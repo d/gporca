@@ -4,6 +4,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libgpopt/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libnaucrates/include)
 add_library(gpdbcost SHARED
+            include/gpdbcost/CCostModelGPDB.h
+            include/gpdbcost/CCostModelGPDBLegacy.h
+            include/gpdbcost/CCostModelParamsGPDB.h
+            include/gpdbcost/CCostModelParamsGPDBLegacy.h
+
             src/CCostModelGPDB.cpp
             src/CCostModelGPDBLegacy.cpp
             src/CCostModelParamsGPDB.cpp

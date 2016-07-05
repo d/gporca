@@ -267,6 +267,9 @@ set_target_properties(gpos PROPERTIES
                       SOVERSION ${GPOS_ABI_VERSION}
                       VERSION ${GPOS_VERSION_STRING})
 
+set(GPOS_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/libgpos/include PARENT_SCOPE)
+set(GPOS_LIBRARIES gpos PARENT_SCOPE)
+
 # Tests reside in the 'server' subdirectory.
 enable_testing()
 add_subdirectory(server)

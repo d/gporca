@@ -132,7 +132,7 @@ find_package(Xerces REQUIRED)
 include_directories(${XERCES_INCLUDE_DIRS})
 
 # GPOS.
-find_package(GPOS 1.136 REQUIRED)
+add_subdirectory(libgpos)
 include_directories(${GPOS_INCLUDE_DIRS})
 
 # Extra system libs needed on Solaris.

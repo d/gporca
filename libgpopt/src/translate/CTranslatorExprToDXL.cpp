@@ -191,7 +191,7 @@ CTranslatorExprToDXL::InitPhysicalTranslators()
 	}
 
 	// array mapping operator type to translator function
-	SPhTranslatorMapping rgPhysicalTranslators[] = 
+	SPhTranslatorMapping rgPhysicalTranslators[] =
 	{
 			{COperator::EopPhysicalFilter, &gpopt::CTranslatorExprToDXL::PdxlnResult},
 			{COperator::EopPhysicalIndexScan, &gpopt::CTranslatorExprToDXL::PdxlnIndexScan},
@@ -236,6 +236,7 @@ CTranslatorExprToDXL::InitPhysicalTranslators()
 			{COperator::EopPhysicalPartitionSelectorDML, &gpopt::CTranslatorExprToDXL::PdxlnPartitionSelectorDML},
 			{COperator::EopPhysicalConstTableGet, &gpopt::CTranslatorExprToDXL::PdxlnResultFromConstTableGet},
 			{COperator::EopPhysicalTVF, &gpopt::CTranslatorExprToDXL::PdxlnTVF},
+			{COperator::EopPhysicalParallelUnionAll, &gpopt::CTranslatorExprToDXL::PdxlnAppend},
 			{COperator::EopPhysicalUnionAll, &gpopt::CTranslatorExprToDXL::PdxlnAppend},
 			{COperator::EopPhysicalDML, &gpopt::CTranslatorExprToDXL::PdxlnDML},
 			{COperator::EopPhysicalSplit, &gpopt::CTranslatorExprToDXL::PdxlnSplit},

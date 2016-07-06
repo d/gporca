@@ -249,6 +249,7 @@ namespace gpopt
 				EopPhysicalScalarAgg,
 
 				EopPhysicalUnionAll,
+				EopPhysicalParallelUnionAll,
 
 				EopPhysicalSort,
 				EopPhysicalLimit,

@@ -170,7 +170,7 @@ namespace gpopt
 				)
 			{
 				GPOS_ASSERT(NULL != pds);
-				GPOS_ASSERT(EdtHashed == pds->Edt());
+//				GPOS_ASSERT(EdtHashed == pds->Edt());
 
 				return dynamic_cast<CDistributionSpecHashed*>(pds);
 			}
@@ -183,7 +183,7 @@ namespace gpopt
 				)
 			{
 				GPOS_ASSERT(NULL != pds);
-				GPOS_ASSERT(EdtHashed == pds->Edt());
+//				GPOS_ASSERT(EdtHashed == pds->Edt());
 
 				return dynamic_cast<const CDistributionSpecHashed*>(pds);
 			}

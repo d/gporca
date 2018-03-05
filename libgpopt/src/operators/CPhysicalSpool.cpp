@@ -388,18 +388,6 @@ CPhysicalSpool::EpetRewindability
 BOOL
 CPhysicalSpool::FValidContext(IMemoryPool *pmp, COptimizationContext *poc, DrgPoc *pdrgpocChild) const
 {
-	GPOS_ASSERT(NULL != pdrgpocChild);
-	GPOS_ASSERT(1 == pdrgpocChild->UlLength());
-
-	COptimizationContext *pocChild = (*pdrgpocChild)[0];
-	CCostContext *pccBest = pocChild->PccBest();
-	GPOS_ASSERT(NULL != pccBest);
-
-	CDrvdPropPlan *pdpplanChild = pccBest->Pdpplan();
-	if (pdpplanChild->Ppim()->FContainsUnresolved())
-	{
-		return false;
-	}
 	return CPhysical::FValidContext(pmp, poc, pdrgpocChild);
 }
 // EOF

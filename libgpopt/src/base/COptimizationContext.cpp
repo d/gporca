@@ -156,6 +156,38 @@ COptimizationContext::FEqualForStats
 }
 
 
+static BOOL
+FYolo(
+		CGroupExpression *pgexpr,
+		COptimizationContext *poc
+)
+{
+	CPartInfo *const ppartinfo = CDrvdPropRelational::Pdprel(pgexpr->Pgroup()->Pdp())->Ppartinfo();
+	const ULONG ulConsumers = ppartinfo->UlConsumers();
+	CPartIndexMap *const ppimReqd = poc->Prpp()->Pepp()->PppsRequired()->Ppim();
+	for (ULONG ul = 0; ul < ulConsumers; ++ul)
+	{
+		const ULONG ulScanId = ppartinfo->UlScanId(ul);
+		if (!ppimReqd->FContains(ulScanId) || (CPartIndexMap::EpimConsumer == ppimReqd->Epim(ulScanId) &&
+											   0 != ppimReqd->UlExpectedPropagators(ulScanId)))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+static BOOL
+FOptimizeSpool
+	(
+	CGroupExpression *pgexpr,
+	COptimizationContext *poc
+	)
+{
+	return FYolo(pgexpr, poc);
+}
+
 //---------------------------------------------------------------------------
 //	@function:
 //		COptimizationContext::FOptimize
@@ -180,6 +212,11 @@ COptimizationContext::FOptimize
 	if (CUtils::FPhysicalMotion(pop))
 	{
 		return FOptimizeMotion(pmp, pgexprParent, pgexprChild, pocChild, ulSearchStages);
+	}
+
+	if (COperator::EopPhysicalSpool == pop->Eopid())
+	{
+		return FOptimizeSpool(pgexprChild, pocChild);
 	}
 
 	if (COperator::EopPhysicalSort == pop->Eopid())
@@ -264,20 +301,12 @@ COptimizationContext::FOptimizeMotion
 	BOOL fCompatibleDistribution = poc->Prpp()->Ped()->FCompatible(pop->Pds());
 	if (fCompatibleDistribution)
 	{
-		CPartInfo *const ppartinfo = CDrvdPropRelational::Pdprel(pgexprMotion->Pgroup()->Pdp())->Ppartinfo();
-		const ULONG ulConsumers = ppartinfo->UlConsumers();
-		CPartIndexMap *const ppimReqd = poc->Prpp()->Pepp()->PppsRequired()->Ppim();
-		for (ULONG ul = 0; ul < ulConsumers; ++ul)
-		{
-			const ULONG ulScanId = ppartinfo->UlScanId(ul);
-			if (!ppimReqd->FContains(ulScanId) || (CPartIndexMap::EpimConsumer == ppimReqd->Epim(ulScanId) &&
-												   0 != ppimReqd->UlExpectedPropagators(ulScanId)))
-			{
-				return false;
-			}
-		}
+		return FYolo(pgexprMotion, poc);
 	}
-	return fCompatibleDistribution;
+	else
+	{
+		return false;
+	}
 }
 
 

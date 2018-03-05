@@ -261,7 +261,23 @@ COptimizationContext::FOptimizeMotion
 
 	CPhysicalMotion *pop = CPhysicalMotion::PopConvert(pgexprMotion->Pop());
 
-	return poc->Prpp()->Ped()->FCompatible(pop->Pds());
+	BOOL fCompatibleDistribution = poc->Prpp()->Ped()->FCompatible(pop->Pds());
+	if (fCompatibleDistribution)
+	{
+		CPartInfo *const ppartinfo = CDrvdPropRelational::Pdprel(pgexprMotion->Pgroup()->Pdp())->Ppartinfo();
+		const ULONG ulConsumers = ppartinfo->UlConsumers();
+		CPartIndexMap *const ppimReqd = poc->Prpp()->Pepp()->PppsRequired()->Ppim();
+		for (ULONG ul = 0; ul < ulConsumers; ++ul)
+		{
+			const ULONG ulScanId = ppartinfo->UlScanId(ul);
+			if (!ppimReqd->FContains(ulScanId) || (CPartIndexMap::EpimConsumer == ppimReqd->Epim(ulScanId) &&
+												   0 != ppimReqd->UlExpectedPropagators(ulScanId)))
+			{
+				return false;
+			}
+		}
+	}
+	return fCompatibleDistribution;
 }
 
 

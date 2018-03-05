@@ -46,10 +46,6 @@ CPhysicalMotion::FValidContext
 	GPOS_ASSERT(NULL != pccBest);
 
 	CDrvdPropPlan *pdpplanChild = pccBest->Pdpplan();
-	if (pdpplanChild->Ppim()->FContainsUnresolved())
-	{
-		return false;
-	}
 
 	CEnfdDistribution *ped = poc->Prpp()->Ped();
 	if (ped->FCompatible(this->Pds()) && ped->FCompatible(pdpplanChild->Pds()))

@@ -202,15 +202,12 @@ CLogicalCTEConsumer::PkcDeriveKeys
 CPartInfo *
 CLogicalCTEConsumer::PpartinfoDerive
 	(
-	IMemoryPool *, //pmp,
+	IMemoryPool *pmp,
 	CExpressionHandle & //exprhdl
 	)
 	const
 {
-	CPartInfo *ppartInfo = CDrvdPropRelational::Pdprel(m_pexprInlined->PdpDerive())->Ppartinfo();
-	ppartInfo->AddRef();
-
-	return ppartInfo;
+	return GPOS_NEW(pmp) CPartInfo(pmp);
 }
 
 //---------------------------------------------------------------------------

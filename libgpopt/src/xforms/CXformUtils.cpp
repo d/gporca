@@ -192,7 +192,7 @@ CXformUtils::FInlinableCTE
 	
 	return IMDFunction::EfsVolatile > pfp->Efs() && 
 			!pfp->FMasterOnly() &&
-			(0 == ppartinfoCTEProducer->UlConsumers() || 1 == pcteinfo->UlConsumers(ulCTEId));
+			(0 == ppartinfoCTEProducer->UlConsumers());
 }
 
 //---------------------------------------------------------------------------

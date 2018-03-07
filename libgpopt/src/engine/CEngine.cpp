@@ -555,15 +555,16 @@ CEngine::FOptimizeChild
 		return false;
 	}
 
-	COperator *popChild = pgexprChild->Pop();
-
-	if (NULL != pgexprParent &&
-		COperator::EopPhysicalSort == pgexprParent->Pop()->Eopid() &&
-		COperator::EopPhysicalMotionGather == popChild->Eopid())
-	{
-		// prevent (Sort --> GatherMerge), since Sort destroys order maintained by GatherMerge
-		return !CPhysicalMotionGather::PopConvert(popChild)->FOrderPreserving();
-	}
+	// TODO: why was this here? It looks out of place
+//	COperator *popChild = pgexprChild->Pop();
+//
+//	if (NULL != pgexprParent &&
+//		COperator::EopPhysicalSort == pgexprParent->Pop()->Eopid() &&
+//		COperator::EopPhysicalMotionGather == popChild->Eopid())
+//	{
+//		// prevent (Sort --> GatherMerge), since Sort destroys order maintained by GatherMerge
+//		return !CPhysicalMotionGather::PopConvert(popChild)->FOrderPreserving();
+//	}
 
 
 	return COptimizationContext::FOptimize(m_pmp, pgexprParent, pgexprChild, pocChild, UlSearchStages());

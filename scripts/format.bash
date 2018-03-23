@@ -66,6 +66,9 @@ _main() {
 		format)
 			format
 			;;
+		stage)
+			stage
+			;;
 		baseline)
 			format
 			stage
@@ -73,8 +76,11 @@ _main() {
 		diff)
 			diff "$@"
 			;;
+		restore_code)
+			restore_code
+			;;
 		*)
-			# unexpected command
+			printf 'unexpected command: %s\n' "${command}"
 			help
 			return 1;
 	esac
@@ -84,11 +90,16 @@ help() {
 	local -a -r commands=(
 	generate_diff
 	format
+	stage
 	baseline
 	diff
+	restore_code
 	)
 	printf 'usage: %s <command>\n' "$0"
+	(
+	IFS=,
 	printf 'supported commands: %s\n' "${commands[*]}"
+	)
 }
 
 _main "$@"

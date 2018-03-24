@@ -21,5 +21,6 @@ SpacesBeforeTrailingComments: 2
 TabWidth:        4
 UseTab:          Always
 
+SortIncludes: false
 ReflowComments: false
 ...

@@ -9,16 +9,16 @@
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
+
 #include "gpdbcost/CCostModelParamsGPDB.h"
 #include "gpdbcost/CCostModelParamsGPDBLegacy.h"
-
-
 #include "gpos/base.h"
 #include "gpos/test/CUnittest.h"
 #include "gpos/memory/CAutoMemoryPool.h"
 #include "gpos/common/CAutoP.h"
 #include "gpos/common/CAutoRef.h"
 #include "gpos/io/COstreamString.h"
+#include "gpopt/cost/ICostModel.h"
 #include "naucrates/dxl/parser/CParseHandlerCostModel.h"
 #include "naucrates/dxl/parser/CParseHandlerFactory.h"
 #include "naucrates/dxl/parser/CParseHandlerManager.h"
@@ -27,20 +27,6 @@
 using namespace gpdxl;
 
 XERCES_CPP_NAMESPACE_USE
-
-static BOOL
-FEquals(IMemoryPool *pmp, ICostModelParams *pcmExpected, ICostModelParams *pcmActual)
-{
-	CWStringDynamic strActual(pmp);
-	COstreamString ossActual(&strActual);
-	pcmActual->OsPrint(ossActual);
-
-	CWStringDynamic strExpected(pmp);
-	COstreamString ossExpected(&strExpected);
-	pcmExpected->OsPrint(ossExpected);
-
-	return strExpected == strActual;
-}
 
 namespace
 {
@@ -122,7 +108,7 @@ static gpos::GPOS_RESULT Eres_CalibratedCostModel()
 	GPOS_RTL_ASSERT(3 == pcm->UlHosts());
 
 	CAutoRef<CCostModelParamsGPDB> pcpExpected(GPOS_NEW(pmp) CCostModelParamsGPDB(pmp));
-	GPOS_RTL_ASSERT(FEquals(pmp, pcpExpected.Pt(), pcm->Pcp()));
+	GPOS_RTL_ASSERT(pcpExpected.Pt()->FEquals(pcm->Pcp()));
 
 	return gpos::GPOS_OK;
 }
@@ -146,7 +132,7 @@ static gpos::GPOS_RESULT Eres_LegacyCostModel()
 	GPOS_RTL_ASSERT(3 == pcm->UlHosts());
 
 	CAutoRef<CCostModelParamsGPDBLegacy> pcpExpected(GPOS_NEW(pmp) CCostModelParamsGPDBLegacy(pmp));
-	GPOS_RTL_ASSERT(FEquals(pmp, pcpExpected.Pt(), pcm->Pcp()));
+	GPOS_RTL_ASSERT(pcpExpected.Pt()->FEquals(pcm->Pcp()));
 
 	return gpos::GPOS_OK;
 }

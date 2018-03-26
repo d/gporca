@@ -182,7 +182,7 @@ const CHAR rgszCostParamNames[CCostModelParamsGPDB::EcpSentinel][GPOPT_COSTPARAM
 	"IndexScanTupCostUnit",
 	"IndexScanTupRandomFactor",
 	"FilterColCostUnit",
-	"OutputTupCostUnit", 
+	"OutputTupCostUnit",
 	"GatherSendCostUnit",
 	"GatherRecvCostUnit",
 	"RedistributeSendCostUnit",
@@ -455,5 +455,19 @@ CCostModelParamsGPDB::OsPrint
 	return os;
 }
 
+BOOL CCostModelParamsGPDB::FEquals(ICostModelParams *pcm) const
+{
+	CCostModelParamsGPDB *pcmgOther = dynamic_cast<CCostModelParamsGPDB *>(pcm);
+	if (NULL == pcmgOther)
+		return false;
+
+	for (ULONG ul = 0U; ul < GPOS_ARRAY_SIZE(m_rgpcp); ul++)
+	{
+		if (!m_rgpcp[ul]->FEquals(pcmgOther->m_rgpcp[ul]))
+			return false;
+	}
+
+	return true;
+}
 
 // EOF

@@ -17,6 +17,7 @@
 #include "gpos/memory/CAutoMemoryPool.h"
 #include "gpos/common/CAutoP.h"
 #include "gpos/common/CAutoRef.h"
+#include "gpos/common/CAutoRg.h"
 #include "gpos/io/COstreamString.h"
 #include "gpopt/cost/ICostModel.h"
 #include "naucrates/dxl/parser/CParseHandlerCostModel.h"
@@ -91,16 +92,16 @@ namespace
 
 static gpos::GPOS_RESULT Eres_CalibratedCostModel()
 {
+	const CHAR szDXLFileName[] = "../data/dxl/parse_tests/CostModelConfigCalibrated.xml";
 	Fixture fixture;
 
 	IMemoryPool *pmp = fixture.Pmp();
 
-	const XMLByte szDXL[] =
-			"<dxl:CostModelConfig CostModelType=\"1\" SegmentsForCosting=\"3\" xmlns:dxl=\"http://greenplum.com/dxl/2010/12/\"/>";
+	gpos::CAutoRg<CHAR> a_szDXL(CDXLUtils::SzRead(pmp, szDXLFileName));
 
 	CParseHandlerCostModel *pphcm = fixture.PphCostModel();
 
-	fixture.Parse(szDXL, sizeof(szDXL));
+	fixture.Parse((const XMLByte *)a_szDXL.Rgt(), strlen(a_szDXL.Rgt()));
 
 	ICostModel *pcm = pphcm->Pcm();
 
@@ -115,16 +116,16 @@ static gpos::GPOS_RESULT Eres_CalibratedCostModel()
 
 static gpos::GPOS_RESULT Eres_LegacyCostModel()
 {
+	const CHAR szDXLFileName[] = "../data/dxl/parse_tests/CostModelConfigLegacy.xml";
 	Fixture fixture;
 
 	IMemoryPool *pmp = fixture.Pmp();
 
-	const XMLByte szDXL[] =
-			"<dxl:CostModelConfig CostModelType=\"0\" SegmentsForCosting=\"3\" xmlns:dxl=\"http://greenplum.com/dxl/2010/12/\"/>";
+	gpos::CAutoRg<CHAR> a_szDXL(CDXLUtils::SzRead(pmp, szDXLFileName));
 
 	CParseHandlerCostModel *pphcm = fixture.PphCostModel();
 
-	fixture.Parse(szDXL, sizeof(szDXL));
+	fixture.Parse((const XMLByte *)a_szDXL.Rgt(), strlen(a_szDXL.Rgt()));
 
 	ICostModel *pcm = pphcm->Pcm();
 

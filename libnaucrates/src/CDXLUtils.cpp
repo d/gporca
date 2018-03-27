@@ -25,6 +25,7 @@
 #include "gpopt/optimizer/COptimizerConfig.h"
 
 #include "naucrates/base/CQueryToDXLResult.h"
+#include "naucrates/dxl/CCostModelConfigSerializer.h"
 #include "naucrates/dxl/CDXLUtils.h"
 #include "naucrates/dxl/parser/CParseHandlerDXL.h"
 #include "naucrates/dxl/parser/CParseHandlerPlan.h"
@@ -1234,10 +1235,8 @@ CDXLUtils::SerializeOptimizerConfig
 	xmlser.AddAttribute(CDXLTokens::PstrToken(EdxltokenOidRank), pwindowoids->OidRank());
 	xmlser.CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenWindowOids));
 
-	xmlser.OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCostModelConfig));
-	xmlser.AddAttribute(CDXLTokens::PstrToken(EdxltokenCostModelType), pcm->Ecmt());
-	xmlser.AddAttribute(CDXLTokens::PstrToken(EdxltokenSegmentsForCosting), pcm->UlHosts());
-	xmlser.CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCostModelConfig));
+	CCostModelConfigSerializer cmcSerializer(pcm);
+	cmcSerializer.Serialize(xmlser);
 
 	xmlser.OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenHint));
 	xmlser.AddAttribute(CDXLTokens::PstrToken(EdxltokenMinNumOfPartsToRequireSortOnInsert), phint->UlMinNumOfPartsToRequireSortOnInsert());

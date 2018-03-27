@@ -21,7 +21,8 @@ namespace gpdxl
 	using namespace gpos;
 
 	XERCES_CPP_NAMESPACE_USE
-	
+
+	class CParseHandlerCostParams;
 	//---------------------------------------------------------------------------
 	//	@class:
 	//		CParseHandlerCostModel
@@ -37,10 +38,12 @@ namespace gpdxl
 			ULONG m_ulSegments;
 			// cost model
 			ICostModel *m_pcm;
-			
+
+			CParseHandlerCostParams *m_pphcp;
+
 			// private copy ctor
-			CParseHandlerCostModel(const CParseHandlerCostModel&); 
-		
+			CParseHandlerCostModel(const CParseHandlerCostModel&);
+
 			// process the start of an element
 			void StartElement
 				(
@@ -49,7 +52,7 @@ namespace gpdxl
 					const XMLCh* const xmlszQname,		// element's qname
 					const Attributes& attr				// element's attributes
 				);
-				
+
 			// process the end of an element
 			void EndElement
 				(
@@ -57,7 +60,7 @@ namespace gpdxl
 					const XMLCh* const xmlszLocalname,	// local part of element's name
 					const XMLCh* const xmlszQname		// element's qname
 				);
-			
+
 		public:
 			// ctor/dtor
 			CParseHandlerCostModel
@@ -66,9 +69,9 @@ namespace gpdxl
 				CParseHandlerManager *pphm,
 				CParseHandlerBase *pphRoot
 				);
-			
+
 			virtual ~CParseHandlerCostModel();
-			
+
 			// cost model
 			ICostModel *Pcm() const;
 	};

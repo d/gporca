@@ -109,6 +109,7 @@ static gpos::GPOS_RESULT Eres_CalibratedCostModel()
 	GPOS_RTL_ASSERT(3 == pcm->UlHosts());
 
 	CAutoRef<CCostModelParamsGPDB> pcpExpected(GPOS_NEW(pmp) CCostModelParamsGPDB(pmp));
+	pcpExpected->SetParam(CCostModelParamsGPDB::EcpNLJFactor, 1024.0, 1023.0, 1025.0);
 	GPOS_RTL_ASSERT(pcpExpected.Pt()->FEquals(pcm->Pcp()));
 
 	return gpos::GPOS_OK;

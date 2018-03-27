@@ -107,7 +107,7 @@ CCostModelGPDB::CCostModelGPDB
 	(
 	IMemoryPool *pmp,
 	ULONG ulSegments,
-	DrgPcp *pdrgpcp
+	CCostModelParamsGPDB *pcp
 	)
 	:
 	m_pmp(pmp),
@@ -115,8 +115,16 @@ CCostModelGPDB::CCostModelGPDB
 {
 	GPOS_ASSERT(0 < ulSegments);
 
-	m_pcp = GPOS_NEW(pmp) CCostModelParamsGPDB(pmp);
-	SetParams(pdrgpcp);
+	if (NULL == pcp)
+	{
+		m_pcp = GPOS_NEW(pmp) CCostModelParamsGPDB(pmp);
+	}
+	else
+	{
+		GPOS_ASSERT(NULL != pcp);
+
+		m_pcp = pcp;
+	}
 }
 
 

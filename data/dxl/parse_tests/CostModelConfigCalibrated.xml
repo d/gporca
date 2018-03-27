@@ -1,1 +1,5 @@
-<dxl:CostModelConfig CostModelType="1" SegmentsForCosting="3" xmlns:dxl="http://greenplum.com/dxl/2010/12/"/>
+<dxl:CostModelConfig CostModelType="1" SegmentsForCosting="3" xmlns:dxl="http://greenplum.com/dxl/2010/12/">
+    <dxl:CostParams>
+        <dxl:CostParam Name="NLJFactor" Value="1024" LowerBound="1023" UpperBound="1025"/>
+    </dxl:CostParams>
+</dxl:CostModelConfig>

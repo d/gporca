@@ -1,4 +1,5 @@
 ---
+# vim: ft=yaml
 Language: Cpp
 BasedOnStyle: Google
 
@@ -6,8 +7,8 @@ AccessModifierOffset: -4
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: true
-BinPackParameters: true
+AlwaysBreakAfterReturnType: All
+BinPackParameters: false
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
 ConstructorInitializerAllOnOneLineOrOnePerLine: true

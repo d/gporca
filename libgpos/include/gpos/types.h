@@ -70,14 +70,14 @@ namespace gpos
 #ifdef ULONG_MAX
 #undef ULONG_MAX
 #endif // ULONG_MAX
-#define ULONG_MAX		((ULONG)-1)
+#define ULONG_MAX		((::gpos::ULONG)-1)
 
 	typedef uint64_t ULLONG;
 	GPOS_CPL_ASSERT(8 == sizeof(ULLONG));
 #ifdef ULLONG_MAX
 #undef ULLONG_MAX
 #endif // ULLONG_MAX
-#define ULLONG_MAX		((ULLONG)-1)
+#define ULLONG_MAX		((::gpos::ULLONG)-1)
 
 	typedef uintptr_t	ULONG_PTR;
 #ifdef GPOS_32BIT
@@ -100,7 +100,7 @@ namespace gpos
 #ifdef INT_MAX
 #undef INT_MAX
 #endif // INT_MAX
-#define INT_MAX			((INT) (ULONG_MAX >> 1))
+#define INT_MAX			((::gpos::INT) (ULONG_MAX >> 1))
 
 #ifdef INT_MIN
 #undef INT_MIN
@@ -110,7 +110,7 @@ namespace gpos
 #ifdef LINT_MAX
 #undef LINT_MAX
 #endif // LINT_MAX
-#define LINT_MAX		((LINT) (ULLONG_MAX >> 1))
+#define LINT_MAX		((::gpos::LINT) (ULLONG_MAX >> 1))
 
 #ifdef LINT_MIN
 #undef LINT_MIN
@@ -120,12 +120,12 @@ namespace gpos
 #ifdef USINT_MAX
 #undef USINT_MAX
 #endif // USINT_MAX
-#define USINT_MAX		((USINT)-1)
+#define USINT_MAX		((::gpos::USINT)-1)
 
 #ifdef SINT_MAX
 #undef SINT_MAX
 #endif // SINT_MAX
-#define SINT_MAX		((SINT) (USINT_MAX >> 1))
+#define SINT_MAX		((::gpos::SINT) (USINT_MAX >> 1))
 
 #ifdef SINT_MIN
 #undef SINT_MIN

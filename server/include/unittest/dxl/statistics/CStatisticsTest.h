@@ -127,13 +127,13 @@ namespace gpnaucrates
 					(
 					IMemoryPool *pmp,
 					ULONG ul1,
-					ULONG ul2 = ULONG_MAX
+					ULONG ul2 = GPOS_ULONG_MAX
 					)
 			{
 				DrgPul *pdrgpul = GPOS_NEW(pmp) DrgPul(pmp);
 				pdrgpul->Append(GPOS_NEW(pmp) ULONG (ul1));
 
-				if (ULONG_MAX != ul2)
+				if (GPOS_ULONG_MAX != ul2)
 				{
 					pdrgpul->Append(GPOS_NEW(pmp) ULONG (ul2));
 				}

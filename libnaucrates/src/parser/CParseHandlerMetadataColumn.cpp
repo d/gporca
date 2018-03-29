@@ -44,7 +44,7 @@ CParseHandlerMetadataColumn::CParseHandlerMetadataColumn
 	m_pmdname(NULL),
 	m_pmdidType(NULL),
 	m_pdxlnDefaultValue(NULL),
-	m_ulWidth(ULONG_MAX)
+	m_ulWidth(GPOS_ULONG_MAX)
 {
 }
 

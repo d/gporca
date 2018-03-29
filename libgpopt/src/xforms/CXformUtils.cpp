@@ -2289,7 +2289,7 @@ CXformUtils::PdrgpcrIndexColumns
 
 	for (ULONG ul = 0; ul < ulLength; ul++)
 	{
-		ULONG ulPos = ULONG_MAX;
+		ULONG ulPos = GPOS_ULONG_MAX;
 		if (EicIncluded == eic)
 		{
 			ulPos = pmdindex->UlIncludedCol(ul);
@@ -2300,7 +2300,7 @@ CXformUtils::PdrgpcrIndexColumns
 		}
 		ULONG ulPosNonDropped = pmdrel->UlPosNonDropped(ulPos);
 		
-		GPOS_ASSERT(ULONG_MAX != ulPosNonDropped);
+		GPOS_ASSERT(GPOS_ULONG_MAX != ulPosNonDropped);
 		GPOS_ASSERT(ulPosNonDropped < pdrgpcr->UlLength());
 
 		CColRef *pcr = (*pdrgpcr)[ulPosNonDropped];
@@ -2837,10 +2837,10 @@ CXformUtils::PexprBuildIndexPlan
 	CTableDescriptor *ptabdesc = NULL;
 	DrgPcr *pdrgpcrOutput = NULL;
 	CWStringConst *pstrAlias = NULL;
-	ULONG ulPartIndex = ULONG_MAX;
+	ULONG ulPartIndex = GPOS_ULONG_MAX;
 	DrgDrgPcr *pdrgpdrgpcrPart = NULL;
 	BOOL fPartialIndex = pmdrel->FPartialIndex(pmdindex->Pmdid());
-	ULONG ulSecondaryPartIndex = ULONG_MAX;
+	ULONG ulSecondaryPartIndex = GPOS_ULONG_MAX;
 	CPartConstraint *ppartcnstrRel = NULL;
 
 	if (!fAllowPartialIndex && fPartialIndex)

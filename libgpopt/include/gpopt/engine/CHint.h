@@ -126,9 +126,9 @@ namespace gpopt
 			{
 				return GPOS_NEW(pmp) CHint
 										(
-										INT_MAX, /* ulMinNumOfPartsToRequireSortOnInsert */
-										INT_MAX, /* ulJoinArityForAssociativityCommutativity */
-										INT_MAX, /* ulArrayExpansionThreshold */
+										GPOS_INT_MAX, /* ulMinNumOfPartsToRequireSortOnInsert */
+										GPOS_INT_MAX, /* ulJoinArityForAssociativityCommutativity */
+										GPOS_INT_MAX, /* ulArrayExpansionThreshold */
 										JOIN_ORDER_DP_THRESHOLD, /*ulJoinOrderDPLimit*/
 										BROADCAST_THRESHOLD, /*ulBroadcastThreshold*/
 										true /* fEnforceConstraintsOnDML */

@@ -18,7 +18,7 @@
 #ifndef GPDXL_CIdGenerator_H
 #define GPDXL_CIdGenerator_H
 
-#define GPDXL_INVALID_ID ULONG_MAX
+#define GPDXL_INVALID_ID GPOS_ULONG_MAX
 
 #include "gpos/base.h"
 

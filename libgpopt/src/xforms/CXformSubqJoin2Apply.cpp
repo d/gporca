@@ -107,7 +107,7 @@ CXformSubqJoin2Apply::CollectSubqueries
 		// add columns used by subquery
 		pcrsOuter->Union(CDrvdPropScalar::Pdpscalar(pexpr->PdpDerive())->PcrsUsed());
 
-		ULONG ulChildIndex = ULONG_MAX;
+		ULONG ulChildIndex = GPOS_ULONG_MAX;
 		const ULONG ulSize = pdrgpcrs->UlLength();
 		for (ULONG ul = 0; ul < ulSize; ul++)
 		{
@@ -120,7 +120,7 @@ CXformSubqJoin2Apply::CollectSubqueries
 			}
 		}
 
-		if (ULONG_MAX != ulChildIndex)
+		if (GPOS_ULONG_MAX != ulChildIndex)
 		{
 			pexpr->AddRef();
 			(*pdrgpdrgpexprSubqs)[ulChildIndex]->Append(pexpr);

@@ -119,7 +119,7 @@ CTreeMapTest::CNode::CNode
 	DrgPnd *pdrgpnd
 	)
 	:
-	m_ulData(ULONG_MAX),
+	m_ulData(GPOS_ULONG_MAX),
 	m_pdrgpnd(pdrgpnd)
 {
 	if (NULL != pulData)

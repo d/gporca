@@ -426,9 +426,9 @@ CICGTest::EresUnittest_PreferHashJoinVersusIndexJoinWhenRiskIsHigh()
 	ICostModelParams::SCostParam *pcpUnlimited = GPOS_NEW(pmp) ICostModelParams::SCostParam
 								(
 								CCostModelParamsGPDB::EcpIndexJoinAllowedRiskThreshold,
-								ULONG_MAX,  // dVal
+								GPOS_ULONG_MAX,  // dVal
 								0,  // dLowerBound
-								ULONG_MAX  // dUpperBound
+								GPOS_ULONG_MAX  // dUpperBound
 								);
 	pdrgpcpUnlimited->Append(pcpUnlimited);
 	GPOS_RESULT eres = CTestUtils::EresCheckOptimizedPlan

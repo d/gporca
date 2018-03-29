@@ -108,8 +108,8 @@ COstreamBasicTest::EresUnittest_Numbers()
 	
 	const INT i = 0xdeadbeef;
 
-	const ULONG ul = ULONG_MAX;
-	const ULLONG ull = ULLONG_MAX;
+	const ULONG ul = GPOS_ULONG_MAX;
+	const ULLONG ull = GPOS_ULLONG_MAX;
 	const DOUBLE d = 1.23456789e20;
 	
 	// numbers in dec and hex formats

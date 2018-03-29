@@ -111,7 +111,7 @@ CPhysicalSequence::PcrsRequired
 	if (ulChildIndex == ulArity - 1)
 	{
 		// request required columns from the last child of the sequence
-		return PcrsChildReqd(pmp, exprhdl, pcrsRequired, ulChildIndex, ULONG_MAX);
+		return PcrsChildReqd(pmp, exprhdl, pcrsRequired, ulChildIndex, GPOS_ULONG_MAX);
 	}
 	
 	m_pcrsEmpty->AddRef();

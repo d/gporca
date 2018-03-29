@@ -130,7 +130,7 @@ CStatsPredUtils::PstatspredUnsupported
 	CColRefSet * //pcrsOuterRefs
 	)
 {
-	return GPOS_NEW(pmp) CStatsPredUnsupported(ULONG_MAX, CStatsPred::EstatscmptOther);
+	return GPOS_NEW(pmp) CStatsPredUnsupported(GPOS_ULONG_MAX, CStatsPred::EstatscmptOther);
 }
 
 //---------------------------------------------------------------------------
@@ -561,7 +561,7 @@ CStatsPredUtils::AddSupportedStatsFilters
 							(
 							GPOS_NEW(pmp) CStatsPredUnsupported
 										(
-										ULONG_MAX,
+										GPOS_ULONG_MAX,
 										CStatsPred::EstatscmptOther,
 										CHistogram::DNeutralScaleFactor
 										)
@@ -859,7 +859,7 @@ CStatsPredUtils::PstatspredLike
 
 	if (NULL == pexprScIdent || NULL == pexprScConst)
 	{
-		return GPOS_NEW(pmp) CStatsPredUnsupported(ULONG_MAX, CStatsPred::EstatscmptLike);
+		return GPOS_NEW(pmp) CStatsPredUnsupported(GPOS_ULONG_MAX, CStatsPred::EstatscmptLike);
 	}
 
 	CScalarIdent *popScalarIdent = CScalarIdent::PopConvert(pexprScIdent->Pop());
@@ -924,7 +924,7 @@ CStatsPredUtils::ProcessArrayCmp
 	if (!fCompareToConstAndScalarIdents)
 	{
 		// unsupported predicate for stats calculations
-		pdrgpstatspred->Append(GPOS_NEW(pmp) CStatsPredUnsupported(ULONG_MAX, CStatsPred::EstatscmptOther));
+		pdrgpstatspred->Append(GPOS_NEW(pmp) CStatsPredUnsupported(GPOS_ULONG_MAX, CStatsPred::EstatscmptOther));
 
 		return;
 	}
@@ -1006,7 +1006,7 @@ CStatsPredUtils::PstatspredBoolean
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 
 	IDatum *pdatum = NULL;
-	ULONG ulColId = ULONG_MAX;
+	ULONG ulColId = GPOS_ULONG_MAX;
 
 	if (CPredicateUtils::FBooleanScalarIdent(pexprPred))
 	{
@@ -1030,7 +1030,7 @@ CStatsPredUtils::PstatspredBoolean
 	}
 
 
-	GPOS_ASSERT(NULL != pdatum && ULONG_MAX != ulColId);
+	GPOS_ASSERT(NULL != pdatum && GPOS_ULONG_MAX != ulColId);
 
 	return GPOS_NEW(pmp) CStatsPredPoint(ulColId, CStatsPred::EstatscmptEq, GPOS_NEW(pmp) CPoint(pdatum));
 }
@@ -1083,7 +1083,7 @@ CStatsPredUtils::PstatsjoinExtract
 		ULONG ulIndexLeft = CUtils::UlPcrIndexContainingSet(pdrgpcrsOutput, pcrLeft);
 		ULONG ulIndexRight = CUtils::UlPcrIndexContainingSet(pdrgpcrsOutput, pcrRight);
 
-		if (ULONG_MAX != ulIndexLeft && ULONG_MAX != ulIndexRight && ulIndexLeft != ulIndexRight)
+		if (GPOS_ULONG_MAX != ulIndexLeft && GPOS_ULONG_MAX != ulIndexRight && ulIndexLeft != ulIndexRight)
 		{
 			if (ulIndexLeft < ulIndexRight)
 			{
@@ -1290,7 +1290,7 @@ CStatsPredUtils::FUnsupportedPredOnDefinedCol
 	CStatsPred *pstatspred
 	)
 {
-	return ((CStatsPred::EsptUnsupported == pstatspred->Espt()) && (ULONG_MAX == pstatspred->UlColId()));
+	return ((CStatsPred::EsptUnsupported == pstatspred->Espt()) && (GPOS_ULONG_MAX == pstatspred->UlColId()));
 }
 
 

@@ -308,7 +308,7 @@ CLogicalConstTableGet::PdrgpcoldescMapping
 	{
 		CColRef *pcr = (*pdrgpcr)[ul];
 
-		ULONG ulLength = ULONG_MAX;
+		ULONG ulLength = GPOS_ULONG_MAX;
 		if (CColRef::EcrtTable == pcr->Ecrt())
 		{
 			CColRefTable *pcrTable = CColRefTable::PcrConvert(pcr);

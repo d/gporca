@@ -88,7 +88,7 @@ CSchedulerContext::Init
 					(
 					CMemoryPoolManager::EatStack,
 					false /*fThreadSafe*/,
-					ULLONG_MAX
+					GPOS_ULLONG_MAX
 					);
 
 	m_pmpGlobal = pmpGlobal;

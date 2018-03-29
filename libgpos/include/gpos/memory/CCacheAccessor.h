@@ -165,7 +165,7 @@ namespace gpos
 						(
 						CMemoryPoolManager::EatTracker,
 						true /*fThreadSafe*/,
-						ULLONG_MAX
+						GPOS_ULLONG_MAX
 						);
 
 				return m_pmp;

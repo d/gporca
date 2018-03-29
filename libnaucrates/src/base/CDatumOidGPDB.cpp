@@ -55,7 +55,7 @@ CDatumOidGPDB::CDatumOidGPDB
 	if (FNull())
 	{
 		// needed for hash computation
-		m_oidVal = INT_MAX;
+		m_oidVal = GPOS_INT_MAX;
 	}
 }
 
@@ -84,7 +84,7 @@ CDatumOidGPDB::CDatumOidGPDB
 	if (FNull())
 	{
 		// needed for hash computation
-		m_oidVal = INT_MAX;
+		m_oidVal = GPOS_INT_MAX;
 	}
 }
 

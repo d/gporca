@@ -40,7 +40,7 @@ namespace gpopt
 	{
 		private:
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+			// origin operator id -- GPOS_ULONG_MAX if operator was not generated via a transformation
 			ULONG m_ulOriginOpId;
 
 			// disable copy ctor
@@ -83,7 +83,7 @@ namespace gpopt
 				return true;
 			}
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+			// origin operator id -- GPOS_ULONG_MAX if operator was not generated via a transformation
 			ULONG UlOriginOpId() const
 			{
 				return m_ulOriginOpId;

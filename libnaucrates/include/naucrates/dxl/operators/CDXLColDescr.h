@@ -79,7 +79,7 @@ namespace gpdxl
 				IMDId *pmdidType,
 				INT iTypeModifier,
 				BOOL fDropped,
-				ULONG ulWidth = ULONG_MAX
+				ULONG ulWidth = GPOS_ULONG_MAX
 				);
 			
 			//dtor

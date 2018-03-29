@@ -231,7 +231,7 @@ namespace gpopt
 			BOOL FUsed(ULONG ulCTEId) const;
 
 			// increment number of CTE consumers
-			void IncrementConsumers(ULONG ulConsumerId, ULONG ulParentCTEId = ULONG_MAX);
+			void IncrementConsumers(ULONG ulConsumerId, ULONG ulParentCTEId = GPOS_ULONG_MAX);
 
 			// add cte producer to hashmap
 			void AddCTEProducer(CExpression *pexprCTEProducer);

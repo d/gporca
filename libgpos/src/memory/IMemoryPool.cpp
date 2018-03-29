@@ -41,7 +41,7 @@ IMemoryPool::NewImpl
 	IMemoryPool::EAllocationType eat
 	)
 {
-	GPOS_ASSERT(ULONG_MAX >= cSize);
+	GPOS_ASSERT(GPOS_ULONG_MAX >= cSize);
 	GPOS_ASSERT_IMP
 		(
 		(NULL != CMemoryPoolManager::Pmpm()) && (this == CMemoryPoolManager::Pmpm()->PmpGlobal()),

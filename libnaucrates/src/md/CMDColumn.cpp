@@ -169,7 +169,7 @@ CMDColumn::Serialize
 	}
 
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColumnNullable), m_fNullable);
-	if (ULONG_MAX != m_ulLength)
+	if (GPOS_ULONG_MAX != m_ulLength)
 	{
 		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColWidth), m_ulLength);
 	}

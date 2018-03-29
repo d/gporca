@@ -28,7 +28,7 @@ CStatsPredDisj::CStatsPredDisj
 	DrgPstatspred *pdrgpstatspred
 	)
 	:
-	CStatsPred(ULONG_MAX),
+	CStatsPred(GPOS_ULONG_MAX),
 	m_pdrgpstatspred(pdrgpstatspred)
 {
 	GPOS_ASSERT(NULL != pdrgpstatspred);

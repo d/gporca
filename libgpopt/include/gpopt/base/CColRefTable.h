@@ -74,7 +74,7 @@ namespace gpopt
 				ULONG ulId, 
 				const CName *pname,
 				ULONG ulOpSource,
-				ULONG ulWidth = ULONG_MAX
+				ULONG ulWidth = GPOS_ULONG_MAX
 				);
 
 			// dtor

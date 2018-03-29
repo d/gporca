@@ -192,7 +192,7 @@ CAutoTaskProxyTest::EresUnittest_TimedWait()
 #ifdef GPOS_DEBUG
 		GPOS_RESULT eres =
 #endif // GPOS_DEBUG
-		atp.EresTimedWait(rgPtsk[0], ULONG_MAX);
+		atp.EresTimedWait(rgPtsk[0], GPOS_ULONG_MAX);
 		GPOS_ASSERT(GPOS_OK == eres);
 
 		// check second task - timeout immediately
@@ -264,7 +264,7 @@ CAutoTaskProxyTest::EresUnittest_TimedWaitAny()
 #ifdef GPOS_DEBUG
 		GPOS_RESULT eres =
 #endif // GPOS_DEBUG
-		atp.EresTimedWaitAny(&ptsk, ULONG_MAX);
+		atp.EresTimedWaitAny(&ptsk, GPOS_ULONG_MAX);
 		GPOS_ASSERT(GPOS_OK == eres);
 		GPOS_ASSERT(ptsk == rgPtsk[2]);
 		GPOS_ASSERT(!rgPtsk[2]->FCanceled());
@@ -301,7 +301,7 @@ CAutoTaskProxyTest::EresUnittest_TimedWaitAny()
 #ifdef GPOS_DEBUG
 		eres =
 #endif // GPOS_DEBUG
-		atp.EresTimedWaitAny(&ptsk, ULONG_MAX);
+		atp.EresTimedWaitAny(&ptsk, GPOS_ULONG_MAX);
 
 		GPOS_ASSERT(GPOS_OK == eres);
 		GPOS_ASSERT(ptsk == rgPtsk[0]);
@@ -430,10 +430,10 @@ CAutoTaskProxyTest::Unittest_ExecuteWaitFunc
 			atp.WaitAny(&finishedTask);
 			break;
 		case EwtTimedWait:
-			atp.EresTimedWait(ptsk, ULONG_MAX);
+			atp.EresTimedWait(ptsk, GPOS_ULONG_MAX);
 			break;
 		case EwtTimedWaitAny:
-			atp.EresTimedWaitAny(&finishedTask, ULONG_MAX);
+			atp.EresTimedWaitAny(&finishedTask, GPOS_ULONG_MAX);
 			break;
 		case EwtDestroy:
 			atp.Destroy(ptsk);

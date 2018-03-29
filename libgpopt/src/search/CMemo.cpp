@@ -781,7 +781,7 @@ CMemo::BuildTreeMap
 	GPOS_ASSERT(NULL == m_pmemotmap && "tree map is already built");
 
 	m_pmemotmap = GPOS_NEW(m_pmp) MemoTreeMap(m_pmp, CExpression::PexprRehydrate);
-	m_pgroupRoot->BuildTreeMap(m_pmp, poc, NULL /*pccParent*/, ULONG_MAX /*ulChildIndex*/, m_pmemotmap);
+	m_pgroupRoot->BuildTreeMap(m_pmp, poc, NULL /*pccParent*/, GPOS_ULONG_MAX /*ulChildIndex*/, m_pmemotmap);
 }
 
 

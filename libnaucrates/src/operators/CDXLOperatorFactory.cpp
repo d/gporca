@@ -1801,7 +1801,7 @@ CDXLOperatorFactory::Pdxlcd
 						);
 	}
 	
-	ULONG ulColLen = ULONG_MAX;
+	ULONG ulColLen = GPOS_ULONG_MAX;
 
 	// parse column length from attributes
 	const XMLCh *xmlszColumnLength =  attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenColWidth));

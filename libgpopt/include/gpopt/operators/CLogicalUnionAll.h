@@ -32,7 +32,7 @@ namespace gpopt
 		private:
 
 			// if this union is needed for partial indexes then store the scan
-			// id, otherwise this will be ULONG_MAX
+			// id, otherwise this will be GPOS_ULONG_MAX
 			ULONG m_ulScanIdPartialIndex;
 
 			// private copy ctor
@@ -49,7 +49,7 @@ namespace gpopt
 				IMemoryPool *pmp,
 				DrgPcr *pdrgpcrOutput,
 				DrgDrgPcr *pdrgpdrgpcrInput,
-				ULONG ulScanIdPartialIndex = ULONG_MAX
+				ULONG ulScanIdPartialIndex = GPOS_ULONG_MAX
 				);
 
 			// dtor
@@ -71,7 +71,7 @@ namespace gpopt
 			}
 
 			// if this union is needed for partial indexes then return the scan
-			// id, otherwise return ULONG_MAX
+			// id, otherwise return GPOS_ULONG_MAX
 			ULONG UlScanIdPartialIndex() const
 			{
 				return m_ulScanIdPartialIndex;
@@ -80,7 +80,7 @@ namespace gpopt
 			// is this unionall needed for a partial index
 			BOOL FPartialIndex() const
 			{
-				return (ULONG_MAX > m_ulScanIdPartialIndex);
+				return (GPOS_ULONG_MAX > m_ulScanIdPartialIndex);
 			}
 
 			// sensitivity to order of inputs

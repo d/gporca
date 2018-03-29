@@ -467,13 +467,13 @@ CDatumGenericGPDB::PdatumPadded
 	// in GPDB the first four bytes of the datum are used for the header
 	const ULONG ulAdjustedColWidth = ulColLen + GPDB_DATUM_HDRSZ;
 
-	if (this->FNull() || (ULONG_MAX == ulColLen))
+	if (this->FNull() || (GPOS_ULONG_MAX == ulColLen))
 	{
 		return this->PdatumCopy(pmp);
 	}
 
 	const ULONG ulDatumLen = this->UlSize();
-	if (ULONG_MAX != ulAdjustedColWidth && ulDatumLen < ulAdjustedColWidth)
+	if (GPOS_ULONG_MAX != ulAdjustedColWidth && ulDatumLen < ulAdjustedColWidth)
 	{
 		const BYTE *pbaOriginal = this->PbaVal();
 		BYTE *pba = NULL;

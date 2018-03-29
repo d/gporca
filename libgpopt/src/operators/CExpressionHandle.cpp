@@ -478,7 +478,7 @@ CExpressionHandle::PdrgpstatOuterRefs
 	GPOS_ASSERT(0 < pcrsOuter->CElements());
 
 	const ULONG ulSize = pdrgpstat->UlLength();
-	ULONG ulStartIndex = ULONG_MAX;
+	ULONG ulStartIndex = GPOS_ULONG_MAX;
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
 		IStatistics *pstats = (*pdrgpstat)[ul];
@@ -492,7 +492,7 @@ CExpressionHandle::PdrgpstatOuterRefs
 		}
 	}
 
-	if (ULONG_MAX != ulStartIndex)
+	if (GPOS_ULONG_MAX != ulStartIndex)
 	{
 		// copy stats starting from index of outer-most stats object referenced by child
 		CUtils::AddRefAppend<IStatistics, CleanupStats>(pdrgpstatResult, pdrgpstat, ulStartIndex);
@@ -1120,7 +1120,7 @@ CExpressionHandle::UlLastNonScalarChild() const
 	const ULONG ulArity = UlArity();
 	if (0 == ulArity)
 	{
-		return ULONG_MAX;
+		return GPOS_ULONG_MAX;
 	}
 
 	ULONG ulLastNonScalarChild = ulArity - 1;
@@ -1136,7 +1136,7 @@ CExpressionHandle::UlLastNonScalarChild() const
 		return ulLastNonScalarChild;
 	}
 
-	return ULONG_MAX;
+	return GPOS_ULONG_MAX;
 }
 
 
@@ -1155,7 +1155,7 @@ CExpressionHandle::UlFirstNonScalarChild() const
 	const ULONG ulArity = UlArity();
 	if (0 == ulArity)
 	{
-		return ULONG_MAX;
+		return GPOS_ULONG_MAX;
 	}
 
 	ULONG ulFirstNonScalarChild = 0;
@@ -1171,7 +1171,7 @@ CExpressionHandle::UlFirstNonScalarChild() const
 		return ulFirstNonScalarChild;
 	}
 
-	return ULONG_MAX;
+	return GPOS_ULONG_MAX;
 }
 
 
@@ -1718,7 +1718,7 @@ CExpressionHandle::UlLastOptimizedChildIndex() const
 //
 //	@doc:
 //		Return the index of child to be optimized next to the given child,
-//		return ULONG_MAX if there is no next child index
+//		return GPOS_ULONG_MAX if there is no next child index
 //
 //
 //---------------------------------------------------------------------------
@@ -1731,7 +1731,7 @@ CExpressionHandle::UlNextOptimizedChildIndex
 {
 	CPhysical::EChildExecOrder eceo = CPhysical::PopConvert(Pop())->Eceo();
 
-	ULONG ulNextChildIndex = ULONG_MAX;
+	ULONG ulNextChildIndex = GPOS_ULONG_MAX;
 	if (CPhysical::EceoRightToLeft == eceo)
 	{
 		if (0 < ulChildIndex)
@@ -1759,7 +1759,7 @@ CExpressionHandle::UlNextOptimizedChildIndex
 //
 //	@doc:
 //		Return the index of child optimized before the given child,
-//		return ULONG_MAX if there is no previous child index
+//		return GPOS_ULONG_MAX if there is no previous child index
 //
 //
 //---------------------------------------------------------------------------
@@ -1772,7 +1772,7 @@ CExpressionHandle::UlPreviousOptimizedChildIndex
 {
 	CPhysical::EChildExecOrder eceo = CPhysical::PopConvert(Pop())->Eceo();
 
-	ULONG ulPrevChildIndex = ULONG_MAX;
+	ULONG ulPrevChildIndex = GPOS_ULONG_MAX;
 	if (CPhysical::EceoRightToLeft == eceo)
 	{
 		if (UlArity() - 1 > ulChildIndex)
@@ -1820,7 +1820,7 @@ CExpressionHandle::FNextChildIndex
 	}
 
 	ULONG ulNextChildIndex = UlNextOptimizedChildIndex(*pulChildIndex);
-	if (ULONG_MAX == ulNextChildIndex)
+	if (GPOS_ULONG_MAX == ulNextChildIndex)
 	{
 		return false;
 	}

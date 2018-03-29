@@ -300,7 +300,7 @@ CHistogramUtils::PhmulhistApplyConjFilter
 
 	// properties of last seen column
 	CDouble dScaleFactorLast(1.0);
-	ULONG ulColIdLast = ULONG_MAX;
+	ULONG ulColIdLast = GPOS_ULONG_MAX;
 
 	// iterate over filters and update corresponding histograms
 	const ULONG ulFilters = pstatspredConj->UlFilters();
@@ -332,7 +332,7 @@ CHistogramUtils::PhmulhistApplyConjFilter
 
 		if (CStatsPred::EsptDisj != pstatspredChild->Espt())
 		{
-			GPOS_ASSERT(ULONG_MAX != ulColId);
+			GPOS_ASSERT(GPOS_ULONG_MAX != ulColId);
 			phistBefore = phmulhistResult->PtLookup(&ulColId)->PhistCopy(pmp);
 			GPOS_ASSERT(NULL != phistBefore);
 
@@ -364,7 +364,7 @@ CHistogramUtils::PhmulhistApplyConjFilter
 			CDouble dScaleFactorDisj(1.0);
 			CDouble dRowsDisjInput(CStatistics::DMinRows.DVal());
 
-			if (ULONG_MAX != ulColId)
+			if (GPOS_ULONG_MAX != ulColId)
 			{
 				// The disjunction predicate uses a single column. The input rows to the disjunction
 				// is obtained by scaling attained so far on that column
@@ -388,7 +388,7 @@ CHistogramUtils::PhmulhistApplyConjFilter
 											);
 
 			// replace intermediate result with the newly generated result from the disjunction
-			if (ULONG_MAX != ulColId)
+			if (GPOS_ULONG_MAX != ulColId)
 			{
 				CHistogram *phistResult = phmulhistAfterDisj->PtLookup(&ulColId);
 				CStatisticsUtils::AddHistogram(pmp, ulColId, phistResult, phmulhistResult, true /* fReplaceOld */);
@@ -449,7 +449,7 @@ CHistogramUtils::PhmulhistApplyDisjFilter
 	HMUlHist *phmulhistResultDisj = GPOS_NEW(pmp) HMUlHist(pmp);
 
 	CHistogram *phistPrev = NULL;
-	ULONG ulColIdPrev = ULONG_MAX;
+	ULONG ulColIdPrev = GPOS_ULONG_MAX;
 	CDouble dScaleFactorPrev(dRowsInput);
 
 	CDouble dRowsCumulative(CStatistics::DMinRows.DVal());
@@ -491,7 +491,7 @@ CHistogramUtils::PhmulhistApplyDisjFilter
 		CHistogram *phistDisjChildCol = NULL;
 
 		BOOL fPredSimple = !CStatsPredUtils::FConjOrDisjPred(pstatspredChild);
-		BOOL fColIdPresent = (ULONG_MAX != ulColId);
+		BOOL fColIdPresent = (GPOS_ULONG_MAX != ulColId);
 		HMUlHist *phmulhistChild = NULL;
 		CDouble dScaleFactorChild(1.0);
 
@@ -521,7 +521,7 @@ CHistogramUtils::PhmulhistApplyDisjFilter
 												&dScaleFactorChild
 								  	  			);
 
-			GPOS_ASSERT_IMP(CStatsPred::EsptDisj == pstatspredChild->Espt(), ULONG_MAX != ulColId);
+			GPOS_ASSERT_IMP(CStatsPred::EsptDisj == pstatspredChild->Espt(), GPOS_ULONG_MAX != ulColId);
 
 			if (fColIdPresent)
 			{
@@ -664,7 +664,7 @@ CHistogramUtils::FNewStatsColumn
 	ULONG ulColIdLast
 	)
 {
-	return (ULONG_MAX == ulColId || ulColId != ulColIdLast);
+	return (GPOS_ULONG_MAX == ulColId || ulColId != ulColIdLast);
 }
 
 // EOF

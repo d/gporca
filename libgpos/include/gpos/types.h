@@ -60,29 +60,29 @@ namespace gpos
 	typedef mode_t MODE_T;
 
 	// define ULONG,ULLONG as types which implement standard's
-	// requirements for ULONG_MAX and ULLONG_MAX; eliminate standard's slack
+	// requirements for GPOS_ULONG_MAX and GPOS_ULLONG_MAX; eliminate standard's slack
 	// by fixed sizes rather than min requirements
 
 	typedef uint32_t ULONG;
 	GPOS_CPL_ASSERT(4 == sizeof(ULONG));
 	
-#ifdef ULONG_MAX
-#undef ULONG_MAX
-#endif // ULONG_MAX
-#define ULONG_MAX		((::gpos::ULONG)-1)
+#ifdef GPOS_ULONG_MAX
+#error "GPOS_ULONG_MAX already defined. It's supposed to be defined in gpos/types.h"
+#endif // GPOS_ULONG_MAX
+#define GPOS_ULONG_MAX		((::gpos::ULONG)-1)
 
 	typedef uint64_t ULLONG;
 	GPOS_CPL_ASSERT(8 == sizeof(ULLONG));
-#ifdef ULLONG_MAX
-#undef ULLONG_MAX
-#endif // ULLONG_MAX
-#define ULLONG_MAX		((::gpos::ULLONG)-1)
+#ifdef GPOS_ULLONG_MAX
+#error "GPOS_ULLONG_MAX already defined. It's supposed to be defined in gpos/types.h"
+#endif // GPOS_ULLONG_MAX
+#define GPOS_ULLONG_MAX		((::gpos::ULLONG)-1)
 
 	typedef uintptr_t	ULONG_PTR;
 #ifdef GPOS_32BIT
-#define ULONG_PTR_MAX	(ULONG_MAX)
+#define ULONG_PTR_MAX	(GPOS_ULONG_MAX)
 #else
-#define ULONG_PTR_MAX	(ULLONG_MAX)
+#define ULONG_PTR_MAX	(GPOS_ULLONG_MAX)
 #endif
 
 	typedef uint16_t USINT;
@@ -96,20 +96,20 @@ namespace gpos
 	GPOS_CPL_ASSERT(4 == sizeof(INT));
 	GPOS_CPL_ASSERT(8 == sizeof(LINT));
 
-#ifdef INT_MAX
-#undef INT_MAX
-#endif // INT_MAX
-#define INT_MAX			((::gpos::INT) (ULONG_MAX >> 1))
+#ifdef GPOS_INT_MAX
+#error "GPOS_INT_MAX already defined. It's supposed to be defined in gpos/types.h"
+#endif // GPOS_INT_MAX
+#define GPOS_INT_MAX			((::gpos::INT) (GPOS_ULONG_MAX >> 1))
 
-#ifdef INT_MIN
-#undef INT_MIN
-#endif // INT_MIN
-#define INT_MIN			(-INT_MAX - 1)
+#ifdef GPOS_INT_MIN
+#error "GPOS_INT_MIN already defined. It's supposed to be defined in gpos/types.h"
+#endif // GPOS_INT_MIN
+#define GPOS_INT_MIN			(-GPOS_INT_MAX - 1)
 
 #ifdef LINT_MAX
 #undef LINT_MAX
 #endif // LINT_MAX
-#define LINT_MAX		((::gpos::LINT) (ULLONG_MAX >> 1))
+#define LINT_MAX		((::gpos::LINT) (GPOS_ULLONG_MAX >> 1))
 
 #ifdef LINT_MIN
 #undef LINT_MIN

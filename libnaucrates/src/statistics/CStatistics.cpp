@@ -1190,7 +1190,7 @@ CStatistics::UlIndexUpperBoundNDVs
  	 	}
 	}
 
-	return ULONG_MAX;
+	return GPOS_ULONG_MAX;
 }
 
 // add upper bound of source cardinality

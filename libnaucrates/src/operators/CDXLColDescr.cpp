@@ -189,7 +189,7 @@ CDXLColDescr::SerializeToDXL
 		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColDropped), m_fDropped);
 	}
 
-	if (ULONG_MAX != m_ulWidth)
+	if (GPOS_ULONG_MAX != m_ulWidth)
 	{
 		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColWidth), m_ulWidth);
 	}

@@ -232,7 +232,7 @@ namespace gpos
                     }
                 }
 
-                return ULONG_MAX;
+                return GPOS_ULONG_MAX;
             }
 
 #ifdef GPOS_DEBUG

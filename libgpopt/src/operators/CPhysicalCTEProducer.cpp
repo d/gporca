@@ -83,7 +83,7 @@ CPhysicalCTEProducer::PcrsRequired
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *m_pcrs);
 	pcrs->Union(pcrsRequired);
-	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
+	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, GPOS_ULONG_MAX);
 
 	GPOS_ASSERT(pcrsChildReqd->CElements() == m_pdrgpcr->UlLength());
 	pcrs->Release();

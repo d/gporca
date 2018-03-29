@@ -36,13 +36,13 @@ using namespace gpos;
 
 
 // invalid key
-const ULONG CSyncHashtableTest::SElem::m_ulInvalid = ULONG_MAX;
+const ULONG CSyncHashtableTest::SElem::m_ulInvalid = GPOS_ULONG_MAX;
 
 // invalid element
 const CSyncHashtableTest::SElem CSyncHashtableTest::SElem::m_elemInvalid
 	(
-	ULONG_MAX,
-	ULONG_MAX
+	GPOS_ULONG_MAX,
+	GPOS_ULONG_MAX
 	);
 
 //---------------------------------------------------------------------------
@@ -568,7 +568,7 @@ CSyncHashtableTest::PvUnittest_IteratorCheck
 	ULONG ulCount = 0;
 	while (htit.FAdvance())
 	{
-		ULONG ulId = ULONG_MAX;
+		ULONG ulId = GPOS_ULONG_MAX;
 
 		// accessor scope
 		{
@@ -582,7 +582,7 @@ CSyncHashtableTest::PvUnittest_IteratorCheck
 			}
 		}
 
-		if (ulId != ULONG_MAX)
+		if (ulId != GPOS_ULONG_MAX)
 		{
 			// check if element has been visited before
 			GPOS_ASSERT(!bv.FExchangeSet(ulId) &&

@@ -66,7 +66,7 @@ namespace gpopt
 				const CName &name,
 				INT iAttno,
 				BOOL fNullable,
-				ULONG ulWidth = ULONG_MAX
+				ULONG ulWidth = GPOS_ULONG_MAX
 				);
 
 			// dtor

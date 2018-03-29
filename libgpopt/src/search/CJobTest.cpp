@@ -37,9 +37,9 @@ CJobTest::CJobTest()
 	:
 	CJob(),
 	m_ett(EttSpawn),
-	m_ulRounds(ULONG_MAX),
-	m_ulFanout(ULONG_MAX),
-	m_ulIters(ULONG_MAX)
+	m_ulRounds(GPOS_ULONG_MAX),
+	m_ulFanout(GPOS_ULONG_MAX),
+	m_ulIters(GPOS_ULONG_MAX)
 {}
 
 

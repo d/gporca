@@ -11,11 +11,13 @@ AlwaysBreakAfterReturnType: All
 BinPackParameters: true
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
+ColumnLimit: 80
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 DerivePointerAlignment: false
 IndentCaseLabels: true
 IndentWidth:     4
 MaxEmptyLinesToKeep: 3
+PenaltyBreakBeforeFirstCallParameter: 19
 PointerAlignment: Right
 SpaceAfterCStyleCast: true
 SpacesBeforeTrailingComments: 2

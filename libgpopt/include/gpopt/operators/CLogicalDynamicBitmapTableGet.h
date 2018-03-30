@@ -39,7 +39,6 @@ namespace gpopt
 	class CLogicalDynamicBitmapTableGet : public CLogicalDynamicGetBase
 	{
 		private:
-
 			// origin operator id -- GPOS_ULONG_MAX if operator was not generated via a transformation
 			ULONG m_ulOriginOpId;
 

@@ -39,7 +39,6 @@ namespace gpopt
 	class CPhysicalBitmapTableScan : public CPhysicalScan
 	{
 		private:
-
 			// origin operator id -- GPOS_ULONG_MAX if operator was not generated via a transformation
 			ULONG m_ulOriginOpId;
 

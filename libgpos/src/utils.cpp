@@ -201,8 +201,7 @@ gpos::UllMultiply
 	ULLONG ullSnd
 	)
 {
-	if (0 < ullSnd &&
-		ullFst > GPOS_ULLONG_MAX / ullSnd)
+	if (0 < ullSnd && ullFst > GPOS_ULLONG_MAX / ullSnd)
 	{
 		// if multiplication result overflows, we have (a * b > GPOS_ULLONG_MAX),
 		// then we need to check for  (a > GPOS_ULLONG_MAX / b)

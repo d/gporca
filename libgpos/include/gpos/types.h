@@ -65,24 +65,24 @@ namespace gpos
 
 	typedef uint32_t ULONG;
 	GPOS_CPL_ASSERT(4 == sizeof(ULONG));
-	
+
 #ifdef GPOS_ULONG_MAX
 #error "GPOS_ULONG_MAX already defined. It's supposed to be defined in gpos/types.h"
-#endif // GPOS_ULONG_MAX
+#endif  // GPOS_ULONG_MAX
 #define GPOS_ULONG_MAX		((::gpos::ULONG)-1)
 
 	typedef uint64_t ULLONG;
 	GPOS_CPL_ASSERT(8 == sizeof(ULLONG));
 #ifdef GPOS_ULLONG_MAX
 #error "GPOS_ULLONG_MAX already defined. It's supposed to be defined in gpos/types.h"
-#endif // GPOS_ULLONG_MAX
+#endif  // GPOS_ULLONG_MAX
 #define GPOS_ULLONG_MAX		((::gpos::ULLONG)-1)
 
 	typedef uintptr_t	ULONG_PTR;
 #ifdef GPOS_32BIT
-#define ULONG_PTR_MAX	(GPOS_ULONG_MAX)
+#define ULONG_PTR_MAX (GPOS_ULONG_MAX)
 #else
-#define ULONG_PTR_MAX	(GPOS_ULLONG_MAX)
+#define ULONG_PTR_MAX (GPOS_ULLONG_MAX)
 #endif
 
 	typedef uint16_t USINT;
@@ -98,18 +98,18 @@ namespace gpos
 
 #ifdef GPOS_INT_MAX
 #error "GPOS_INT_MAX already defined. It's supposed to be defined in gpos/types.h"
-#endif // GPOS_INT_MAX
-#define GPOS_INT_MAX			((::gpos::INT) (GPOS_ULONG_MAX >> 1))
+#endif  // GPOS_INT_MAX
+#define GPOS_INT_MAX ((::gpos::INT)(GPOS_ULONG_MAX >> 1))
 
 #ifdef GPOS_INT_MIN
 #error "GPOS_INT_MIN already defined. It's supposed to be defined in gpos/types.h"
-#endif // GPOS_INT_MIN
-#define GPOS_INT_MIN			(-GPOS_INT_MAX - 1)
+#endif  // GPOS_INT_MIN
+#define GPOS_INT_MIN (-GPOS_INT_MAX - 1)
 
 #ifdef LINT_MAX
 #undef LINT_MAX
 #endif // LINT_MAX
-#define LINT_MAX		((::gpos::LINT) (GPOS_ULLONG_MAX >> 1))
+#define LINT_MAX ((::gpos::LINT)(GPOS_ULLONG_MAX >> 1))
 
 #ifdef LINT_MIN
 #undef LINT_MIN
@@ -119,12 +119,12 @@ namespace gpos
 #ifdef USINT_MAX
 #undef USINT_MAX
 #endif // USINT_MAX
-#define USINT_MAX		((::gpos::USINT)-1)
+#define USINT_MAX ((::gpos::USINT) -1)
 
 #ifdef SINT_MAX
 #undef SINT_MAX
 #endif // SINT_MAX
-#define SINT_MAX		((::gpos::SINT) (USINT_MAX >> 1))
+#define SINT_MAX ((::gpos::SINT)(USINT_MAX >> 1))
 
 #ifdef SINT_MIN
 #undef SINT_MIN

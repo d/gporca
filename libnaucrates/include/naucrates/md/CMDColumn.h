@@ -79,7 +79,7 @@ namespace gpmd
 				gpdxl::CDXLNode *pdxnlDefaultValue,
 				ULONG ulLength = GPOS_ULONG_MAX
 				);
-			
+
 			// dtor
 			virtual
 			~CMDColumn();

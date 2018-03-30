@@ -20,7 +20,7 @@
 #include "naucrates/statistics/IStatistics.h"
 #include "gpos/task/CAutoTraceFlag.h"
 
-#define GPOPT_INVALID_OPTCTXT_ID	GPOS_ULONG_MAX
+#define GPOPT_INVALID_OPTCTXT_ID GPOS_ULONG_MAX
 
 namespace gpopt
 {

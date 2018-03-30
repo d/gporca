@@ -39,11 +39,8 @@ using namespace gpos;
 const ULONG CSyncHashtableTest::SElem::m_ulInvalid = GPOS_ULONG_MAX;
 
 // invalid element
-const CSyncHashtableTest::SElem CSyncHashtableTest::SElem::m_elemInvalid
-	(
-	GPOS_ULONG_MAX,
-	GPOS_ULONG_MAX
-	);
+const CSyncHashtableTest::SElem CSyncHashtableTest::SElem::m_elemInvalid(
+	GPOS_ULONG_MAX, GPOS_ULONG_MAX);
 
 //---------------------------------------------------------------------------
 //	@function:

@@ -122,13 +122,8 @@ namespace gpnaucrates
 			DrgPstatspred *PdrgppredfilterNumeric(IMemoryPool *pmp, ULONG ulColId, SStatsCmpValElem statsCmpValElem);
 
 			// helper function that generates an array of ULONG pointers
-			static
-			DrgPul *Pdrgpul
-					(
-					IMemoryPool *pmp,
-					ULONG ul1,
-					ULONG ul2 = GPOS_ULONG_MAX
-					)
+			static DrgPul *
+			Pdrgpul(IMemoryPool *pmp, ULONG ul1, ULONG ul2 = GPOS_ULONG_MAX)
 			{
 				DrgPul *pdrgpul = GPOS_NEW(pmp) DrgPul(pmp);
 				pdrgpul->Append(GPOS_NEW(pmp) ULONG (ul1));

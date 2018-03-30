@@ -381,21 +381,16 @@ CExpressionTest::EresUnittest_BitmapGet()
 								CUtils::PexprScalarConstInt4(pmp, 20 /*iVal*/)
 								);
 
-	CExpression *pexprBitmapTableGet =
-			GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalBitmapTableGet
-							(
-							pmp,
-							ptabdesc,
-							GPOS_ULONG_MAX, // pgexprOrigin
-							GPOS_NEW(pmp) CName(pmp, CName(&strRelAlias)),
-							pdrgpcrTable
-							),
+	CExpression *pexprBitmapTableGet = GPOS_NEW(pmp)
+		CExpression(pmp,
+					GPOS_NEW(pmp) CLogicalBitmapTableGet(
+						pmp,
+						ptabdesc,
+						GPOS_ULONG_MAX,  // pgexprOrigin
+						GPOS_NEW(pmp) CName(pmp, CName(&strRelAlias)),
+						pdrgpcrTable),
 					pexprTableCond,
-					pexprBitmapIndex
-					);
+					pexprBitmapIndex);
 
 	// debug print
 	CWStringDynamic str(pmp);

@@ -251,7 +251,11 @@ CJobGroupExpressionOptimization::EevtInitialize
 
 	// check if job can be early terminated without optimizing any child
 	CCost costLowerBound(GPOPT_INVALID_COST);
-	if (psc->Peng()->FSafeToPrune(pjgeo->m_pgexpr, pjgeo->m_poc->Prpp(), NULL /*pccChild*/, GPOS_ULONG_MAX /*ulChildIndex*/, &costLowerBound))
+	if (psc->Peng()->FSafeToPrune(pjgeo->m_pgexpr,
+								  pjgeo->m_poc->Prpp(),
+								  NULL /*pccChild*/,
+								  GPOS_ULONG_MAX /*ulChildIndex*/,
+								  &costLowerBound))
 	{
 		(void) pjgeo->m_pgexpr->PccComputeCost(psc->PmpGlobal(), pjgeo->m_poc, pjgeo->m_ulOptReq, NULL /*pdrgpoc*/, true /*fPruned*/, costLowerBound);
 		return eevFinalized;

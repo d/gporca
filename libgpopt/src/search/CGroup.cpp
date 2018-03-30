@@ -2163,7 +2163,11 @@ CGroup::CostLowerBound
 
 		if (!CUtils::FEnforcer(pgexprCurrent->Pop()))
 		{
-			CCost costLowerBoundGExpr = pgexprCurrent->CostLowerBound(pmp, prppInput, NULL /*pccChild*/, GPOS_ULONG_MAX /*ulChildIndex*/);
+			CCost costLowerBoundGExpr =
+				pgexprCurrent->CostLowerBound(pmp,
+											  prppInput,
+											  NULL /*pccChild*/,
+											  GPOS_ULONG_MAX /*ulChildIndex*/);
 			if (costLowerBoundGExpr < costLowerBound)
 			{
 				costLowerBound = costLowerBoundGExpr;

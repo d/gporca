@@ -106,7 +106,7 @@ CPhysicalMotionRoutedDistribute::PcrsRequired
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *m_pcrsRequiredLocal);
 	pcrs->Union(pcrsRequired);
-	
+
 	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, GPOS_ULONG_MAX);
 	pcrs->Release();
 

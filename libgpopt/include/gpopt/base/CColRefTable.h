@@ -71,7 +71,7 @@ namespace gpopt
 				INT iTypeModifier,
 				INT iAttno,
 				BOOL fNullable,
-				ULONG ulId, 
+				ULONG ulId,
 				const CName *pname,
 				ULONG ulOpSource,
 				ULONG ulWidth = GPOS_ULONG_MAX

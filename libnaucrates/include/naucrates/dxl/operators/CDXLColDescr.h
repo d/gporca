@@ -81,7 +81,7 @@ namespace gpdxl
 				BOOL fDropped,
 				ULONG ulWidth = GPOS_ULONG_MAX
 				);
-			
+
 			//dtor
 			~CDXLColDescr();
 			

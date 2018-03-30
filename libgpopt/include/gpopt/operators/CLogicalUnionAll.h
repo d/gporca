@@ -30,7 +30,6 @@ namespace gpopt
 	{
 
 		private:
-
 			// if this union is needed for partial indexes then store the scan
 			// id, otherwise this will be GPOS_ULONG_MAX
 			ULONG m_ulScanIdPartialIndex;

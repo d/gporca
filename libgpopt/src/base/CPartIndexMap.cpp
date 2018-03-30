@@ -896,7 +896,8 @@ CPartIndexMap::FSatisfiesEntry
 
 	ULONG ulExpectedPropagators = pptiDrvd->UlExpectedPropagators();
 	return GPOS_ULONG_MAX == ulExpectedPropagators ||
-			(0 != ulExpectedPropagators && ulExpectedPropagators == pptiReqd->UlExpectedPropagators());
+		   (0 != ulExpectedPropagators &&
+			ulExpectedPropagators == pptiReqd->UlExpectedPropagators());
 }
 
 //---------------------------------------------------------------------------

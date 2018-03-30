@@ -110,13 +110,12 @@ CMemoryPoolManager::EresInit
 	IMemoryPool *pmpBase = new(pvAllocBase) CMemoryPoolAlloc(pfnAlloc, pfnFree);
 
 	// create internal memory pool
-	IMemoryPool *pmpInternal = new(pvAllocInternal) CMemoryPoolTracker
-			(
-			pmpBase,
-			GPOS_ULLONG_MAX, // ullMaxMemory
-			true, // FThreadSafe
-			false //fOwnsUnderlyingPmp
-			);
+	IMemoryPool *pmpInternal = new (pvAllocInternal)
+		CMemoryPoolTracker(pmpBase,
+						   GPOS_ULLONG_MAX,  // ullMaxMemory
+						   true,			 // FThreadSafe
+						   false			 //fOwnsUnderlyingPmp
+		);
 
 	// instantiate manager
 	GPOS_TRY

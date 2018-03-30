@@ -92,8 +92,9 @@ CPhysicalMotionBroadcast::PcrsRequired
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *pcrsRequired);
-	
-	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, GPOS_ULONG_MAX);
+
+	CColRefSet *pcrsChildReqd =
+		PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, GPOS_ULONG_MAX);
 	pcrs->Release();
 
 	return pcrsChildReqd;

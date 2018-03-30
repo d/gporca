@@ -706,7 +706,8 @@ CStatisticsUtils::UpdateDisjStatistics
 	GPOS_ASSERT(NULL != pbsDontUpdateStats);
 	GPOS_ASSERT(NULL != phmulhistResultDisj);
 
-	if (NULL != phistPrev && GPOS_ULONG_MAX != ulColId && !pbsDontUpdateStats->FBit(ulColId))
+	if (NULL != phistPrev && GPOS_ULONG_MAX != ulColId &&
+		!pbsDontUpdateStats->FBit(ulColId))
 	{
 		// 1. the filter is on the same column because GPOS_ULONG_MAX != ulColId
 		// 2. the histogram of the column can be updated

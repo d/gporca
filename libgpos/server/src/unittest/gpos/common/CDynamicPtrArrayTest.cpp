@@ -92,7 +92,7 @@ CDynamicPtrArrayTest::EresUnittest_Basic()
 #endif // GPOS_DEBUG
 	pdrg->UlPos(szMissingElem);
 	GPOS_ASSERT(GPOS_ULONG_MAX == ulPosMissing);
-	
+
 	// all elements were inserted in ascending order
 	GPOS_ASSERT(pdrg->FSorted());
 

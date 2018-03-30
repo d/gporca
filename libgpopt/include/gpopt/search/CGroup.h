@@ -27,7 +27,7 @@
 #include "gpopt/operators/CLogical.h"
 #include "gpopt/search/CTreeMap.h"
 
-#define GPOPT_INVALID_GROUP_ID	GPOS_ULONG_MAX
+#define GPOPT_INVALID_GROUP_ID GPOS_ULONG_MAX
 
 namespace gpopt
 {

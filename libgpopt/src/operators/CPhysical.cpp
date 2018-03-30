@@ -764,7 +764,8 @@ CPhysical::PcterNAry
 	if (EceoLeftToRight == Eceo())
 	{
 		ULONG ulLastNonScalarChild = exprhdl.UlLastNonScalarChild();
-		if (GPOS_ULONG_MAX != ulLastNonScalarChild && ulChildIndex < ulLastNonScalarChild)
+		if (GPOS_ULONG_MAX != ulLastNonScalarChild &&
+			ulChildIndex < ulLastNonScalarChild)
 		{
 			return pcter->PcterAllOptional(pmp);
 		}
@@ -774,7 +775,8 @@ CPhysical::PcterNAry
 		GPOS_ASSERT(EceoRightToLeft == Eceo());
 
 		ULONG ulFirstNonScalarChild = exprhdl.UlFirstNonScalarChild();
-		if (GPOS_ULONG_MAX != ulFirstNonScalarChild && ulChildIndex > ulFirstNonScalarChild)
+		if (GPOS_ULONG_MAX != ulFirstNonScalarChild &&
+			ulChildIndex > ulFirstNonScalarChild)
 		{
 			return pcter->PcterAllOptional(pmp);
 		}

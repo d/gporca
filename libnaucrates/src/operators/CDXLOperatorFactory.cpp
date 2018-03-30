@@ -1800,7 +1800,7 @@ CDXLOperatorFactory::Pdxlcd
 						EdxltokenColDescr
 						);
 	}
-	
+
 	ULONG ulColLen = GPOS_ULONG_MAX;
 
 	// parse column length from attributes

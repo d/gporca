@@ -144,8 +144,9 @@ namespace gpos
 				)
 				const
 			{
-				GPOS_ASSERT(GPOS_ULONG_MAX != m_cKeyOffset && "Key offset not initialized.");
-			
+				GPOS_ASSERT(GPOS_ULONG_MAX != m_cKeyOffset &&
+							"Key offset not initialized.");
+
 				K &k = *(K*)((BYTE*)pt + m_cKeyOffset);
 
 				return k;

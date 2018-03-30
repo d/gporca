@@ -521,7 +521,8 @@ CHistogramUtils::PhmulhistApplyDisjFilter
 												&dScaleFactorChild
 								  	  			);
 
-			GPOS_ASSERT_IMP(CStatsPred::EsptDisj == pstatspredChild->Espt(), GPOS_ULONG_MAX != ulColId);
+			GPOS_ASSERT_IMP(CStatsPred::EsptDisj == pstatspredChild->Espt(),
+							GPOS_ULONG_MAX != ulColId);
 
 			if (fColIdPresent)
 			{

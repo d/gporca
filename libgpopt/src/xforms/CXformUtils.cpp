@@ -2299,7 +2299,7 @@ CXformUtils::PdrgpcrIndexColumns
 			ulPos = pmdindex->UlKey(ul);
 		}
 		ULONG ulPosNonDropped = pmdrel->UlPosNonDropped(ulPos);
-		
+
 		GPOS_ASSERT(GPOS_ULONG_MAX != ulPosNonDropped);
 		GPOS_ASSERT(ulPosNonDropped < pdrgpcr->UlLength());
 

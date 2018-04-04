@@ -9,7 +9,7 @@
 //		Implementation of the SAX parse handler class for the index only scan operator
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -29,14 +29,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerIndexOnlyScan::CParseHandlerIndexOnlyScan
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerIndexScan(pmp, pphm, pphRoot)
+CParseHandlerIndexOnlyScan::CParseHandlerIndexOnlyScan(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerIndexScan(pmp, pphm, pphRoot)
 {
 }
 
@@ -49,13 +44,10 @@ CParseHandlerIndexOnlyScan::CParseHandlerIndexOnlyScan
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerIndexOnlyScan::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerIndexOnlyScan::StartElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const,  // xmlszQname
+										 const Attributes &attrs)
 {
 	StartElementHelper(xmlszLocalname, attrs, EdxltokenPhysicalIndexOnlyScan);
 }
@@ -69,12 +61,10 @@ CParseHandlerIndexOnlyScan::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerIndexOnlyScan::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerIndexOnlyScan::EndElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const  // xmlszQname
+)
 {
 	EndElementHelper(xmlszLocalname, EdxltokenPhysicalIndexOnlyScan);
 }

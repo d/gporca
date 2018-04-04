@@ -28,12 +28,7 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalIntersect::CLogicalIntersect
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalSetOp(pmp)
+CLogicalIntersect::CLogicalIntersect(IMemoryPool *pmp) : CLogicalSetOp(pmp)
 {
 	m_fPattern = true;
 }
@@ -46,14 +41,9 @@ CLogicalIntersect::CLogicalIntersect
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalIntersect::CLogicalIntersect
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcrOutput,
-	DrgDrgPcr *pdrgpdrgpcrInput
-	)
-	:
-	CLogicalSetOp(pmp, pdrgpcrOutput, pdrgpdrgpcrInput)
+CLogicalIntersect::CLogicalIntersect(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput,
+									 DrgDrgPcr *pdrgpdrgpcrInput)
+	: CLogicalSetOp(pmp, pdrgpcrOutput, pdrgpdrgpcrInput)
 {
 }
 
@@ -78,12 +68,8 @@ CLogicalIntersect::~CLogicalIntersect()
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalIntersect::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalIntersect::Maxcard(IMemoryPool *,  // pmp
+						   CExpressionHandle &exprhdl) const
 {
 	// contradictions produce no rows
 	if (CDrvdPropRelational::Pdprel(exprhdl.Pdp())->Ppc()->FContradiction())
@@ -111,17 +97,16 @@ CLogicalIntersect::Maxcard
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalIntersect::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalIntersect::PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+											  BOOL fMustExist)
 {
-	DrgPcr *pdrgpcrOutput = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
-	DrgDrgPcr *pdrgpdrgpcrInput = CUtils::PdrgpdrgpcrRemap(pmp, m_pdrgpdrgpcrInput, phmulcr, fMustExist);
+	DrgPcr *pdrgpcrOutput =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
+	DrgDrgPcr *pdrgpdrgpcrInput =
+		CUtils::PdrgpdrgpcrRemap(pmp, m_pdrgpdrgpcrInput, phmulcr, fMustExist);
 
-	return GPOS_NEW(pmp) CLogicalIntersect(pmp, pdrgpcrOutput, pdrgpdrgpcrInput);
+	return GPOS_NEW(pmp)
+		CLogicalIntersect(pmp, pdrgpcrOutput, pdrgpdrgpcrInput);
 }
 
 
@@ -134,11 +119,7 @@ CLogicalIntersect::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalIntersect::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalIntersect::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfIntersect2Join);
@@ -154,13 +135,9 @@ CLogicalIntersect::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalIntersect::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat * // not used
-	)
-	const
+CLogicalIntersect::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								DrgPstat *  // not used
+								) const
 {
 	GPOS_ASSERT(Esp(exprhdl) > EspNone);
 
@@ -171,24 +148,23 @@ CLogicalIntersect::PstatsDerive
 	const ULONG ulSize = m_pdrgpdrgpcrInput->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, (*m_pdrgpdrgpcrInput)[ul]);
+		CColRefSet *pcrs =
+			GPOS_NEW(pmp) CColRefSet(pmp, (*m_pdrgpdrgpcrInput)[ul]);
 		pdrgpcrsOutput->Append(pcrs);
 	}
 
-	IStatistics *pstatsIntersectAll =
-			CLogicalIntersectAll::PstatsDerive(pmp, exprhdl, m_pdrgpdrgpcrInput, pdrgpcrsOutput);
+	IStatistics *pstatsIntersectAll = CLogicalIntersectAll::PstatsDerive(
+		pmp, exprhdl, m_pdrgpdrgpcrInput, pdrgpcrsOutput);
 
 	// computed columns
 	DrgPul *pdrgpulComputedCols = GPOS_NEW(pmp) DrgPul(pmp);
 
-	IStatistics *pstats = CLogicalGbAgg::PstatsDerive
-											(
-											pmp,
-											pstatsIntersectAll,
-											(*m_pdrgpdrgpcrInput)[0], // we group by the columns of the first child
-											pdrgpulComputedCols, // no computed columns for set ops
-											NULL // no keys, use all grouping cols
-											);
+	IStatistics *pstats = CLogicalGbAgg::PstatsDerive(
+		pmp, pstatsIntersectAll,
+		(*m_pdrgpdrgpcrInput)[0],  // we group by the columns of the first child
+		pdrgpulComputedCols,	   // no computed columns for set ops
+		NULL					   // no keys, use all grouping cols
+	);
 	// clean up
 	pdrgpulComputedCols->Release();
 	pstatsIntersectAll->Release();

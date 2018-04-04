@@ -28,7 +28,7 @@ using namespace gpos;
 CAutoSuspendAbort::CAutoSuspendAbort()
 {
 	m_ptsk = CTask::PtskSelf();
-	
+
 	if (NULL != m_ptsk)
 	{
 		m_ptsk->SuspendAbort();

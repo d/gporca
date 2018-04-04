@@ -11,21 +11,18 @@
 
 namespace gpopt
 {
-	class CColConstraintsHashMapper : public IColConstraintsMapper
-	{
-		public:
-			CColConstraintsHashMapper
-				(
-					IMemoryPool *pmp,
-					DrgPcnstr *pdrgPcnstr
-				);
+class CColConstraintsHashMapper : public IColConstraintsMapper
+{
+public:
+	CColConstraintsHashMapper(IMemoryPool *pmp, DrgPcnstr *pdrgPcnstr);
 
-			virtual DrgPcnstr *PdrgPcnstrLookup(CColRef *pcr);
-			virtual ~CColConstraintsHashMapper();
+	virtual DrgPcnstr *
+	PdrgPcnstrLookup(CColRef *pcr);
+	virtual ~CColConstraintsHashMapper();
 
-		private:
-			HMColConstr *m_phmColConstr;
-	};
-}
+private:
+	HMColConstr *m_phmColConstr;
+};
+}  // namespace gpopt
 
-#endif //GPOPT_CColConstraintsHashMapper_H
+#endif  //GPOPT_CColConstraintsHashMapper_H

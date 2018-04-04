@@ -15,46 +15,29 @@
 
 namespace gpnaucrates
 {
-	class CLeftOuterJoinStatsProcessor : public CJoinStatsProcessor
-	{
-	private:
-		// create a new hash map of histograms from the results of the inner join and the histograms of the outer child
-		static
-		HMUlHist *PhmulhistLOJ
-				(
-				IMemoryPool *pmp,
-				const CStatistics *pstatsOuter,
-				const CStatistics *pstatsInner,
-				CStatistics *pstatsInnerJoin,
-				DrgPstatspredjoin *pdrgpstatspredjoin,
-				CDouble dRowsInnerJoin,
-				CDouble *pdRowsLASJ
-				);
-		// helper method to add histograms of the inner side of a LOJ
-		static
-		void AddHistogramsLOJInner
-				(
-				IMemoryPool *pmp,
-				const CStatistics *pstatsInnerJoin,
-				DrgPul *pdrgpulInnerColId,
-				CDouble dRowsLASJ,
-				CDouble dRowsInnerJoin,
-				HMUlHist *phmulhistLOJ
-				);
+class CLeftOuterJoinStatsProcessor : public CJoinStatsProcessor
+{
+private:
+	// create a new hash map of histograms from the results of the inner join and the histograms of the outer child
+	static HMUlHist *
+	PhmulhistLOJ(IMemoryPool *pmp, const CStatistics *pstatsOuter,
+				 const CStatistics *pstatsInner, CStatistics *pstatsInnerJoin,
+				 DrgPstatspredjoin *pdrgpstatspredjoin, CDouble dRowsInnerJoin,
+				 CDouble *pdRowsLASJ);
+	// helper method to add histograms of the inner side of a LOJ
+	static void
+	AddHistogramsLOJInner(IMemoryPool *pmp, const CStatistics *pstatsInnerJoin,
+						  DrgPul *pdrgpulInnerColId, CDouble dRowsLASJ,
+						  CDouble dRowsInnerJoin, HMUlHist *phmulhistLOJ);
 
-	public:
-		static
-		CStatistics *PstatsLOJStatic
-				(
-				IMemoryPool *pmp,
-				const IStatistics *pstatsOuter,
-				const IStatistics *pstatsInner,
-				DrgPstatspredjoin *pdrgpstatspredjoin
-				);
-	};
-}
+public:
+	static CStatistics *
+	PstatsLOJStatic(IMemoryPool *pmp, const IStatistics *pstatsOuter,
+					const IStatistics *pstatsInner,
+					DrgPstatspredjoin *pdrgpstatspredjoin);
+};
+}  // namespace gpnaucrates
 
-#endif // !GPNAUCRATES_CLeftOuterJoinStatsProcessor_H
+#endif  // !GPNAUCRATES_CLeftOuterJoinStatsProcessor_H
 
 // EOF
-

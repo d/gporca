@@ -14,7 +14,7 @@
 #include "gpos/string/CWString.h"
 #include "gpos/task/IWorker.h"
 
-#define GPOS_STACK_DESCR_TRACE_BUF   (4096)
+#define GPOS_STACK_DESCR_TRACE_BUF (4096)
 
 using namespace gpos;
 
@@ -30,12 +30,9 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 INT
-CStackDescriptor::IGetStackFrames
-	(
-	ULONG_PTR ulpFp,
-	INT sig __attribute__((unused)),
-	void *pvContext
-	)
+CStackDescriptor::IGetStackFrames(ULONG_PTR ulpFp,
+								  INT sig __attribute__((unused)),
+								  void *pvContext)
 {
 	CStackDescriptor *psd = (CStackDescriptor *) pvContext;
 
@@ -58,10 +55,7 @@ CStackDescriptor::IGetStackFrames
 //
 //---------------------------------------------------------------------------
 void
-CStackDescriptor::BackTrace
-	(
-	ULONG ulSkip
-	)
+CStackDescriptor::BackTrace(ULONG ulSkip)
 {
 	// reset stack depth
 	Reset();
@@ -102,10 +96,7 @@ CStackDescriptor::BackTrace
 //
 //---------------------------------------------------------------------------
 void
-CStackDescriptor::BackTrace
-	(
-	ULONG ulSkip
-	)
+CStackDescriptor::BackTrace(ULONG ulSkip)
 {
 	// get base pointer of current frame
 	ULONG_PTR ulpCurrFrame;
@@ -115,7 +106,7 @@ CStackDescriptor::BackTrace
 	Reset();
 
 	// pointer to next frame in stack
-	void **ppvNextFrame = (void**)ulpCurrFrame;
+	void **ppvNextFrame = (void **) ulpCurrFrame;
 
 	// get stack start address
 	ULONG_PTR ulpStackStart = 0;
@@ -137,7 +128,7 @@ CStackDescriptor::BackTrace
 			(ULONG_PTR) *ppvNextFrame < (ULONG_PTR) ppvNextFrame)
 		{
 			break;
-	 	}
+		}
 
 		// skip top frames
 		if (0 < ulSkip)
@@ -147,22 +138,18 @@ CStackDescriptor::BackTrace
 		else
 		{
 			// get return address (one above the base pointer)
-			ULONG_PTR *pulpIP = (ULONG_PTR*)(ppvNextFrame + 1);
+			ULONG_PTR *pulpIP = (ULONG_PTR *) (ppvNextFrame + 1);
 			m_rgpvAddresses[m_ulDepth++] = (void *) *pulpIP;
 		}
 
 		// move to next frame
-		ppvNextFrame = (void**)*ppvNextFrame;
+		ppvNextFrame = (void **) *ppvNextFrame;
 	}
 }
 
-#else // unsupported platform
+#else  // unsupported platform
 
-void
-CStackDescriptor::BackTrace
-	(
-	ULONG
-	)
+void CStackDescriptor::BackTrace(ULONG)
 {
 	GPOS_CPL_ASSERT(!"Backtrace is not supported for this platform");
 }
@@ -179,17 +166,11 @@ CStackDescriptor::BackTrace
 //
 //---------------------------------------------------------------------------
 void
-CStackDescriptor::AppendSymbolInfo
-	(
-	CWString *pws,
-	CHAR *szDemangleBuf,
-	SIZE_T size,
-	const DL_INFO &info,
-	ULONG ulIdx
-	)
-	const
+CStackDescriptor::AppendSymbolInfo(CWString *pws, CHAR *szDemangleBuf,
+								   SIZE_T size, const DL_INFO &info,
+								   ULONG ulIdx) const
 {
-	const CHAR* szSymbol = szDemangleBuf;
+	const CHAR *szSymbol = szDemangleBuf;
 
 	// resolve symbol name
 	if (info.dli_sname)
@@ -198,9 +179,10 @@ CStackDescriptor::AppendSymbolInfo
 		szSymbol = info.dli_sname;
 
 		// demangle C++ symbol
-		CHAR *pcDemangled = clib::SzDemangle(szSymbol, szDemangleBuf, &size, &iStatus);
+		CHAR *pcDemangled =
+			clib::SzDemangle(szSymbol, szDemangleBuf, &size, &iStatus);
 		GPOS_ASSERT(size <= GPOS_STACK_SYMBOL_SIZE);
-		
+
 		if (0 == iStatus)
 		{
 			// skip args and template info
@@ -222,15 +204,14 @@ CStackDescriptor::AppendSymbolInfo
 	}
 
 	// format symbol info
-	pws->AppendFormat
-		(
+	pws->AppendFormat(
 		GPOS_WSZ_LIT("%-4d 0x%016lx %s + %lu\n"),
-		ulIdx + 1,										// frame no.
-		(long unsigned int) m_rgpvAddresses[ulIdx],		// current address in frame
-		szSymbol,										// symbol name
+		ulIdx + 1,									 // frame no.
+		(long unsigned int) m_rgpvAddresses[ulIdx],  // current address in frame
+		szSymbol,									 // symbol name
 		(long unsigned int) m_rgpvAddresses[ulIdx] - (ULONG_PTR) info.dli_saddr
-														// offset from frame start
-		);
+		// offset from frame start
+	);
 }
 
 
@@ -243,14 +224,10 @@ CStackDescriptor::AppendSymbolInfo
 //
 //---------------------------------------------------------------------------
 void
-CStackDescriptor::AppendTrace
-	(
-	CWString *pws,
-	ULONG ulDepth
-	)
-	const
+CStackDescriptor::AppendTrace(CWString *pws, ULONG ulDepth) const
 {
-	GPOS_ASSERT(GPOS_STACK_TRACE_DEPTH >= m_ulDepth && "Stack exceeds maximum depth");
+	GPOS_ASSERT(GPOS_STACK_TRACE_DEPTH >= m_ulDepth &&
+				"Stack exceeds maximum depth");
 
 	// symbol info
 	Dl_info info;
@@ -258,7 +235,7 @@ CStackDescriptor::AppendTrace
 
 	// buffer for symbol demangling
 	CHAR szDemangleBuf[GPOS_STACK_SYMBOL_SIZE];
-	
+
 	// print info for frames in stack
 	for (ULONG i = 0; i < m_ulDepth && i < ulDepth; i++)
 	{
@@ -280,12 +257,7 @@ CStackDescriptor::AppendTrace
 //
 //---------------------------------------------------------------------------
 void
-CStackDescriptor::AppendTrace
-	(
-	IOstream &os,
-	ULONG ulDepth
-	)
-	const
+CStackDescriptor::AppendTrace(IOstream &os, ULONG ulDepth) const
 {
 	WCHAR wsz[GPOS_STACK_DESCR_TRACE_BUF];
 	CWStringStatic str(wsz, GPOS_ARRAY_SIZE(wsz));
@@ -307,14 +279,11 @@ ULONG
 CStackDescriptor::UlHash() const
 {
 	GPOS_ASSERT(0 < m_ulDepth && "No stack to hash");
-	GPOS_ASSERT(GPOS_STACK_TRACE_DEPTH >= m_ulDepth && "Stack exceeds maximum depth");
+	GPOS_ASSERT(GPOS_STACK_TRACE_DEPTH >= m_ulDepth &&
+				"Stack exceeds maximum depth");
 
-	return gpos::UlHashByteArray
-				(
-				(BYTE *) m_rgpvAddresses,
-				m_ulDepth * GPOS_SIZEOF(m_rgpvAddresses[0])
-				);
+	return gpos::UlHashByteArray((BYTE *) m_rgpvAddresses,
+								 m_ulDepth * GPOS_SIZEOF(m_rgpvAddresses[0]));
 }
 
 // EOF
-

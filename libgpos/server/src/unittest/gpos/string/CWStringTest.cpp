@@ -33,8 +33,7 @@ using namespace gpos;
 GPOS_RESULT
 CWStringTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_Initialize),
 		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_Equals),
 		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_Append),
@@ -43,9 +42,10 @@ CWStringTest::EresUnittest()
 		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_AppendEscape),
 		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_AppendFormatLarge),
 #ifndef GPOS_Darwin
-		GPOS_UNITTEST_FUNC(CWStringTest::EresUnittest_AppendFormatInvalidLocale),
+		GPOS_UNITTEST_FUNC(
+			CWStringTest::EresUnittest_AppendFormatInvalidLocale),
 #endif
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -64,9 +64,11 @@ CWStringTest::EresUnittest_Append()
 {
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
-	
-	CWStringDynamic *pstr1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
-	CWStringDynamic *pstr2 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("456"));
+
+	CWStringDynamic *pstr1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
+	CWStringDynamic *pstr2 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("456"));
 	CWStringDynamic *pstr3 = GPOS_NEW(pmp) CWStringDynamic(pmp);
 
 	WCHAR buffer1[8];
@@ -87,11 +89,11 @@ CWStringTest::EresUnittest_Append()
 
 	GPOS_ASSERT(pstr1->FEquals(&cstr1));
 	GPOS_ASSERT(ss1.FEquals(&cstr1));
-	
+
 	// append an empty string
 	pstr1->Append(pstr3);
 	ss1.Append(&ss3);
-	
+
 	// string should be the same as before
 	GPOS_ASSERT(pstr1->FEquals(&cstr1));
 	GPOS_ASSERT(ss1.FEquals(&cstr1));
@@ -102,7 +104,7 @@ CWStringTest::EresUnittest_Append()
 
 	GPOS_ASSERT(pstr3->FEquals(pstr1));
 	GPOS_ASSERT(ss3.FEquals(&ss1));
-	
+
 	// check truncation
 	ss3.Append(&ss2);
 	GPOS_ASSERT(ss3.FEquals(&cstr2));
@@ -127,22 +129,21 @@ CWStringTest::EresUnittest_Append()
 GPOS_RESULT
 CWStringTest::EresUnittest_AppendFormat()
 {
-	CAutoMemoryPool amp
-		(
-		CAutoMemoryPool::ElcExc,
-		CMemoryPoolManager::EatTracker,
-		false /*fThreadSafe*/,
-		1024 * 1024 /*ullSizeMax*/
-		);
+	CAutoMemoryPool amp(CAutoMemoryPool::ElcExc, CMemoryPoolManager::EatTracker,
+						false /*fThreadSafe*/, 1024 * 1024 /*ullSizeMax*/
+	);
 	IMemoryPool *pmp = amp.Pmp();
 
-	CWStringDynamic *pstr1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
+	CWStringDynamic *pstr1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
 
 	WCHAR buffer1[16];
 	WCHAR buffer2[12];
 
-	CWStringStatic ss1(buffer1, GPOS_ARRAY_SIZE(buffer1), GPOS_WSZ_LIT("Hello"));
-	CWStringStatic ss2(buffer2, GPOS_ARRAY_SIZE(buffer2), GPOS_WSZ_LIT("Hello"));
+	CWStringStatic ss1(buffer1, GPOS_ARRAY_SIZE(buffer1),
+					   GPOS_WSZ_LIT("Hello"));
+	CWStringStatic ss2(buffer2, GPOS_ARRAY_SIZE(buffer2),
+					   GPOS_WSZ_LIT("Hello"));
 
 	pstr1->AppendFormat(GPOS_WSZ_LIT(" world %d"), 123);
 	ss1.AppendFormat(GPOS_WSZ_LIT(" world %d"), 123);
@@ -171,7 +172,8 @@ CWStringTest::EresUnittest_AppendFormat()
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM));
 
 		GPOS_RESET_EX;
 	}
@@ -193,13 +195,9 @@ CWStringTest::EresUnittest_AppendFormat()
 GPOS_RESULT
 CWStringTest::EresUnittest_AppendFormatInvalidLocale()
 {
-	CAutoMemoryPool amp
-		(
-		CAutoMemoryPool::ElcExc,
-		CMemoryPoolManager::EatTracker,
-		false /*fThreadSafe*/,
-		1024 * 1024 /*ullSizeMax*/
-		);
+	CAutoMemoryPool amp(CAutoMemoryPool::ElcExc, CMemoryPoolManager::EatTracker,
+						false /*fThreadSafe*/, 1024 * 1024 /*ullSizeMax*/
+	);
 	IMemoryPool *pmp = amp.Pmp();
 
 	CHAR *oldLocale = setlocale(LC_CTYPE, NULL);
@@ -210,13 +208,14 @@ CWStringTest::EresUnittest_AppendFormatInvalidLocale()
 	setlocale(LC_CTYPE, "C");
 	GPOS_TRY
 	{
-		pstr1->AppendFormat(GPOS_WSZ_LIT("%s"), (CHAR *)"ÃË", 123);
+		pstr1->AppendFormat(GPOS_WSZ_LIT("%s"), (CHAR *) "ÃË", 123);
 
 		eres = GPOS_FAILED;
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiIllegalByteSequence));
+		GPOS_ASSERT(GPOS_MATCH_EX(ex, CException::ExmaSystem,
+								  CException::ExmiIllegalByteSequence));
 
 		GPOS_RESET_EX;
 	}
@@ -244,7 +243,8 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
 
-	CWStringDynamic *pstr1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
+	CWStringDynamic *pstr1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
 	CWStringConst cstr1(GPOS_WSZ_LIT(" World "));
 
 	const ULONG ulLengthInit = pstr1->UlLength();
@@ -259,8 +259,9 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 
 	{
 		CAutoTrace at(pmp);
-		at.Os() << std::endl <<"Formatted string size:" << pstr1->UlLength();
-		at.Os() << std::endl <<"Expected string size:" << ulExpected <<  std::endl;
+		at.Os() << std::endl << "Formatted string size:" << pstr1->UlLength();
+		at.Os() << std::endl
+				<< "Expected string size:" << ulExpected << std::endl;
 	}
 
 	GPOS_ASSERT(pstr1->UlLength() == ulExpected);
@@ -269,7 +270,8 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 	GPOS_DELETE(pstr1);
 
 	// append small string
-	CWStringDynamic *pstr2 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
+	CWStringDynamic *pstr2 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
 	pstr2->AppendCharArray(" World");
 	GPOS_TRACE(pstr2->Wsz());
 
@@ -277,10 +279,11 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 	GPOS_DELETE(pstr2);
 
 	// append large string
-	CWStringDynamic *pstr3 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello "));
+	CWStringDynamic *pstr3 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello "));
 #ifdef GPOS_DEBUG
 	ULONG ulStartLength = pstr3->UlLength();
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 	const ULONG ulAppendLength = 50000;
 	CHAR *sz = GPOS_NEW_ARRAY(pmp, CHAR, ulAppendLength + 1);
 	for (ULONG ul = 0; ul < ulAppendLength; ul++)
@@ -305,7 +308,8 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 	GPOS_DELETE(pstr3);
 
 	WCHAR wsz[25];
-	CWStringStatic *pstr4 = GPOS_NEW(pmp) CWStringStatic(wsz, GPOS_ARRAY_SIZE(wsz), GPOS_WSZ_LIT("Hello"));
+	CWStringStatic *pstr4 = GPOS_NEW(pmp)
+		CWStringStatic(wsz, GPOS_ARRAY_SIZE(wsz), GPOS_WSZ_LIT("Hello"));
 	pstr4->AppendCharArray(" World");
 	pstr4->AppendWideCharArray(GPOS_WSZ_LIT(" WIDE WORLD"));
 
@@ -334,36 +338,37 @@ CWStringTest::EresUnittest_AppendFormatLarge()
 GPOS_RESULT
 CWStringTest::EresUnittest_Initialize()
 {
-#ifdef GPOS_DEBUG // run this test in debug mode only
+#ifdef GPOS_DEBUG  // run this test in debug mode only
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
-		
-	CWStringDynamic *pstr1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
-	
+
+	CWStringDynamic *pstr1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
+
 	CWStringConst cstr1(GPOS_WSZ_LIT("123"));
 	GPOS_ASSERT(pstr1->FEquals(&cstr1));
-	
+
 	// empty string initialization
 	CWStringDynamic *pstr2 = GPOS_NEW(pmp) CWStringDynamic(pmp);
 	WCHAR buffer[16];
 	CWStringStatic ss(buffer, GPOS_ARRAY_SIZE(buffer));
-	
+
 	CWStringConst cstr2(GPOS_WSZ_LIT(""));
 	GPOS_ASSERT(pstr2->FEquals(&cstr2));
 	GPOS_ASSERT(ss.FEquals(&cstr2));
 	GPOS_ASSERT(0 == pstr2->UlLength());
 	GPOS_ASSERT(0 == ss.UlLength());
-	
+
 	// constant string initialization
 	CWStringConst *pcstr1 = GPOS_NEW(pmp) CWStringConst(GPOS_WSZ_LIT("123"));
 	GPOS_ASSERT(pcstr1->FEquals(&cstr1));
-	
+
 	// cleanup
 	GPOS_DELETE(pstr1);
 	GPOS_DELETE(pstr2);
 	GPOS_DELETE(pcstr1);
-	
-#endif // #ifdef GPOS_DEBUG
+
+#endif  // #ifdef GPOS_DEBUG
 	return GPOS_OK;
 }
 
@@ -381,11 +386,14 @@ CWStringTest::EresUnittest_Equals()
 #ifdef GPOS_DEBUG
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
-	
+
 	// dynamic strings
-	CWStringDynamic *str1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
-	CWStringDynamic *str2 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
-	CWStringDynamic *str3 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("12"));
+	CWStringDynamic *str1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
+	CWStringDynamic *str2 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("123"));
+	CWStringDynamic *str3 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("12"));
 
 	GPOS_ASSERT(str1->FEquals(str2));
 	GPOS_ASSERT(!str1->FEquals(str3));
@@ -409,7 +417,7 @@ CWStringTest::EresUnittest_Equals()
 	CWStringConst *cstr2 = GPOS_NEW(pmp) CWStringConst(GPOS_WSZ_LIT("12"));
 	GPOS_ASSERT(!cstr1->FEquals(cstr2));
 	GPOS_ASSERT(cstr1->FEquals(str1));
-	
+
 	// cleanup
 	GPOS_DELETE(str1);
 	GPOS_DELETE(str2);
@@ -417,8 +425,8 @@ CWStringTest::EresUnittest_Equals()
 	GPOS_DELETE(cstr1);
 	GPOS_DELETE(cstr2);
 
-#endif // #ifdef GPOS_DEBUG
-	
+#endif  // #ifdef GPOS_DEBUG
+
 	return GPOS_OK;
 }
 
@@ -435,23 +443,24 @@ CWStringTest::EresUnittest_Copy()
 {
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
-	
-	CWStringDynamic *pstr1 = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
-	
+
+	CWStringDynamic *pstr1 =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("Hello"));
+
 	CWStringConst *pcstr1 = pstr1->PStrCopy(pmp);
-	
+
 	GPOS_ASSERT(pstr1->FEquals(pcstr1));
-		
+
 	// character buffers should be different
 	GPOS_ASSERT(pstr1->Wsz() != pcstr1->Wsz());
-	
+
 	// cleanup
 	GPOS_DELETE(pstr1);
-	
+
 	GPOS_ASSERT(NULL != pcstr1->Wsz());
 	GPOS_DELETE(pcstr1);
-	
-	return GPOS_OK;	
+
+	return GPOS_OK;
 }
 
 //---------------------------------------------------------------------------
@@ -498,7 +507,7 @@ CWStringTest::EresUnittest_AppendEscape()
 #ifdef GPOS_DEBUG
 	CWStringConst cstr1(GPOS_WSZ_LIT("Hyyylloyyy "));
 	CWStringConst cstr2(GPOS_WSZ_LIT("Hyyylloy"));
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	GPOS_ASSERT(strd.FEquals(&cstr1));
 	GPOS_ASSERT(strs1.FEquals(&cstr1));
@@ -510,7 +519,7 @@ CWStringTest::EresUnittest_AppendEscape()
 
 #ifdef GPOS_DEBUG
 	CWStringConst cstr3(GPOS_WSZ_LIT("Hyyylloyyy Helloe "));
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// should be the same
 	GPOS_ASSERT(strd.FEquals(&cstr3));
@@ -572,4 +581,3 @@ CWStringTest::EresUnittest_AppendEscape()
 }
 
 // EOF
-

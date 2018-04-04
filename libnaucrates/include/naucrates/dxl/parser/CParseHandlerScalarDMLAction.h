@@ -17,53 +17,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarDMLAction
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar DML action expression
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarDMLAction : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			// private copy ctor
-			CParseHandlerScalarDMLAction(const CParseHandlerScalarDMLAction &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor
-			CParseHandlerScalarDMLAction
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarDMLAction
+//
+//	@doc:
+//		Parse handler for parsing a scalar DML action expression
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarDMLAction : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarDMLAction(const CParseHandlerScalarDMLAction &);
 
-#endif // !GPDXL_CParseHandlerScalarDMLAction_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerScalarDMLAction(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								 CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerScalarDMLAction_H
 
 // EOF

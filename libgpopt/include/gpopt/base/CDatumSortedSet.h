@@ -11,23 +11,20 @@
 
 namespace gpopt
 {
-	// A sorted and uniq'd array of pointers to datums
-	// It facilitates the construction of CConstraintInterval
-	class CDatumSortedSet : public DrgPdatum
-	{
-		private:
-			BOOL m_fIncludesNull;
+// A sorted and uniq'd array of pointers to datums
+// It facilitates the construction of CConstraintInterval
+class CDatumSortedSet : public DrgPdatum
+{
+private:
+	BOOL m_fIncludesNull;
 
-		public:
-			CDatumSortedSet
-			(
-			IMemoryPool *pmp,
-			CExpression *pexprArray,
-			const IComparator *pcomp
-			);
+public:
+	CDatumSortedSet(IMemoryPool *pmp, CExpression *pexprArray,
+					const IComparator *pcomp);
 
-			BOOL FIncludesNull() const;
-	};
-}
+	BOOL
+	FIncludesNull() const;
+};
+}  // namespace gpopt
 
 #endif

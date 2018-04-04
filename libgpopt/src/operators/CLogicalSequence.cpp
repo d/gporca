@@ -28,12 +28,7 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CLogicalSequence::CLogicalSequence
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp)
+CLogicalSequence::CLogicalSequence(IMemoryPool *pmp) : CLogical(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -47,11 +42,7 @@ CLogicalSequence::CLogicalSequence
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalSequence::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalSequence::FMatch(COperator *pop) const
 {
 	return pop->Eopid() == Eopid();
 }
@@ -65,11 +56,7 @@ CLogicalSequence::FMatch
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalSequence::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalSequence::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfImplementSequence);
@@ -86,18 +73,15 @@ CLogicalSequence::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalSequence::PcrsDeriveOutput
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
+CLogicalSequence::PcrsDeriveOutput(IMemoryPool *,  // pmp
+								   CExpressionHandle &exprhdl)
 {
 	GPOS_ASSERT(1 <= exprhdl.UlArity());
-	
+
 	// get output columns of last child
 	CColRefSet *pcrs = exprhdl.Pdprel(exprhdl.UlArity() - 1)->PcrsOutput();
 	pcrs->AddRef();
-	
+
 	return pcrs;
 }
 
@@ -112,12 +96,8 @@ CLogicalSequence::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalSequence::PkcDeriveKeys
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalSequence::PkcDeriveKeys(IMemoryPool *,  // pmp
+								CExpressionHandle &exprhdl) const
 {
 	// return key of last child
 	const ULONG ulArity = exprhdl.UlArity();
@@ -134,12 +114,8 @@ CLogicalSequence::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalSequence::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalSequence::Maxcard(IMemoryPool *,  // pmp
+						  CExpressionHandle &exprhdl) const
 {
 	// pass on max card of last child
 	return exprhdl.Pdprel(exprhdl.UlArity() - 1)->Maxcard();
@@ -154,16 +130,11 @@ CLogicalSequence::Maxcard
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CLogicalSequence::PpartinfoDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalSequence::PpartinfoDerive(IMemoryPool *pmp,
+								  CExpressionHandle &exprhdl) const
 {
 	return PpartinfoDeriveCombine(pmp, exprhdl);
 }
 
 
 // EOF
-

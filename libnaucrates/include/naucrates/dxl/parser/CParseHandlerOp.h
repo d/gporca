@@ -19,52 +19,47 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerOp
-	//
-	//	@doc:
-	//		Base parse handler class for DXL operators
-	//
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerOp : public CParseHandlerBase 
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerOp
+//
+//	@doc:
+//		Base parse handler class for DXL operators
+//
+//
+//---------------------------------------------------------------------------
+class CParseHandlerOp : public CParseHandlerBase
+{
+private:
+	// private copy ctor
+	CParseHandlerOp(const CParseHandlerOp &);
 
-			// private copy ctor
-			CParseHandlerOp(const CParseHandlerOp&);
-			
-			
-		protected:
 
-			// the root of the parsed DXL tree constructed by the parse handler
-			CDXLNode *m_pdxln;
-			
-			
-			void AddChildFromParseHandler(const CParseHandlerOp *);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerOp
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-			virtual
-			~CParseHandlerOp();
+protected:
+	// the root of the parsed DXL tree constructed by the parse handler
+	CDXLNode *m_pdxln;
 
-			// returns constructed DXL node
-			CDXLNode *Pdxln() const;	
-	};
-}
 
-#endif // !GPDXL_CParseHandlerOp_H
+	void
+	AddChildFromParseHandler(const CParseHandlerOp *);
+
+public:
+	// ctor/dtor
+	CParseHandlerOp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerOp();
+
+	// returns constructed DXL node
+	CDXLNode *
+	Pdxln() const;
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerOp_H
 
 // EOF

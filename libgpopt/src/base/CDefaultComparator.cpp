@@ -9,7 +9,7 @@
 //		Default comparator for IDatum instances to be used in constraint derivation
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -41,12 +41,8 @@ using gpnaucrates::IDatum;
 //		Does not take ownership of the constant expression evaluator
 //
 //---------------------------------------------------------------------------
-CDefaultComparator::CDefaultComparator
-	(
-	IConstExprEvaluator *pceeval
-	)
-	:
-	m_pceeval(pceeval)
+CDefaultComparator::CDefaultComparator(IConstExprEvaluator *pceeval)
+	: m_pceeval(pceeval)
 {
 	GPOS_ASSERT(NULL != pceeval);
 }
@@ -61,21 +57,18 @@ CDefaultComparator::CDefaultComparator
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FEvalComparison
-	(
-	IMemoryPool *pmp,
-	const IDatum *pdatum1,
-	const IDatum *pdatum2,
-	IMDType::ECmpType ecmpt
-	)
-	const
+CDefaultComparator::FEvalComparison(IMemoryPool *pmp, const IDatum *pdatum1,
+									const IDatum *pdatum2,
+									IMDType::ECmpType ecmpt) const
 {
 	GPOS_ASSERT(m_pceeval->FCanEvalExpressions());
 
 	IDatum *pdatum1Copy = pdatum1->PdatumCopy(pmp);
-	CExpression *pexpr1 = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarConst(pmp, pdatum1Copy));
+	CExpression *pexpr1 = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CScalarConst(pmp, pdatum1Copy));
 	IDatum *pdatum2Copy = pdatum2->PdatumCopy(pmp);
-	CExpression *pexpr2 = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarConst(pmp, pdatum2Copy));
+	CExpression *pexpr2 = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CScalarConst(pmp, pdatum2Copy));
 	CExpression *pexprComp = CUtils::PexprScalarCmp(pmp, pexpr1, pexpr2, ecmpt);
 
 	CExpression *pexprResult = m_pceeval->PexprEval(pexprComp);
@@ -100,23 +93,16 @@ CDefaultComparator::FEvalComparison
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FEqual
-	(
-	const IDatum *pdatum1,
-	const IDatum *pdatum2
-	)
-	const
+CDefaultComparator::FEqual(const IDatum *pdatum1, const IDatum *pdatum2) const
 {
 	if (!CUtils::FConstrainableType(pdatum1->Pmdid()) ||
-			!CUtils::FConstrainableType(pdatum2->Pmdid()))
+		!CUtils::FConstrainableType(pdatum2->Pmdid()))
 	{
-
 		return false;
 	}
 	if (FUseBuiltinIntEvaluators() && CUtils::FIntType(pdatum1->Pmdid()) &&
-			CUtils::FIntType(pdatum2->Pmdid()))
+		CUtils::FIntType(pdatum2->Pmdid()))
 	{
-
 		return pdatum1->FStatsEqual(pdatum2);
 	}
 	CAutoMemoryPool amp;
@@ -142,23 +128,17 @@ CDefaultComparator::FEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FLessThan
-	(
-	const IDatum *pdatum1,
-	const IDatum *pdatum2
-	)
-	const
+CDefaultComparator::FLessThan(const IDatum *pdatum1,
+							  const IDatum *pdatum2) const
 {
 	if (!CUtils::FConstrainableType(pdatum1->Pmdid()) ||
-			!CUtils::FConstrainableType(pdatum2->Pmdid()))
+		!CUtils::FConstrainableType(pdatum2->Pmdid()))
 	{
-
 		return false;
 	}
 	if (FUseBuiltinIntEvaluators() && CUtils::FIntType(pdatum1->Pmdid()) &&
-			CUtils::FIntType(pdatum2->Pmdid()))
+		CUtils::FIntType(pdatum2->Pmdid()))
 	{
-
 		return pdatum1->FStatsLessThan(pdatum2);
 	}
 	CAutoMemoryPool amp;
@@ -171,7 +151,7 @@ CDefaultComparator::FLessThan
 	{
 		return true;
 	}
-	
+
 	return FEvalComparison(amp.Pmp(), pdatum1, pdatum2, IMDType::EcmptL);
 }
 
@@ -184,24 +164,19 @@ CDefaultComparator::FLessThan
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FLessThanOrEqual
-	(
-	const IDatum *pdatum1,
-	const IDatum *pdatum2
-	)
-	const
+CDefaultComparator::FLessThanOrEqual(const IDatum *pdatum1,
+									 const IDatum *pdatum2) const
 {
 	if (!CUtils::FConstrainableType(pdatum1->Pmdid()) ||
-			!CUtils::FConstrainableType(pdatum2->Pmdid()))
+		!CUtils::FConstrainableType(pdatum2->Pmdid()))
 	{
-
 		return false;
 	}
 	if (FUseBuiltinIntEvaluators() && CUtils::FIntType(pdatum1->Pmdid()) &&
-			CUtils::FIntType(pdatum2->Pmdid()))
+		CUtils::FIntType(pdatum2->Pmdid()))
 	{
-
-		return pdatum1->FStatsLessThan(pdatum2) || pdatum1->FStatsEqual(pdatum2);
+		return pdatum1->FStatsLessThan(pdatum2) ||
+			   pdatum1->FStatsEqual(pdatum2);
 	}
 	CAutoMemoryPool amp;
 
@@ -233,23 +208,17 @@ CDefaultComparator::FLessThanOrEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FGreaterThan
-	(
-	const IDatum *pdatum1,
-	const IDatum *pdatum2
-	)
-	const
+CDefaultComparator::FGreaterThan(const IDatum *pdatum1,
+								 const IDatum *pdatum2) const
 {
 	if (!CUtils::FConstrainableType(pdatum1->Pmdid()) ||
-			!CUtils::FConstrainableType(pdatum2->Pmdid()))
+		!CUtils::FConstrainableType(pdatum2->Pmdid()))
 	{
-
 		return false;
 	}
 	if (FUseBuiltinIntEvaluators() && CUtils::FIntType(pdatum1->Pmdid()) &&
-			CUtils::FIntType(pdatum2->Pmdid()))
+		CUtils::FIntType(pdatum2->Pmdid()))
 	{
-
 		return pdatum1->FStatsGreaterThan(pdatum2);
 	}
 	CAutoMemoryPool amp;
@@ -275,24 +244,19 @@ CDefaultComparator::FGreaterThan
 //
 //---------------------------------------------------------------------------
 BOOL
-CDefaultComparator::FGreaterThanOrEqual
-	(
-	const IDatum *pdatum1,
-	const IDatum *pdatum2
-	)
-	const
+CDefaultComparator::FGreaterThanOrEqual(const IDatum *pdatum1,
+										const IDatum *pdatum2) const
 {
 	if (!CUtils::FConstrainableType(pdatum1->Pmdid()) ||
-			!CUtils::FConstrainableType(pdatum2->Pmdid()))
+		!CUtils::FConstrainableType(pdatum2->Pmdid()))
 	{
-
 		return false;
 	}
 	if (FUseBuiltinIntEvaluators() && CUtils::FIntType(pdatum1->Pmdid()) &&
-			CUtils::FIntType(pdatum2->Pmdid()))
+		CUtils::FIntType(pdatum2->Pmdid()))
 	{
-
-		return pdatum1->FStatsGreaterThan(pdatum2) || pdatum1->FStatsEqual(pdatum2);
+		return pdatum1->FStatsGreaterThan(pdatum2) ||
+			   pdatum1->FStatsEqual(pdatum2);
 	}
 	CAutoMemoryPool amp;
 

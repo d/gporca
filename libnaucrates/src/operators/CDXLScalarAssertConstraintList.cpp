@@ -26,12 +26,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarAssertConstraintList::CDXLScalarAssertConstraintList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarAssertConstraintList::CDXLScalarAssertConstraintList(IMemoryPool *pmp)
+	: CDXLScalar(pmp)
 {
 }
 
@@ -72,18 +68,16 @@ CDXLScalarAssertConstraintList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAssertConstraintList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarAssertConstraintList::SerializeToDXL(CXMLSerializer *pxmlser,
+											   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -97,20 +91,17 @@ CDXLScalarAssertConstraintList::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAssertConstraintList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarAssertConstraintList::AssertValid(const CDXLNode *pdxln,
+											BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(0 < ulArity);
-	
+
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxlopScalarAssertConstraint == pdxlnChild->Pdxlop()->Edxlop());
+		GPOS_ASSERT(EdxlopScalarAssertConstraint ==
+					pdxlnChild->Pdxlop()->Edxlop());
 
 		if (fValidateChildren)
 		{
@@ -118,6 +109,6 @@ CDXLScalarAssertConstraintList::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

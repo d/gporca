@@ -29,14 +29,8 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalInsert::CLogicalInsert
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_ptabdesc(NULL),
-	m_pdrgpcrSource(NULL)
+CLogicalInsert::CLogicalInsert(IMemoryPool *pmp)
+	: CLogical(pmp), m_ptabdesc(NULL), m_pdrgpcrSource(NULL)
 {
 	m_fPattern = true;
 }
@@ -49,16 +43,9 @@ CLogicalInsert::CLogicalInsert
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalInsert::CLogicalInsert
-	(
-	IMemoryPool *pmp,
-	CTableDescriptor *ptabdesc,
-	DrgPcr *pdrgpcrSource
-	)
-	:
-	CLogical(pmp),
-	m_ptabdesc(ptabdesc),
-	m_pdrgpcrSource(pdrgpcrSource)
+CLogicalInsert::CLogicalInsert(IMemoryPool *pmp, CTableDescriptor *ptabdesc,
+							   DrgPcr *pdrgpcrSource)
+	: CLogical(pmp), m_ptabdesc(ptabdesc), m_pdrgpcrSource(pdrgpcrSource)
 
 {
 	GPOS_ASSERT(NULL != ptabdesc);
@@ -90,11 +77,7 @@ CLogicalInsert::~CLogicalInsert()
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalInsert::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalInsert::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -104,7 +87,7 @@ CLogicalInsert::FMatch
 	CLogicalInsert *popInsert = CLogicalInsert::PopConvert(pop);
 
 	return m_ptabdesc->Pmdid()->FEquals(popInsert->Ptabdesc()->Pmdid()) &&
-			m_pdrgpcrSource->FEqual(popInsert->PdrgpcrSource());
+		   m_pdrgpcrSource->FEqual(popInsert->PdrgpcrSource());
 }
 
 //---------------------------------------------------------------------------
@@ -118,8 +101,10 @@ CLogicalInsert::FMatch
 ULONG
 CLogicalInsert::UlHash() const
 {
-	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(), m_ptabdesc->Pmdid()->UlHash());
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrSource));
+	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(),
+										 m_ptabdesc->Pmdid()->UlHash());
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrSource));
 
 	return ulHash;
 }
@@ -133,14 +118,11 @@ CLogicalInsert::UlHash() const
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalInsert::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalInsert::PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+										   BOOL fMustExist)
 {
-	DrgPcr *pdrgpcr = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrSource, phmulcr, fMustExist);
+	DrgPcr *pdrgpcr =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrSource, phmulcr, fMustExist);
 	m_ptabdesc->AddRef();
 
 	return GPOS_NEW(pmp) CLogicalInsert(pmp, m_ptabdesc, pdrgpcr);
@@ -155,11 +137,9 @@ CLogicalInsert::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalInsert::PcrsDeriveOutput
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & //exprhdl
-	)
+CLogicalInsert::PcrsDeriveOutput(IMemoryPool *pmp,
+								 CExpressionHandle &  //exprhdl
+)
 {
 	CColRefSet *pcrsOutput = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrsOutput->Include(m_pdrgpcrSource);
@@ -175,12 +155,8 @@ CLogicalInsert::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalInsert::PkcDeriveKeys
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalInsert::PkcDeriveKeys(IMemoryPool *,  // pmp
+							  CExpressionHandle &exprhdl) const
 {
 	return PkcDeriveKeysPassThru(exprhdl, 0 /* ulChild */);
 }
@@ -194,12 +170,8 @@ CLogicalInsert::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalInsert::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalInsert::Maxcard(IMemoryPool *,  // pmp
+						CExpressionHandle &exprhdl) const
 {
 	// pass on max card of first child
 	return exprhdl.Pdprel(0)->Maxcard();
@@ -214,11 +186,7 @@ CLogicalInsert::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalInsert::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalInsert::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfInsert2DML);
@@ -234,13 +202,10 @@ CLogicalInsert::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalInsert::PstatsDerive
-	(
-	IMemoryPool *, // pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat * // not used
-	)
-	const
+CLogicalInsert::PstatsDerive(IMemoryPool *,  // pmp,
+							 CExpressionHandle &exprhdl,
+							 DrgPstat *  // not used
+							 ) const
 {
 	return PstatsPassThruOuter(exprhdl);
 }
@@ -254,26 +219,20 @@ CLogicalInsert::PstatsDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalInsert::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalInsert::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
 		return COperator::OsPrint(os);
 	}
 
-	os	<< SzId()
-		<< " (";
+	os << SzId() << " (";
 	m_ptabdesc->Name().OsPrint(os);
 	os << "), Source Columns: [";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcrSource);
-	os	<< "]";
+	os << "]";
 
 	return os;
 }
 
 // EOF
-

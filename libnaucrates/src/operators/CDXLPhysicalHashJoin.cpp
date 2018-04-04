@@ -25,13 +25,9 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalHashJoin::CDXLPhysicalHashJoin
-	(
-	IMemoryPool *pmp,
-	EdxlJoinType edxljt
-	)
-	:
-	CDXLPhysicalJoin(pmp, edxljt)
+CDXLPhysicalHashJoin::CDXLPhysicalHashJoin(IMemoryPool *pmp,
+										   EdxlJoinType edxljt)
+	: CDXLPhysicalJoin(pmp, edxljt)
 {
 }
 
@@ -73,26 +69,25 @@ CDXLPhysicalHashJoin::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalHashJoin::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalHashJoin::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinType), PstrJoinTypeName());
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinType),
+						  PstrJoinTypeName());
+
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
-	
+
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);		
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -101,22 +96,19 @@ CDXLPhysicalHashJoin::SerializeToDXL
 //		CDXLPhysicalHashJoin::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalHashJoin::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalHashJoin::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
-	
+
 	GPOS_ASSERT(EdxlhjIndexSentinel == pdxln->UlArity());
 	GPOS_ASSERT(EdxljtSentinel > Edxltype());
-	
+
 	CDXLNode *pdxlnJoinFilter = (*pdxln)[EdxlhjIndexJoinFilter];
 	CDXLNode *pdxlnHashClauses = (*pdxln)[EdxlhjIndexHashCondList];
 	CDXLNode *pdxlnLeft = (*pdxln)[EdxlhjIndexHashLeft];
@@ -124,18 +116,21 @@ CDXLPhysicalHashJoin::AssertValid
 
 	// assert children are of right type (physical/scalar)
 	GPOS_ASSERT(EdxlopScalarJoinFilter == pdxlnJoinFilter->Pdxlop()->Edxlop());
-	GPOS_ASSERT(EdxlopScalarHashCondList == pdxlnHashClauses->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarHashCondList ==
+				pdxlnHashClauses->Pdxlop()->Edxlop());
 	GPOS_ASSERT(EdxloptypePhysical == pdxlnLeft->Pdxlop()->Edxloperatortype());
 	GPOS_ASSERT(EdxloptypePhysical == pdxlnRight->Pdxlop()->Edxloperatortype());
 
 	if (fValidateChildren)
 	{
-		pdxlnJoinFilter->Pdxlop()->AssertValid(pdxlnJoinFilter, fValidateChildren);
-		pdxlnHashClauses->Pdxlop()->AssertValid(pdxlnHashClauses, fValidateChildren);
+		pdxlnJoinFilter->Pdxlop()->AssertValid(pdxlnJoinFilter,
+											   fValidateChildren);
+		pdxlnHashClauses->Pdxlop()->AssertValid(pdxlnHashClauses,
+												fValidateChildren);
 		pdxlnLeft->Pdxlop()->AssertValid(pdxlnLeft, fValidateChildren);
 		pdxlnRight->Pdxlop()->AssertValid(pdxlnRight, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

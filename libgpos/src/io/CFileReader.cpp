@@ -25,12 +25,9 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CFileReader::CFileReader()
-	:
-	CFileDescriptor(),
-	m_ullSize(0),
-	m_ullReadSize(0)
-{}
+CFileReader::CFileReader() : CFileDescriptor(), m_ullSize(0), m_ullReadSize(0)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -42,7 +39,8 @@ CFileReader::CFileReader()
 //
 //---------------------------------------------------------------------------
 CFileReader::~CFileReader()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -54,11 +52,7 @@ CFileReader::~CFileReader()
 //
 //---------------------------------------------------------------------------
 void
-CFileReader::Open
-	(
-	const CHAR *szPath,
-	const ULONG ulPerms
-	)
+CFileReader::Open(const CHAR *szPath, const ULONG ulPerms)
 {
 	GPOS_ASSERT(NULL != szPath);
 
@@ -93,13 +87,10 @@ CFileReader::Close()
 //
 //---------------------------------------------------------------------------
 ULONG_PTR
-CFileReader::UlpRead
-	(
-	BYTE *pb,
-	const ULONG_PTR ulpReadSize
-	)
+CFileReader::UlpRead(BYTE *pb, const ULONG_PTR ulpReadSize)
 {
-	GPOS_ASSERT(CFileDescriptor::FOpened() && "Attempt to read from invalid file descriptor");
+	GPOS_ASSERT(CFileDescriptor::FOpened() &&
+				"Attempt to read from invalid file descriptor");
 	GPOS_ASSERT(0 < ulpReadSize);
 	GPOS_ASSERT(NULL != pb);
 
@@ -107,36 +98,37 @@ CFileReader::UlpRead
 
 	while (0 < ulpBytesLeft)
 	{
-			INT_PTR iBytes = -1;
+		INT_PTR iBytes = -1;
 
-    	 	// read from file and check to simulate I/O error
-    	 	GPOS_CHECK_SIM_IO_ERR(&iBytes, ioutils::IRead(IFileDescr(), pb, ulpBytesLeft));
+		// read from file and check to simulate I/O error
+		GPOS_CHECK_SIM_IO_ERR(&iBytes,
+							  ioutils::IRead(IFileDescr(), pb, ulpBytesLeft));
 
-    	 	// reach the end of file
-    	 	if (0 == iBytes)
-    	 	{
-    	 		break;
-    	 	}
+		// reach the end of file
+		if (0 == iBytes)
+		{
+			break;
+		}
 
-    	 	// check for error
-    	 	if (-1 == iBytes)
-    	 	{
-    	 		// in case an interrupt was received we retry
-    	 		if (EINTR == errno)
-    	 		{
-    	 			GPOS_CHECK_ABORT;
-    	 			continue;
-    	 		}
+		// check for error
+		if (-1 == iBytes)
+		{
+			// in case an interrupt was received we retry
+			if (EINTR == errno)
+			{
+				GPOS_CHECK_ABORT;
+				continue;
+			}
 
-    	 		GPOS_RAISE(CException::ExmaSystem, CException::ExmiIOError, errno);
-    	 	}
+			GPOS_RAISE(CException::ExmaSystem, CException::ExmiIOError, errno);
+		}
 
-    	 	ulpBytesLeft -= iBytes;
-    	 	pb += iBytes;
-    	 	m_ullReadSize += iBytes;
+		ulpBytesLeft -= iBytes;
+		pb += iBytes;
+		m_ullReadSize += iBytes;
 	};
 
-    return ulpReadSize - ulpBytesLeft;
+	return ulpReadSize - ulpBytesLeft;
 }
 
 
@@ -170,4 +162,3 @@ CFileReader::UllReadSize() const
 }
 
 // EOF
-

@@ -27,12 +27,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarOneTimeFilter::CDXLScalarOneTimeFilter
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalarFilter(pmp)
+CDXLScalarOneTimeFilter::CDXLScalarOneTimeFilter(IMemoryPool *pmp)
+	: CDXLScalarFilter(pmp)
 {
 }
 
@@ -76,21 +72,19 @@ CDXLScalarOneTimeFilter::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarOneTimeFilter::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * pdxln
-	)
-	const
+CDXLScalarOneTimeFilter::SerializeToDXL(CXMLSerializer *pxmlser,
+										const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serilize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 

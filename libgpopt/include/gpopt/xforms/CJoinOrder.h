@@ -16,146 +16,144 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CJoinOrder
+//
+//	@doc:
+//		Helper class for creating compact join orders
+//
+//---------------------------------------------------------------------------
+class CJoinOrder
+{
+public:
 	//---------------------------------------------------------------------------
-	//	@class:
-	//		CJoinOrder
+	//	@struct:
+	//		SEdge
 	//
 	//	@doc:
-	//		Helper class for creating compact join orders
+	//		Struct to capture edge
 	//
 	//---------------------------------------------------------------------------
-	class CJoinOrder
+	struct SEdge : public CRefCount
 	{
-		public:
+		// cover of edge
+		CBitSet *m_pbs;
 
-			//---------------------------------------------------------------------------
-			//	@struct:
-			//		SEdge
-			//
-			//	@doc:
-			//		Struct to capture edge
-			//
-			//---------------------------------------------------------------------------
-			struct SEdge : public CRefCount
-			{
-				// cover of edge
-				CBitSet *m_pbs;
-				
-				// associated conjunct
-				CExpression *m_pexpr;
-				
-				// a flag to mark edge as used
-				BOOL m_fUsed;
+		// associated conjunct
+		CExpression *m_pexpr;
 
-				// ctor
-				SEdge(IMemoryPool *pmp, CExpression *pexpr);
-				
-				// dtor
-				~SEdge();
-				
-				// print routine
-				IOstream &OsPrint(IOstream &os) const;
-			};
-			
-		
-			//---------------------------------------------------------------------------
-			//	@struct:
-			//		SComponent
-			//
-			//	@doc:
-			//		Struct to capture component
-			//
-			//---------------------------------------------------------------------------
-			struct SComponent : public CRefCount
-			{
-				// cover
-				CBitSet *m_pbs;
-				
-				// associated expression
-				CExpression *m_pexpr;
-				
-				// a flag to component edge as used
-				BOOL m_fUsed;
+		// a flag to mark edge as used
+		BOOL m_fUsed;
 
-				// ctor
-				SComponent(IMemoryPool *pmp, CExpression *pexpr);
-				
-				// ctor
-				SComponent(CExpression *pexpr, CBitSet *pbs);
+		// ctor
+		SEdge(IMemoryPool *pmp, CExpression *pexpr);
 
-				// dtor
-				~SComponent();
+		// dtor
+		~SEdge();
 
-				// print routine
-				IOstream &OsPrint(IOstream &os) const;
-			};
+		// print routine
+		IOstream &
+		OsPrint(IOstream &os) const;
+	};
 
-		protected:
-				
-			// memory pool
-			IMemoryPool *m_pmp;
-			
-			// edges
-			SEdge **m_rgpedge;
-			
-			// number of edges
-			ULONG m_ulEdges;
-			
-			// components
-			SComponent **m_rgpcomp;
-			
-			// number of components
-			ULONG m_ulComps;
-			
-			// compute cover of each edge
-			void ComputeEdgeCover();
-			
-			// apply edges to graph components
-			void MergeComponents();
-			
-			// add edge and merge associated components
-			void AddEdge(SEdge *pedge, DrgPexpr *pdrgpexprConjuncts);
 
-			// combine two disjoint components
-			void CombineComponents(SComponent *pcompLeft, SComponent *pcompRight, DrgPexpr *pdrgpexpr);
-			
-			// determine order in which to apply edges
-			virtual 
-			void SortEdges();
+	//---------------------------------------------------------------------------
+	//	@struct:
+	//		SComponent
+	//
+	//	@doc:
+	//		Struct to capture component
+	//
+	//---------------------------------------------------------------------------
+	struct SComponent : public CRefCount
+	{
+		// cover
+		CBitSet *m_pbs;
 
-		private:
+		// associated expression
+		CExpression *m_pexpr;
 
-			// private copy ctor
-			CJoinOrder(const CJoinOrder &);
+		// a flag to component edge as used
+		BOOL m_fUsed;
 
-		public:
+		// ctor
+		SComponent(IMemoryPool *pmp, CExpression *pexpr);
 
-			// ctor
-			CJoinOrder
-				(
-				IMemoryPool *pmp,
-				DrgPexpr *pdrgpexprComponents,
-				DrgPexpr *pdrgpexprConjuncts
-				);
-		
-			// dtor
-			virtual
-			~CJoinOrder();			
-		
-			// main handler
-			virtual
-			CExpression *PexprExpand();
-			
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &) const;
+		// ctor
+		SComponent(CExpression *pexpr, CBitSet *pbs);
 
-	}; // class CJoinOrder
+		// dtor
+		~SComponent();
 
-}
+		// print routine
+		IOstream &
+		OsPrint(IOstream &os) const;
+	};
 
-#endif // !GPOPT_CJoinOrder_H
+protected:
+	// memory pool
+	IMemoryPool *m_pmp;
+
+	// edges
+	SEdge **m_rgpedge;
+
+	// number of edges
+	ULONG m_ulEdges;
+
+	// components
+	SComponent **m_rgpcomp;
+
+	// number of components
+	ULONG m_ulComps;
+
+	// compute cover of each edge
+	void
+	ComputeEdgeCover();
+
+	// apply edges to graph components
+	void
+	MergeComponents();
+
+	// add edge and merge associated components
+	void
+	AddEdge(SEdge *pedge, DrgPexpr *pdrgpexprConjuncts);
+
+	// combine two disjoint components
+	void
+	CombineComponents(SComponent *pcompLeft, SComponent *pcompRight,
+					  DrgPexpr *pdrgpexpr);
+
+	// determine order in which to apply edges
+	virtual void
+	SortEdges();
+
+private:
+	// private copy ctor
+	CJoinOrder(const CJoinOrder &);
+
+public:
+	// ctor
+	CJoinOrder(IMemoryPool *pmp, DrgPexpr *pdrgpexprComponents,
+			   DrgPexpr *pdrgpexprConjuncts);
+
+	// dtor
+	virtual ~CJoinOrder();
+
+	// main handler
+	virtual CExpression *
+	PexprExpand();
+
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &) const;
+
+};  // class CJoinOrder
+
+}  // namespace gpopt
+
+#endif  // !GPOPT_CJoinOrder_H
 
 // EOF

@@ -6,7 +6,7 @@
 //		CParseHandlerScalarSubPlanParam.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing a Param of
 //		a scalar SubPlan
 //---------------------------------------------------------------------------
@@ -32,15 +32,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarSubPlanParam::CParseHandlerScalarSubPlanParam
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_pdxlcr(NULL)
+CParseHandlerScalarSubPlanParam::CParseHandlerScalarSubPlanParam(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_pdxlcr(NULL)
 {
 }
 
@@ -66,21 +60,23 @@ CParseHandlerScalarSubPlanParam::~CParseHandlerScalarSubPlanParam()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanParam::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname,
-	const Attributes &attrs
-	)
+CParseHandlerScalarSubPlanParam::StartElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const,  // xmlszQname,
+	const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	m_pdxlcr = CDXLOperatorFactory::Pdxlcr(m_pphm->Pmm(), attrs, EdxltokenScalarSubPlanParam);
+	m_pdxlcr = CDXLOperatorFactory::Pdxlcr(m_pphm->Pmm(), attrs,
+										   EdxltokenScalarSubPlanParam);
 }
 
 //---------------------------------------------------------------------------
@@ -92,17 +88,19 @@ CParseHandlerScalarSubPlanParam::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanParam::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarSubPlanParam::EndElement(const XMLCh *const,  // xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam), xmlszLocalname) && NULL != m_pdxln)
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam),
+				 xmlszLocalname) &&
+		NULL != m_pdxln)
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag,	pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// deactivate handler

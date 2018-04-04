@@ -12,21 +12,17 @@
 
 namespace gpopt
 {
-	// Build hashed distributions used in physical union all during
-	// distribution derivation. The class is an array of hashed
-	// distribution on input column of each child, and an output hashed
-	// distribution on UnionAll output columns
+// Build hashed distributions used in physical union all during
+// distribution derivation. The class is an array of hashed
+// distribution on input column of each child, and an output hashed
+// distribution on UnionAll output columns
 
-	class CHashedDistributions : public DrgPds
-	{
-		public:
-			CHashedDistributions
-			(
-			IMemoryPool *pmp,
-			DrgPcr *pdrgpcrOutput,
-			DrgDrgPcr *pdrgpdrgpcrInput
-			);
-	};
-}
+class CHashedDistributions : public DrgPds
+{
+public:
+	CHashedDistributions(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput,
+						 DrgDrgPcr *pdrgpdrgpcrInput);
+};
+}  // namespace gpopt
 
-#endif //GPOPT_CHashedDistributions_H
+#endif  //GPOPT_CHashedDistributions_H

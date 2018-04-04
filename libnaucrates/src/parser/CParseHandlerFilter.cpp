@@ -30,14 +30,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerFilter::CParseHandlerFilter
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerFilter::CParseHandlerFilter(IMemoryPool *pmp,
+										 CParseHandlerManager *pphm,
+										 CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -51,49 +47,57 @@ CParseHandlerFilter::CParseHandlerFilter
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerFilter::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
-{	
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarFilter), xmlszLocalname))
+CParseHandlerFilter::StartElement(const XMLCh *const xmlszUri,
+								  const XMLCh *const xmlszLocalname,
+								  const XMLCh *const xmlszQname,
+								  const Attributes &attrs)
+{
+	if (0 ==
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarFilter),
+								 xmlszLocalname))
 	{
 		// start the filter
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarFilter(m_pmp));
-	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarJoinFilter), xmlszLocalname))
-	{
-		// start the filter
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarJoinFilter(m_pmp));
-	} 
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter), xmlszLocalname))
-	{
-		// start the filter
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarOneTimeFilter(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarFilter(m_pmp));
 	}
 	else if (0 == XMLString::compareString(
-			CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter), xmlszLocalname))
+					  CDXLTokens::XmlstrToken(EdxltokenScalarJoinFilter),
+					  xmlszLocalname))
 	{
 		// start the filter
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarRecheckCondFilter(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarJoinFilter(m_pmp));
+	}
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter),
+					  xmlszLocalname))
+	{
+		// start the filter
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarOneTimeFilter(m_pmp));
+	}
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter),
+					  xmlszLocalname))
+	{
+		// start the filter
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarRecheckCondFilter(m_pmp));
 	}
 	else
 	{
 		GPOS_ASSERT(NULL != m_pdxln);
-		
+
 		// install a scalar element parser for parsing the condition element
-		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 
 		m_pphm->ActivateParseHandler(pphOp);
-		
+
 		// store parse handler
 		this->Append(pphOp);
-		
+
 		pphOp->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
-		
 	}
 }
 
@@ -106,30 +110,38 @@ CParseHandlerFilter::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerFilter::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerFilter::EndElement(const XMLCh *const,  // xmlszUri,
+								const XMLCh *const xmlszLocalname,
+								const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarFilter), xmlszLocalname) &&
-		0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarJoinFilter), xmlszLocalname) &&
-		0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter), xmlszLocalname) &&
-		0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarFilter),
+				 xmlszLocalname) &&
+		0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarJoinFilter),
+				 xmlszLocalname) &&
+		0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter),
+				 xmlszLocalname) &&
+		0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	if (0 < this->UlLength())
 	{
-		// filter node was not empty 
-		CParseHandlerScalarOp *pphOp = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
-		
-		AddChildFromParseHandler(pphOp);	
+		// filter node was not empty
+		CParseHandlerScalarOp *pphOp =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+
+		AddChildFromParseHandler(pphOp);
 	}
-	
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }

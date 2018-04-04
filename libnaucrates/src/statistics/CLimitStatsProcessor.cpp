@@ -19,17 +19,15 @@ using namespace gpopt;
 
 //	compute the statistics of a limit operation
 CStatistics *
-CLimitStatsProcessor::PstatsLimit
-	(
-	IMemoryPool *pmp,
-	const CStatistics *pstatsInput,
-	CDouble dLimitCount
-	)
+CLimitStatsProcessor::PstatsLimit(IMemoryPool *pmp,
+								  const CStatistics *pstatsInput,
+								  CDouble dLimitCount)
 {
 	GPOS_ASSERT(NULL != pstatsInput);
 
 	// copy the hash map from colid -> histogram for resultant structure
-	HMUlHist *phmulhistLimit = pstatsInput->CopyHistograms(pmp);;
+	HMUlHist *phmulhistLimit = pstatsInput->CopyHistograms(pmp);
+	;
 
 	CDouble dRowsLimit = CStatistics::DMinRows;
 	if (!pstatsInput->FEmpty())
@@ -37,15 +35,9 @@ CLimitStatsProcessor::PstatsLimit
 		dRowsLimit = std::max(CStatistics::DMinRows, dLimitCount);
 	}
 	// create an output stats object
-	CStatistics *pstatsLimit = GPOS_NEW(pmp) CStatistics
-											(
-											pmp,
-											phmulhistLimit,
-											pstatsInput->CopyWidths(pmp),
-											dRowsLimit,
-											pstatsInput->FEmpty(),
-											pstatsInput->UlNumberOfPredicates()
-											);
+	CStatistics *pstatsLimit = GPOS_NEW(pmp) CStatistics(
+		pmp, phmulhistLimit, pstatsInput->CopyWidths(pmp), dRowsLimit,
+		pstatsInput->FEmpty(), pstatsInput->UlNumberOfPredicates());
 
 	// In the output statistics object, the upper bound source cardinality of the join column
 	// cannot be greater than the upper bound source cardinality information maintained in the input
@@ -54,7 +46,9 @@ CLimitStatsProcessor::PstatsLimit
 	// and estimated limit cardinality.
 
 	// modify source id to upper bound card information
-	CStatisticsUtils::ComputeCardUpperBounds(pmp, pstatsInput, pstatsLimit, dRowsLimit, CStatistics::EcbmMin /* ecbm */);
+	CStatisticsUtils::ComputeCardUpperBounds(pmp, pstatsInput, pstatsLimit,
+											 dRowsLimit,
+											 CStatistics::EcbmMin /* ecbm */);
 
 	return pstatsLimit;
 }

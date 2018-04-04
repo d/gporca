@@ -29,12 +29,7 @@ CMessageRepository *CMessageRepository::m_pmr = NULL;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CMessageRepository::CMessageRepository
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp)
+CMessageRepository::CMessageRepository(IMemoryPool *pmp) : m_pmp(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -64,11 +59,7 @@ CMessageRepository::~CMessageRepository()
 //
 //---------------------------------------------------------------------------
 CMessage *
-CMessageRepository::PmsgLookup
-	(
-	CException exc,
-	ELocale eloc
-	)
+CMessageRepository::PmsgLookup(CException exc, ELocale eloc)
 {
 	GPOS_ASSERT(exc != CException::m_excInvalid &&
 				"Cannot lookup invalid exception message");
@@ -83,7 +74,7 @@ CMessageRepository::PmsgLookup
 			// try to locate locale-specific message table
 			TMTAccessor tmta(m_tmt, elocSearch);
 			CMessageTable *pmt = tmta.PtLookup();
-		
+
 			if (NULL != pmt)
 			{
 				// try to locate specific message
@@ -115,19 +106,19 @@ GPOS_RESULT
 CMessageRepository::EresInit()
 {
 	GPOS_ASSERT(NULL == m_pmr);
-	
+
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
 
 	CMessageRepository *pmr = GPOS_NEW(pmp) CMessageRepository(pmp);
 	pmr->InitDirectory(pmp);
 	pmr->LoadStandardMessages();
-	
+
 	CMessageRepository::m_pmr = pmr;
 
 	// detach safety
 	(void) amp.PmpDetach();
-	
+
 	return GPOS_OK;
 }
 
@@ -175,21 +166,12 @@ CMessageRepository::Shutdown()
 //
 //---------------------------------------------------------------------------
 void
-CMessageRepository::InitDirectory
-	(
-	IMemoryPool *pmp
-	)
+CMessageRepository::InitDirectory(IMemoryPool *pmp)
 {
-	m_tmt.Init
-		(
-		pmp,
-		128,
-		GPOS_OFFSET(CMessageTable, m_link),
-		GPOS_OFFSET(CMessageTable, m_eloc),
-		&(CMessageTable::m_elocInvalid),
-		CMessageTable::UlHash,
-		CMessageTable::FEqual
-		);
+	m_tmt.Init(pmp, 128, GPOS_OFFSET(CMessageTable, m_link),
+			   GPOS_OFFSET(CMessageTable, m_eloc),
+			   &(CMessageTable::m_elocInvalid), CMessageTable::UlHash,
+			   CMessageTable::FEqual);
 }
 
 
@@ -203,11 +185,7 @@ CMessageRepository::InitDirectory
 //
 //---------------------------------------------------------------------------
 void
-CMessageRepository::AddMessage
-	(
-	ELocale eloc, 
-	CMessage *pmsg
-	)
+CMessageRepository::AddMessage(ELocale eloc, CMessage *pmsg)
 {
 	// retry logic: (1) attempt to insert first (frequent code path)
 	// or (2) create message table after failure and retry (infreq code path)
@@ -217,7 +195,7 @@ CMessageRepository::AddMessage
 		{
 			TMTAccessor tmta(m_tmt, eloc);
 			CMessageTable *pmt = tmta.PtLookup();
-			
+
 			if (NULL != pmt)
 			{
 				pmt->AddMessage(pmsg);
@@ -226,9 +204,9 @@ CMessageRepository::AddMessage
 		}
 
 		// create message table for this locale on demand
-		AddMessageTable(eloc);					
+		AddMessageTable(eloc);
 	}
-	
+
 	GPOS_ASSERT(!"Adding message table on demand failed");
 }
 
@@ -242,14 +220,11 @@ CMessageRepository::AddMessage
 //
 //---------------------------------------------------------------------------
 void
-CMessageRepository::AddMessageTable
-	(
-	ELocale eloc
-	)
+CMessageRepository::AddMessageTable(ELocale eloc)
 {
-	CMessageTable *pmtNew = 
+	CMessageTable *pmtNew =
 		GPOS_NEW(m_pmp) CMessageTable(m_pmp, GPOS_MSGTAB_SIZE, eloc);
-	
+
 	{
 		TMTAccessor tmta(m_tmt, eloc);
 		CMessageTable *pmt = tmta.PtLookup();
@@ -287,4 +262,3 @@ CMessageRepository::LoadStandardMessages()
 }
 
 // EOF
-

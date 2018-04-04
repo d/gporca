@@ -6,7 +6,7 @@
 //		CParseHandlerScalarNullTest.h
 //
 //	@doc:
-//		
+//
 //		SAX parse handler class for parsing scalar NullTest.
 //---------------------------------------------------------------------------
 
@@ -21,54 +21,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarNullTest
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar op expression
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarNullTest : public CParseHandlerScalarOp
-	{
-		private:
-	
-			// private copy ctor
-			CParseHandlerScalarNullTest(const CParseHandlerScalarNullTest &);
-	
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
-	
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
-	
-		public:
-			// ctor
-			CParseHandlerScalarNullTest
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarNullTest
+//
+//	@doc:
+//		Parse handler for parsing a scalar op expression
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarNullTest : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarNullTest(const CParseHandlerScalarNullTest &);
 
-	};
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-}
-#endif // GPDXL_CParseHandlerScalarNullTest_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerScalarNullTest(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								CParseHandlerBase *pphRoot);
+};
+
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerScalarNullTest_H
 
 //EOF

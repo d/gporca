@@ -21,13 +21,10 @@ using namespace gpopt;
 
 //  return a statistics object for a project operation
 CStatistics *
-CProjectStatsProcessor::PstatsProject
-	(
-	IMemoryPool *pmp,
-	const CStatistics *pstatsInput,
-	DrgPul *pdrgpulProjColIds,
-	HMUlDatum *phmuldatum
-	)
+CProjectStatsProcessor::PstatsProject(IMemoryPool *pmp,
+									  const CStatistics *pstatsInput,
+									  DrgPul *pdrgpulProjColIds,
+									  HMUlDatum *phmuldatum)
 {
 	GPOS_ASSERT(NULL != pdrgpulProjColIds);
 
@@ -47,7 +44,6 @@ CProjectStatsProcessor::PstatsProject
 
 		if (NULL == phist)
 		{
-
 			// create histogram for the new project column
 			DrgPbucket *pdrgbucket = GPOS_NEW(pmp) DrgPbucket(pmp);
 			CDouble dNullFreq = 0.0;
@@ -61,7 +57,8 @@ CProjectStatsProcessor::PstatsProject
 					fWellDefined = true;
 					if (!pdatum->FNull())
 					{
-						pdrgbucket->Append(CBucket::PbucketSingleton(pmp, pdatum));
+						pdrgbucket->Append(
+							CBucket::PbucketSingleton(pmp, pdatum));
 					}
 					else
 					{
@@ -74,28 +71,26 @@ CProjectStatsProcessor::PstatsProject
 			CColRef *pcr = pcf->PcrLookup(ulColId);
 			GPOS_ASSERT(NULL != pcr);
 
-			if (0 == pdrgbucket->UlLength() && IMDType::EtiBool == pcr->Pmdtype()->Eti())
+			if (0 == pdrgbucket->UlLength() &&
+				IMDType::EtiBool == pcr->Pmdtype()->Eti())
 			{
 				pdrgbucket->Release();
-			 	phistPrCol = CHistogram::PhistDefaultBoolColStats(pmp);
+				phistPrCol = CHistogram::PhistDefaultBoolColStats(pmp);
 			}
 			else
 			{
-				phistPrCol = GPOS_NEW(pmp) CHistogram
-										(
-										pdrgbucket,
-										fWellDefined,
-										dNullFreq,
-										CHistogram::DDefaultNDVRemain,
-										CHistogram::DDefaultNDVFreqRemain
-										);
+				phistPrCol = GPOS_NEW(pmp)
+					CHistogram(pdrgbucket, fWellDefined, dNullFreq,
+							   CHistogram::DDefaultNDVRemain,
+							   CHistogram::DDefaultNDVFreqRemain);
 			}
 
 			phmulhistNew->FInsert(GPOS_NEW(pmp) ULONG(ulColId), phistPrCol);
 		}
 		else
 		{
-			phmulhistNew->FInsert(GPOS_NEW(pmp) ULONG(ulColId), phist->PhistCopy(pmp));
+			phmulhistNew->FInsert(GPOS_NEW(pmp) ULONG(ulColId),
+								  phist->PhistCopy(pmp));
 		}
 
 		// look up width
@@ -105,33 +100,33 @@ CProjectStatsProcessor::PstatsProject
 			CColRef *pcr = pcf->PcrLookup(ulColId);
 			GPOS_ASSERT(NULL != pcr);
 
-			CDouble dWidth = CStatisticsUtils::DDefaultColumnWidth(pcr->Pmdtype());
-			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId), GPOS_NEW(pmp) CDouble(dWidth));
+			CDouble dWidth =
+				CStatisticsUtils::DDefaultColumnWidth(pcr->Pmdtype());
+			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId),
+									  GPOS_NEW(pmp) CDouble(dWidth));
 		}
 		else
 		{
-			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId), GPOS_NEW(pmp) CDouble(*pdWidth));
+			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId),
+									  GPOS_NEW(pmp) CDouble(*pdWidth));
 		}
 	}
 
 	CDouble dRowsInput = pstatsInput->DRows();
 	// create an output stats object
-	CStatistics *pstatsProject = GPOS_NEW(pmp) CStatistics
-											(
-											pmp,
-											phmulhistNew,
-											phmuldoubleWidth,
-											dRowsInput,
-											pstatsInput->FEmpty(),
-											pstatsInput->UlNumberOfPredicates()
-											);
+	CStatistics *pstatsProject = GPOS_NEW(pmp)
+		CStatistics(pmp, phmulhistNew, phmuldoubleWidth, dRowsInput,
+					pstatsInput->FEmpty(), pstatsInput->UlNumberOfPredicates());
 
 	// In the output statistics object, the upper bound source cardinality of the project column
 	// is equivalent the estimate project cardinality.
-	CStatisticsUtils::ComputeCardUpperBounds(pmp, pstatsInput, pstatsProject, dRowsInput, CStatistics::EcbmInputSourceMaxCard /* ecbm */);
+	CStatisticsUtils::ComputeCardUpperBounds(
+		pmp, pstatsInput, pstatsProject, dRowsInput,
+		CStatistics::EcbmInputSourceMaxCard /* ecbm */);
 
 	// add upper bound card information for the project columns
-	CStatistics::CreateAndInsertUpperBoundNDVs(pmp, pstatsProject, pdrgpulProjColIds, dRowsInput);
+	CStatistics::CreateAndInsertUpperBoundNDVs(pmp, pstatsProject,
+											   pdrgpulProjColIds, dRowsInput);
 
 	return pstatsProject;
 }

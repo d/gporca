@@ -24,25 +24,20 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarArrayRef::CScalarArrayRef
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidElem,
-	INT iTypeModifier,
-	IMDId *pmdidArray,
-	IMDId *pmdidReturn
-	)
-	:
-	CScalar(pmp),
-	m_pmdidElem(pmdidElem),
-	m_iTypeModifier(iTypeModifier),
-	m_pmdidArray(pmdidArray),
-	m_pmdidType(pmdidReturn)
+CScalarArrayRef::CScalarArrayRef(IMemoryPool *pmp, IMDId *pmdidElem,
+								 INT iTypeModifier, IMDId *pmdidArray,
+								 IMDId *pmdidReturn)
+	: CScalar(pmp),
+	  m_pmdidElem(pmdidElem),
+	  m_iTypeModifier(iTypeModifier),
+	  m_pmdidArray(pmdidArray),
+	  m_pmdidType(pmdidReturn)
 {
 	GPOS_ASSERT(pmdidElem->FValid());
 	GPOS_ASSERT(pmdidArray->FValid());
 	GPOS_ASSERT(pmdidReturn->FValid());
-	GPOS_ASSERT(pmdidReturn->FEquals(pmdidElem) || pmdidReturn->FEquals(pmdidArray));
+	GPOS_ASSERT(pmdidReturn->FEquals(pmdidElem) ||
+				pmdidReturn->FEquals(pmdidArray));
 }
 
 //---------------------------------------------------------------------------
@@ -78,11 +73,9 @@ CScalarArrayRef::ITypeModifier() const
 ULONG
 CScalarArrayRef::UlHash() const
 {
-	return gpos::UlCombineHashes
-					(
-					UlCombineHashes(m_pmdidElem->UlHash(), m_pmdidArray->UlHash()),
-					m_pmdidType->UlHash()
-					);
+	return gpos::UlCombineHashes(
+		UlCombineHashes(m_pmdidElem->UlHash(), m_pmdidArray->UlHash()),
+		m_pmdidType->UlHash());
 }
 
 //---------------------------------------------------------------------------
@@ -94,11 +87,7 @@ CScalarArrayRef::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarArrayRef::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarArrayRef::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -108,9 +97,8 @@ CScalarArrayRef::FMatch
 	CScalarArrayRef *popArrayRef = CScalarArrayRef::PopConvert(pop);
 
 	return m_pmdidType->FEquals(popArrayRef->PmdidType()) &&
-			m_pmdidElem->FEquals(popArrayRef->PmdidElem()) &&
-			m_pmdidArray->FEquals(popArrayRef->PmdidArray());
+		   m_pmdidElem->FEquals(popArrayRef->PmdidElem()) &&
+		   m_pmdidArray->FEquals(popArrayRef->PmdidArray());
 }
 
 // EOF
-

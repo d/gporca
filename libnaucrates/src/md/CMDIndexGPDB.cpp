@@ -31,30 +31,22 @@ using namespace gpmd;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CMDIndexGPDB::CMDIndexGPDB
-	(
-	IMemoryPool *pmp, 
-	IMDId *pmdid, 
-	CMDName *pmdname,
-	BOOL fClustered, 
-	IMDIndex::EmdindexType emdindt,
-	IMDId *pmdidItemType,
-	DrgPul *pdrgpulKeyCols,
-	DrgPul *pdrgpulIncludedCols,
-	DrgPmdid *pdrgpmdidOpClasses,
-	IMDPartConstraint *pmdpartcnstr
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_fClustered(fClustered),
-	m_emdindt(emdindt),
-	m_pmdidItemType(pmdidItemType),
-	m_pdrgpulKeyCols(pdrgpulKeyCols),
-	m_pdrgpulIncludedCols(pdrgpulIncludedCols),
-	m_pdrgpmdidOpClasses(pdrgpmdidOpClasses),
-	m_pmdpartcnstr(pmdpartcnstr)
+CMDIndexGPDB::CMDIndexGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+						   BOOL fClustered, IMDIndex::EmdindexType emdindt,
+						   IMDId *pmdidItemType, DrgPul *pdrgpulKeyCols,
+						   DrgPul *pdrgpulIncludedCols,
+						   DrgPmdid *pdrgpmdidOpClasses,
+						   IMDPartConstraint *pmdpartcnstr)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_fClustered(fClustered),
+	  m_emdindt(emdindt),
+	  m_pmdidItemType(pmdidItemType),
+	  m_pdrgpulKeyCols(pdrgpulKeyCols),
+	  m_pdrgpulIncludedCols(pdrgpulIncludedCols),
+	  m_pdrgpmdidOpClasses(pdrgpmdidOpClasses),
+	  m_pmdpartcnstr(pmdpartcnstr)
 {
 	GPOS_ASSERT(pmdid->FValid());
 	GPOS_ASSERT(IMDIndex::EmdindSentinel > emdindt);
@@ -62,10 +54,12 @@ CMDIndexGPDB::CMDIndexGPDB
 	GPOS_ASSERT(0 < pdrgpulKeyCols->UlLength());
 	GPOS_ASSERT(NULL != pdrgpulIncludedCols);
 	GPOS_ASSERT_IMP(NULL != pmdidItemType, IMDIndex::EmdindBitmap == emdindt);
-	GPOS_ASSERT_IMP(IMDIndex::EmdindBitmap == emdindt, NULL != pmdidItemType && pmdidItemType->FValid());
+	GPOS_ASSERT_IMP(IMDIndex::EmdindBitmap == emdindt,
+					NULL != pmdidItemType && pmdidItemType->FValid());
 	GPOS_ASSERT(NULL != pdrgpmdidOpClasses);
-	
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -167,11 +161,7 @@ CMDIndexGPDB::UlKeys() const
 //
 //---------------------------------------------------------------------------
 ULONG
-CMDIndexGPDB::UlKey
-	(
-	ULONG ulPos
-	) 
-	const
+CMDIndexGPDB::UlKey(ULONG ulPos) const
 {
 	return *((*m_pdrgpulKeyCols)[ulPos]);
 }
@@ -185,11 +175,7 @@ CMDIndexGPDB::UlKey
 //
 //---------------------------------------------------------------------------
 ULONG
-CMDIndexGPDB::UlPosInKey
-	(
-	ULONG ulCol
-	)
-	const
+CMDIndexGPDB::UlPosInKey(ULONG ulCol) const
 {
 	const ULONG ulSize = UlKeys();
 
@@ -227,11 +213,7 @@ CMDIndexGPDB::UlIncludedCols() const
 //
 //---------------------------------------------------------------------------
 ULONG
-CMDIndexGPDB::UlIncludedCol
-	(
-	ULONG ulPos
-	)
-	const
+CMDIndexGPDB::UlIncludedCol(ULONG ulPos) const
 {
 	return *((*m_pdrgpulIncludedCols)[ulPos]);
 }
@@ -245,11 +227,7 @@ CMDIndexGPDB::UlIncludedCol
 //
 //---------------------------------------------------------------------------
 ULONG
-CMDIndexGPDB::UlPosInIncludedCol
-	(
-	ULONG ulCol
-	)
-	const
+CMDIndexGPDB::UlPosInIncludedCol(ULONG ulCol) const
 {
 	const ULONG ulSize = UlIncludedCols();
 
@@ -289,45 +267,50 @@ CMDIndexGPDB::Pmdpartcnstr() const
 //
 //---------------------------------------------------------------------------
 void
-CMDIndexGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) const
+CMDIndexGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenIndex));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenIndex));
+
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexClustered), m_fClustered);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexType), PstrIndexType(m_emdindt));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexClustered),
+						  m_fClustered);
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexType),
+						  PstrIndexType(m_emdindt));
 	if (NULL != m_pmdidItemType)
 	{
-		m_pmdidItemType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenIndexItemType));
+		m_pmdidItemType->Serialize(
+			pxmlser, CDXLTokens::PstrToken(EdxltokenIndexItemType));
 	}
-		
+
 	// serialize index keys
-	CWStringDynamic *pstrKeyCols = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulKeyCols);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexKeyCols), pstrKeyCols);
+	CWStringDynamic *pstrKeyCols =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulKeyCols);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexKeyCols),
+						  pstrKeyCols);
 	GPOS_DELETE(pstrKeyCols);
 
-	CWStringDynamic *pstrAvailCols = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulIncludedCols);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexIncludedCols), pstrAvailCols);
+	CWStringDynamic *pstrAvailCols =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulIncludedCols);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexIncludedCols),
+						  pstrAvailCols);
 	GPOS_DELETE(pstrAvailCols);
-		
+
 	// serialize operator class information
-	SerializeMDIdList(pxmlser, m_pdrgpmdidOpClasses, 
-						CDXLTokens::PstrToken(EdxltokenOpClasses), 
-						CDXLTokens::PstrToken(EdxltokenOpClass));
-	
+	SerializeMDIdList(pxmlser, m_pdrgpmdidOpClasses,
+					  CDXLTokens::PstrToken(EdxltokenOpClasses),
+					  CDXLTokens::PstrToken(EdxltokenOpClass));
+
 	if (NULL != m_pmdpartcnstr)
 	{
 		m_pmdpartcnstr->Serialize(pxmlser);
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenIndex));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenIndex));
 }
 
 #ifdef GPOS_DEBUG
@@ -340,16 +323,12 @@ CMDIndexGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CMDIndexGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDIndexGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Index id: ";
 	Pmdid()->OsPrint(os);
 	os << std::endl;
-	
+
 	os << "Index name: " << (Mdname()).Pstr()->Wsz() << std::endl;
 	os << "Index type: " << PstrIndexType(m_emdindt)->Wsz() << std::endl;
 
@@ -363,7 +342,7 @@ CMDIndexGPDB::DebugPrint
 		}
 		os << ulKey;
 	}
-	os << std::endl;	
+	os << std::endl;
 
 	os << "Included Columns: ";
 	for (ULONG ul = 0; ul < UlIncludedCols(); ul++)
@@ -378,7 +357,7 @@ CMDIndexGPDB::DebugPrint
 	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -399,27 +378,22 @@ CMDIndexGPDB::PmdidItemType() const
 //		CMDIndexGPDB::FCompatible
 //
 //	@doc:
-//		Check if given scalar comparison can be used with the index key 
+//		Check if given scalar comparison can be used with the index key
 // 		at the specified position
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDIndexGPDB::FCompatible
-	(
-	const IMDScalarOp *pmdscop, 
-	ULONG ulKeyPos
-	)
-	const
+CMDIndexGPDB::FCompatible(const IMDScalarOp *pmdscop, ULONG ulKeyPos) const
 {
 	GPOS_ASSERT(NULL != pmdscop);
 	GPOS_ASSERT(ulKeyPos < m_pdrgpmdidOpClasses->UlLength());
-	
-	// check if the index opclass for the key at the given position is one of 
+
+	// check if the index opclass for the key at the given position is one of
 	// the classes the scalar comparison belongs to
 	const IMDId *pmdidOpClass = (*m_pdrgpmdidOpClasses)[ulKeyPos];
-	
+
 	const ULONG ulScOpClasses = pmdscop->UlOpCLasses();
-	
+
 	for (ULONG ul = 0; ul < ulScOpClasses; ul++)
 	{
 		if (pmdidOpClass->FEquals(pmdscop->PmdidOpClass(ul)))
@@ -427,9 +401,8 @@ CMDIndexGPDB::FCompatible
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 // EOF
-

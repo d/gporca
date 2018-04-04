@@ -27,24 +27,19 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CXformInnerJoin2HashJoin::CXformInnerJoin2HashJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp, 
-					GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
-					) 
-		)
-{}
+CXformInnerJoin2HashJoin::CXformInnerJoin2HashJoin(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
+		  ))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -56,11 +51,7 @@ CXformInnerJoin2HashJoin::CXformInnerJoin2HashJoin
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformInnerJoin2HashJoin::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformInnerJoin2HashJoin::Exfp(CExpressionHandle &exprhdl) const
 {
 	return CXformUtils::ExfpLogicalJoin2PhysicalJoin(exprhdl);
 }
@@ -75,19 +66,16 @@ CXformInnerJoin2HashJoin::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformInnerJoin2HashJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	) 
-	const
+CXformInnerJoin2HashJoin::Transform(CXformContext *pxfctxt,
+									CXformResult *pxfres,
+									CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CXformUtils::ImplementHashJoin<CPhysicalInnerHashJoin>(pxfctxt, pxfres, pexpr);
+	CXformUtils::ImplementHashJoin<CPhysicalInnerHashJoin>(pxfctxt, pxfres,
+														   pexpr);
 }
 
 // EOF

@@ -27,16 +27,10 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CStatsPredPoint::CStatsPredPoint
-	(
-	ULONG ulColId,
-	CStatsPred::EStatsCmpType escmpt,
-	CPoint *ppoint
-	)
-	:
-	CStatsPred(ulColId),
-	m_escmpt(escmpt),
-	m_ppoint(ppoint)
+CStatsPredPoint::CStatsPredPoint(ULONG ulColId,
+								 CStatsPred::EStatsCmpType escmpt,
+								 CPoint *ppoint)
+	: CStatsPred(ulColId), m_escmpt(escmpt), m_ppoint(ppoint)
 {
 	GPOS_ASSERT(NULL != ppoint);
 }
@@ -49,17 +43,10 @@ CStatsPredPoint::CStatsPredPoint
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CStatsPredPoint::CStatsPredPoint
-	(
-	IMemoryPool *pmp,
-	const CColRef *pcr,
-	CStatsPred::EStatsCmpType escmpt,
-	IDatum *pdatum
-	)
-	:
-	CStatsPred(ULONG_MAX),
-	m_escmpt(escmpt),
-	m_ppoint(NULL)
+CStatsPredPoint::CStatsPredPoint(IMemoryPool *pmp, const CColRef *pcr,
+								 CStatsPred::EStatsCmpType escmpt,
+								 IDatum *pdatum)
+	: CStatsPred(ULONG_MAX), m_escmpt(escmpt), m_ppoint(NULL)
 {
 	GPOS_ASSERT(NULL != pcr);
 	GPOS_ASSERT(NULL != pdatum);
@@ -77,27 +64,24 @@ CStatsPredPoint::CStatsPredPoint
 //		Add padding to datums when needed
 //---------------------------------------------------------------------------
 IDatum *
-CStatsPredPoint::PdatumPreprocess
-	(
-	IMemoryPool *pmp,
-	const CColRef *pcr,
-	IDatum *pdatum
-	)
+CStatsPredPoint::PdatumPreprocess(IMemoryPool *pmp, const CColRef *pcr,
+								  IDatum *pdatum)
 {
 	GPOS_ASSERT(NULL != pcr);
 	GPOS_ASSERT(NULL != pdatum);
 
-	if (!pdatum->FNeedsPadding() || CColRef::EcrtTable != pcr->Ecrt() || pdatum->FNull())
+	if (!pdatum->FNeedsPadding() || CColRef::EcrtTable != pcr->Ecrt() ||
+		pdatum->FNull())
 	{
 		// we do not pad datum for comparison against computed columns
 		pdatum->AddRef();
 		return pdatum;
 	}
 
-	const CColRefTable *pcrTable = CColRefTable::PcrConvert(const_cast<CColRef*>(pcr));
+	const CColRefTable *pcrTable =
+		CColRefTable::PcrConvert(const_cast<CColRef *>(pcr));
 
 	return pdatum->PdatumPadded(pmp, pcrTable->UlWidth());
 }
 
 // EOF
-

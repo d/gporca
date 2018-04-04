@@ -21,47 +21,42 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	// parse handler for GPDB array coerce cast function metadata
-	class CParseHandlerMDArrayCoerceCast : public CParseHandlerMetadataObject
-	{
-		private:
+// parse handler for GPDB array coerce cast function metadata
+class CParseHandlerMDArrayCoerceCast : public CParseHandlerMetadataObject
+{
+private:
+	// private copy ctor
+	CParseHandlerMDArrayCoerceCast(const CParseHandlerMDArrayCoerceCast &);
 
-			// private copy ctor
-			CParseHandlerMDArrayCoerceCast(const CParseHandlerMDArrayCoerceCast &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerMDArrayCoerceCast(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerMDArrayCoerceCast
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerMDArrayCoerceCast_H
+#endif  // !GPDXL_CParseHandlerMDArrayCoerceCast_H
 
 // EOF

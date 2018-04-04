@@ -28,33 +28,26 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDCastGPDB::CMDCastGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidSrc,
-	IMDId *pmdidDest,
-	BOOL fBinaryCoercible,
-	IMDId *pmdidCastFunc,
-	EmdCoercepathType emdPathType
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidSrc(pmdidSrc),
-	m_pmdidDest(pmdidDest),
-	m_fBinaryCoercible(fBinaryCoercible),
-	m_pmdidCastFunc(pmdidCastFunc),
-	m_emdPathType(emdPathType)
+CMDCastGPDB::CMDCastGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+						 IMDId *pmdidSrc, IMDId *pmdidDest,
+						 BOOL fBinaryCoercible, IMDId *pmdidCastFunc,
+						 EmdCoercepathType emdPathType)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidSrc(pmdidSrc),
+	  m_pmdidDest(pmdidDest),
+	  m_fBinaryCoercible(fBinaryCoercible),
+	  m_pmdidCastFunc(pmdidCastFunc),
+	  m_emdPathType(emdPathType)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 	GPOS_ASSERT(m_pmdidSrc->FValid());
 	GPOS_ASSERT(m_pmdidDest->FValid());
 	GPOS_ASSERT_IMP(!fBinaryCoercible, m_pmdidCastFunc->FValid());
 
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -151,7 +144,7 @@ CMDCastGPDB::PmdidCastFunc() const
 //		CMDCastGPDB::FBinaryCoercible
 //
 //	@doc:
-//		Returns whether this is a cast between binary coercible types, i.e. the 
+//		Returns whether this is a cast between binary coercible types, i.e. the
 //		types are binary compatible
 //
 //---------------------------------------------------------------------------
@@ -177,27 +170,30 @@ CMDCastGPDB::EmdPathType() const
 //
 //---------------------------------------------------------------------------
 void
-CMDCastGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CMDCastGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBCast));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenGPDBCast));
+
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBCastBinaryCoercible), m_fBinaryCoercible);
-	m_pmdidSrc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastSrcType));
-	m_pmdidDest->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastDestType));
-	m_pmdidCastFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastFuncId));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBCastCoercePathType), m_emdPathType);
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenGPDBCastBinaryCoercible),
+		m_fBinaryCoercible);
+	m_pmdidSrc->Serialize(pxmlser,
+						  CDXLTokens::PstrToken(EdxltokenGPDBCastSrcType));
+	m_pmdidDest->Serialize(pxmlser,
+						   CDXLTokens::PstrToken(EdxltokenGPDBCastDestType));
+	m_pmdidCastFunc->Serialize(pxmlser,
+							   CDXLTokens::PstrToken(EdxltokenGPDBCastFuncId));
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenGPDBCastCoercePathType), m_emdPathType);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBCast));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenGPDBCast));
 }
 
 
@@ -212,32 +208,28 @@ CMDCastGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CMDCastGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDCastGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Cast " << (Mdname()).Pstr()->Wsz() << ": ";
 	PmdidSrc()->OsPrint(os);
 	os << "->";
 	PmdidDest()->OsPrint(os);
 	os << std::endl;
-		
+
 	if (m_fBinaryCoercible)
 	{
 		os << ", binary-coercible";
 	}
-	
+
 	if (IMDId::FValid(m_pmdidCastFunc))
 	{
 		os << ", Cast func id: ";
 		PmdidCastFunc()->OsPrint(os);
 	}
-	
-	os << std::endl;	
+
+	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

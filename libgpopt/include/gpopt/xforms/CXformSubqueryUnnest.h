@@ -16,60 +16,52 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformSubqueryUnnest
-	//
-	//	@doc:
-	//		Base class for subquery unnesting xforms
-	//
-	//---------------------------------------------------------------------------
-	class CXformSubqueryUnnest : public CXformExploration
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformSubqueryUnnest
+//
+//	@doc:
+//		Base class for subquery unnesting xforms
+//
+//---------------------------------------------------------------------------
+class CXformSubqueryUnnest : public CXformExploration
+{
+private:
+	// private copy ctor
+	CXformSubqueryUnnest(const CXformSubqueryUnnest &);
+
+protected:
+	// helper for subquery unnesting
+	static CExpression *
+	PexprSubqueryUnnest(IMemoryPool *pmp, CExpression *pexpr,
+						BOOL fEnforceCorrelatedApply);
+
+public:
+	// ctor
+	explicit CXformSubqueryUnnest(CExpression *pexprPattern)
+		: CXformExploration(pexprPattern){};
+
+	// dtor
+	virtual ~CXformSubqueryUnnest()
 	{
+	}
 
-		private:
+	// compute xform promise for a given expression handle
+	virtual EXformPromise
+	Exfp(CExpressionHandle &exprhdl) const;
 
-			// private copy ctor
-			CXformSubqueryUnnest(const CXformSubqueryUnnest &);
-
-		protected:
-
-			// helper for subquery unnesting
-			static
-			CExpression *PexprSubqueryUnnest(IMemoryPool *pmp, CExpression *pexpr, BOOL fEnforceCorrelatedApply);
-
-		public:
-
-			// ctor
-			explicit
-			CXformSubqueryUnnest
-				(
-				CExpression *pexprPattern
-				)
-				:
-				CXformExploration(pexprPattern)
-			{};
-
-			// dtor
-			virtual
-			~CXformSubqueryUnnest()
-			{}
-
-			// compute xform promise for a given expression handle
-			virtual
-			EXformPromise Exfp(CExpressionHandle &exprhdl) const;
-
-			// actual transform
-			virtual
-			void Transform(CXformContext *pxfctxt, CXformResult *pxfres, CExpression *pexpr) const;
+	// actual transform
+	virtual void
+	Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+			  CExpression *pexpr) const;
 
 
-	}; // class CXformSubqueryUnnest
+};  // class CXformSubqueryUnnest
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CXformSubqueryUnnest_H
+#endif  // !GPOPT_CXformSubqueryUnnest_H
 
 // EOF

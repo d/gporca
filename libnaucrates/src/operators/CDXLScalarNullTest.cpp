@@ -26,16 +26,9 @@ using namespace gpdxl;
 //		Constructs a NullTest node
 //
 //---------------------------------------------------------------------------
-CDXLScalarNullTest::CDXLScalarNullTest
-	(
-	IMemoryPool *pmp,
-	BOOL fIsNull
-	)
-	:
-	CDXLScalar(pmp),
-	m_fIsNull(fIsNull)
+CDXLScalarNullTest::CDXLScalarNullTest(IMemoryPool *pmp, BOOL fIsNull)
+	: CDXLScalar(pmp), m_fIsNull(fIsNull)
 {
-
 }
 
 //---------------------------------------------------------------------------
@@ -79,7 +72,7 @@ CDXLScalarNullTest::FIsNullTest() const
 const CWStringConst *
 CDXLScalarNullTest::PstrOpName() const
 {
-	if(m_fIsNull)
+	if (m_fIsNull)
 	{
 		return CDXLTokens::PstrToken(EdxltokenScalarIsNull);
 	}
@@ -95,21 +88,18 @@ CDXLScalarNullTest::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarNullTest::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarNullTest::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -122,23 +112,19 @@ CDXLScalarNullTest::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarNullTest::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarNullTest::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 
 	CDXLNode *pdxlnArg = (*pdxln)[0];
 	GPOS_ASSERT(EdxloptypeScalar == pdxlnArg->Pdxlop()->Edxloperatortype());
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

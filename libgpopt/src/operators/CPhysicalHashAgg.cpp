@@ -29,19 +29,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalHashAgg::CPhysicalHashAgg
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr,
-	DrgPcr *pdrgpcrMinimal,
-	COperator::EGbAggType egbaggtype,
-	BOOL fGeneratesDuplicates,
-	DrgPcr *pdrgpcrArgDQA,
-	BOOL fMultiStage
-	)
-	:
-	CPhysicalAgg(pmp, pdrgpcr, pdrgpcrMinimal, egbaggtype, fGeneratesDuplicates, pdrgpcrArgDQA, fMultiStage)
-{}
+CPhysicalHashAgg::CPhysicalHashAgg(IMemoryPool *pmp, DrgPcr *pdrgpcr,
+								   DrgPcr *pdrgpcrMinimal,
+								   COperator::EGbAggType egbaggtype,
+								   BOOL fGeneratesDuplicates,
+								   DrgPcr *pdrgpcrArgDQA, BOOL fMultiStage)
+	: CPhysicalAgg(pmp, pdrgpcr, pdrgpcrMinimal, egbaggtype,
+				   fGeneratesDuplicates, pdrgpcrArgDQA, fMultiStage)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -53,7 +49,8 @@ CPhysicalHashAgg::CPhysicalHashAgg
 //
 //---------------------------------------------------------------------------
 CPhysicalHashAgg::~CPhysicalHashAgg()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -65,20 +62,17 @@ CPhysicalHashAgg::~CPhysicalHashAgg()
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalHashAgg::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl
-	COrderSpec *, // posRequired
-	ULONG
+CPhysicalHashAgg::PosRequired(IMemoryPool *pmp,
+							  CExpressionHandle &,  // exprhdl
+							  COrderSpec *,			// posRequired
+							  ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+								  ulChildIndex
+#endif  // GPOS_DEBUG
+							  ,
+							  DrgPdp *,  // pdrgpdpCtxt
+							  ULONG		 // ulOptReq
+							  ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -96,12 +90,9 @@ CPhysicalHashAgg::PosRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalHashAgg::PosDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalHashAgg::PosDerive(IMemoryPool *pmp,
+							CExpressionHandle &  // exprhdl
+							) const
 {
 	// return empty sort order
 	return GPOS_NEW(pmp) COrderSpec(pmp);
@@ -117,15 +108,12 @@ CPhysicalHashAgg::PosDerive
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalHashAgg::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *
+CPhysicalHashAgg::EpetOrder(CExpressionHandle &,  // exprhdl
+							const CEnfdOrder *
 #ifdef GPOS_DEBUG
-	peo
-#endif // GPOS_DEBUG
-	)
-	const
+								peo
+#endif  // GPOS_DEBUG
+							) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());

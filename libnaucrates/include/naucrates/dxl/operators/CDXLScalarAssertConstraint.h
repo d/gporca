@@ -18,82 +18,75 @@
 
 namespace gpdxl
 {
-	using namespace gpmd;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarAssertConstraint
-	//
-	//	@doc:
-	//		Class for representing individual DXL scalar assert constraints
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarAssertConstraint : public CDXLScalar
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarAssertConstraint
+//
+//	@doc:
+//		Class for representing individual DXL scalar assert constraints
+//
+//---------------------------------------------------------------------------
+class CDXLScalarAssertConstraint : public CDXLScalar
+{
+private:
+	// error message
+	CWStringBase *m_pstrErrorMsg;
+
+	// private copy ctor
+	CDXLScalarAssertConstraint(const CDXLScalarAssertConstraint &);
+
+public:
+	// ctor
+	CDXLScalarAssertConstraint(IMemoryPool *pmp, CWStringBase *pstrErrorMsg);
+
+	// dtor
+	virtual ~CDXLScalarAssertConstraint();
+
+	// ident accessors
+	virtual Edxlopid
+	Edxlop() const;
+
+	// operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
+
+	// error message
+	CWStringBase *
+	PstrErrorMsg() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
 	{
-		private:
-
-			// error message
-			CWStringBase *m_pstrErrorMsg;
-			
-			// private copy ctor
-			CDXLScalarAssertConstraint(const CDXLScalarAssertConstraint&);
-
-		public:
-			// ctor
-			CDXLScalarAssertConstraint(IMemoryPool *pmp, CWStringBase *pstrErrorMsg);
-
-			// dtor
-			virtual
-			~CDXLScalarAssertConstraint();
-			
-			// ident accessors
-			virtual
-			Edxlopid Edxlop() const;
-
-			// operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
-
-			// error message
-			CWStringBase *PstrErrorMsg() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-				(
-				CMDAccessor * //pmda
-				)
-				const
-			{
-				return false;
-			}
+		return false;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			virtual
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	virtual void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
 
-			// conversion function
-			static
-			CDXLScalarAssertConstraint *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarAssertConstraint == pdxlop->Edxlop());
+	// conversion function
+	static CDXLScalarAssertConstraint *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarAssertConstraint == pdxlop->Edxlop());
 
-				return dynamic_cast<CDXLScalarAssertConstraint*>(pdxlop);
-			}
-	};
-}
+		return dynamic_cast<CDXLScalarAssertConstraint *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarAssertConstraint_H
+#endif  // !GPDXL_CDXLScalarAssertConstraint_H
 
 // EOF

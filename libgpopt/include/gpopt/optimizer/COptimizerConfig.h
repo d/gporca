@@ -24,117 +24,115 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// forward decl
-	class ICostModel;
+// forward decl
+class ICostModel;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		COptimizerConfig
-	//
-	//	@doc:
-	//		Configuration parameters of the optimizer including damping factors used
-	//		during statistics derivation, CTE inlining cut-off threshold, Id of plan to
-	//		be extracted (if plan enumeration is enabled), number of plans to be sampled
-	//		from the space (if plan sampling is enabled) etc.
-	//
-	//		Most of these configurations can be changed from outside ORCA through
-	//		GUCs. They are also included in optimizer’s minidumps under
-	//		<dxl:OptimizerConfig> element
-	//
-	//---------------------------------------------------------------------------
-	class COptimizerConfig : public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		COptimizerConfig
+//
+//	@doc:
+//		Configuration parameters of the optimizer including damping factors used
+//		during statistics derivation, CTE inlining cut-off threshold, Id of plan to
+//		be extracted (if plan enumeration is enabled), number of plans to be sampled
+//		from the space (if plan sampling is enabled) etc.
+//
+//		Most of these configurations can be changed from outside ORCA through
+//		GUCs. They are also included in optimizer’s minidumps under
+//		<dxl:OptimizerConfig> element
+//
+//---------------------------------------------------------------------------
+class COptimizerConfig : public CRefCount
+{
+private:
+	// plan enumeration configuration
+	CEnumeratorConfig *m_pec;
+
+	// statistics configuration
+	CStatisticsConfig *m_pstatsconf;
+
+	// CTE configuration
+	CCTEConfig *m_pcteconf;
+
+	// cost model configuration
+	ICostModel *m_pcm;
+
+	// hint configuration
+	CHint *m_phint;
+
+	// default window oids
+	CWindowOids *m_pwindowoids;
+
+public:
+	// ctor
+	COptimizerConfig(CEnumeratorConfig *pec, CStatisticsConfig *pstatsconf,
+					 CCTEConfig *pcteconf, ICostModel *pcm, CHint *phint,
+					 CWindowOids *pdefoidsGPDB);
+
+	// dtor
+	virtual ~COptimizerConfig();
+
+
+	// plan enumeration configuration
+	CEnumeratorConfig *
+	Pec() const
 	{
+		return m_pec;
+	}
 
-		private:
-			
-			// plan enumeration configuration
-			CEnumeratorConfig *m_pec;
+	// statistics configuration
+	CStatisticsConfig *
+	Pstatsconf() const
+	{
+		return m_pstatsconf;
+	}
 
-			// statistics configuration
-			CStatisticsConfig *m_pstatsconf;
+	// CTE configuration
+	CCTEConfig *
+	Pcteconf() const
+	{
+		return m_pcteconf;
+	}
 
-			// CTE configuration
-			CCTEConfig *m_pcteconf;
-			
-			// cost model configuration
-			ICostModel *m_pcm;
+	// cost model configuration
+	ICostModel *
+	Pcm() const
+	{
+		return m_pcm;
+	}
 
-			// hint configuration
-			CHint *m_phint;
+	// default window oids
+	CWindowOids *
+	Pwindowoids() const
+	{
+		return m_pwindowoids;
+	}
 
-			// default window oids
-			CWindowOids *m_pwindowoids;
+	// hint configuration
+	CHint *
+	Phint() const
+	{
+		return m_phint;
+	}
 
-		public:
+	// generate default optimizer configurations
+	static COptimizerConfig *
+	PoconfDefault(IMemoryPool *pmp);
 
-			// ctor
-			COptimizerConfig
-				(
-				CEnumeratorConfig *pec,
-				CStatisticsConfig *pstatsconf,
-				CCTEConfig *pcteconf,
-				ICostModel *pcm,
-				CHint *phint,
-				CWindowOids *pdefoidsGPDB
-				);
+	// generate default optimizer configurations with the given cost model
+	static COptimizerConfig *
+	PoconfDefault(IMemoryPool *pmp, ICostModel *pcm);
 
-			// dtor
-			virtual
-			~COptimizerConfig();
+	void
+	Serialize(IMemoryPool *pmp, CXMLSerializer *pxmlser,
+			  CBitSet *pbsTrace) const;
 
-			
-			// plan enumeration configuration
-			CEnumeratorConfig *Pec() const
-			{
-				return m_pec;
-			}
+};  // class COptimizerConfig
 
-			// statistics configuration
-			CStatisticsConfig *Pstatsconf() const
-			{
-				return m_pstatsconf;
-			}
+}  // namespace gpopt
 
-			// CTE configuration
-			CCTEConfig *Pcteconf() const
-			{
-				return m_pcteconf;
-			}
-
-			// cost model configuration
-			ICostModel *Pcm() const
-			{
-				return m_pcm;
-			}
-			
-			// default window oids
-			CWindowOids *Pwindowoids() const
-			{
-				return m_pwindowoids;
-			}
-
-			// hint configuration
-			CHint *Phint() const
-			{
-				return m_phint;
-			}
-
-			// generate default optimizer configurations
-			static
-			COptimizerConfig *PoconfDefault(IMemoryPool *pmp);
-			
-			// generate default optimizer configurations with the given cost model
-			static
-			COptimizerConfig *PoconfDefault(IMemoryPool *pmp, ICostModel *pcm);
-
-			void Serialize(IMemoryPool *pmp, CXMLSerializer *pxmlser, CBitSet *pbsTrace) const;
-
-	}; // class COptimizerConfig
-
-}
-
-#endif // !GPOPT_COptimizerConfig_H
+#endif  // !GPOPT_COptimizerConfig_H
 
 // EOF

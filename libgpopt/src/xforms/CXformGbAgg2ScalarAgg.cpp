@@ -28,19 +28,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformGbAgg2ScalarAgg::CXformGbAgg2ScalarAgg
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)))
-		)
-{}
+CXformGbAgg2ScalarAgg::CXformGbAgg2ScalarAgg(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -53,11 +49,7 @@ CXformGbAgg2ScalarAgg::CXformGbAgg2ScalarAgg
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformGbAgg2ScalarAgg::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformGbAgg2ScalarAgg::Exfp(CExpressionHandle &exprhdl) const
 {
 	if (0 < CLogicalGbAgg::PopConvert(exprhdl.Pop())->Pdrgpcr()->UlLength() ||
 		exprhdl.Pdpscalar(1 /*ulChildIndex*/)->FHasSubquery())
@@ -79,13 +71,8 @@ CXformGbAgg2ScalarAgg::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformGbAgg2ScalarAgg::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformGbAgg2ScalarAgg::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -95,7 +82,7 @@ CXformGbAgg2ScalarAgg::Transform
 	IMemoryPool *pmp = pxfctxt->Pmp();
 	DrgPcr *pdrgpcr = popAgg->Pdrgpcr();
 	pdrgpcr->AddRef();
-	
+
 	// extract components
 	CExpression *pexprRel = (*pexpr)[0];
 	CExpression *pexprScalar = (*pexpr)[1];
@@ -111,23 +98,13 @@ CXformGbAgg2ScalarAgg::Transform
 	}
 
 	// create alternative expression
-	CExpression *pexprAlt = 
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalScalarAgg
-						(
-						pmp,
-						pdrgpcr,
-						popAgg->PdrgpcrMinimal(),
-						popAgg->Egbaggtype(),
-						popAgg->FGeneratesDuplicates(),
-						pdrgpcrArgDQA,
-						CXformUtils::FMultiStageAgg(pexpr)
-						),
-			pexprRel,
-			pexprScalar
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp)
+		CExpression(pmp,
+					GPOS_NEW(pmp) CPhysicalScalarAgg(
+						pmp, pdrgpcr, popAgg->PdrgpcrMinimal(),
+						popAgg->Egbaggtype(), popAgg->FGeneratesDuplicates(),
+						pdrgpcrArgDQA, CXformUtils::FMultiStageAgg(pexpr)),
+					pexprRel, pexprScalar);
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
@@ -135,4 +112,3 @@ CXformGbAgg2ScalarAgg::Transform
 
 
 // EOF
-

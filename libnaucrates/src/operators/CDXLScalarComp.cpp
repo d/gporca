@@ -26,16 +26,9 @@ using namespace gpdxl;
 //		Constructs a scalar comparison node
 //
 //---------------------------------------------------------------------------
-CDXLScalarComp::CDXLScalarComp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp,
-	const CWStringConst *pstrCompOpName
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdid(pmdidOp),
-	m_pstrCompOpName(pstrCompOpName)
+CDXLScalarComp::CDXLScalarComp(IMemoryPool *pmp, IMDId *pmdidOp,
+							   const CWStringConst *pstrCompOpName)
+	: CDXLScalar(pmp), m_pmdid(pmdidOp), m_pstrCompOpName(pstrCompOpName)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 }
@@ -120,24 +113,23 @@ CDXLScalarComp::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarComp::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarComp::SerializeToDXL(CXMLSerializer *pxmlser,
+							   const CDXLNode *pdxln) const
 {
 	GPOS_CHECK_ABORT;
 
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenComparisonOp), PstrCmpOpName());
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenComparisonOp),
+						  PstrCmpOpName());
 
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
-	
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 
 	GPOS_CHECK_ABORT;
 }
@@ -152,12 +144,7 @@ CDXLScalarComp::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarComp::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarComp::AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(2 == ulArity);
@@ -165,18 +152,17 @@ CDXLScalarComp::AssertValid
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnArg = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnArg->Pdxlop()->Edxloperatortype() ||
-					EdxloptypeLogical == pdxlnArg->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(
+			EdxloptypeScalar == pdxlnArg->Pdxlop()->Edxloperatortype() ||
+			EdxloptypeLogical == pdxlnArg->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
-
-
+#endif  // GPOS_DEBUG
 
 
 

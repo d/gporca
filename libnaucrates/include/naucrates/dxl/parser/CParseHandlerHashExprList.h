@@ -6,7 +6,7 @@
 //		CParseHandlerHashExprList.h
 //
 //	@doc:
-//		SAX parse handler class for parsing the list of hash expressions in a 
+//		SAX parse handler class for parsing the list of hash expressions in a
 //		redistribute motion node.
 //---------------------------------------------------------------------------
 
@@ -18,55 +18,49 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerHashExprList
-	//
-	//	@doc:
-	//		SAX parse handler class for parsing the list of hash expressions in a 
-	//		redistribute motion node.
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerHashExprList : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-		
-			// private copy ctor
-			CParseHandlerHashExprList(const CParseHandlerHashExprList&); 
-		
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerHashExprList
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerHashExprList
+//
+//	@doc:
+//		SAX parse handler class for parsing the list of hash expressions in a
+//		redistribute motion node.
+//
+//---------------------------------------------------------------------------
+class CParseHandlerHashExprList : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerHashExprList(const CParseHandlerHashExprList &);
 
-#endif // !GPDXL_CParseHandlerHashExprList_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerHashExprList(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerHashExprList_H
 
 // EOF

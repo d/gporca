@@ -26,73 +26,74 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd declarations
-	class CExpression;
+// fwd declarations
+class CExpression;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply
-	//
-	//	@doc:
-	//		Transform inner join over Select over a partitioned table into a union-all
-	//		of dynamic index get applies
-	//
-	//---------------------------------------------------------------------------
-	class CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply : public CXformJoin2IndexApplyBase
-		<CLogicalInnerJoin, CLogicalIndexApply, CLogicalDynamicGet,
-		true /*fWithSelect*/, true /*fPartial*/, IMDIndex::EmdindBtree>
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply
+//
+//	@doc:
+//		Transform inner join over Select over a partitioned table into a union-all
+//		of dynamic index get applies
+//
+//---------------------------------------------------------------------------
+class CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply
+	: public CXformJoin2IndexApplyBase<CLogicalInnerJoin, CLogicalIndexApply,
+									   CLogicalDynamicGet, true /*fWithSelect*/,
+									   true /*fPartial*/, IMDIndex::EmdindBtree>
+{
+public:
+	// ctor
+	explicit CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply(
+		IMemoryPool *pmp)
+		: CXformJoin2IndexApplyBase<CLogicalInnerJoin, CLogicalIndexApply,
+									CLogicalDynamicGet, true /*fWithSelect*/,
+									true /*fPartial*/, IMDIndex::EmdindBtree>(
+			  pmp)
 	{
-		public:
-			// ctor
-			explicit
-			CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply(IMemoryPool *pmp)
-				: CXformJoin2IndexApplyBase
-				 <CLogicalInnerJoin, CLogicalIndexApply, CLogicalDynamicGet,
-				 true /*fWithSelect*/, true /*fPartial*/, IMDIndex::EmdindBtree>
-				(pmp)
-			{}
+	}
 
-			// dtor
-			virtual
-			~CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply()
-			{}
+	// dtor
+	virtual ~CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply()
+	{
+	}
 
-			// compute xform promise for a given expression handle
-			virtual
-			CXform::EXformPromise Exfp(CExpressionHandle &exprhdl) const
-			{
-				if (CXform::ExfpNone == CXformJoin2IndexApply::Exfp(exprhdl))
-				{
-					return CXform::ExfpNone;
-				}
+	// compute xform promise for a given expression handle
+	virtual CXform::EXformPromise
+	Exfp(CExpressionHandle &exprhdl) const
+	{
+		if (CXform::ExfpNone == CXformJoin2IndexApply::Exfp(exprhdl))
+		{
+			return CXform::ExfpNone;
+		}
 
-				if (exprhdl.Pdprel(1 /*ulChildIndex*/)->FHasPartialIndexes())
-				{
-					return CXform::ExfpHigh;
-				}
+		if (exprhdl.Pdprel(1 /*ulChildIndex*/)->FHasPartialIndexes())
+		{
+			return CXform::ExfpHigh;
+		}
 
-				return CXform::ExfpNone;
-			}
+		return CXform::ExfpNone;
+	}
 
-			// ident accessor
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfInnerJoinWithInnerSelect2PartialDynamicIndexGetApply;
-			}
+	// ident accessor
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfInnerJoinWithInnerSelect2PartialDynamicIndexGetApply;
+	}
 
-			// xform name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply";
-			}
+	// xform name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply";
+	}
+};
+}  // namespace gpopt
 
-	};
-}
-
-#endif // !GPOPT_CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply_H
+#endif  // !GPOPT_CXformInnerJoinWithInnerSelect2PartialDynamicIndexGetApply_H
 
 // EOF

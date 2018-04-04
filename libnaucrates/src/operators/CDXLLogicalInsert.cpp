@@ -28,16 +28,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalInsert::CDXLLogicalInsert
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc,
-	DrgPul *pdrgpul
-	)
-	:
-	CDXLLogical(pmp),
-	m_pdxltabdesc(pdxltabdesc),
-	m_pdrgpul(pdrgpul)
+CDXLLogicalInsert::CDXLLogicalInsert(IMemoryPool *pmp,
+									 CDXLTableDescr *pdxltabdesc,
+									 DrgPul *pdrgpul)
+	: CDXLLogical(pmp), m_pdxltabdesc(pdxltabdesc), m_pdrgpul(pdrgpul)
 {
 	GPOS_ASSERT(NULL != pdxltabdesc);
 	GPOS_ASSERT(NULL != pdrgpul);
@@ -94,15 +88,12 @@ CDXLLogicalInsert::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalInsert::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalInsert::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	CWStringDynamic *pstrCols = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpul);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInsertCols), pstrCols);
@@ -110,11 +101,12 @@ CDXLLogicalInsert::SerializeToDXL
 
 	// serialize table descriptor
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
-	
+
 	// serialize arguments
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -127,12 +119,8 @@ CDXLLogicalInsert::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalInsert::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLLogicalInsert::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 
@@ -145,7 +133,7 @@ CDXLLogicalInsert::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

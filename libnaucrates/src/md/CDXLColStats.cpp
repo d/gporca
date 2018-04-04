@@ -32,32 +32,24 @@ using namespace gpmd;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLColStats::CDXLColStats
-	(
-	IMemoryPool *pmp,
-	CMDIdColStats *pmdidColStats,
-	CMDName *pmdname,
-	CDouble dWidth,
-	CDouble dNullFreq,
-	CDouble dDistinctRemain,
-	CDouble dFreqRemain,
-	DrgPdxlbucket *pdrgpdxlbucket,
-	BOOL fColStatsMissing
-	)
-	:
-	m_pmp(pmp),
-	m_pmdidColStats(pmdidColStats),
-	m_pmdname(pmdname),
-	m_dWidth(dWidth),
-	m_dNullFreq(dNullFreq),
-	m_dDistinctRemain(dDistinctRemain),
-	m_dFreqRemain(dFreqRemain),
-	m_pdrgpdxlbucket(pdrgpdxlbucket),
-	m_fColStatsMissing(fColStatsMissing)
+CDXLColStats::CDXLColStats(IMemoryPool *pmp, CMDIdColStats *pmdidColStats,
+						   CMDName *pmdname, CDouble dWidth, CDouble dNullFreq,
+						   CDouble dDistinctRemain, CDouble dFreqRemain,
+						   DrgPdxlbucket *pdrgpdxlbucket, BOOL fColStatsMissing)
+	: m_pmp(pmp),
+	  m_pmdidColStats(pmdidColStats),
+	  m_pmdname(pmdname),
+	  m_dWidth(dWidth),
+	  m_dNullFreq(dNullFreq),
+	  m_dDistinctRemain(dDistinctRemain),
+	  m_dFreqRemain(dFreqRemain),
+	  m_pdrgpdxlbucket(pdrgpdxlbucket),
+	  m_fColStatsMissing(fColStatsMissing)
 {
 	GPOS_ASSERT(pmdidColStats->FValid());
 	GPOS_ASSERT(NULL != pdrgpdxlbucket);
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -141,11 +133,7 @@ CDXLColStats::UlBuckets() const
 //
 //---------------------------------------------------------------------------
 const CDXLBucket *
-CDXLColStats::Pdxlbucket
-	(
-	ULONG ul
-	) 
-	const
+CDXLColStats::Pdxlbucket(ULONG ul) const
 {
 	return (*m_pdrgpdxlbucket)[ul];
 }
@@ -160,22 +148,23 @@ CDXLColStats::Pdxlbucket
 //
 //---------------------------------------------------------------------------
 void
-CDXLColStats::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CDXLColStats::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenColumnStats));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumnStats));
+
 	m_pmdidColStats->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWidth), m_dWidth);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNullFreq), m_dNullFreq);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNdvRemain), m_dDistinctRemain);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColFreqRemain), m_dFreqRemain);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColStatsMissing), m_fColStatsMissing);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNullFreq),
+						  m_dNullFreq);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNdvRemain),
+						  m_dDistinctRemain);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColFreqRemain),
+						  m_dFreqRemain);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColStatsMissing),
+						  m_fColStatsMissing);
 
 	GPOS_CHECK_ABORT;
 
@@ -187,9 +176,9 @@ CDXLColStats::Serialize
 
 		GPOS_CHECK_ABORT;
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenColumnStats));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumnStats));
 }
 
 
@@ -204,18 +193,14 @@ CDXLColStats::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CDXLColStats::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CDXLColStats::DebugPrint(IOstream &os) const
 {
 	os << "Column id: ";
 	Pmdid()->OsPrint(os);
 	os << std::endl;
-	
+
 	os << "Column name: " << (Mdname()).Pstr()->Wsz() << std::endl;
-	
+
 	for (ULONG ul = 0; ul < UlBuckets(); ul++)
 	{
 		const CDXLBucket *pdxlbucket = Pdxlbucket(ul);
@@ -223,7 +208,7 @@ CDXLColStats::DebugPrint
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -234,34 +219,21 @@ CDXLColStats::DebugPrint
 //
 //---------------------------------------------------------------------------
 CDXLColStats *
-CDXLColStats::PdxlcolstatsDummy
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	CDouble dWidth
-	)
+CDXLColStats::PdxlcolstatsDummy(IMemoryPool *pmp, IMDId *pmdid,
+								CMDName *pmdname, CDouble dWidth)
 {
 	CMDIdColStats *pmdidColStats = CMDIdColStats::PmdidConvert(pmdid);
 
 	CAutoRef<DrgPdxlbucket> a_pdrgpdxlbucket;
 	a_pdrgpdxlbucket = GPOS_NEW(pmp) DrgPdxlbucket(pmp);
 	CAutoRef<CDXLColStats> a_pdxlcolstats;
-	a_pdxlcolstats = GPOS_NEW(pmp) CDXLColStats
-					(
-					pmp,
-					pmdidColStats,
-					pmdname,
-					dWidth,
-					CHistogram::DDefaultNullFreq,
-					CHistogram::DDefaultNDVRemain,
-					CHistogram::DDefaultNDVFreqRemain,
-					a_pdrgpdxlbucket.Pt(),
-					true /* fColStatsMissing */
-					);
+	a_pdxlcolstats = GPOS_NEW(pmp) CDXLColStats(
+		pmp, pmdidColStats, pmdname, dWidth, CHistogram::DDefaultNullFreq,
+		CHistogram::DDefaultNDVRemain, CHistogram::DDefaultNDVFreqRemain,
+		a_pdrgpdxlbucket.Pt(), true /* fColStatsMissing */
+	);
 	a_pdrgpdxlbucket.PtReset();
 	return a_pdxlcolstats.PtReset();
 }
 
 // EOF
-

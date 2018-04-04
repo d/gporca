@@ -32,15 +32,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerResult::CParseHandlerResult
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_pdxlop(NULL)
+CParseHandlerResult::CParseHandlerResult(IMemoryPool *pmp,
+										 CParseHandlerManager *pphm,
+										 CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot), m_pdxlop(NULL)
 {
 }
 
@@ -53,30 +48,36 @@ CParseHandlerResult::CParseHandlerResult
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerResult::SetupInitialHandlers
-	(
-	)
+CParseHandlerResult::SetupInitialHandlers()
 {
 	// seeing a result tag
-	GPOS_ASSERT(m_pdxlop == NULL && "Result dxl node should not have been created yet");
-	GPOS_ASSERT(0 == this->UlLength() && "No handlers should have been added yet");
+	GPOS_ASSERT(m_pdxlop == NULL &&
+				"Result dxl node should not have been created yet");
+	GPOS_ASSERT(0 == this->UlLength() &&
+				"No handlers should have been added yet");
 
-	m_pdxlop = (CDXLPhysicalResult *) CDXLOperatorFactory::PdxlopResult(m_pphm->Pmm());
+	m_pdxlop =
+		(CDXLPhysicalResult *) CDXLOperatorFactory::PdxlopResult(m_pphm->Pmm());
 
 	// parse handler for the one-time filter
-	CParseHandlerBase *pphOneTimeFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter), m_pphm, this);
+	CParseHandlerBase *pphOneTimeFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarOneTimeFilter), m_pphm,
+		this);
 	m_pphm->ActivateParseHandler(pphOneTimeFilter);
-	
+
 	// parse handler for the filter
-	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
+	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphFilter);
 
 	// parse handler for the proj list
-	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphPrL);
 
 	//parse handler for the properties of the operator
-	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphProp);
 
 	this->Append(pphProp);
@@ -94,24 +95,23 @@ CParseHandlerResult::SetupInitialHandlers
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerResult::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerResult::StartElement(const XMLCh *const xmlszUri,
+								  const XMLCh *const xmlszLocalname,
+								  const XMLCh *const xmlszQname,
+								  const Attributes &attrs)
 {
-
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalResult), xmlszLocalname)
-		&& NULL == m_pdxlop)
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalResult),
+				 xmlszLocalname) &&
+		NULL == m_pdxlop)
 	{
 		SetupInitialHandlers();
 	}
 	else if (NULL != m_pdxlop)
 	{
 		// parse handler for child node
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		this->Append(pphChild);
@@ -120,7 +120,8 @@ CParseHandlerResult::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -134,24 +135,29 @@ CParseHandlerResult::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerResult::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerResult::EndElement(const XMLCh *const,  // xmlszUri,
+								const XMLCh *const xmlszLocalname,
+								const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalResult), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalResult), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct node from the created child nodes
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
-	CParseHandlerFilter *pphFilter = dynamic_cast<CParseHandlerFilter *>((*this)[2]);
-	CParseHandlerFilter *pphOneTimeFilter = dynamic_cast<CParseHandlerFilter *>((*this)[3]);
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
+	CParseHandlerFilter *pphFilter =
+		dynamic_cast<CParseHandlerFilter *>((*this)[2]);
+	CParseHandlerFilter *pphOneTimeFilter =
+		dynamic_cast<CParseHandlerFilter *>((*this)[3]);
 
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);
 	// set statictics and physical properties
@@ -164,17 +170,17 @@ CParseHandlerResult::EndElement
 
 	if (this->UlLength() == 5)
 	{
-		CParseHandlerPhysicalOp *pphChild = dynamic_cast<CParseHandlerPhysicalOp*>((*this)[4]);
+		CParseHandlerPhysicalOp *pphChild =
+			dynamic_cast<CParseHandlerPhysicalOp *>((*this)[4]);
 		AddChildFromParseHandler(pphChild);
 	}
 
 #ifdef GPOS_DEBUG
 	m_pdxlop->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }
 
 // EOF
-

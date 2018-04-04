@@ -24,201 +24,216 @@
 
 namespace gpopt
 {
-	using namespace gpos;	
-	using namespace gpmd;
-	
-	// dynamic array of columns -- array owns columns
-	typedef CDynamicPtrArray<CColumnDescriptor, CleanupRelease> DrgPcoldesc;
-	
-	// dynamic array of bitsets
-	typedef CDynamicPtrArray<CBitSet, CleanupRelease> DrgPbs;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTableDescriptor
-	//
-	//	@doc:
-	//		metadata abstraction for tables
-	//
-	//---------------------------------------------------------------------------
-	class CTableDescriptor : public CRefCount
+using namespace gpos;
+using namespace gpmd;
+
+// dynamic array of columns -- array owns columns
+typedef CDynamicPtrArray<CColumnDescriptor, CleanupRelease> DrgPcoldesc;
+
+// dynamic array of bitsets
+typedef CDynamicPtrArray<CBitSet, CleanupRelease> DrgPbs;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CTableDescriptor
+//
+//	@doc:
+//		metadata abstraction for tables
+//
+//---------------------------------------------------------------------------
+class CTableDescriptor : public CRefCount
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
+
+	// mdid of the table
+	IMDId *m_pmdid;
+
+	// name of table
+	CName m_name;
+
+	// array of columns
+	DrgPcoldesc *m_pdrgpcoldesc;
+
+	// distribution policy
+	IMDRelation::Ereldistrpolicy m_ereldistrpolicy;
+
+	// storage type
+	IMDRelation::Erelstoragetype m_erelstoragetype;
+
+	// distribution columns for hash distribution
+	DrgPcoldesc *m_pdrgpcoldescDist;
+
+	// if true, we need to consider a hash distributed table as random
+	// there are two possible scenarios:
+	// 1. in hawq 2.0, some hash distributed tables need to be considered as random,
+	//	  depending on its bucket number
+	// 2. for a partitioned table, it may contain a part with a different distribution
+	BOOL m_fConvertHashToRandom;
+
+	// indexes of partition columns for partitioned tables
+	DrgPul *m_pdrgpulPart;
+
+	// key sets
+	DrgPbs *m_pdrgpbsKeys;
+
+	// number of leaf partitions
+	ULONG m_ulPartitions;
+
+	// id of user the table needs to be accessed with
+	ULONG m_ulExecuteAsUser;
+
+	// if true, it means this descriptor has partial indexes
+	BOOL m_fHasPartialIndexes;
+
+	// private copy ctor
+	CTableDescriptor(const CTableDescriptor &);
+
+	// returns true if this table descriptor has partial indexes
+	BOOL
+	FDescriptorWithPartialIndexes();
+
+public:
+	// ctor
+	CTableDescriptor(IMemoryPool *, IMDId *pmdid, const CName &,
+					 BOOL fConvertHashToRandom,
+					 IMDRelation::Ereldistrpolicy ereldistrpolicy,
+					 IMDRelation::Erelstoragetype erelstoragetype,
+					 ULONG ulExecuteAsUser);
+
+	// dtor
+	virtual ~CTableDescriptor();
+
+	// add a column to the table descriptor
+	void
+	AddColumn(CColumnDescriptor *);
+
+	// add the column at the specified position to the list of distribution columns
+	void
+	AddDistributionColumn(ULONG ulPos);
+
+	// add the column at the specified position to the list of partition columns
+	void
+	AddPartitionColumn(ULONG ulPos);
+
+	// add a keyset
+	BOOL
+	FAddKeySet(CBitSet *pbs);
+
+	// accessors
+	ULONG
+	UlColumns() const;
+	const CColumnDescriptor *Pcoldesc(ULONG) const;
+
+	// mdid accessor
+	IMDId *
+	Pmdid() const
 	{
-		private:
-			
-			// memory pool
-			IMemoryPool *m_pmp;
-			
-			// mdid of the table
-			IMDId *m_pmdid;
-			
-			// name of table
-			CName m_name;
-			
-			// array of columns
-			DrgPcoldesc *m_pdrgpcoldesc;
-			
-			// distribution policy
-			IMDRelation::Ereldistrpolicy m_ereldistrpolicy;
-			
-			// storage type
-			IMDRelation::Erelstoragetype m_erelstoragetype;
+		return m_pmdid;
+	}
 
-			// distribution columns for hash distribution
-			DrgPcoldesc *m_pdrgpcoldescDist;
-						
-			// if true, we need to consider a hash distributed table as random
-			// there are two possible scenarios:
-			// 1. in hawq 2.0, some hash distributed tables need to be considered as random,
-			//	  depending on its bucket number
-			// 2. for a partitioned table, it may contain a part with a different distribution
-			BOOL m_fConvertHashToRandom;
-			
-			// indexes of partition columns for partitioned tables
-			DrgPul *m_pdrgpulPart;
-			
-			// key sets
-			DrgPbs *m_pdrgpbsKeys;
-			
-			// number of leaf partitions
-			ULONG m_ulPartitions;
+	// name accessor
+	const CName &
+	Name() const
+	{
+		return m_name;
+	}
 
-			// id of user the table needs to be accessed with
-			ULONG m_ulExecuteAsUser;
+	// execute as user accessor
+	ULONG
+	UlExecuteAsUser() const
+	{
+		return m_ulExecuteAsUser;
+	}
 
-			// if true, it means this descriptor has partial indexes
-			BOOL m_fHasPartialIndexes;
+	// return the position of a particular attribute (identified by attno)
+	ULONG
+	UlPosition(INT iAttno) const;
 
-			// private copy ctor
-			CTableDescriptor(const CTableDescriptor &);
+	// column descriptor accessor
+	DrgPcoldesc *
+	Pdrgpcoldesc() const
+	{
+		return m_pdrgpcoldesc;
+	}
 
-			// returns true if this table descriptor has partial indexes
-			BOOL FDescriptorWithPartialIndexes();
+	// distribution column descriptors accessor
+	const DrgPcoldesc *
+	PdrgpcoldescDist() const
+	{
+		return m_pdrgpcoldescDist;
+	}
 
-		public:
+	// partition column indexes accessor
+	const DrgPul *
+	PdrgpulPart() const
+	{
+		return m_pdrgpulPart;
+	}
 
-			// ctor
-			CTableDescriptor
-				(
-				IMemoryPool *,
-				IMDId *pmdid,
-				const CName &,
-				BOOL fConvertHashToRandom,
-				IMDRelation::Ereldistrpolicy ereldistrpolicy,
-				IMDRelation::Erelstoragetype erelstoragetype,
-				ULONG ulExecuteAsUser
-				);
-				
-			// dtor
-			virtual
-			~CTableDescriptor();
+	// array of key sets
+	const DrgPbs *
+	PdrgpbsKeys() const
+	{
+		return m_pdrgpbsKeys;
+	}
 
-			// add a column to the table descriptor
-			void AddColumn(CColumnDescriptor *);
-			
-			// add the column at the specified position to the list of distribution columns
-			void AddDistributionColumn(ULONG ulPos);
+	// return the number of leaf partitions
+	ULONG
+	UlPartitions() const;
 
-			// add the column at the specified position to the list of partition columns
-			void AddPartitionColumn(ULONG ulPos);
+	// distribution policy
+	IMDRelation::Ereldistrpolicy
+	Ereldistribution() const
+	{
+		return m_ereldistrpolicy;
+	}
 
-			// add a keyset
-			BOOL FAddKeySet(CBitSet *pbs);
-			
-			// accessors
-			ULONG UlColumns() const;
-			const CColumnDescriptor *Pcoldesc(ULONG) const;
-			
-			// mdid accessor
-			IMDId *Pmdid() const
-			{
-				return m_pmdid;
-			}
-			
-			// name accessor
-			const CName &Name() const
-			{
-				return m_name;
-			}
-			
-			// execute as user accessor
-			ULONG UlExecuteAsUser() const
-			{
-				return m_ulExecuteAsUser;
-			}
-			
-			// return the position of a particular attribute (identified by attno)
-			ULONG UlPosition(INT iAttno) const;
+	// storage type
+	IMDRelation::Erelstoragetype
+	Erelstorage() const
+	{
+		return m_erelstoragetype;
+	}
 
-			// column descriptor accessor
-			DrgPcoldesc *Pdrgpcoldesc() const
-			{
-				return m_pdrgpcoldesc;
-			}
-			
-			// distribution column descriptors accessor
-			const DrgPcoldesc *PdrgpcoldescDist() const
-			{
-				return m_pdrgpcoldescDist;
-			}
-			
-			// partition column indexes accessor
-			const DrgPul *PdrgpulPart() const
-			{
-				return m_pdrgpulPart;
-			}
-			
-			// array of key sets
-			const DrgPbs *PdrgpbsKeys() const
-			{
-				return m_pdrgpbsKeys;
-			}
+	BOOL
+	FPartitioned() const
+	{
+		return 0 < m_pdrgpulPart->UlLength();
+	}
 
-			// return the number of leaf partitions
-			ULONG UlPartitions() const;
+	// true iff a hash distributed table needs to be considered as random
+	BOOL
+	FConvertHashToRandom() const
+	{
+		return m_fConvertHashToRandom;
+	}
 
-			// distribution policy
-			IMDRelation::Ereldistrpolicy Ereldistribution() const 
-			{
-				return m_ereldistrpolicy;
-			}
-			
-			// storage type
-			IMDRelation::Erelstoragetype Erelstorage() const
-			{
-				return m_erelstoragetype;
-			}
+	// helper function for finding the index of a column descriptor in
+	// an array of column descriptors
+	ULONG
+	UlPos(const CColumnDescriptor *, const DrgPcoldesc *) const;
 
-			BOOL FPartitioned() const
-			{
-				return 0 < m_pdrgpulPart->UlLength();
-			}
-
-			// true iff a hash distributed table needs to be considered as random
-			BOOL FConvertHashToRandom() const
-			{
-				return m_fConvertHashToRandom;
-			}
-			
-			// helper function for finding the index of a column descriptor in
-			// an array of column descriptors
-			ULONG UlPos(const CColumnDescriptor *, const DrgPcoldesc *) const;
-			
 #ifdef GPOS_DEBUG
-			IOstream &OsPrint(IOstream &) const;
-#endif // GPOS_DEBUG
+	IOstream &
+	OsPrint(IOstream &) const;
+#endif  // GPOS_DEBUG
 
-			// returns number of indices
-			ULONG UlIndices();
+	// returns number of indices
+	ULONG
+	UlIndices();
 
-			// true iff this table has partial indexes
-			BOOL FHasPartialIndexes() const
-			{
-				return m_fHasPartialIndexes;
-			}
+	// true iff this table has partial indexes
+	BOOL
+	FHasPartialIndexes() const
+	{
+		return m_fHasPartialIndexes;
+	}
 
-	}; // class CTableDescriptor
-}
+};  // class CTableDescriptor
+}  // namespace gpopt
 
-#endif // !GPOPT_CTableDescriptor_H
+#endif  // !GPOPT_CTableDescriptor_H
 
 // EOF

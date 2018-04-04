@@ -18,54 +18,49 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CCTEConfig
-	//
-	//	@doc:
-	//		CTE configurations
-	//
-	//---------------------------------------------------------------------------
-	class CCTEConfig : public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		CCTEConfig
+//
+//	@doc:
+//		CTE configurations
+//
+//---------------------------------------------------------------------------
+class CCTEConfig : public CRefCount
+{
+private:
+	// CTE inlining cut-off
+	ULONG m_ulCTEInliningCutoff;
+
+	// private copy ctor
+	CCTEConfig(const CCTEConfig &);
+
+public:
+	// ctor
+	CCTEConfig(ULONG ulCTEInliningCutoff)
+		: m_ulCTEInliningCutoff(ulCTEInliningCutoff)
 	{
+	}
 
-		private:
+	// CTE inlining cut-off
+	ULONG
+	UlCTEInliningCutoff() const
+	{
+		return m_ulCTEInliningCutoff;
+	}
 
-			// CTE inlining cut-off
-			ULONG m_ulCTEInliningCutoff;
+	// generate default optimizer configurations
+	static CCTEConfig *
+	PcteconfDefault(IMemoryPool *pmp)
+	{
+		return GPOS_NEW(pmp) CCTEConfig(0 /* ulCTEInliningCutoff */);
+	}
 
-			// private copy ctor
-			CCTEConfig(const CCTEConfig &);
+};  // class CCTEConfig
+}  // namespace gpopt
 
-		public:
-
-			// ctor
-			CCTEConfig
-				(
-				ULONG ulCTEInliningCutoff
-				)
-				:
-				m_ulCTEInliningCutoff(ulCTEInliningCutoff)
-			{}
-
-			// CTE inlining cut-off
-			ULONG UlCTEInliningCutoff() const
-			{
-				return m_ulCTEInliningCutoff;
-			}
-
-			// generate default optimizer configurations
-			static
-			CCTEConfig *PcteconfDefault(IMemoryPool *pmp)
-			{
-				return GPOS_NEW(pmp) CCTEConfig(0 /* ulCTEInliningCutoff */);
-			}
-
-	}; // class CCTEConfig
-}
-
-#endif // !GPOPT_CCTEConfig_H
+#endif  // !GPOPT_CCTEConfig_H
 
 // EOF

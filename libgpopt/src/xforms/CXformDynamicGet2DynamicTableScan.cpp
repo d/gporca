@@ -26,21 +26,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformDynamicGet2DynamicTableScan::CXformDynamicGet2DynamicTableScan
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalDynamicGet(pmp)
-				)
-		)
-{}
+CXformDynamicGet2DynamicTableScan::CXformDynamicGet2DynamicTableScan(
+	IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalDynamicGet(pmp)))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -52,13 +44,9 @@ CXformDynamicGet2DynamicTableScan::CXformDynamicGet2DynamicTableScan
 //
 //---------------------------------------------------------------------------
 void
-CXformDynamicGet2DynamicTableScan::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformDynamicGet2DynamicTableScan::Transform(CXformContext *pxfctxt,
+											 CXformResult *pxfres,
+											 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -69,45 +57,31 @@ CXformDynamicGet2DynamicTableScan::Transform
 
 	// create/extract components for alternative
 	CName *pname = GPOS_NEW(pmp) CName(pmp, popGet->Name());
-	
+
 	CTableDescriptor *ptabdesc = popGet->Ptabdesc();
 	ptabdesc->AddRef();
-	
+
 	DrgPcr *pdrgpcrOutput = popGet->PdrgpcrOutput();
 	GPOS_ASSERT(NULL != pdrgpcrOutput);
 
 	pdrgpcrOutput->AddRef();
-	
+
 	DrgDrgPcr *pdrgpdrgpcrPart = popGet->PdrgpdrgpcrPart();
 	pdrgpdrgpcrPart->AddRef();
-	
+
 	popGet->Ppartcnstr()->AddRef();
 	popGet->PpartcnstrRel()->AddRef();
-	
+
 	// create alternative expression
-	CExpression *pexprAlt = 
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalDynamicTableScan
-						(
-						pmp,
-						popGet->FPartial(),
-						pname, 
-						ptabdesc,
-						popGet->UlOpId(),
-						popGet->UlScanId(), 
-						pdrgpcrOutput,
-						pdrgpdrgpcrPart,
-						popGet->UlSecondaryScanId(),
-						popGet->Ppartcnstr(),
-						popGet->PpartcnstrRel()
-						)
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CPhysicalDynamicTableScan(
+				 pmp, popGet->FPartial(), pname, ptabdesc, popGet->UlOpId(),
+				 popGet->UlScanId(), pdrgpcrOutput, pdrgpdrgpcrPart,
+				 popGet->UlSecondaryScanId(), popGet->Ppartcnstr(),
+				 popGet->PpartcnstrRel()));
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
 }
 
 
 // EOF
-

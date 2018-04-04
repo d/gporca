@@ -19,51 +19,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerArray
-	//
-	//	@doc:
-	//		Parse handler for scalar array operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerArray : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			// process the start of an element
-			virtual
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			virtual
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-			// private copy ctor
-			CParseHandlerArray(const CParseHandlerArray &);
-			
-		public:
-			
-			// ctor
-			CParseHandlerArray(IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pph);						
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerArray
+//
+//	@doc:
+//		Parse handler for scalar array operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerArray : public CParseHandlerScalarOp
+{
+private:
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-#endif // !GPDXL_CParseHandlerArray_H
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+	// private copy ctor
+	CParseHandlerArray(const CParseHandlerArray &);
+
+public:
+	// ctor
+	CParseHandlerArray(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					   CParseHandlerBase *pph);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerArray_H
 
 // EOF

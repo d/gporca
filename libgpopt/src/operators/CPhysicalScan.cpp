@@ -32,20 +32,14 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalScan::CPhysicalScan
-	(
-	IMemoryPool *pmp,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CPhysical(pmp),
-	m_pnameAlias(pnameAlias),
-	m_ptabdesc(ptabdesc),
-	m_pdrgpcrOutput(pdrgpcrOutput),
-	m_pds(NULL),
-	m_pstatsBaseTable(NULL)
+CPhysicalScan::CPhysicalScan(IMemoryPool *pmp, const CName *pnameAlias,
+							 CTableDescriptor *ptabdesc, DrgPcr *pdrgpcrOutput)
+	: CPhysical(pmp),
+	  m_pnameAlias(pnameAlias),
+	  m_ptabdesc(ptabdesc),
+	  m_pdrgpcrOutput(pdrgpcrOutput),
+	  m_pds(NULL),
+	  m_pstatsBaseTable(NULL)
 {
 	GPOS_ASSERT(NULL != ptabdesc);
 	GPOS_ASSERT(NULL != pnameAlias);
@@ -81,7 +75,7 @@ CPhysicalScan::~CPhysicalScan()
 	GPOS_DELETE(m_pnameAlias);
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CPhysicalScan::FInputOrderSensitive
@@ -107,22 +101,19 @@ CPhysicalScan::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalScan::FProvidesReqdCols
-	(
-	CExpressionHandle &, // exprhdl
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalScan::FProvidesReqdCols(CExpressionHandle &,  // exprhdl
+								 CColRefSet *pcrsRequired,
+								 ULONG  // ulOptReq
+								 ) const
 {
 	GPOS_ASSERT(NULL != pcrsRequired);
 
-	CColRefSet 	*pcrs = GPOS_NEW(m_pmp) CColRefSet(m_pmp);
+	CColRefSet *pcrs = GPOS_NEW(m_pmp) CColRefSet(m_pmp);
 	pcrs->Include(m_pdrgpcrOutput);
 
 	BOOL fResult = pcrs->FSubset(pcrsRequired);
 	pcrs->Release();
-	
+
 	return fResult;
 }
 
@@ -136,15 +127,12 @@ CPhysicalScan::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalScan::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *
+CPhysicalScan::EpetOrder(CExpressionHandle &,  // exprhdl
+						 const CEnfdOrder *
 #ifdef GPOS_DEBUG
-	peo
-#endif // GPOS_DEBUG
-	)
-	const
+							 peo
+#endif  // GPOS_DEBUG
+						 ) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -164,11 +152,10 @@ CPhysicalScan::EpetOrder
 //
 //---------------------------------------------------------------------------
 CExpression *
-CPhysicalScan::PexprMatchEqualitySide
-	(
+CPhysicalScan::PexprMatchEqualitySide(
 	CExpression *pexprToMatch,
-	DrgPexpr *pdrgpexpr // array of predicates to inspect
-	)
+	DrgPexpr *pdrgpexpr  // array of predicates to inspect
+)
 {
 	GPOS_ASSERT(NULL != pexprToMatch);
 	GPOS_ASSERT(NULL != pdrgpexpr);
@@ -187,22 +174,29 @@ CPhysicalScan::PexprMatchEqualitySide
 		CExpression *pexprPredOuter = (*pexprPred)[0];
 		CExpression *pexprPredInner = (*pexprPred)[1];
 
-		IMDId *pmdidTypeOuter = CScalar::PopConvert(pexprPredOuter->Pop())->PmdidType();
-		IMDId *pmdidTypeInner = CScalar::PopConvert(pexprPredInner->Pop())->PmdidType();
+		IMDId *pmdidTypeOuter =
+			CScalar::PopConvert(pexprPredOuter->Pop())->PmdidType();
+		IMDId *pmdidTypeInner =
+			CScalar::PopConvert(pexprPredInner->Pop())->PmdidType();
 		if (!pmdidTypeOuter->FEquals(pmdidTypeInner))
 		{
 			// only consider equality of identical types
 			continue;
 		}
 
-		pexprToMatch = CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprToMatch);
-		if (CUtils::FEqual(CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprPredOuter), pexprToMatch))
+		pexprToMatch =
+			CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprToMatch);
+		if (CUtils::FEqual(
+				CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprPredOuter),
+				pexprToMatch))
 		{
 			pexprMatching = pexprPredInner;
 			break;
 		}
 
-		if (CUtils::FEqual(CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprPredInner), pexprToMatch))
+		if (CUtils::FEqual(
+				CCastUtils::PexprWithoutBinaryCoercibleCasts(pexprPredInner),
+				pexprToMatch))
 		{
 			pexprMatching = pexprPredOuter;
 			break;
@@ -222,21 +216,19 @@ CPhysicalScan::PexprMatchEqualitySide
 //
 //---------------------------------------------------------------------------
 CDistributionSpecHashed *
-CPhysicalScan::PdshashedDeriveWithOuterRefs
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalScan::PdshashedDeriveWithOuterRefs(IMemoryPool *pmp,
+											CExpressionHandle &exprhdl) const
 {
 	GPOS_ASSERT(exprhdl.FHasOuterRefs());
 	GPOS_ASSERT(CDistributionSpec::EdtHashed == m_pds->Edt());
 
 	CExpression *pexprIndexPred = exprhdl.PexprScalarChild(0 /*ulChildIndex*/);
-	DrgPexpr *pdrgpexpr = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprIndexPred);
+	DrgPexpr *pdrgpexpr =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprIndexPred);
 
 	DrgPexpr *pdrgpexprMatching = GPOS_NEW(pmp) DrgPexpr(pmp);
-	CDistributionSpecHashed *pdshashed = CDistributionSpecHashed::PdsConvert(m_pds);
+	CDistributionSpecHashed *pdshashed =
+		CDistributionSpecHashed::PdsConvert(m_pds);
 	DrgPexpr *pdrgpexprHashed = pdshashed->Pdrgpexpr();
 	const ULONG ulSize = pdrgpexprHashed->UlLength();
 
@@ -256,14 +248,18 @@ CPhysicalScan::PdshashedDeriveWithOuterRefs
 
 	if (fSuccess)
 	{
-		GPOS_ASSERT(pdrgpexprMatching->UlLength() == pdrgpexprHashed->UlLength());
+		GPOS_ASSERT(pdrgpexprMatching->UlLength() ==
+					pdrgpexprHashed->UlLength());
 
 		// create a matching hashed distribution request
 		BOOL fNullsColocated = pdshashed->FNullsColocated();
-		CDistributionSpecHashed *pdshashedEquiv = GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexprMatching, fNullsColocated);
+		CDistributionSpecHashed *pdshashedEquiv = GPOS_NEW(pmp)
+			CDistributionSpecHashed(pdrgpexprMatching, fNullsColocated);
 
 		pdrgpexprHashed->AddRef();
-		CDistributionSpecHashed *pdshashedResult = GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexprHashed, fNullsColocated, pdshashedEquiv);
+		CDistributionSpecHashed *pdshashedResult = GPOS_NEW(pmp)
+			CDistributionSpecHashed(pdrgpexprHashed, fNullsColocated,
+									pdshashedEquiv);
 
 		return pdshashedResult;
 	}
@@ -282,23 +278,18 @@ CPhysicalScan::PdshashedDeriveWithOuterRefs
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalScan::PdsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalScan::PdsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl) const
 {
 	BOOL fIndexOrBitmapScan = COperator::EopPhysicalIndexScan == Eopid() ||
-				COperator::EopPhysicalBitmapTableScan == Eopid();
-	if (fIndexOrBitmapScan &&
-		CDistributionSpec::EdtHashed == m_pds->Edt() &&
+							  COperator::EopPhysicalBitmapTableScan == Eopid();
+	if (fIndexOrBitmapScan && CDistributionSpec::EdtHashed == m_pds->Edt() &&
 		exprhdl.FHasOuterRefs())
 	{
 		// if index conditions have outer references and index relation is hashed,
 		// check to see if we can derive an equivalent hashed distribution for the
 		// outer references
-		CDistributionSpecHashed *pdshashed = PdshashedDeriveWithOuterRefs(pmp, exprhdl);
+		CDistributionSpecHashed *pdshashed =
+			PdshashedDeriveWithOuterRefs(pmp, exprhdl);
 		if (NULL != pdshashed)
 		{
 			return pdshashed;
@@ -319,27 +310,25 @@ CPhysicalScan::PdsDerive
 //
 //---------------------------------------------------------------------------
 CPartIndexMap *
-CPhysicalScan::PpimDeriveFromDynamicScan
-	(
-	IMemoryPool *pmp,
-	ULONG ulPartIndexId,
-	IMDId *pmdidRel,
-	DrgDrgPcr *pdrgpdrgpcrPart,
-	ULONG ulSecondaryPartIndexId,
-	CPartConstraint *ppartcnstr,
-	CPartConstraint *ppartcnstrRel,
-	ULONG ulExpectedPropagators
-	)
+CPhysicalScan::PpimDeriveFromDynamicScan(IMemoryPool *pmp, ULONG ulPartIndexId,
+										 IMDId *pmdidRel,
+										 DrgDrgPcr *pdrgpdrgpcrPart,
+										 ULONG ulSecondaryPartIndexId,
+										 CPartConstraint *ppartcnstr,
+										 CPartConstraint *ppartcnstrRel,
+										 ULONG ulExpectedPropagators)
 {
 	CPartIndexMap *ppim = GPOS_NEW(pmp) CPartIndexMap(pmp);
 	PartCnstrMap *ppartcnstrmap = GPOS_NEW(pmp) PartCnstrMap(pmp);
-	
-	(void) ppartcnstrmap->FInsert(GPOS_NEW(pmp) ULONG(ulSecondaryPartIndexId), ppartcnstr);
+
+	(void) ppartcnstrmap->FInsert(GPOS_NEW(pmp) ULONG(ulSecondaryPartIndexId),
+								  ppartcnstr);
 
 	DrgPpartkeys *pdrgppartkeys = GPOS_NEW(pmp) DrgPpartkeys(pmp);
 	pdrgppartkeys->Append(GPOS_NEW(pmp) CPartKeys(pdrgpdrgpcrPart));
 
-	ppim->Insert(ulPartIndexId, ppartcnstrmap, CPartIndexMap::EpimConsumer, ulExpectedPropagators, pmdidRel, pdrgppartkeys, ppartcnstrRel);
+	ppim->Insert(ulPartIndexId, ppartcnstrmap, CPartIndexMap::EpimConsumer,
+				 ulExpectedPropagators, pmdidRel, pdrgppartkeys, ppartcnstrRel);
 
 	return ppim;
 }
@@ -354,12 +343,8 @@ CPhysicalScan::PpimDeriveFromDynamicScan
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalScan::EpetDistribution
-	(
-	CExpressionHandle &/*exprhdl*/,
-	const CEnfdDistribution *ped
-	)
-	const
+CPhysicalScan::EpetDistribution(CExpressionHandle & /*exprhdl*/,
+								const CEnfdDistribution *ped) const
 {
 	GPOS_ASSERT(NULL != ped);
 
@@ -384,10 +369,7 @@ CPhysicalScan::EpetDistribution
 //
 //---------------------------------------------------------------------------
 void
-CPhysicalScan::ComputeTableStats
-	(
-	IMemoryPool *pmp
-	)
+CPhysicalScan::ComputeTableStats(IMemoryPool *pmp)
 {
 	GPOS_ASSERT(NULL == m_pstatsBaseTable);
 
@@ -395,7 +377,8 @@ CPhysicalScan::ComputeTableStats
 	CColRefSet *pcrsWidth = GPOS_NEW(pmp) CColRefSet(pmp, m_pdrgpcrOutput);
 
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
-	m_pstatsBaseTable = pmda->Pstats(pmp, m_ptabdesc->Pmdid(), pcrsHist, pcrsWidth);
+	m_pstatsBaseTable =
+		pmda->Pstats(pmp, m_ptabdesc->Pmdid(), pcrsHist, pcrsWidth);
 	GPOS_ASSERT(NULL != m_pstatsBaseTable);
 
 	pcrsHist->Release();
@@ -412,17 +395,13 @@ CPhysicalScan::ComputeTableStats
 //
 //---------------------------------------------------------------------------
 CPhysicalScan *
-CPhysicalScan::PopConvert
-	(
-	COperator *pop
-	)
+CPhysicalScan::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(CUtils::FPhysicalScan(pop));
 
-	return dynamic_cast<CPhysicalScan*>(pop);
+	return dynamic_cast<CPhysicalScan *>(pop);
 }
 
 
 // EOF
-

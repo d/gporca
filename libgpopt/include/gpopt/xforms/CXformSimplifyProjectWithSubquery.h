@@ -16,86 +16,74 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformSimplifyProjectWithSubquery
-	//
-	//	@doc:
-	//		Simplify Project with subquery
-	//
-	//---------------------------------------------------------------------------
-	class CXformSimplifyProjectWithSubquery : public CXformSimplifySubquery
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformSimplifyProjectWithSubquery
+//
+//	@doc:
+//		Simplify Project with subquery
+//
+//---------------------------------------------------------------------------
+class CXformSimplifyProjectWithSubquery : public CXformSimplifySubquery
+{
+private:
+	// private copy ctor
+	CXformSimplifyProjectWithSubquery(
+		const CXformSimplifyProjectWithSubquery &);
+
+public:
+	// ctor
+	explicit CXformSimplifyProjectWithSubquery(IMemoryPool *pmp)
+		:  // pattern
+		  CXformSimplifySubquery(GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalProject(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // project list
+			  ))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformSimplifyProjectWithSubquery()
+	{
+	}
 
-			// private copy ctor
-			CXformSimplifyProjectWithSubquery(const CXformSimplifyProjectWithSubquery &);
+	// Compatibility function for simplifying aggregates
+	virtual BOOL
+	FCompatible(CXform::EXformId exfid)
+	{
+		return (CXform::ExfSimplifyProjectWithSubquery != exfid);
+	}
 
-		public:
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfSimplifyProjectWithSubquery;
+	}
 
-			// ctor
-			explicit
-			CXformSimplifyProjectWithSubquery
-				(
-				IMemoryPool *pmp
-				)
-				:
-				// pattern
-				CXformSimplifySubquery
-				(
-				GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalProject(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),	// relational child
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// project list
-						)
-				)
-			{}
+	// return a string for xform name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformSimplifyProjectWithSubquery";
+	}
 
-			// dtor
-			virtual
-			~CXformSimplifyProjectWithSubquery()
-			{}
+	// is transformation a subquery unnesting (Subquery To Apply) xform?
+	virtual BOOL
+	FSubqueryUnnesting() const
+	{
+		return true;
+	}
 
-			// Compatibility function for simplifying aggregates
-			virtual
-			BOOL FCompatible
-				(
-				CXform::EXformId exfid
-				)
-			{
-				return (CXform::ExfSimplifyProjectWithSubquery != exfid);
-			}
+};  // class CXformSimplifyProjectWithSubquery
 
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfSimplifyProjectWithSubquery;
-			}
+}  // namespace gpopt
 
-			// return a string for xform name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformSimplifyProjectWithSubquery";
-			}
-
-			// is transformation a subquery unnesting (Subquery To Apply) xform?
-			virtual
-			BOOL FSubqueryUnnesting() const
-			{
-				return true;
-			}
-
-	}; // class CXformSimplifyProjectWithSubquery
-
-}
-
-#endif // !GPOPT_CXformSimplifyProjectWithSubquery_H
+#endif  // !GPOPT_CXformSimplifyProjectWithSubquery_H
 
 // EOF

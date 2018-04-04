@@ -29,19 +29,15 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CSerializableQuery::CSerializableQuery
-	(
-	IMemoryPool *pmp,
-	const CDXLNode *pdxlnQuery,
-	const DrgPdxln *pdrgpdxlnQueryOutput,
-	const DrgPdxln *pdrgpdxlnCTE
-	)
-	:
-	CSerializable(),
-	m_pmp(pmp),
-	m_pdxlnQuery(pdxlnQuery),
-	m_pdrgpdxlnQueryOutput(pdrgpdxlnQueryOutput),
-	m_pdrgpdxlnCTE(pdrgpdxlnCTE)
+CSerializableQuery::CSerializableQuery(IMemoryPool *pmp,
+									   const CDXLNode *pdxlnQuery,
+									   const DrgPdxln *pdrgpdxlnQueryOutput,
+									   const DrgPdxln *pdrgpdxlnCTE)
+	: CSerializable(),
+	  m_pmp(pmp),
+	  m_pdxlnQuery(pdxlnQuery),
+	  m_pdrgpdxlnQueryOutput(pdrgpdxlnQueryOutput),
+	  m_pdrgpdxlnCTE(pdrgpdxlnCTE)
 {
 	GPOS_ASSERT(NULL != pdxlnQuery);
 	GPOS_ASSERT(NULL != pdrgpdxlnQueryOutput);
@@ -69,22 +65,12 @@ CSerializableQuery::~CSerializableQuery()
 //
 //---------------------------------------------------------------------------
 void
-CSerializableQuery::Serialize
-	(
-	COstream &oos
-	)
+CSerializableQuery::Serialize(COstream &oos)
 {
-	CDXLUtils::SerializeQuery
-			(
-			m_pmp,
-			oos,
-			m_pdxlnQuery,
-			m_pdrgpdxlnQueryOutput,
-			m_pdrgpdxlnCTE,
-			false /*fSerializeHeaders*/,
-			false /*fIndent*/
-			);
+	CDXLUtils::SerializeQuery(m_pmp, oos, m_pdxlnQuery, m_pdrgpdxlnQueryOutput,
+							  m_pdrgpdxlnCTE, false /*fSerializeHeaders*/,
+							  false /*fIndent*/
+	);
 }
 
 // EOF
-

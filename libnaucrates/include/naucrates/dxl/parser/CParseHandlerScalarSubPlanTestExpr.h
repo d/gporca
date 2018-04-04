@@ -18,65 +18,62 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarSubPlanTestExpr
-	//
-	//	@doc:
-	//		Parse handler for parsing subplan test expression
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarSubPlanTestExpr : public CParseHandlerScalarOp
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarSubPlanTestExpr
+//
+//	@doc:
+//		Parse handler for parsing subplan test expression
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarSubPlanTestExpr : public CParseHandlerScalarOp
+{
+private:
+	// child test expression
+	CDXLNode *m_pdxlnTestExpr;
+
+	// private copy ctor
+	CParseHandlerScalarSubPlanTestExpr(
+		const CParseHandlerScalarSubPlanTestExpr &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerScalarSubPlanTestExpr(IMemoryPool *pmp,
+									   CParseHandlerManager *pphm,
+									   CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerScalarSubPlanTestExpr();
+
+	// return test expression
+	CDXLNode *
+	PdxlnTestExpr() const
 	{
-		private:
+		return m_pdxlnTestExpr;
+	}
+};
+}  // namespace gpdxl
 
-			// child test expression
-			CDXLNode *m_pdxlnTestExpr;
-
-			// private copy ctor
-			CParseHandlerScalarSubPlanTestExpr(const CParseHandlerScalarSubPlanTestExpr &);
-
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-
-		public:
-			// ctor/dtor
-			CParseHandlerScalarSubPlanTestExpr
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-
-			virtual
-			~CParseHandlerScalarSubPlanTestExpr();
-
-			// return test expression
-			CDXLNode *PdxlnTestExpr() const
-			{
-				return m_pdxlnTestExpr;
-			}
-	};
-}
-
-#endif // !GPDXL_CParseHandlerScalarSubPlanTestExpr_H
+#endif  // !GPDXL_CParseHandlerScalarSubPlanTestExpr_H
 
 // EOF

@@ -28,18 +28,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDPartConstraintGPDB::CMDPartConstraintGPDB
-	(
-	IMemoryPool *pmp,
-	DrgPul *pdrgpulDefaultParts,
-	BOOL fUnbounded,
-	CDXLNode *pdxln
-	)
-	:
-	m_pmp(pmp),
-	m_pdrgpulDefaultParts(pdrgpulDefaultParts),
-	m_fUnbounded(fUnbounded),
-	m_pdxln(pdxln)
+CMDPartConstraintGPDB::CMDPartConstraintGPDB(IMemoryPool *pmp,
+											 DrgPul *pdrgpulDefaultParts,
+											 BOOL fUnbounded, CDXLNode *pdxln)
+	: m_pmp(pmp),
+	  m_pdrgpulDefaultParts(pdrgpulDefaultParts),
+	  m_fUnbounded(fUnbounded),
+	  m_pdxln(pdxln)
 {
 	GPOS_ASSERT(NULL != pdrgpulDefaultParts);
 }
@@ -68,13 +63,8 @@ CMDPartConstraintGPDB::~CMDPartConstraintGPDB()
 //
 //---------------------------------------------------------------------------
 CExpression *
-CMDPartConstraintGPDB::Pexpr
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	DrgPcr *pdrgpcr
-	)
-	const
+CMDPartConstraintGPDB::Pexpr(IMemoryPool *pmp, CMDAccessor *pmda,
+							 DrgPcr *pdrgpcr) const
 {
 	GPOS_ASSERT(NULL != pdrgpcr);
 
@@ -120,28 +110,27 @@ CMDPartConstraintGPDB::FUnbounded() const
 //
 //---------------------------------------------------------------------------
 void
-CMDPartConstraintGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CMDPartConstraintGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenPartConstraint));
-	
+						 CDXLTokens::PstrToken(EdxltokenPartConstraint));
+
 	// serialize default parts
-	CWStringDynamic *pstrDefParts = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDefaultParts);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDefaultPartition), pstrDefParts);
+	CWStringDynamic *pstrDefParts =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDefaultParts);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDefaultPartition),
+						  pstrDefParts);
 	GPOS_DELETE(pstrDefParts);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartConstraintUnbounded), m_fUnbounded);
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenPartConstraintUnbounded), m_fUnbounded);
 
 	// serialize the scalar expression
 	if (NULL != m_pdxln)
 		m_pdxln->SerializeToDXL(pxmlser);
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenPartConstraint));
+						  CDXLTokens::PstrToken(EdxltokenPartConstraint));
 
 	GPOS_CHECK_ABORT;
 }

@@ -21,8 +21,7 @@ using namespace gpopt;
 
 
 // initialization of push through handler
-const CNormalizer::SPushThru CNormalizer::m_rgpt[] =
-{
+const CNormalizer::SPushThru CNormalizer::m_rgpt[] = {
 	{COperator::EopLogicalSelect, PushThruSelect},
 	{COperator::EopLogicalProject, PushThruUnaryWithScalarChild},
 	{COperator::EopLogicalSequenceProject, PushThruSeqPrj},
@@ -34,7 +33,7 @@ const CNormalizer::SPushThru CNormalizer::m_rgpt[] =
 	{COperator::EopLogicalIntersectAll, PushThruSetOp},
 	{COperator::EopLogicalDifference, PushThruSetOp},
 	{COperator::EopLogicalDifferenceAll, PushThruSetOp},
-	{COperator::EopLogicalInnerJoin,PushThruJoin},
+	{COperator::EopLogicalInnerJoin, PushThruJoin},
 	{COperator::EopLogicalNAryJoin, PushThruJoin},
 	{COperator::EopLogicalInnerApply, PushThruJoin},
 	{COperator::EopLogicalInnerCorrelatedApply, PushThruJoin},
@@ -46,7 +45,8 @@ const CNormalizer::SPushThru CNormalizer::m_rgpt[] =
 	{COperator::COperator::EopLogicalLeftSemiCorrelatedApplyIn, PushThruJoin},
 	{COperator::COperator::EopLogicalLeftAntiSemiApply, PushThruJoin},
 	{COperator::COperator::EopLogicalLeftAntiSemiApplyNotIn, PushThruJoin},
-	{COperator::COperator::EopLogicalLeftAntiSemiCorrelatedApplyNotIn, PushThruJoin},
+	{COperator::COperator::EopLogicalLeftAntiSemiCorrelatedApplyNotIn,
+	 PushThruJoin},
 };
 
 
@@ -60,21 +60,17 @@ const CNormalizer::SPushThru CNormalizer::m_rgpt[] =
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FPushThruOuterChild
-	(
-	CExpression *pexprLogical
-	)
+CNormalizer::FPushThruOuterChild(CExpression *pexprLogical)
 {
 	GPOS_ASSERT(NULL != pexprLogical);
 
 	COperator::EOperatorId eopid = pexprLogical->Pop()->Eopid();
 
-	return
-		COperator::EopLogicalLeftOuterJoin == eopid ||
-		COperator::EopLogicalLeftOuterApply == eopid ||
-		COperator::EopLogicalLeftOuterCorrelatedApply == eopid ||
-		CUtils::FLeftAntiSemiApply(pexprLogical->Pop()) ||
-		CUtils::FLeftSemiApply(pexprLogical->Pop());
+	return COperator::EopLogicalLeftOuterJoin == eopid ||
+		   COperator::EopLogicalLeftOuterApply == eopid ||
+		   COperator::EopLogicalLeftOuterCorrelatedApply == eopid ||
+		   CUtils::FLeftAntiSemiApply(pexprLogical->Pop()) ||
+		   CUtils::FLeftSemiApply(pexprLogical->Pop());
 }
 
 
@@ -88,24 +84,25 @@ CNormalizer::FPushThruOuterChild
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FPushableThruSeqPrjChild
-	(
-	CExpression *pexprSeqPrj,
-	CExpression *pexprPred
-	)
+CNormalizer::FPushableThruSeqPrjChild(CExpression *pexprSeqPrj,
+									  CExpression *pexprPred)
 {
 	GPOS_ASSERT(NULL != pexprSeqPrj);
 	GPOS_ASSERT(NULL != pexprPred);
-	GPOS_ASSERT(CLogical::EopLogicalSequenceProject == pexprSeqPrj->Pop()->Eopid());
+	GPOS_ASSERT(CLogical::EopLogicalSequenceProject ==
+				pexprSeqPrj->Pop()->Eopid());
 
-	CDistributionSpec *pds = CLogicalSequenceProject::PopConvert(pexprSeqPrj->Pop())->Pds();
+	CDistributionSpec *pds =
+		CLogicalSequenceProject::PopConvert(pexprSeqPrj->Pop())->Pds();
 	BOOL fPushable = false;
 	if (CDistributionSpec::EdtHashed == pds->Edt())
 	{
 		CAutoMemoryPool amp;
 		IMemoryPool *pmp = amp.Pmp();
-		CColRefSet *pcrsUsed = CDrvdPropScalar::Pdpscalar(pexprPred->PdpDerive())->PcrsUsed();
-		CColRefSet *pcrsPartCols = CUtils::PcrsExtractColumns(pmp, CDistributionSpecHashed::PdsConvert(pds)->Pdrgpexpr());
+		CColRefSet *pcrsUsed =
+			CDrvdPropScalar::Pdpscalar(pexprPred->PdpDerive())->PcrsUsed();
+		CColRefSet *pcrsPartCols = CUtils::PcrsExtractColumns(
+			pmp, CDistributionSpecHashed::PdsConvert(pds)->Pdrgpexpr());
 		if (pcrsPartCols->FSubset(pcrsUsed))
 		{
 			// predicate is pushable if used columns are included in partition-by expression
@@ -128,11 +125,7 @@ CNormalizer::FPushableThruSeqPrjChild
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FPushable
-	(
-	CExpression *pexprLogical,
-	CExpression *pexprPred
-	)
+CNormalizer::FPushable(CExpression *pexprLogical, CExpression *pexprPred)
 {
 	GPOS_ASSERT(NULL != pexprLogical);
 	GPOS_ASSERT(NULL != pexprPred);
@@ -156,11 +149,7 @@ CNormalizer::FPushable
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprRecursiveNormalize
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr
-	)
+CNormalizer::PexprRecursiveNormalize(IMemoryPool *pmp, CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -189,14 +178,10 @@ CNormalizer::PexprRecursiveNormalize
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::SplitConjunct
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CExpression *pexprConj,
-	DrgPexpr **ppdrgpexprPushable,
-	DrgPexpr **ppdrgpexprUnpushable
-	)
+CNormalizer::SplitConjunct(IMemoryPool *pmp, CExpression *pexpr,
+						   CExpression *pexprConj,
+						   DrgPexpr **ppdrgpexprPushable,
+						   DrgPexpr **ppdrgpexprUnpushable)
 {
 	GPOS_ASSERT(pexpr->Pop()->FLogical());
 	GPOS_ASSERT(pexprConj->Pop()->FScalar());
@@ -204,9 +189,10 @@ CNormalizer::SplitConjunct
 	GPOS_ASSERT(NULL != ppdrgpexprUnpushable);
 
 	// collect pushable predicates from given conjunct
-	*ppdrgpexprPushable =  GPOS_NEW(pmp) DrgPexpr(pmp);
-	*ppdrgpexprUnpushable =  GPOS_NEW(pmp) DrgPexpr(pmp);
-	DrgPexpr *pdrgpexprConjuncts = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
+	*ppdrgpexprPushable = GPOS_NEW(pmp) DrgPexpr(pmp);
+	*ppdrgpexprUnpushable = GPOS_NEW(pmp) DrgPexpr(pmp);
+	DrgPexpr *pdrgpexprConjuncts =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
 	const ULONG ulSize = pdrgpexprConjuncts->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
@@ -238,13 +224,9 @@ CNormalizer::SplitConjunct
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruOuterChild
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruOuterChild(IMemoryPool *pmp, CExpression *pexpr,
+								CExpression *pexprConj,
+								CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(FPushThruOuterChild(pexpr));
@@ -267,17 +249,19 @@ CNormalizer::PushThruOuterChild
 
 	DrgPexpr *pdrgpexprPushable = NULL;
 	DrgPexpr *pdrgpexprUnpushable = NULL;
-	SplitConjunct(pmp, pexprOuter, pexprConj, &pdrgpexprPushable, &pdrgpexprUnpushable);
+	SplitConjunct(pmp, pexprOuter, pexprConj, &pdrgpexprPushable,
+				  &pdrgpexprUnpushable);
 
 	if (0 < pdrgpexprPushable->UlLength())
 	{
 		pdrgpexprPushable->AddRef();
-		CExpression *pexprNewConj = CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
+		CExpression *pexprNewConj =
+			CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
 
 		// create a new select node on top of the outer child
 		pexprOuter->AddRef();
-		CExpression *pexprNewSelect =
-			GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalSelect(pmp), pexprOuter, pexprNewConj);
+		CExpression *pexprNewSelect = GPOS_NEW(pmp) CExpression(
+			pmp, GPOS_NEW(pmp) CLogicalSelect(pmp), pexprOuter, pexprNewConj);
 
 		// push predicate through the new select to create a new outer child
 		CExpression *pexprNewOuter = NULL;
@@ -289,10 +273,12 @@ CNormalizer::PushThruOuterChild
 		pop->AddRef();
 		pexprInner->AddRef();
 		pexprPred->AddRef();
-		CExpression *pexprNew = GPOS_NEW(pmp) CExpression(pmp, pop, pexprNewOuter, pexprInner, pexprPred);
+		CExpression *pexprNew = GPOS_NEW(pmp)
+			CExpression(pmp, pop, pexprNewOuter, pexprInner, pexprPred);
 
 		// call push down predicates on the new outer join
-		CExpression *pexprConstTrue = CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
+		CExpression *pexprConstTrue =
+			CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
 		PushThru(pmp, pexprNew, pexprConstTrue, ppexprResult);
 		pexprConstTrue->Release();
 		pexprNew->Release();
@@ -309,7 +295,8 @@ CNormalizer::PushThruOuterChild
 
 		// call push down on the outer join predicates
 		CExpression *pexprNew = NULL;
-		CExpression *pexprConstTrue = CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
+		CExpression *pexprConstTrue =
+			CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
 		PushThru(pmp, pexprOuterJoin, pexprConstTrue, &pexprNew);
 		if (pexprOuterJoin != pexpr)
 		{
@@ -347,16 +334,14 @@ CNormalizer::PushThruOuterChild
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FSimplifySelectOnOuterJoin
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprOuterJoin,
-	CExpression *pexprPred, // selection predicate
-	CExpression **ppexprResult
-	)
+CNormalizer::FSimplifySelectOnOuterJoin(
+	IMemoryPool *pmp, CExpression *pexprOuterJoin,
+	CExpression *pexprPred,  // selection predicate
+	CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pmp);
-	GPOS_ASSERT(COperator::EopLogicalLeftOuterJoin == pexprOuterJoin->Pop()->Eopid());
+	GPOS_ASSERT(COperator::EopLogicalLeftOuterJoin ==
+				pexprOuterJoin->Pop()->Eopid());
 	GPOS_ASSERT(pexprPred->Pop()->FScalar());
 	GPOS_ASSERT(NULL != ppexprResult);
 
@@ -371,7 +356,9 @@ CNormalizer::FSimplifySelectOnOuterJoin
 	CExpression *pexprOuterJoinInnerChild = (*pexprOuterJoin)[1];
 	CExpression *pexprOuterJoinPred = (*pexprOuterJoin)[2];
 
-	CColRefSet *pcrsOutput = CDrvdPropRelational::Pdprel(pexprOuterJoinInnerChild->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsOutput =
+		CDrvdPropRelational::Pdprel(pexprOuterJoinInnerChild->PdpDerive())
+			->PcrsOutput();
 	if (!GPOS_FTRACE(EopttraceDisableOuterJoin2InnerJoinRewrite) &&
 		CPredicateUtils::FNullRejecting(pmp, pexprPred, pcrsOutput))
 	{
@@ -381,14 +368,11 @@ CNormalizer::FSimplifySelectOnOuterJoin
 		pexprOuterJoinOuterChild->AddRef();
 		pexprOuterJoinInnerChild->AddRef();
 
-		*ppexprResult = GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
-					pexprOuterJoinOuterChild,
-					pexprOuterJoinInnerChild,
-					CPredicateUtils::PexprConjunction(pmp, pexprPred, pexprOuterJoinPred)
-					);
+		*ppexprResult = GPOS_NEW(pmp)
+			CExpression(pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
+						pexprOuterJoinOuterChild, pexprOuterJoinInnerChild,
+						CPredicateUtils::PexprConjunction(pmp, pexprPred,
+														  pexprOuterJoinPred));
 
 		return true;
 	}
@@ -407,20 +391,16 @@ CNormalizer::FSimplifySelectOnOuterJoin
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruSelect
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprSelect,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruSelect(IMemoryPool *pmp, CExpression *pexprSelect,
+							CExpression *pexprConj, CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprConj);
 	GPOS_ASSERT(NULL != ppexprResult);
 
 	CExpression *pexprLogicalChild = (*pexprSelect)[0];
 	CExpression *pexprScalarChild = (*pexprSelect)[1];
-	CExpression *pexprPred =  CPredicateUtils::PexprConjunction(pmp, pexprScalarChild, pexprConj);
+	CExpression *pexprPred =
+		CPredicateUtils::PexprConjunction(pmp, pexprScalarChild, pexprConj);
 
 	if (CUtils::FScalarConstTrue(pexprPred))
 	{
@@ -434,7 +414,8 @@ CNormalizer::PushThruSelect
 	if (COperator::EopLogicalLeftOuterJoin == eopid)
 	{
 		CExpression *pexprSimplified = NULL;
-		if (FSimplifySelectOnOuterJoin(pmp, pexprLogicalChild, pexprPred, &pexprSimplified))
+		if (FSimplifySelectOnOuterJoin(pmp, pexprLogicalChild, pexprPred,
+									   &pexprSimplified))
 		{
 			// simplification succeeded, normalize resulting expression
 			*ppexprResult = PexprNormalize(pmp, pexprSimplified);
@@ -453,10 +434,12 @@ CNormalizer::PushThruSelect
 	{
 		// logical child may not pass all predicates through, we need to collect
 		// unpushable predicates, if any, into a top Select node
-		DrgPexpr *pdrgpexprConjuncts = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprPred);
+		DrgPexpr *pdrgpexprConjuncts =
+			CPredicateUtils::PdrgpexprConjuncts(pmp, pexprPred);
 		DrgPexpr *pdrgpexprRemaining = NULL;
 		CExpression *pexpr = NULL;
-		PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexpr, &pdrgpexprRemaining);
+		PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexpr,
+				 &pdrgpexprRemaining);
 		*ppexprResult = PexprSelect(pmp, pexpr, pdrgpexprRemaining);
 		pdrgpexprConjuncts->Release();
 	}
@@ -475,12 +458,8 @@ CNormalizer::PushThruSelect
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprSelect
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	DrgPexpr *pdrgpexpr
-	)
+CNormalizer::PexprSelect(IMemoryPool *pmp, CExpression *pexpr,
+						 DrgPexpr *pdrgpexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != pdrgpexpr);
@@ -493,8 +472,10 @@ CNormalizer::PexprSelect
 	}
 
 	// result expression is a select over predicates
-	CExpression *pexprConjunction = CPredicateUtils::PexprConjunction(pmp, pdrgpexpr);
-	CExpression *pexprSelect = CUtils::PexprSafeSelect(pmp, pexpr, pexprConjunction);
+	CExpression *pexprConjunction =
+		CPredicateUtils::PexprConjunction(pmp, pdrgpexpr);
+	CExpression *pexprSelect =
+		CUtils::PexprSafeSelect(pmp, pexpr, pexprConjunction);
 	if (COperator::EopLogicalSelect != pexprSelect->Pop()->Eopid())
 	{
 		// Select node was pruned, return created expression
@@ -511,7 +492,8 @@ CNormalizer::PexprSelect
 
 	// we have a Select on top of Outer Join expression, attempt simplifying expression into InnerJoin
 	CExpression *pexprSimplified = NULL;
-	if (FSimplifySelectOnOuterJoin(pmp, pexprLogicalChild, (*pexprSelect)[1], &pexprSimplified))
+	if (FSimplifySelectOnOuterJoin(pmp, pexprLogicalChild, (*pexprSelect)[1],
+								   &pexprSimplified))
 	{
 		// simplification succeeded, normalize resulting expression
 		pexprSelect->Release();
@@ -535,13 +517,10 @@ CNormalizer::PexprSelect
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruUnaryWithoutScalarChild
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLogical,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruUnaryWithoutScalarChild(IMemoryPool *pmp,
+											 CExpression *pexprLogical,
+											 CExpression *pexprConj,
+											 CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprLogical);
 	GPOS_ASSERT(1 == pexprLogical->UlArity());
@@ -549,7 +528,8 @@ CNormalizer::PushThruUnaryWithoutScalarChild
 	GPOS_ASSERT(NULL != ppexprResult);
 
 	// break scalar expression to conjuncts
-	DrgPexpr *pdrgpexprConjuncts = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
+	DrgPexpr *pdrgpexprConjuncts =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
 
 	// get logical child
 	CExpression *pexprLogicalChild = (*pexprLogical)[0];
@@ -557,13 +537,15 @@ CNormalizer::PushThruUnaryWithoutScalarChild
 	// push conjuncts through the logical child
 	CExpression *pexprNewLogicalChild = NULL;
 	DrgPexpr *pdrgpexprUnpushable = NULL;
-	PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexprNewLogicalChild, &pdrgpexprUnpushable);
+	PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexprNewLogicalChild,
+			 &pdrgpexprUnpushable);
 	pdrgpexprConjuncts->Release();
 
 	// create a new logical expression based on recursion results
 	COperator *pop = pexprLogical->Pop();
 	pop->AddRef();
-	CExpression *pexprNewLogical = GPOS_NEW(pmp) CExpression(pmp, pop, pexprNewLogicalChild);
+	CExpression *pexprNewLogical =
+		GPOS_NEW(pmp) CExpression(pmp, pop, pexprNewLogicalChild);
 	*ppexprResult = PexprSelect(pmp, pexprNewLogical, pdrgpexprUnpushable);
 }
 
@@ -577,13 +559,10 @@ CNormalizer::PushThruUnaryWithoutScalarChild
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruUnaryWithScalarChild
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLogical,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruUnaryWithScalarChild(IMemoryPool *pmp,
+										  CExpression *pexprLogical,
+										  CExpression *pexprConj,
+										  CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprLogical);
 	GPOS_ASSERT(2 == pexprLogical->UlArity());
@@ -599,16 +578,19 @@ CNormalizer::PushThruUnaryWithScalarChild
 	DrgPexpr *pdrgpexprUnpushable = NULL;
 
 	// break scalar expression to conjuncts
-	DrgPexpr *pdrgpexprConjuncts = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
+	DrgPexpr *pdrgpexprConjuncts =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
 
-	PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexprNewLogicalChild, &pdrgpexprUnpushable);
+	PushThru(pmp, pexprLogicalChild, pdrgpexprConjuncts, &pexprNewLogicalChild,
+			 &pdrgpexprUnpushable);
 	pdrgpexprConjuncts->Release();
 
 	// create a new logical expression based on recursion results
 	COperator *pop = pexprLogical->Pop();
 	pop->AddRef();
 	pexprScalarChild->AddRef();
-	CExpression *pexprNewLogical = GPOS_NEW(pmp) CExpression(pmp, pop, pexprNewLogicalChild, pexprScalarChild);
+	CExpression *pexprNewLogical = GPOS_NEW(pmp)
+		CExpression(pmp, pop, pexprNewLogicalChild, pexprScalarChild);
 	*ppexprResult = PexprSelect(pmp, pexprNewLogical, pdrgpexprUnpushable);
 }
 
@@ -622,23 +604,20 @@ CNormalizer::PushThruUnaryWithScalarChild
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::SplitConjunctForSeqPrj
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprSeqPrj,
-	CExpression *pexprConj,
-	DrgPexpr **ppdrgpexprPushable,
-	DrgPexpr **ppdrgpexprUnpushable
-	)
+CNormalizer::SplitConjunctForSeqPrj(IMemoryPool *pmp, CExpression *pexprSeqPrj,
+									CExpression *pexprConj,
+									DrgPexpr **ppdrgpexprPushable,
+									DrgPexpr **ppdrgpexprUnpushable)
 {
 	GPOS_ASSERT(NULL != pexprSeqPrj);
 	GPOS_ASSERT(NULL != pexprConj);
 	GPOS_ASSERT(NULL != ppdrgpexprPushable);
 	GPOS_ASSERT(NULL != ppdrgpexprUnpushable);
 
-	*ppdrgpexprPushable =  GPOS_NEW(pmp) DrgPexpr(pmp);
+	*ppdrgpexprPushable = GPOS_NEW(pmp) DrgPexpr(pmp);
 	*ppdrgpexprUnpushable = GPOS_NEW(pmp) DrgPexpr(pmp);
-	DrgPexpr *pdrgpexprPreds = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
+	DrgPexpr *pdrgpexprPreds =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprConj);
 	const ULONG ulPreds = pdrgpexprPreds->UlLength();
 	for (ULONG ul = 0; ul < ulPreds; ul++)
 	{
@@ -666,16 +645,12 @@ CNormalizer::SplitConjunctForSeqPrj
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruSeqPrj
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprSeqPrj,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruSeqPrj(IMemoryPool *pmp, CExpression *pexprSeqPrj,
+							CExpression *pexprConj, CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprSeqPrj);
-	GPOS_ASSERT(CLogical::EopLogicalSequenceProject == pexprSeqPrj->Pop()->Eopid());
+	GPOS_ASSERT(CLogical::EopLogicalSequenceProject ==
+				pexprSeqPrj->Pop()->Eopid());
 	GPOS_ASSERT(NULL != pexprConj);
 	GPOS_ASSERT(NULL != ppexprResult);
 
@@ -686,13 +661,16 @@ CNormalizer::PushThruSeqPrj
 	// break scalar expression to pushable and unpushable conjuncts
 	DrgPexpr *pdrgpexprPushable = NULL;
 	DrgPexpr *pdrgpexprUnpushable = NULL;
-	SplitConjunctForSeqPrj(pmp, pexprSeqPrj, pexprConj, &pdrgpexprPushable, &pdrgpexprUnpushable);
+	SplitConjunctForSeqPrj(pmp, pexprSeqPrj, pexprConj, &pdrgpexprPushable,
+						   &pdrgpexprUnpushable);
 
 	CExpression *pexprNewLogicalChild = NULL;
 	if (0 < pdrgpexprPushable->UlLength())
 	{
-		CExpression *pexprPushableConj = CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
-		PushThru(pmp, pexprLogicalChild, pexprPushableConj, &pexprNewLogicalChild);
+		CExpression *pexprPushableConj =
+			CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
+		PushThru(pmp, pexprLogicalChild, pexprPushableConj,
+				 &pexprNewLogicalChild);
 		pexprPushableConj->Release();
 	}
 	else
@@ -707,7 +685,8 @@ CNormalizer::PushThruSeqPrj
 	COperator *pop = pexprSeqPrj->Pop();
 	pop->AddRef();
 	pexprScalarChild->AddRef();
-	CExpression *pexprNewLogical = GPOS_NEW(pmp) CExpression(pmp, pop, pexprNewLogicalChild, pexprScalarChild);
+	CExpression *pexprNewLogical = GPOS_NEW(pmp)
+		CExpression(pmp, pop, pexprNewLogicalChild, pexprScalarChild);
 
 	// create a select node for remaining predicates, if any
 	*ppexprResult = PexprSelect(pmp, pexprNewLogical, pdrgpexprUnpushable);
@@ -723,13 +702,8 @@ CNormalizer::PushThruSeqPrj
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruSetOp
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprSetOp,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruSetOp(IMemoryPool *pmp, CExpression *pexprSetOp,
+						   CExpression *pexprConj, CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprSetOp);
 	GPOS_ASSERT(CUtils::FLogicalSetOp(pexprSetOp->Pop()));
@@ -746,7 +720,7 @@ CNormalizer::PushThruSetOp
 	{
 		CExpression *pexprChild = (*pexprSetOp)[ul];
 		DrgPcr *pdrgpcrChild = (*pdrgpdrgpcrInput)[ul];
-		CColRefSet *pcrsChild =  GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrChild);
+		CColRefSet *pcrsChild = GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrChild);
 
 		pexprConj->AddRef();
 		CExpression *pexprRemappedConj = pexprConj;
@@ -764,9 +738,11 @@ CNormalizer::PushThruSetOp
 			//
 			// this is achieved by passing (fMustExist = True) flag below, which enforces
 			// creating column copies for columns not already in the given map
-			HMUlCr *phmulcr = CUtils::PhmulcrMapping(pmp, pdrgpcrOutput, pdrgpcrChild);
+			HMUlCr *phmulcr =
+				CUtils::PhmulcrMapping(pmp, pdrgpcrOutput, pdrgpcrChild);
 			pexprRemappedConj->Release();
-			pexprRemappedConj = pexprConj->PexprCopyWithRemappedColumns(pmp, phmulcr, true /*fMustExist*/);
+			pexprRemappedConj = pexprConj->PexprCopyWithRemappedColumns(
+				pmp, phmulcr, true /*fMustExist*/);
 			phmulcr->Release();
 		}
 
@@ -780,7 +756,8 @@ CNormalizer::PushThruSetOp
 
 	pcrsOutput->Release();
 	popSetOp->AddRef();
-	*ppexprResult = GPOS_NEW(pmp) CExpression(pmp, popSetOp, pdrgpexprNewChildren);
+	*ppexprResult =
+		GPOS_NEW(pmp) CExpression(pmp, popSetOp, pdrgpexprNewChildren);
 }
 
 
@@ -794,13 +771,8 @@ CNormalizer::PushThruSetOp
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThruJoin
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprJoin,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThruJoin(IMemoryPool *pmp, CExpression *pexprJoin,
+						  CExpression *pexprConj, CExpression **ppexprResult)
 {
 	GPOS_ASSERT(NULL != pexprConj);
 	GPOS_ASSERT(NULL != ppexprResult);
@@ -809,10 +781,9 @@ CNormalizer::PushThruJoin
 	const ULONG ulArity = pexprJoin->UlArity();
 	BOOL fLASApply = CUtils::FLeftAntiSemiApply(pop);
 	COperator::EOperatorId eopid = pop->Eopid();
-	BOOL fOuterJoin =
-		COperator::EopLogicalLeftOuterJoin == eopid ||
-		COperator::EopLogicalLeftOuterApply == eopid ||
-		COperator::EopLogicalLeftOuterCorrelatedApply == eopid;
+	BOOL fOuterJoin = COperator::EopLogicalLeftOuterJoin == eopid ||
+					  COperator::EopLogicalLeftOuterApply == eopid ||
+					  COperator::EopLogicalLeftOuterCorrelatedApply == eopid;
 
 	if (fOuterJoin && !CUtils::FScalarConstTrue(pexprConj))
 	{
@@ -825,14 +796,16 @@ CNormalizer::PushThruJoin
 
 	// combine conjunct with join predicate
 	CExpression *pexprScalar = (*pexprJoin)[ulArity - 1];
-	CExpression *pexprPred =  CPredicateUtils::PexprConjunction(pmp, pexprScalar, pexprConj);
+	CExpression *pexprPred =
+		CPredicateUtils::PexprConjunction(pmp, pexprScalar, pexprConj);
 
 	// break predicate to conjuncts
-	DrgPexpr *pdrgpexprConjuncts = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprPred);
+	DrgPexpr *pdrgpexprConjuncts =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprPred);
 	pexprPred->Release();
 
 	// push predicates through children and compute new child expressions
-	DrgPexpr *pdrgpexprChildren =  GPOS_NEW(pmp) DrgPexpr(pmp);
+	DrgPexpr *pdrgpexprChildren = GPOS_NEW(pmp) DrgPexpr(pmp);
 
 	for (ULONG ul = 0; ul < ulArity - 1; ul++)
 	{
@@ -857,7 +830,8 @@ CNormalizer::PushThruJoin
 		}
 
 		DrgPexpr *pdrgpexprRemaining = NULL;
-		PushThru(pmp, pexprChild, pdrgpexprConjuncts, &pexprNewChild, &pdrgpexprRemaining);
+		PushThru(pmp, pexprChild, pdrgpexprConjuncts, &pexprNewChild,
+				 &pdrgpexprRemaining);
 		pdrgpexprChildren->Append(pexprNewChild);
 
 		pdrgpexprConjuncts->Release();
@@ -865,7 +839,8 @@ CNormalizer::PushThruJoin
 	}
 
 	// remaining conjuncts become the new join predicate
-	CExpression *pexprNewScalar = CPredicateUtils::PexprConjunction(pmp, pdrgpexprConjuncts);
+	CExpression *pexprNewScalar =
+		CPredicateUtils::PexprConjunction(pmp, pdrgpexprConjuncts);
 	pdrgpexprChildren->Append(pexprNewScalar);
 
 	// create a new join expression
@@ -882,11 +857,7 @@ CNormalizer::PushThruJoin
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FChild
-	(
-	CExpression *pexpr,
-	CExpression *pexprChild
-	)
+CNormalizer::FChild(CExpression *pexpr, CExpression *pexprChild)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != pexprChild);
@@ -911,13 +882,8 @@ CNormalizer::FChild
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThru
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLogical,
-	CExpression *pexprConj,
-	CExpression **ppexprResult
-	)
+CNormalizer::PushThru(IMemoryPool *pmp, CExpression *pexprLogical,
+					  CExpression *pexprConj, CExpression **ppexprResult)
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pexprLogical);
@@ -960,7 +926,8 @@ CNormalizer::PushThru
 	{
 		// add select node on top of the result for the given predicate
 		pexprConj->AddRef();
-		*ppexprResult = CUtils::PexprSafeSelect(pmp, pexprNormalized, pexprConj);
+		*ppexprResult =
+			CUtils::PexprSafeSelect(pmp, pexprNormalized, pexprConj);
 	}
 }
 
@@ -975,21 +942,16 @@ CNormalizer::PushThru
 //
 //---------------------------------------------------------------------------
 void
-CNormalizer::PushThru
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLogical,
-	DrgPexpr *pdrgpexprConjuncts,
-	CExpression **ppexprResult,
-	DrgPexpr **ppdrgpexprRemaining
-	)
+CNormalizer::PushThru(IMemoryPool *pmp, CExpression *pexprLogical,
+					  DrgPexpr *pdrgpexprConjuncts, CExpression **ppexprResult,
+					  DrgPexpr **ppdrgpexprRemaining)
 {
 	GPOS_ASSERT(NULL != pexprLogical);
 	GPOS_ASSERT(NULL != pdrgpexprConjuncts);
 	GPOS_ASSERT(NULL != ppexprResult);
 
-	DrgPexpr *pdrgpexprPushable =  GPOS_NEW(pmp) DrgPexpr(pmp);
-	DrgPexpr *pdrgpexprUnpushable =  GPOS_NEW(pmp) DrgPexpr(pmp);
+	DrgPexpr *pdrgpexprPushable = GPOS_NEW(pmp) DrgPexpr(pmp);
+	DrgPexpr *pdrgpexprUnpushable = GPOS_NEW(pmp) DrgPexpr(pmp);
 
 	const ULONG ulSize = pdrgpexprConjuncts->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
@@ -1007,7 +969,8 @@ CNormalizer::PushThru
 	}
 
 	// push through a conjunction of all pushable predicates
-	CExpression *pexprPred = CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
+	CExpression *pexprPred =
+		CPredicateUtils::PexprConjunction(pmp, pdrgpexprPushable);
 	if (FPushThruOuterChild(pexprLogical))
 	{
 		PushThruOuterChild(pmp, pexprLogical, pexprPred, ppexprResult);
@@ -1031,11 +994,7 @@ CNormalizer::PushThru
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprNormalize
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr
-	)
+CNormalizer::PexprNormalize(IMemoryPool *pmp, CExpression *pexpr)
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pexpr);
@@ -1053,7 +1012,8 @@ CNormalizer::PexprNormalize
 	{
 		if (FPushThruOuterChild(pexpr))
 		{
-			CExpression *pexprConstTrue = CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
+			CExpression *pexprConstTrue =
+				CUtils::PexprScalarConstBool(pmp, true /*fVal*/);
 			PushThru(pmp, pexpr, pexprConstTrue, &pexprResult);
 			pexprConstTrue->Release();
 		}
@@ -1071,11 +1031,13 @@ CNormalizer::PexprNormalize
 
 			// normalize scalar predicate and construct a new expression
 			CExpression *pexprPred = (*pexpr)[pexpr->UlArity() - 1];
-			CExpression *pexprPredNormalized = PexprRecursiveNormalize(pmp, pexprPred);
+			CExpression *pexprPredNormalized =
+				PexprRecursiveNormalize(pmp, pexprPred);
 			pdrgpexpr->Append(pexprPredNormalized);
 			COperator *pop = pexpr->Pop();
 			pop->AddRef();
-			CExpression *pexprNew = GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexpr);
+			CExpression *pexprNew =
+				GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexpr);
 
 			// push normalized predicate through
 			PushThru(pmp, pexprNew, pexprPredNormalized, &pexprResult);
@@ -1101,12 +1063,10 @@ CNormalizer::PexprNormalize
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprPullUpAndCombineProjects
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	BOOL *pfSuccess		// output to indicate whether anything was pulled up
-	)
+CNormalizer::PexprPullUpAndCombineProjects(
+	IMemoryPool *pmp, CExpression *pexpr,
+	BOOL *pfSuccess  // output to indicate whether anything was pulled up
+)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != pfSuccess);
@@ -1124,25 +1084,22 @@ CNormalizer::PexprPullUpAndCombineProjects
 	CExpressionHandle exprhdl(pmp);
 	exprhdl.Attach(pexpr);
 
-	CColRefSet *pcrsOutput = CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsOutput =
+		CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput();
 
 	// extract the columns used by the scalar expression and the operator itself (for grouping, sorting, etc.)
 	CColRefSet *pcrsUsed = exprhdl.PcrsUsedColumns(pmp);
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
-		CExpression *pexprChild = PexprPullUpAndCombineProjects(pmp, (*pexpr)[ul], pfSuccess);
-		if (pop->FLogical() && CLogical::PopConvert(pop)->FCanPullProjectionsUp(ul) &&
+		CExpression *pexprChild =
+			PexprPullUpAndCombineProjects(pmp, (*pexpr)[ul], pfSuccess);
+		if (pop->FLogical() &&
+			CLogical::PopConvert(pop)->FCanPullProjectionsUp(ul) &&
 			COperator::EopLogicalProject == pexprChild->Pop()->Eopid())
 		{
 			// this child is a project - see if any project elements can be pulled up
-			CExpression *pexprNewChild = PexprPullUpProjectElements
-											(
-											pmp,
-											pexprChild,
-											pcrsUsed,
-											pcrsOutput,
-											&pdrgpexprPrElPullUp
-											);
+			CExpression *pexprNewChild = PexprPullUpProjectElements(
+				pmp, pexprChild, pcrsUsed, pcrsOutput, &pdrgpexprPrElPullUp);
 
 			pexprChild->Release();
 			pexprChild = pexprNewChild;
@@ -1154,7 +1111,8 @@ CNormalizer::PexprPullUpAndCombineProjects
 	pcrsUsed->Release();
 	pop->AddRef();
 
-	if (0 < pdrgpexprPrElPullUp->UlLength() && COperator::EopLogicalProject == pop->Eopid())
+	if (0 < pdrgpexprPrElPullUp->UlLength() &&
+		COperator::EopLogicalProject == pop->Eopid())
 	{
 		// some project elements have been pulled up and the original expression
 		// was a project - combine its project list with the pulled up project elements
@@ -1166,13 +1124,20 @@ CNormalizer::PexprPullUpAndCombineProjects
 
 		CUtils::AddRefAppend(pdrgpexprPrElPullUp, pexprPrLOld->PdrgPexpr());
 		pdrgpexprChildren->Release();
-		CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElPullUp);
-		GPOS_ASSERT(CDrvdPropRelational::Pdprel(pexprRelational->PdpDerive())->PcrsOutput()->FSubset(CDrvdPropScalar::Pdpscalar(pexprPrjList->PdpDerive())->PcrsUsed()));
+		CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(
+			pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElPullUp);
+		GPOS_ASSERT(
+			CDrvdPropRelational::Pdprel(pexprRelational->PdpDerive())
+				->PcrsOutput()
+				->FSubset(CDrvdPropScalar::Pdpscalar(pexprPrjList->PdpDerive())
+							  ->PcrsUsed()));
 
-		return GPOS_NEW(pmp) CExpression(pmp, pop, pexprRelational, pexprPrjList);
+		return GPOS_NEW(pmp)
+			CExpression(pmp, pop, pexprRelational, pexprPrjList);
 	}
 
-	CExpression *pexprOutput = GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
+	CExpression *pexprOutput =
+		GPOS_NEW(pmp) CExpression(pmp, pop, pdrgpexprChildren);
 
 	if (0 == pdrgpexprPrElPullUp->UlLength())
 	{
@@ -1183,10 +1148,16 @@ CNormalizer::PexprPullUpAndCombineProjects
 
 	// some project elements were pulled - add a project on top of output expression
 	*pfSuccess = true;
-	CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElPullUp);
-	GPOS_ASSERT(CDrvdPropRelational::Pdprel(pexprOutput->PdpDerive())->PcrsOutput()->FSubset(CDrvdPropScalar::Pdpscalar(pexprPrjList->PdpDerive())->PcrsUsed()));
+	CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElPullUp);
+	GPOS_ASSERT(
+		CDrvdPropRelational::Pdprel(pexprOutput->PdpDerive())
+			->PcrsOutput()
+			->FSubset(CDrvdPropScalar::Pdpscalar(pexprPrjList->PdpDerive())
+						  ->PcrsUsed()));
 
-	return GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalProject(pmp), pexprOutput, pexprPrjList);
+	return GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalProject(pmp),
+									 pexprOutput, pexprPrjList);
 }
 
 //---------------------------------------------------------------------------
@@ -1202,14 +1173,11 @@ CNormalizer::PexprPullUpAndCombineProjects
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprPullUpProjectElements
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CColRefSet *pcrsUsed,
+CNormalizer::PexprPullUpProjectElements(
+	IMemoryPool *pmp, CExpression *pexpr, CColRefSet *pcrsUsed,
 	CColRefSet *pcrsOutput,
-	DrgPexpr **ppdrgpexprPrElPullUp	// output: the pulled-up project elements
-	)
+	DrgPexpr **ppdrgpexprPrElPullUp  // output: the pulled-up project elements
+)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(COperator::EopLogicalProject == pexpr->Pop()->Eopid());
@@ -1232,18 +1200,23 @@ CNormalizer::PexprPullUpProjectElements
 	for (ULONG ul = 0; ul < ulProjElements; ul++)
 	{
 		CExpression *pexprPrEl = (*pexprPrL)[ul];
-		CScalarProjectElement *popPrEl = CScalarProjectElement::PopConvert(pexprPrEl->Pop());
+		CScalarProjectElement *popPrEl =
+			CScalarProjectElement::PopConvert(pexprPrEl->Pop());
 		CColRef *pcrDefined = popPrEl->Pcr();
-		CColRefSet *pcrsUsedByProjElem = CDrvdPropScalar::Pdpscalar(pexprPrEl->PdpDerive())->PcrsUsed();
+		CColRefSet *pcrsUsedByProjElem =
+			CDrvdPropScalar::Pdpscalar(pexprPrEl->PdpDerive())->PcrsUsed();
 
 		// a proj elem can be pulled up only if the defined column is not in
 		// pcrsUsed and its used columns are in pcrOutput
 		// NB we don't pull up projections that call set-returning functions
 		pexprPrEl->AddRef();
 
-		CDrvdPropScalar *pdpscalar = CDrvdPropScalar::Pdpscalar(pexprPrEl->PdpDerive());
+		CDrvdPropScalar *pdpscalar =
+			CDrvdPropScalar::Pdpscalar(pexprPrEl->PdpDerive());
 
-		if (!pcrsUsed->FMember(pcrDefined) && pcrsOutput->FSubset(pcrsUsedByProjElem) && !pdpscalar->FHasNonScalarFunction())
+		if (!pcrsUsed->FMember(pcrDefined) &&
+			pcrsOutput->FSubset(pcrsUsedByProjElem) &&
+			!pdpscalar->FHasNonScalarFunction())
 		{
 			(*ppdrgpexprPrElPullUp)->Append(pexprPrEl);
 		}
@@ -1262,8 +1235,10 @@ CNormalizer::PexprPullUpProjectElements
 	else
 	{
 		// some project elements could not be pulled up - need a project here
-		CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElNoPullUp);
-		pexprNew = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalProject(pmp), pexprNew, pexprPrjList);
+		CExpression *pexprPrjList = GPOS_NEW(pmp) CExpression(
+			pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), pdrgpexprPrElNoPullUp);
+		pexprNew = GPOS_NEW(pmp) CExpression(
+			pmp, GPOS_NEW(pmp) CLogicalProject(pmp), pexprNew, pexprPrjList);
 	}
 
 	return pexprNew;
@@ -1279,11 +1254,7 @@ CNormalizer::PexprPullUpProjectElements
 //
 //---------------------------------------------------------------------------
 CExpression *
-CNormalizer::PexprPullUpProjections
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr
-	)
+CNormalizer::PexprPullUpProjections(IMemoryPool *pmp, CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -1295,7 +1266,8 @@ CNormalizer::PexprPullUpProjections
 	{
 		fPullUp = false;
 
-		CExpression *pexprOutputNew = PexprPullUpAndCombineProjects(pmp, pexprOutput, &fPullUp);
+		CExpression *pexprOutputNew =
+			PexprPullUpAndCombineProjects(pmp, pexprOutput, &fPullUp);
 		pexprOutput->Release();
 		pexprOutput = pexprOutputNew;
 	}
@@ -1316,11 +1288,7 @@ CNormalizer::PexprPullUpProjections
 //
 //---------------------------------------------------------------------------
 BOOL
-CNormalizer::FLocalColsSubsetOfInputCols
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr
-	)
+CNormalizer::FLocalColsSubsetOfInputCols(IMemoryPool *pmp, CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_CHECK_STACK_SIZE;
@@ -1378,6 +1346,6 @@ CNormalizer::FLocalColsSubsetOfInputCols
 	return fValid;
 }
 
-#endif //GPOS_DEBUG
+#endif  //GPOS_DEBUG
 
 // EOF

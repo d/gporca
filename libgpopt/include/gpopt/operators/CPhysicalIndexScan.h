@@ -17,178 +17,160 @@
 
 namespace gpopt
 {
+// fwd declarations
+class CTableDescriptor;
+class CIndexDescriptor;
+class CName;
+class CDistributionSpecHashed;
 
-	// fwd declarations
-	class CTableDescriptor;
-	class CIndexDescriptor;
-	class CName;
-	class CDistributionSpecHashed;
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalIndexScan
+//
+//	@doc:
+//		Base class for physical index scan operators
+//
+//---------------------------------------------------------------------------
+class CPhysicalIndexScan : public CPhysicalScan
+{
+private:
+	// index descriptor
+	CIndexDescriptor *m_pindexdesc;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalIndexScan
-	//
-	//	@doc:
-	//		Base class for physical index scan operators
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalIndexScan : public CPhysicalScan
+	// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+	ULONG m_ulOriginOpId;
+
+	// order
+	COrderSpec *m_pos;
+
+	// private copy ctor
+	CPhysicalIndexScan(const CPhysicalIndexScan &);
+
+public:
+	// ctors
+	CPhysicalIndexScan(IMemoryPool *pmp, CIndexDescriptor *pindexdesc,
+					   CTableDescriptor *ptabdesc, ULONG ulOriginOpId,
+					   const CName *pnameAlias, DrgPcr *pdrgpcr,
+					   COrderSpec *pos);
+
+	// dtor
+	virtual ~CPhysicalIndexScan();
+
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopPhysicalIndexScan;
+	}
 
-		private:
+	// operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalIndexScan";
+	}
 
-			// index descriptor
-			CIndexDescriptor *m_pindexdesc;
+	// table alias name
+	const CName &
+	NameAlias() const
+	{
+		return *m_pnameAlias;
+	}
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
-			ULONG m_ulOriginOpId;
+	// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+	ULONG
+	UlOriginOpId() const
+	{
+		return m_ulOriginOpId;
+	}
 
-			// order
-			COrderSpec *m_pos;
+	// operator specific hash function
+	virtual ULONG
+	UlHash() const;
 
-			// private copy ctor
-			CPhysicalIndexScan(const CPhysicalIndexScan&);
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-		public:
+	// index descriptor
+	CIndexDescriptor *
+	Pindexdesc() const
+	{
+		return m_pindexdesc;
+	}
 
-			// ctors
-			CPhysicalIndexScan
-				(
-				IMemoryPool *pmp,
-				CIndexDescriptor *pindexdesc,
-				CTableDescriptor *ptabdesc,
-				ULONG ulOriginOpId,
-				const CName *pnameAlias,
-				DrgPcr *pdrgpcr,
-				COrderSpec *pos
-				);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-			// dtor
-			virtual
-			~CPhysicalIndexScan();
+	//-------------------------------------------------------------------------------------
+	// Derived Plan Properties
+	//-------------------------------------------------------------------------------------
 
+	// derive sort order
+	virtual COrderSpec *
+	PosDerive(IMemoryPool *,	   //pmp
+			  CExpressionHandle &  //exprhdl
+			  ) const
+	{
+		m_pos->AddRef();
+		return m_pos;
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalIndexScan;
-			}
+	// derive partition index map
+	virtual CPartIndexMap *
+	PpimDerive(IMemoryPool *pmp,
+			   CExpressionHandle &,  // exprhdl
+			   CDrvdPropCtxt *		 //pdpctxt
+			   ) const
+	{
+		return GPOS_NEW(pmp) CPartIndexMap(pmp);
+	}
 
-			// operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalIndexScan";
-			}
+	//-------------------------------------------------------------------------------------
+	// Enforced Properties
+	//-------------------------------------------------------------------------------------
 
-			// table alias name
-			const CName &NameAlias() const
-			{
-				return *m_pnameAlias;
-			}
+	// return order property enforcing type for this operator
+	virtual CEnfdProp::EPropEnforcingType
+	EpetOrder(CExpressionHandle &exprhdl, const CEnfdOrder *peo) const;
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
-			ULONG UlOriginOpId() const
-			{
-				return m_ulOriginOpId;
-			}
+	// conversion function
+	static CPhysicalIndexScan *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalIndexScan == pop->Eopid());
 
-			// operator specific hash function
-			virtual
-			ULONG UlHash() const;
+		return dynamic_cast<CPhysicalIndexScan *>(pop);
+	}
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
+	// statistics derivation during costing
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *,		   // pmp
+				 CExpressionHandle &,  // exprhdl
+				 CReqdPropPlan *,	  // prpplan
+				 DrgPstat *			   //pdrgpstatCtxt
+				 ) const
+	{
+		GPOS_ASSERT(
+			!"stats derivation during costing for index scan is invalid");
 
-			// index descriptor
-			CIndexDescriptor *Pindexdesc() const
-			{
-				return m_pindexdesc;
-			}
+		return NULL;
+	}
 
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
+	// debug print
+	virtual IOstream &
+	OsPrint(IOstream &) const;
 
-			//-------------------------------------------------------------------------------------
-			// Derived Plan Properties
-			//-------------------------------------------------------------------------------------
+};  // class CPhysicalIndexScan
 
-			// derive sort order
-			virtual
-			COrderSpec *PosDerive
-							(
-							IMemoryPool *,//pmp
-							CExpressionHandle &//exprhdl
-							)
-							const
-			{
-				m_pos->AddRef();
-				return m_pos;
-			}
+}  // namespace gpopt
 
-			// derive partition index map
-			virtual
-			CPartIndexMap *PpimDerive
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &, // exprhdl
-				CDrvdPropCtxt * //pdpctxt
-				)
-				const
-			{
-				return GPOS_NEW(pmp) CPartIndexMap(pmp);
-			}
-			
-			//-------------------------------------------------------------------------------------
-			// Enforced Properties
-			//-------------------------------------------------------------------------------------
-
-			// return order property enforcing type for this operator
-			virtual
-			CEnfdProp::EPropEnforcingType EpetOrder(CExpressionHandle &exprhdl, const CEnfdOrder *peo) const;
-
-			// conversion function
-			static
-			CPhysicalIndexScan *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalIndexScan == pop->Eopid());
-
-				return dynamic_cast<CPhysicalIndexScan*>(pop);
-			}
-
-			// statistics derivation during costing
-			virtual
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *, // pmp
-				CExpressionHandle &, // exprhdl
-				CReqdPropPlan *, // prpplan
-				DrgPstat * //pdrgpstatCtxt
-				)
-				const
-			{
-				GPOS_ASSERT(!"stats derivation during costing for index scan is invalid");
-
-				return NULL;
-			}
-
-			// debug print
-			virtual
-			IOstream &OsPrint(IOstream &) const;
-
-	}; // class CPhysicalIndexScan
-
-}
-
-#endif // !GPOPT_CPhysicalIndexScan_H
+#endif  // !GPOPT_CPhysicalIndexScan_H
 
 // EOF

@@ -31,18 +31,18 @@ using namespace gpos;
 GPOS_RESULT
 CSpinlockTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CSpinlockTest::EresUnittest_LockRelease),
 		GPOS_UNITTEST_FUNC(CSpinlockTest::EresUnittest_Concurrency)
 #ifdef GPOS_DEBUG
-		,
+			,
 		GPOS_UNITTEST_FUNC_ASSERT(CSpinlockTest::EresUnittest_SelfDeadlock),
-		GPOS_UNITTEST_FUNC_ASSERT(CSpinlockTest::EresUnittest_LockedDestruction),
+		GPOS_UNITTEST_FUNC_ASSERT(
+			CSpinlockTest::EresUnittest_LockedDestruction),
 		GPOS_UNITTEST_FUNC_ASSERT(CSpinlockTest::EresUnittest_Allocation)
-#endif // GPOS_DEBUG
-		};
-		
+#endif  // GPOS_DEBUG
+	};
+
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
 
@@ -75,16 +75,16 @@ CSpinlockTest::EresUnittest_LockRelease()
 //		Spawn a number of threads to loop on a spinlock
 //
 //---------------------------------------------------------------------------
-#define GPOS_SLOCK_THREADS	10
+#define GPOS_SLOCK_THREADS 10
 GPOS_RESULT
 CSpinlockTest::EresUnittest_Concurrency()
 {
 #ifdef GPOS_DEBUG
 	if (IWorker::m_fEnforceTimeSlices)
- 	{
- 		return GPOS_OK;
+	{
+		return GPOS_OK;
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	CSpinlockDummy slock;
 
@@ -100,7 +100,8 @@ CSpinlockTest::EresUnittest_Concurrency()
 
 		for (ULONG i = 0; i < GPOS_SLOCK_THREADS; i++)
 		{
-			rgPtsk[i] = atp.PtskCreate(CSpinlockTest::PvUnittest_ConcurrencyRun, &slock);
+			rgPtsk[i] = atp.PtskCreate(CSpinlockTest::PvUnittest_ConcurrencyRun,
+									   &slock);
 		}
 
 		for (ULONG i = 0; i < GPOS_SLOCK_THREADS; i++)
@@ -132,13 +133,9 @@ CSpinlockTest::EresUnittest_Concurrency()
 //
 //---------------------------------------------------------------------------
 void *
-CSpinlockTest::PvUnittest_ConcurrencyRun
-	(
-	void *pv
-	)
+CSpinlockTest::PvUnittest_ConcurrencyRun(void *pv)
 {
-
-	CSpinlockDummy *pslock = (CSpinlockDummy*)pv;
+	CSpinlockDummy *pslock = (CSpinlockDummy *) pv;
 
 	for (ULONG i = 0; i < 10000; i++)
 	{
@@ -237,7 +234,6 @@ CSpinlockTest::EresUnittest_Allocation()
 }
 
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

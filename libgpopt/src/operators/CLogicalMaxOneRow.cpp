@@ -28,20 +28,15 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CLogical::EStatPromise
-CLogicalMaxOneRow::Esp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalMaxOneRow::Esp(CExpressionHandle &exprhdl) const
 {
 	// low promise for stat derivation if logical expression has outer-refs
 	// or is part of an Apply expression
 	if (exprhdl.FHasOuterRefs() ||
-		 (NULL != exprhdl.Pgexpr() &&
-			CXformUtils::FGenerateApply(exprhdl.Pgexpr()->ExfidOrigin()))
-		)
+		(NULL != exprhdl.Pgexpr() &&
+		 CXformUtils::FGenerateApply(exprhdl.Pgexpr()->ExfidOrigin())))
 	{
-		 return EspLow;
+		return EspLow;
 	}
 
 	return EspHigh;
@@ -56,14 +51,8 @@ CLogicalMaxOneRow::Esp
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalMaxOneRow::PcrsStat
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsInput,
-	ULONG ulChildIndex
-	)
-	const
+CLogicalMaxOneRow::PcrsStat(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							CColRefSet *pcrsInput, ULONG ulChildIndex) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -85,11 +74,7 @@ CLogicalMaxOneRow::PcrsStat
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalMaxOneRow::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalMaxOneRow::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfMaxOneRow2Assert);
@@ -106,19 +91,14 @@ CLogicalMaxOneRow::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalMaxOneRow::PstatsDerive
-			(
-			IMemoryPool *pmp,
-			CExpressionHandle &exprhdl,
-			DrgPstat * // pdrgpstatCtxt
-			)
-			const
+CLogicalMaxOneRow::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								DrgPstat *  // pdrgpstatCtxt
+								) const
 {
 	// no more than one row can be produced by operator, scale down input statistics accordingly
 	IStatistics *pstats = exprhdl.Pstats(0);
-	return  pstats->PstatsScale(pmp, CDouble(1.0 / pstats->DRows()));
+	return pstats->PstatsScale(pmp, CDouble(1.0 / pstats->DRows()));
 }
 
 
 // EOF
-

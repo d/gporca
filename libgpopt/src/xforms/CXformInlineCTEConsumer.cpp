@@ -26,21 +26,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformInlineCTEConsumer::CXformInlineCTEConsumer
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)
-				)
-		)
-{}
+CXformInlineCTEConsumer::CXformInlineCTEConsumer(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -51,13 +43,10 @@ CXformInlineCTEConsumer::CXformInlineCTEConsumer
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformInlineCTEConsumer::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformInlineCTEConsumer::Exfp(CExpressionHandle &exprhdl) const
 {
-	const ULONG ulId = CLogicalCTEConsumer::PopConvert(exprhdl.Pop())->UlCTEId();
+	const ULONG ulId =
+		CLogicalCTEConsumer::PopConvert(exprhdl.Pop())->UlCTEId();
 	CCTEInfo *pcteinfo = COptCtxt::PoctxtFromTLS()->Pcteinfo();
 
 	if ((pcteinfo->FEnableInlining() || 1 == pcteinfo->UlConsumers(ulId)) &&
@@ -78,24 +67,21 @@ CXformInlineCTEConsumer::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformInlineCTEConsumer::Transform
-	(
-	CXformContext *
+CXformInlineCTEConsumer::Transform(CXformContext *
 #ifdef GPOS_DEBUG
-	pxfctxt
+									   pxfctxt
 #endif
-	,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+								   ,
+								   CXformResult *pxfres,
+								   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
 	// inline the consumer
-	CLogicalCTEConsumer *popConsumer = CLogicalCTEConsumer::PopConvert(pexpr->Pop());
+	CLogicalCTEConsumer *popConsumer =
+		CLogicalCTEConsumer::PopConvert(pexpr->Pop());
 	CExpression *pexprAlt = popConsumer->PexprInlined();
 	pexprAlt->AddRef();
 	// add alternative to xform result

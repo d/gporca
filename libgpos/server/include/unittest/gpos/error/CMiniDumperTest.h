@@ -19,97 +19,95 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CMiniDumperTest
+//
+//	@doc:
+//		Static unit tests for minidump handler
+//
+//---------------------------------------------------------------------------
+class CMiniDumperTest
+{
+private:
+	//---------------------------------------------------------------------------
+	//	@class:
+	//		CMiniDumperStream
+	//
+	//	@doc:
+	//		Local minidump handler
+	//
+	//---------------------------------------------------------------------------
+	class CMiniDumperStream : public CMiniDumper
+	{
+	public:
+		// ctor
+		CMiniDumperStream(IMemoryPool *pmp);
+
+		// dtor
+		virtual ~CMiniDumperStream();
+
+		// serialize minidump header
+		virtual void
+		SerializeHeader();
+
+		// serialize minidump footer
+		virtual void
+		SerializeFooter();
+
+		// serialize entry header
+		virtual void
+		SerializeEntryHeader();
+
+		// serialize entry footer
+		virtual void
+		SerializeEntryFooter();
+
+	};  // class CMiniDumperStream
 
 	//---------------------------------------------------------------------------
 	//	@class:
-	//		CMiniDumperTest
+	//		CSerializableStack
 	//
 	//	@doc:
-	//		Static unit tests for minidump handler
+	//		Stack serializer
 	//
 	//---------------------------------------------------------------------------
-	class CMiniDumperTest
+	class CSerializableStack : public CSerializable
 	{
-		private:
+	public:
+		// ctor
+		CSerializableStack();
 
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		CMiniDumperStream
-			//
-			//	@doc:
-			//		Local minidump handler
-			//
-			//---------------------------------------------------------------------------
-			class CMiniDumperStream : public CMiniDumper
-			{
-				public:
+		// dtor
+		virtual ~CSerializableStack();
 
-					// ctor
-					CMiniDumperStream(IMemoryPool *pmp);
+		// serialize object to passed stream
+		virtual void
+		Serialize(COstream &oos);
 
-					// dtor
-					virtual
-					~CMiniDumperStream();
+	};  // class CSerializableStack
 
-					// serialize minidump header
-					virtual
-					void SerializeHeader();
+	// helper functions
+	static void *
+	PvRaise(void *);
+	static void *
+	PvLoop(void *);
+	static void *
+	PvLoopSerialize(void *);
 
-					// serialize minidump footer
-					virtual
-					void SerializeFooter();
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_Basic();
+	static GPOS_RESULT
+	EresUnittest_Concurrency();
 
-					// serialize entry header
-					virtual
-					void SerializeEntryHeader();
+};  // class CMiniDumperTest
+}  // namespace gpos
 
-					// serialize entry footer
-					virtual
-					void SerializeEntryFooter();
-
-			}; // class CMiniDumperStream
-
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		CSerializableStack
-			//
-			//	@doc:
-			//		Stack serializer
-			//
-			//---------------------------------------------------------------------------
-			class CSerializableStack : public CSerializable
-			{
-				public:
-
-					// ctor
-					CSerializableStack();
-
-					// dtor
-					virtual
-					~CSerializableStack();
-
-					// serialize object to passed stream
-					virtual
-					void Serialize(COstream &oos);
-
-			}; // class CSerializableStack
-
-			// helper functions
-			static void *PvRaise(void *);
-			static void *PvLoop(void *);
-			static void *PvLoopSerialize(void *);
-
-		public:
-
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_Basic();
-			static GPOS_RESULT EresUnittest_Concurrency();
-
-	}; // class CMiniDumperTest
-}
-
-#endif // !GPOS_CMiniDumperTest_H
+#endif  // !GPOS_CMiniDumperTest_H
 
 // EOF
-

@@ -24,13 +24,7 @@ using namespace gpos;
 //		ctor
 //
 //---------------------------------------------------------------------------
-COstreamString::COstreamString
-    (
-	CWString *pws
-    )
-	: 
-    COstream(),
-    m_pws(pws)
+COstreamString::COstreamString(CWString *pws) : COstream(), m_pws(pws)
 {
 	GPOS_ASSERT(m_pws && "Backing string cannot be NULL");
 }
@@ -43,11 +37,8 @@ COstreamString::COstreamString
 //		WCHAR array write thru;
 //
 //---------------------------------------------------------------------------
-IOstream&
-COstreamString::operator << 
-    (
-	const WCHAR *wsz
-    )
+IOstream &
+COstreamString::operator<<(const WCHAR *wsz)
 {
 	m_pws->AppendWideCharArray(wsz);
 
@@ -62,11 +53,8 @@ COstreamString::operator <<
 //		CHAR array write thru;
 //
 //---------------------------------------------------------------------------
-IOstream&
-COstreamString::operator <<
-    (
-	const CHAR *sz
-    )
+IOstream &
+COstreamString::operator<<(const CHAR *sz)
 {
 	m_pws->AppendCharArray(sz);
 
@@ -82,11 +70,8 @@ COstreamString::operator <<
 //		WCHAR write thru;
 //
 //---------------------------------------------------------------------------
-IOstream&
-COstreamString::operator <<
-    (
-	const WCHAR wc
-    )
+IOstream &
+COstreamString::operator<<(const WCHAR wc)
 {
 	WCHAR wsz[2];
 	wsz[0] = wc;
@@ -105,11 +90,8 @@ COstreamString::operator <<
 //		CHAR write thru;
 //
 //---------------------------------------------------------------------------
-IOstream&
-COstreamString::operator <<
-    (
-	const CHAR c
-    )
+IOstream &
+COstreamString::operator<<(const CHAR c)
 {
 	CHAR sz[2];
 	sz[0] = c;
@@ -121,4 +103,3 @@ COstreamString::operator <<
 
 
 // EOF
-

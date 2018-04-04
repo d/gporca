@@ -9,7 +9,7 @@
 //		Implement BitmapTableGet
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -31,23 +31,17 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementBitmapTableGet::CXformImplementBitmapTableGet
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalBitmapTableGet(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // predicate tree
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // bitmap index expression
-				)
-		)
-{}
+CXformImplementBitmapTableGet::CXformImplementBitmapTableGet(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalBitmapTableGet(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // predicate tree
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // bitmap index expression
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -58,20 +52,17 @@ CXformImplementBitmapTableGet::CXformImplementBitmapTableGet
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementBitmapTableGet::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementBitmapTableGet::Transform(CXformContext *pxfctxt,
+										 CXformResult *pxfres,
+										 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
 	IMemoryPool *pmp = pxfctxt->Pmp();
-	CLogicalBitmapTableGet *popLogical = CLogicalBitmapTableGet::PopConvert(pexpr->Pop());
+	CLogicalBitmapTableGet *popLogical =
+		CLogicalBitmapTableGet::PopConvert(pexpr->Pop());
 
 	CTableDescriptor *ptabdesc = popLogical->Ptabdesc();
 	ptabdesc->AddRef();
@@ -79,23 +70,19 @@ CXformImplementBitmapTableGet::Transform
 	DrgPcr *pdrgpcrOutput = popLogical->PdrgpcrOutput();
 	pdrgpcrOutput->AddRef();
 
-	CPhysicalBitmapTableScan *popPhysical =
-			GPOS_NEW(pmp) CPhysicalBitmapTableScan
-					(
-					pmp,
-					ptabdesc,
-					pexpr->Pop()->UlOpId(),
-					GPOS_NEW(pmp) CName(pmp, *popLogical->PnameTableAlias()),
-					pdrgpcrOutput
-					);
+	CPhysicalBitmapTableScan *popPhysical = GPOS_NEW(pmp)
+		CPhysicalBitmapTableScan(pmp, ptabdesc, pexpr->Pop()->UlOpId(),
+								 GPOS_NEW(pmp)
+									 CName(pmp, *popLogical->PnameTableAlias()),
+								 pdrgpcrOutput);
 
 	CExpression *pexprCondition = (*pexpr)[0];
 	CExpression *pexprIndexPath = (*pexpr)[1];
 	pexprCondition->AddRef();
 	pexprIndexPath->AddRef();
 
-	CExpression *pexprPhysical =
-			GPOS_NEW(pmp) CExpression(pmp, popPhysical, pexprCondition, pexprIndexPath);
+	CExpression *pexprPhysical = GPOS_NEW(pmp)
+		CExpression(pmp, popPhysical, pexprCondition, pexprIndexPath);
 	pxfres->Add(pexprPhysical);
 }
 

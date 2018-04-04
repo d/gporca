@@ -30,155 +30,130 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalGbAggDeduplicate
+//
+//	@doc:
+//		aggregate operator for deduplicating join outputs
+//
+//---------------------------------------------------------------------------
+class CLogicalGbAggDeduplicate : public CLogicalGbAgg
+{
+private:
+	// private copy ctor
+	CLogicalGbAggDeduplicate(const CLogicalGbAggDeduplicate &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalGbAggDeduplicate
-	//
-	//	@doc:
-	//		aggregate operator for deduplicating join outputs
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalGbAggDeduplicate : public CLogicalGbAgg
+	// array of keys from the join's child
+	DrgPcr *m_pdrgpcrKeys;
+
+public:
+	// ctor
+	explicit CLogicalGbAggDeduplicate(IMemoryPool *pmp);
+
+	// ctor
+	CLogicalGbAggDeduplicate(IMemoryPool *pmp, DrgPcr *pdrgpcr,
+							 COperator::EGbAggType egbaggtype,
+							 DrgPcr *pdrgpcrKeys = NULL);
+
+	// ctor
+	CLogicalGbAggDeduplicate(IMemoryPool *pmp, DrgPcr *pdrgpcr,
+							 DrgPcr *pdrgpcrMinimal,
+							 COperator::EGbAggType egbaggtype,
+							 DrgPcr *pdrgpcrKeys = NULL);
+
+	// dtor
+	virtual ~CLogicalGbAggDeduplicate();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopLogicalGbAggDeduplicate;
+	}
 
-			// private copy ctor
-			CLogicalGbAggDeduplicate(const CLogicalGbAggDeduplicate &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalGbAggDeduplicate";
+	}
 
-			// array of keys from the join's child
-			DrgPcr *m_pdrgpcrKeys;
+	// array of keys from the join's child that needs to be deduped
+	DrgPcr *
+	PdrgpcrKeys() const
+	{
+		return m_pdrgpcrKeys;
+	}
 
-		public:
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// ctor
-			explicit
-			CLogicalGbAggDeduplicate(IMemoryPool *pmp);
+	// hash function
+	virtual ULONG
+	UlHash() const;
 
-			// ctor
-			CLogicalGbAggDeduplicate
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcr,
-				COperator::EGbAggType egbaggtype,
-				DrgPcr *pdrgpcrKeys = NULL
-				);
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// ctor
-			CLogicalGbAggDeduplicate
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcr,
-				DrgPcr *pdrgpcrMinimal,
-				COperator::EGbAggType egbaggtype,
-				DrgPcr *pdrgpcrKeys = NULL
-				);
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			// dtor
-			virtual
-			~CLogicalGbAggDeduplicate();
+	// derive key collections
+	virtual CKeyCollection *
+	PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalGbAggDeduplicate;
-			}
+	// compute required stats columns of the n-th child
+	//-------------------------------------------------------------------------------------
+	// Required Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalGbAggDeduplicate";
-			}
+	// compute required stat columns of the n-th child
+	virtual CColRefSet *
+	PcrsStat(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+			 CColRefSet *pcrsInput, ULONG ulChildIndex) const;
 
-			// array of keys from the join's child that needs to be deduped
-			DrgPcr *PdrgpcrKeys() const
-			{
-				return m_pdrgpcrKeys;
-			}
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
+	// candidate set of xforms
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// hash function
-			virtual
-			ULONG UlHash() const;
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// conversion function
+	static CLogicalGbAggDeduplicate *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalGbAggDeduplicate == pop->Eopid());
 
-			// derive key collections
-			virtual
-			CKeyCollection *PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
-
-			// compute required stats columns of the n-th child
-			//-------------------------------------------------------------------------------------
-			// Required Relational Properties
-			//-------------------------------------------------------------------------------------
-
-			// compute required stat columns of the n-th child
-			virtual
-			CColRefSet *PcrsStat
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CColRefSet *pcrsInput,
-				ULONG ulChildIndex
-				)
-				const;
-
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
-
-			// candidate set of xforms
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
-
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-						(
-						IMemoryPool *pmp,
-						CExpressionHandle &exprhdl,
-						DrgPstat *pdrgpstatCtxt
-						)
-						const;
-
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CLogicalGbAggDeduplicate *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalGbAggDeduplicate == pop->Eopid());
-
-				return dynamic_cast<CLogicalGbAggDeduplicate*>(pop);
-			}
+		return dynamic_cast<CLogicalGbAggDeduplicate *>(pop);
+	}
 
 
-			// debug print
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
+	// debug print
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-	}; // class CLogicalGbAggDeduplicate
+};  // class CLogicalGbAggDeduplicate
 
-}
+}  // namespace gpopt
 
 
-#endif // !GPOS_CLogicalGbAggDeduplicate_H
+#endif  // !GPOS_CLogicalGbAggDeduplicate_H
 
 // EOF

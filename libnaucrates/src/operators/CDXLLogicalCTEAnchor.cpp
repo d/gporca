@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL logical CTE anchors
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/operators/CDXLLogicalCTEAnchor.h"
@@ -26,14 +26,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalCTEAnchor::CDXLLogicalCTEAnchor
-	(
-	IMemoryPool *pmp,
-	ULONG ulId
-	)
-	:
-	CDXLLogical(pmp),
-	m_ulId(ulId)
+CDXLLogicalCTEAnchor::CDXLLogicalCTEAnchor(IMemoryPool *pmp, ULONG ulId)
+	: CDXLLogical(pmp), m_ulId(ulId)
 {
 }
 
@@ -74,20 +68,18 @@ CDXLLogicalCTEAnchor::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalCTEAnchor::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalCTEAnchor::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCTEId), UlId());
-	
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -100,11 +92,8 @@ CDXLLogicalCTEAnchor::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalCTEAnchor::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLLogicalCTEAnchor::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 
@@ -116,6 +105,6 @@ CDXLLogicalCTEAnchor::AssertValid
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

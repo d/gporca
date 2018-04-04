@@ -24,87 +24,79 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarArrayCoerceExpr
-	//
-	//	@doc:
-	//		Class for representing DXL array coerce operator
-	//---------------------------------------------------------------------------
-	class CDXLScalarArrayCoerceExpr : public CDXLScalarCoerceBase
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarArrayCoerceExpr
+//
+//	@doc:
+//		Class for representing DXL array coerce operator
+//---------------------------------------------------------------------------
+class CDXLScalarArrayCoerceExpr : public CDXLScalarCoerceBase
+{
+private:
+	// catalog MDId of element coerce function
+	IMDId *m_pmdidElementFunc;
+
+	// conversion semantics flag to pass to func
+	BOOL m_fIsExplicit;
+
+	// private copy ctor
+	CDXLScalarArrayCoerceExpr(const CDXLScalarArrayCoerceExpr &);
+
+public:
+	CDXLScalarArrayCoerceExpr(IMemoryPool *pmp, IMDId *pmdidElementFunc,
+							  IMDId *pmdidResultType, INT iTypeModifier,
+							  BOOL fIsExplicit, EdxlCoercionForm edxlcf,
+							  INT iLoc);
+
+	virtual ~CDXLScalarArrayCoerceExpr()
 	{
-		private:
-			// catalog MDId of element coerce function
-			IMDId *m_pmdidElementFunc;
+		m_pmdidElementFunc->Release();
+	}
 
-			// conversion semantics flag to pass to func
-			BOOL m_fIsExplicit;
+	// ident accessor
+	virtual Edxlopid
+	Edxlop() const
+	{
+		return EdxlopScalarArrayCoerceExpr;
+	}
 
-			// private copy ctor
-			CDXLScalarArrayCoerceExpr(const CDXLScalarArrayCoerceExpr&);
+	// return metadata id of element coerce function
+	IMDId *
+	PmdidElementFunc() const
+	{
+		return m_pmdidElementFunc;
+	}
 
-		public:
-			CDXLScalarArrayCoerceExpr
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidElementFunc,
-				IMDId *pmdidResultType,
-				INT iTypeModifier,
-				BOOL fIsExplicit,
-				EdxlCoercionForm edxlcf,
-				INT iLoc
-				);
+	BOOL
+	FIsExplicit() const
+	{
+		return m_fIsExplicit;
+	}
 
-			virtual
-			~CDXLScalarArrayCoerceExpr()
-			{
-				m_pmdidElementFunc->Release();
-			}
+	// name of the DXL operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
 
-			// ident accessor
-			virtual
-			Edxlopid Edxlop() const
-			{
-				return EdxlopScalarArrayCoerceExpr;
-			}
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// return metadata id of element coerce function
-			IMDId *PmdidElementFunc() const
-			{
-				return m_pmdidElementFunc;
-			}
+	// conversion function
+	static CDXLScalarArrayCoerceExpr *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarArrayCoerceExpr == pdxlop->Edxlop());
 
-			BOOL FIsExplicit() const
-			{
-				return m_fIsExplicit;
-			}
+		return dynamic_cast<CDXLScalarArrayCoerceExpr *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
 
-			// name of the DXL operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLScalarArrayCoerceExpr *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarArrayCoerceExpr == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLScalarArrayCoerceExpr*>(pdxlop);
-			}
-	};
-}
-
-#endif // !GPDXL_CDXLScalarArrayCoerceExpr_H
+#endif  // !GPDXL_CDXLScalarArrayCoerceExpr_H
 
 // EOF

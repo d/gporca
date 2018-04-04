@@ -29,14 +29,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerStacktrace::CParseHandlerStacktrace
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot)
+CParseHandlerStacktrace::CParseHandlerStacktrace(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot)
 {
 }
 
@@ -50,13 +46,11 @@ CParseHandlerStacktrace::CParseHandlerStacktrace
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStacktrace::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const, // xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes&  // attrs
-	)
+CParseHandlerStacktrace::StartElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const,  // xmlszLocalname,
+									  const XMLCh *const,  // xmlszQname
+									  const Attributes &   // attrs
+)
 {
 	// passthrough
 }
@@ -70,12 +64,10 @@ CParseHandlerStacktrace::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStacktrace::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const, // xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerStacktrace::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const,  // xmlszLocalname,
+									const XMLCh *const   // xmlszQname
+)
 {
 	// deactivate handler
 	m_pphm->DeactivateHandler();

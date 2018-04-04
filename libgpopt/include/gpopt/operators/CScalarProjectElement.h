@@ -18,124 +18,116 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarProjectElement
-	//
-	//	@doc:
-	//		Scalar project element operator is used to define a column reference
-	//		as equivalent to a scalar expression
-	//
-	//---------------------------------------------------------------------------
-	class CScalarProjectElement : public CScalar
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarProjectElement
+//
+//	@doc:
+//		Scalar project element operator is used to define a column reference
+//		as equivalent to a scalar expression
+//
+//---------------------------------------------------------------------------
+class CScalarProjectElement : public CScalar
+{
+private:
+	// defined column reference
+	CColRef *m_pcr;
+
+	// private copy ctor
+	CScalarProjectElement(const CScalarProjectElement &);
+
+
+public:
+	// ctor
+	CScalarProjectElement(IMemoryPool *pmp, CColRef *pcr)
+		: CScalar(pmp), m_pcr(pcr)
 	{
+		GPOS_ASSERT(NULL != pcr);
+	}
 
-		private:
+	// dtor
+	virtual ~CScalarProjectElement()
+	{
+	}
 
-			// defined column reference
-			CColRef *m_pcr;
+	// identity accessor
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopScalarProjectElement;
+	}
 
-			// private copy ctor
-			CScalarProjectElement(const CScalarProjectElement &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarProjectElement";
+	}
 
+	// defined column reference accessor
+	CColRef *
+	Pcr() const
+	{
+		return m_pcr;
+	}
 
-		public:
+	// operator specific hash function
+	ULONG
+	UlHash() const;
 
-			// ctor
-			CScalarProjectElement
-				(
-				IMemoryPool *pmp,
-				CColRef *pcr
-				)
-				:
-				CScalar(pmp),
-				m_pcr(pcr)
-			{
-				GPOS_ASSERT(NULL != pcr);
-			}
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-			// dtor
-			virtual
-			~CScalarProjectElement() {}
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const;
 
-			// identity accessor
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarProjectElement;
-			}
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarProjectElement";
-			}
+	// return locally defined columns
+	virtual CColRefSet *
+	PcrsDefined(IMemoryPool *pmp,
+				CExpressionHandle &  // exprhdl
+	)
+	{
+		CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
+		pcrs->Include(m_pcr);
 
-			// defined column reference accessor
-			CColRef *Pcr() const
-			{
-				return m_pcr;
-			}
+		return pcrs;
+	}
 
-			// operator specific hash function
-			ULONG UlHash() const;
+	// conversion function
+	static CScalarProjectElement *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarProjectElement == pop->Eopid());
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
+		return reinterpret_cast<CScalarProjectElement *>(pop);
+	}
 
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const;
+	virtual IMDId *
+	PmdidType() const
+	{
+		GPOS_ASSERT(!"Invalid function call: CScalarProjectElemet::MdidType()");
+		return NULL;
+	}
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+	// print
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-			// return locally defined columns
-			virtual
-			CColRefSet *PcrsDefined
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle & // exprhdl
-				)
-			{
-				CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
-				pcrs->Include(m_pcr);
+};  // class CScalarProjectElement
 
-				return pcrs;
-			}
-
-			// conversion function
-			static
-			CScalarProjectElement *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarProjectElement == pop->Eopid());
-
-				return reinterpret_cast<CScalarProjectElement*>(pop);
-			}
-
-			virtual
-			IMDId *PmdidType() const
-			{
-				GPOS_ASSERT(!"Invalid function call: CScalarProjectElemet::MdidType()");
-				return NULL;
-			}
-
-			// print
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
-
-	}; // class CScalarProjectElement
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarProjectElement_H
+#endif  // !GPOPT_CScalarProjectElement_H
 
 // EOF

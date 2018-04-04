@@ -24,16 +24,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarWindowFrameEdge::CDXLScalarWindowFrameEdge
-	(
-	IMemoryPool *pmp,
-	BOOL fLeading,
-	EdxlFrameBoundary edxlfb
-	)
-	:
-	CDXLScalar(pmp),
-	m_fLeading(fLeading),
-	m_edxlfb(edxlfb)
+CDXLScalarWindowFrameEdge::CDXLScalarWindowFrameEdge(IMemoryPool *pmp,
+													 BOOL fLeading,
+													 EdxlFrameBoundary edxlfb)
+	: CDXLScalar(pmp), m_fLeading(fLeading), m_edxlfb(edxlfb)
 {
 }
 
@@ -80,24 +74,20 @@ CDXLScalarWindowFrameEdge::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-CDXLScalarWindowFrameEdge::PstrFrameBoundary
-	(
-	EdxlFrameBoundary edxlfb
-	)
-	const
+CDXLScalarWindowFrameEdge::PstrFrameBoundary(EdxlFrameBoundary edxlfb) const
 {
 	GPOS_ASSERT(EdxlfbSentinel > edxlfb);
 
-	ULONG rgrgulMapping[][2] =
-					{
-					{EdxlfbUnboundedPreceding, EdxltokenWindowBoundaryUnboundedPreceding},
-					{EdxlfbBoundedPreceding, EdxltokenWindowBoundaryBoundedPreceding},
-					{EdxlfbCurrentRow, EdxltokenWindowBoundaryCurrentRow},
-					{EdxlfbUnboundedFollowing, EdxltokenWindowBoundaryUnboundedFollowing},
-					{EdxlfbBoundedFollowing, EdxltokenWindowBoundaryBoundedFollowing},
-					{EdxlfbDelayedBoundedPreceding, EdxltokenWindowBoundaryDelayedBoundedPreceding},
-					{EdxlfbDelayedBoundedFollowing, EdxltokenWindowBoundaryDelayedBoundedFollowing}
-					};
+	ULONG rgrgulMapping[][2] = {
+		{EdxlfbUnboundedPreceding, EdxltokenWindowBoundaryUnboundedPreceding},
+		{EdxlfbBoundedPreceding, EdxltokenWindowBoundaryBoundedPreceding},
+		{EdxlfbCurrentRow, EdxltokenWindowBoundaryCurrentRow},
+		{EdxlfbUnboundedFollowing, EdxltokenWindowBoundaryUnboundedFollowing},
+		{EdxlfbBoundedFollowing, EdxltokenWindowBoundaryBoundedFollowing},
+		{EdxlfbDelayedBoundedPreceding,
+		 EdxltokenWindowBoundaryDelayedBoundedPreceding},
+		{EdxlfbDelayedBoundedFollowing,
+		 EdxltokenWindowBoundaryDelayedBoundedFollowing}};
 
 	const ULONG ulArity = GPOS_ARRAY_SIZE(rgrgulMapping);
 	for (ULONG ul = 0; ul < ulArity; ul++)
@@ -123,28 +113,29 @@ CDXLScalarWindowFrameEdge::PstrFrameBoundary
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarWindowFrameEdge::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarWindowFrameEdge::SerializeToDXL(CXMLSerializer *pxmlser,
+										  const CDXLNode *pdxln) const
 {
-
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	if (m_fLeading)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowLeadingBoundary), PstrFrameBoundary(m_edxlfb));
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenWindowLeadingBoundary),
+			PstrFrameBoundary(m_edxlfb));
 	}
 	else
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowTrailingBoundary), PstrFrameBoundary(m_edxlfb));
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenWindowTrailingBoundary),
+			PstrFrameBoundary(m_edxlfb));
 	}
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -157,19 +148,21 @@ CDXLScalarWindowFrameEdge::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarWindowFrameEdge::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarWindowFrameEdge::AssertValid(const CDXLNode *pdxln,
+									   BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(1 >= ulArity);
 
-	GPOS_ASSERT_IMP((m_edxlfb == EdxlfbBoundedPreceding || m_edxlfb == EdxlfbBoundedFollowing
-					|| m_edxlfb == EdxlfbDelayedBoundedPreceding || m_edxlfb == EdxlfbDelayedBoundedFollowing), 1 == ulArity);
-	GPOS_ASSERT_IMP((m_edxlfb == EdxlfbUnboundedPreceding || m_edxlfb == EdxlfbUnboundedFollowing || m_edxlfb == EdxlfbCurrentRow), 0 == ulArity);
+	GPOS_ASSERT_IMP((m_edxlfb == EdxlfbBoundedPreceding ||
+					 m_edxlfb == EdxlfbBoundedFollowing ||
+					 m_edxlfb == EdxlfbDelayedBoundedPreceding ||
+					 m_edxlfb == EdxlfbDelayedBoundedFollowing),
+					1 == ulArity);
+	GPOS_ASSERT_IMP((m_edxlfb == EdxlfbUnboundedPreceding ||
+					 m_edxlfb == EdxlfbUnboundedFollowing ||
+					 m_edxlfb == EdxlfbCurrentRow),
+					0 == ulArity);
 
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
@@ -182,6 +175,6 @@ CDXLScalarWindowFrameEdge::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -22,53 +22,50 @@ using namespace gpdxl;
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CSerializablePlan
-	//
-	//	@doc:
-	//		Serializable plan object 
-	//
-	//---------------------------------------------------------------------------
-	class CSerializablePlan : public CSerializable
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CSerializablePlan
+//
+//	@doc:
+//		Serializable plan object
+//
+//---------------------------------------------------------------------------
+class CSerializablePlan : public CSerializable
+{
+private:
+	IMemoryPool *m_pmp;
 
-			IMemoryPool *m_pmp;
+	// plan DXL node
+	const CDXLNode *m_pdxlnPlan;
 
-			// plan DXL node
-			const CDXLNode *m_pdxlnPlan;
+	// serialized plan
+	CWStringDynamic *m_pstrPlan;
 
-			// serialized plan
-			CWStringDynamic *m_pstrPlan;
-			
-			// plan Id
-			ULLONG m_ullPlanId;
+	// plan Id
+	ULLONG m_ullPlanId;
 
-			// plan space size
-			ULLONG m_ullPlanSpaceSize;
+	// plan space size
+	ULLONG m_ullPlanSpaceSize;
 
 
-			// private copy ctor
-			CSerializablePlan(const CSerializablePlan&);
+	// private copy ctor
+	CSerializablePlan(const CSerializablePlan &);
 
-		public:
+public:
+	// ctor
+	CSerializablePlan(IMemoryPool *pmp, const CDXLNode *pdxlnPlan,
+					  ULLONG ullPlanId, ULLONG ullPlanSpaceSize);
 
-			// ctor
-			CSerializablePlan(IMemoryPool *pmp, const CDXLNode *pdxlnPlan, ULLONG ullPlanId, ULLONG ullPlanSpaceSize);
+	// dtor
+	virtual ~CSerializablePlan();
 
-			// dtor
-			virtual
-			~CSerializablePlan();
+	// serialize object to passed buffer
+	virtual void
+	Serialize(COstream &oos);
 
-			// serialize object to passed buffer
-			virtual
-			void Serialize(COstream& oos);
+};  // class CSerializablePlan
+}  // namespace gpopt
 
-	}; // class CSerializablePlan
-}
-
-#endif // !GPOPT_CSerializablePlan_H
+#endif  // !GPOPT_CSerializablePlan_H
 
 // EOF
-

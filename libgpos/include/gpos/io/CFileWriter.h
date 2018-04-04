@@ -16,55 +16,55 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CFileWriter
+//
+//	@doc:
+//		Implementation of file handler for raw output;
+//		does not provide thread-safety
+//
+//---------------------------------------------------------------------------
+class CFileWriter : public CFileDescriptor
+{
+private:
+	// file size
+	ULLONG m_ullSize;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CFileWriter
-	//
-	//	@doc:
-	//		Implementation of file handler for raw output;
-	//		does not provide thread-safety
-	//
-	//---------------------------------------------------------------------------
-	class CFileWriter : public CFileDescriptor
+	// no copy ctor
+	CFileWriter(const CFileWriter &);
+
+public:
+	// ctor
+	CFileWriter();
+
+	// dtor
+	virtual ~CFileWriter()
 	{
-		private:
+	}
 
-			// file size
-			ULLONG m_ullSize;
+	ULLONG
+	UllSize() const
+	{
+		return m_ullSize;
+	}
 
-			// no copy ctor
-			CFileWriter(const CFileWriter &);
+	// open file for writing
+	void
+	Open(const CHAR *szPath, ULONG ulPerms);
 
-		public:
+	// close file
+	void
+	Close();
 
-			// ctor
-			CFileWriter();
+	// write bytes to file
+	void
+	Write(const BYTE *pb, const ULONG_PTR ullWriteSize);
 
-			// dtor
-			virtual
-			~CFileWriter()
-			{}
+};  // class CFileWriter
 
-			ULLONG UllSize() const
-			{
-				return m_ullSize;
-			}
+}  // namespace gpos
 
-			// open file for writing
-			void Open(const CHAR *szPath, ULONG ulPerms);
-
-			// close file
-			void Close();
-
-			// write bytes to file
-			void Write(const BYTE *pb, const ULONG_PTR ullWriteSize);
-
-	};	// class CFileWriter
-
-}
-
-#endif // !GPOS_CFileWriter_H
+#endif  // !GPOS_CFileWriter_H
 
 // EOF
-

@@ -41,11 +41,7 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::Stat
-	(
-	const CHAR *szPath,
-	SFileStat *pfs
-	)
+gpos::ioutils::Stat(const CHAR *szPath, SFileStat *pfs)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -75,11 +71,7 @@ gpos::ioutils::Stat
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::Fstat
-	(
-	const INT iFd,
-	SFileStat *pfs
-	)
+gpos::ioutils::Fstat(const INT iFd, SFileStat *pfs)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pfs);
@@ -108,10 +100,7 @@ gpos::ioutils::Fstat
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FPathExist
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::FPathExist(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -133,10 +122,7 @@ gpos::ioutils::FPathExist
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FDir
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::FDir(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -157,10 +143,7 @@ gpos::ioutils::FDir
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FFile
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::FFile(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -181,10 +164,7 @@ gpos::ioutils::FFile
 //
 //---------------------------------------------------------------------------
 ULLONG
-gpos::ioutils::UllFileSize
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::UllFileSize(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -206,10 +186,7 @@ gpos::ioutils::UllFileSize
 //
 //---------------------------------------------------------------------------
 ULLONG
-gpos::ioutils::UllFileSize
-	(
-	const INT iFd
-	)
+gpos::ioutils::UllFileSize(const INT iFd)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 
@@ -229,11 +206,7 @@ gpos::ioutils::UllFileSize
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FPerms
-	(
-	const CHAR *szPath,
-	ULONG ulPerms
-	)
+gpos::ioutils::FPerms(const CHAR *szPath, ULONG ulPerms)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -254,11 +227,7 @@ gpos::ioutils::FPerms
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::MkDir
-	(
-	const CHAR *szPath,
-	ULONG ulPerms
-	)
+gpos::ioutils::MkDir(const CHAR *szPath, ULONG ulPerms)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -284,10 +253,7 @@ gpos::ioutils::MkDir
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::RmDir
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::RmDir(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -315,11 +281,7 @@ gpos::ioutils::RmDir
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::Move
-	(
-	const CHAR *szOld,
-	const CHAR *szNew
-	)
+gpos::ioutils::Move(const CHAR *szOld, const CHAR *szNew)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szOld);
@@ -353,10 +315,7 @@ gpos::ioutils::Move
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::Unlink
-	(
-	const CHAR *szPath
-	)
+gpos::ioutils::Unlink(const CHAR *szPath)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -377,12 +336,7 @@ gpos::ioutils::Unlink
 //
 //---------------------------------------------------------------------------
 INT
-gpos::ioutils::IOpen
-	(
-	const CHAR *szPath,
-	INT iMode,
-	INT iPerms
-	)
+gpos::ioutils::IOpen(const CHAR *szPath, INT iMode, INT iPerms)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != szPath);
@@ -404,10 +358,7 @@ gpos::ioutils::IOpen
 //
 //---------------------------------------------------------------------------
 INT
-gpos::ioutils::IClose
-	(
-	INT iFildes
-	)
+gpos::ioutils::IClose(INT iFildes)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 
@@ -428,11 +379,7 @@ gpos::ioutils::IClose
 //
 //---------------------------------------------------------------------------
 INT
-gpos::ioutils::IFStat
-	(
-	INT iFiledes,
-	SFileStat *pstBuf
-	)
+gpos::ioutils::IFStat(INT iFiledes, SFileStat *pstBuf)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pstBuf);
@@ -454,12 +401,7 @@ gpos::ioutils::IFStat
 //
 //---------------------------------------------------------------------------
 INT_PTR
-gpos::ioutils::IWrite
-	(
-	INT iFd,
-	const void *pvBuf,
-	const ULONG_PTR ulpCount
-	)
+gpos::ioutils::IWrite(INT iFd, const void *pvBuf, const ULONG_PTR ulpCount)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pvBuf);
@@ -483,12 +425,7 @@ gpos::ioutils::IWrite
 //
 //---------------------------------------------------------------------------
 INT_PTR
-gpos::ioutils::IRead
-	(
-	INT iFd,
-	void *pvBuf,
-	const ULONG_PTR ulpCount
-	)
+gpos::ioutils::IRead(INT iFd, void *pvBuf, const ULONG_PTR ulpCount)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pvBuf);
@@ -511,10 +448,7 @@ gpos::ioutils::IRead
 //
 //---------------------------------------------------------------------------
 void
-gpos::ioutils::SzMkDTemp
-	(
-	CHAR *szTemplate
-	)
+gpos::ioutils::SzMkDTemp(CHAR *szTemplate)
 {
 	GPOS_ASSERT(NULL != szTemplate);
 
@@ -525,21 +459,22 @@ gpos::ioutils::SzMkDTemp
 
 	GPOS_ASSERT(ulSize > ulNumOfCmp);
 
-	GPOS_ASSERT(0 == clib::IMemCmp("XXXXXX", szTemplate + (ulSize - ulNumOfCmp), ulNumOfCmp));
-#endif	// GPOS_DEBUG
+	GPOS_ASSERT(0 == clib::IMemCmp("XXXXXX", szTemplate + (ulSize - ulNumOfCmp),
+								   ulNumOfCmp));
+#endif  // GPOS_DEBUG
 
-	CHAR* szRes = NULL;
+	CHAR *szRes = NULL;
 
 
 #ifdef GPOS_SunOS
 	// check to simulate I/O error
 	GPOS_CHECK_SIM_IO_ERR(&szRes, mktemp(szTemplate));
 
-	ioutils::MkDir(szTemplate, S_IRUSR  | S_IWUSR  | S_IXUSR);
+	ioutils::MkDir(szTemplate, S_IRUSR | S_IWUSR | S_IXUSR);
 #else
 	// check to simulate I/O error
 	GPOS_CHECK_SIM_IO_ERR(&szRes, mkdtemp(szTemplate));
-#endif // GPOS_SunOS
+#endif  // GPOS_SunOS
 
 	if (NULL == szRes)
 	{
@@ -562,28 +497,26 @@ gpos::ioutils::SzMkDTemp
 //
 //---------------------------------------------------------------------------
 static BOOL
-FSimulateIOErrorInternal
-	(
-	INT iErrno,
-	const CHAR *szFile,
-	ULONG ulLine
-	)
+FSimulateIOErrorInternal(INT iErrno, const CHAR *szFile, ULONG ulLine)
 {
 	BOOL fRes = false;
 
 	ITask *ptsk = ITask::PtskSelf();
-	if (NULL != ptsk &&
-	    ptsk->FTrace(EtraceSimulateIOError) &&
-	    CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem, CException::ExmiIOError) &&
-	    !GPOS_MATCH_EX(ptsk->Perrctxt()->Exc(), CException::ExmaSystem, CException::ExmiIOError))
+	if (NULL != ptsk && ptsk->FTrace(EtraceSimulateIOError) &&
+		CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem,
+										CException::ExmiIOError) &&
+		!GPOS_MATCH_EX(ptsk->Perrctxt()->Exc(), CException::ExmaSystem,
+					   CException::ExmiIOError))
 	{
 		// disable simulation temporarily to log injection
 		CAutoTraceFlag(EtraceSimulateIOError, false);
 
-		CLogger *plogger = dynamic_cast<CLogger*>(ITask::PtskSelf()->Ptskctxt()->PlogErr());
+		CLogger *plogger =
+			dynamic_cast<CLogger *>(ITask::PtskSelf()->Ptskctxt()->PlogErr());
 		if (!plogger->FLogging())
 		{
-			GPOS_TRACE_FORMAT_ERR("Simulating I/O error at %s:%d", szFile, ulLine);
+			GPOS_TRACE_FORMAT_ERR("Simulating I/O error at %s:%d", szFile,
+								  ulLine);
 		}
 
 		errno = iErrno;
@@ -611,13 +544,8 @@ FSimulateIOErrorInternal
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FSimulateIOError
-	(
-	INT *piRes,
-	INT iErrno,
-	const CHAR *szFile,
-	ULONG ulLine
-	)
+gpos::ioutils::FSimulateIOError(INT *piRes, INT iErrno, const CHAR *szFile,
+								ULONG ulLine)
 {
 	GPOS_ASSERT(NULL != piRes);
 
@@ -637,13 +565,8 @@ gpos::ioutils::FSimulateIOError
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::ioutils::FSimulateIOError
-	(
-	CHAR **pszRes,
-	INT iErrno,
-	const CHAR *szFile,
-	ULONG ulLine
-	)
+gpos::ioutils::FSimulateIOError(CHAR **pszRes, INT iErrno, const CHAR *szFile,
+								ULONG ulLine)
 {
 	GPOS_ASSERT(NULL != pszRes);
 
@@ -651,7 +574,6 @@ gpos::ioutils::FSimulateIOError
 
 	return FSimulateIOErrorInternal(iErrno, szFile, ulLine);
 }
-#endif // GPOS_FPSIMULATOR
+#endif  // GPOS_FPSIMULATOR
 
 // EOF
-

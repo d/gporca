@@ -24,82 +24,68 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarArrayCoerceExpr
-	//
-	//	@doc:
-	//		Scalar Array Coerce Expr operator
-	//
-	//---------------------------------------------------------------------------
-	class CScalarArrayCoerceExpr : public CScalarCoerceBase
-	{
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarArrayCoerceExpr
+//
+//	@doc:
+//		Scalar Array Coerce Expr operator
+//
+//---------------------------------------------------------------------------
+class CScalarArrayCoerceExpr : public CScalarCoerceBase
+{
+private:
+	// catalog MDId of the element function
+	IMDId *m_pmdidElementFunc;
 
-		private:
-			// catalog MDId of the element function
-			IMDId *m_pmdidElementFunc;
+	// conversion semantics flag to pass to func
+	BOOL m_fIsExplicit;
 
-			// conversion semantics flag to pass to func
-			BOOL m_fIsExplicit;
+	// private copy ctor
+	CScalarArrayCoerceExpr(const CScalarArrayCoerceExpr &);
 
-			// private copy ctor
-			CScalarArrayCoerceExpr(const CScalarArrayCoerceExpr &);
+public:
+	// ctor
+	CScalarArrayCoerceExpr(IMemoryPool *pmp, IMDId *pmdidElementFunc,
+						   IMDId *pmdidResultType, INT iTypeModifier,
+						   BOOL fIsExplicit, ECoercionForm edxlcf, INT iLoc);
 
-		public:
+	// dtor
+	virtual ~CScalarArrayCoerceExpr();
 
-			// ctor
-			CScalarArrayCoerceExpr
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidElementFunc,
-				IMDId *pmdidResultType,
-				INT iTypeModifier,
-				BOOL fIsExplicit,
-				ECoercionForm edxlcf,
-				INT iLoc
-				);
+	// return metadata id of element coerce function
+	IMDId *
+	PmdidElementFunc() const;
 
-			// dtor
-			virtual
-			~CScalarArrayCoerceExpr();
-		
-			// return metadata id of element coerce function
-			IMDId *PmdidElementFunc() const;
+	BOOL
+	FIsExplicit() const;
 
-			BOOL FIsExplicit() const;
+	virtual EOperatorId
+	Eopid() const;
 
-			virtual
-			EOperatorId Eopid() const;
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const;
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const;
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// match function
-			virtual
-			BOOL FMatch
-				(
-				COperator *pop
-				) const;
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const;
 
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const;
+	// conversion function
+	static CScalarArrayCoerceExpr *
+	PopConvert(COperator *pop);
 
-			// conversion function
-			static
-			CScalarArrayCoerceExpr *PopConvert
-				(
-				COperator *pop
-				);
+};  // class CScalarArrayCoerceExpr
 
-	}; // class CScalarArrayCoerceExpr
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarArrayCoerceExpr_H
+#endif  // !GPOPT_CScalarArrayCoerceExpr_H
 
 // EOF

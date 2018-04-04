@@ -33,22 +33,16 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDatumInt8GPDB::CDatumInt8GPDB
-	(
-	CSystemId sysid,
-	LINT lVal,
-	BOOL fNull
-	)
-	:
-	m_pmdid(NULL),
-	m_lVal(lVal),
-	m_fNull(fNull)
+CDatumInt8GPDB::CDatumInt8GPDB(CSystemId sysid, LINT lVal, BOOL fNull)
+	: m_pmdid(NULL), m_lVal(lVal), m_fNull(fNull)
 {
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
-	IMDId *pmdid = dynamic_cast<const CMDTypeInt8GPDB *>(pmda->PtMDType<IMDTypeInt8>(sysid))->Pmdid();
+	IMDId *pmdid = dynamic_cast<const CMDTypeInt8GPDB *>(
+					   pmda->PtMDType<IMDTypeInt8>(sysid))
+					   ->Pmdid();
 	pmdid->AddRef();
 	m_pmdid = pmdid;
-	
+
 	if (FNull())
 	{
 		// needed for hash computation
@@ -64,19 +58,12 @@ CDatumInt8GPDB::CDatumInt8GPDB
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDatumInt8GPDB::CDatumInt8GPDB
-	(
-	IMDId *pmdid,
-	LINT lVal,
-	BOOL fNull
-	)
-	:
-	m_pmdid(pmdid),
-	m_lVal(lVal),
-	m_fNull(fNull)
+CDatumInt8GPDB::CDatumInt8GPDB(IMDId *pmdid, LINT lVal, BOOL fNull)
+	: m_pmdid(pmdid), m_lVal(lVal), m_fNull(fNull)
 {
 	GPOS_ASSERT(NULL != m_pmdid);
-	GPOS_ASSERT(GPDB_INT8_OID == CMDIdGPDB::PmdidConvert(m_pmdid)->OidObjectId());
+	GPOS_ASSERT(GPDB_INT8_OID ==
+				CMDIdGPDB::PmdidConvert(m_pmdid)->OidObjectId());
 
 	if (FNull())
 	{
@@ -170,7 +157,8 @@ CDatumInt8GPDB::Pmdid() const
 ULONG
 CDatumInt8GPDB::UlHash() const
 {
-	return gpos::UlCombineHashes(m_pmdid->UlHash(), gpos::UlHash<LINT>(&m_lVal));
+	return gpos::UlCombineHashes(m_pmdid->UlHash(),
+								 gpos::UlHash<LINT>(&m_lVal));
 }
 
 
@@ -183,11 +171,7 @@ CDatumInt8GPDB::UlHash() const
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-CDatumInt8GPDB::Pstr
-	(
-	IMemoryPool *pmp
-	)
-	const
+CDatumInt8GPDB::Pstr(IMemoryPool *pmp) const
 {
 	CWStringDynamic str(pmp);
 	if (!FNull())
@@ -211,25 +195,22 @@ CDatumInt8GPDB::Pstr
 //
 //---------------------------------------------------------------------------
 BOOL
-CDatumInt8GPDB::FMatch
-	(
-	const IDatum *pdatum
-	)
-	const
+CDatumInt8GPDB::FMatch(const IDatum *pdatum) const
 {
-	if(!m_pmdid->FEquals(pdatum->Pmdid()))
+	if (!m_pmdid->FEquals(pdatum->Pmdid()))
 	{
 		return false;
 	}
 
-	const CDatumInt8GPDB *pdatumInt8 = dynamic_cast<const CDatumInt8GPDB *>(pdatum);
+	const CDatumInt8GPDB *pdatumInt8 =
+		dynamic_cast<const CDatumInt8GPDB *>(pdatum);
 
-	if(!pdatumInt8->FNull() && !FNull())
+	if (!pdatumInt8->FNull() && !FNull())
 	{
 		return (pdatumInt8->LValue() == LValue());
 	}
 
-	if(pdatumInt8->FNull() && FNull())
+	if (pdatumInt8->FNull() && FNull())
 	{
 		return true;
 	}
@@ -246,11 +227,7 @@ CDatumInt8GPDB::FMatch
 //
 //---------------------------------------------------------------------------
 IDatum *
-CDatumInt8GPDB::PdatumCopy
-	(
-	IMemoryPool *pmp
-	)
-	const
+CDatumInt8GPDB::PdatumCopy(IMemoryPool *pmp) const
 {
 	m_pmdid->AddRef();
 	return GPOS_NEW(pmp) CDatumInt8GPDB(m_pmdid, m_lVal, m_fNull);
@@ -266,11 +243,7 @@ CDatumInt8GPDB::PdatumCopy
 //
 //---------------------------------------------------------------------------
 IOstream &
-CDatumInt8GPDB::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CDatumInt8GPDB::OsPrint(IOstream &os) const
 {
 	if (!FNull())
 	{
@@ -285,4 +258,3 @@ CDatumInt8GPDB::OsPrint
 }
 
 // EOF
-

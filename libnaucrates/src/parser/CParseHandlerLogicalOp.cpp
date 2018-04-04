@@ -25,14 +25,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerLogicalOp::CParseHandlerLogicalOp
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerOp(pmp, pphm, pphRoot)
+CParseHandlerLogicalOp::CParseHandlerLogicalOp(IMemoryPool *pmp,
+											   CParseHandlerManager *pphm,
+											   CParseHandlerBase *pphRoot)
+	: CParseHandlerOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -47,16 +43,14 @@ CParseHandlerLogicalOp::CParseHandlerLogicalOp
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalOp::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerLogicalOp::StartElement(const XMLCh *const xmlszUri,
+									 const XMLCh *const xmlszLocalname,
+									 const XMLCh *const xmlszQname,
+									 const Attributes &attrs)
 {
 	// instantiate the parse handler
-	CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+	CParseHandlerBase *pph =
+		CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
 
 	GPOS_ASSERT(NULL != pph);
 
@@ -78,12 +72,10 @@ CParseHandlerLogicalOp::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalOp::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const, // xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerLogicalOp::EndElement(const XMLCh *const,  // xmlszUri,
+								   const XMLCh *const,  // xmlszLocalname,
+								   const XMLCh *const   // xmlszQname
+)
 {
 	GPOS_ASSERT(!"Invalid call of endElement inside CParseHandlerLogicalOp");
 }

@@ -13,63 +13,62 @@
 
 #include "gpos/types.h"
 
-#define GPOS_FILE_NAME_BUF_SIZE   (1024)
-#define GPOS_FILE_DESCR_INVALID   (-1)
+#define GPOS_FILE_NAME_BUF_SIZE (1024)
+#define GPOS_FILE_DESCR_INVALID (-1)
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CFileDescriptor
-	//
-	//	@doc:
-	//		File handler abstraction;
-	//
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CFileDescriptor
+//
+//	@doc:
+//		File handler abstraction;
+//
+//---------------------------------------------------------------------------
 
-	class CFileDescriptor
+class CFileDescriptor
+{
+private:
+	// file descriptor
+	INT m_iFileDescr;
+
+	// no copy ctor
+	CFileDescriptor(const CFileDescriptor &);
+
+protected:
+	// ctor -- accessible through inheritance only
+	CFileDescriptor();
+
+	// dtor -- accessible through inheritance only
+	virtual ~CFileDescriptor();
+
+	// get file descriptor
+	INT
+	IFileDescr() const
 	{
-		private:
+		return m_iFileDescr;
+	}
 
-			// file descriptor
-			INT m_iFileDescr;
+	// open file
+	void
+	OpenInternal(const CHAR *szPath, ULONG ulMode, ULONG ulPerms);
 
-			// no copy ctor
-			CFileDescriptor(const CFileDescriptor&);
+	// close file
+	void
+	CloseInternal();
 
-		protected:
+public:
+	// check if file is open
+	BOOL
+	FOpened() const
+	{
+		return (GPOS_FILE_DESCR_INVALID != m_iFileDescr);
+	}
 
-			// ctor -- accessible through inheritance only
-			CFileDescriptor();
+};  // class CFile
+}  // namespace gpos
 
-			// dtor -- accessible through inheritance only
-			virtual
-			~CFileDescriptor();
-
-			// get file descriptor
-			INT IFileDescr() const
-			{
-				return m_iFileDescr;
-			}
-
-			// open file
-			void OpenInternal(const CHAR *szPath, ULONG ulMode, ULONG ulPerms);
-
-			// close file
-			void CloseInternal();
-
-		public:
-
-			// check if file is open
-			BOOL FOpened() const
-			{
-				return (GPOS_FILE_DESCR_INVALID != m_iFileDescr);
-			}
-
-	};	// class CFile
-}
-
-#endif // !GPOS_CFile_H
+#endif  // !GPOS_CFile_H
 
 // EOF
-

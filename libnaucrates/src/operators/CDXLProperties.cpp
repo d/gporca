@@ -22,10 +22,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLProperties::CDXLProperties()
-	:
-	m_pdxlstatsderrel(NULL)
-{}
+CDXLProperties::CDXLProperties() : m_pdxlstatsderrel(NULL)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -49,10 +48,7 @@ CDXLProperties::~CDXLProperties()
 //
 //---------------------------------------------------------------------------
 void
-CDXLProperties::SetStats
-	(
-	CDXLStatsDerivedRelation *pdxlstatsderrel
-	)
+CDXLProperties::SetStats(CDXLStatsDerivedRelation *pdxlstatsderrel)
 {
 	// allow setting properties only once
 	GPOS_ASSERT(NULL == m_pdxlstatsderrel);
@@ -83,11 +79,7 @@ CDXLProperties::Pdxlstatsderrel() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLProperties::SerializePropertiesToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLProperties::SerializePropertiesToDXL(CXMLSerializer *pxmlser) const
 {
 	SerializeStatsToDXL(pxmlser);
 }
@@ -101,11 +93,7 @@ CDXLProperties::SerializePropertiesToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLProperties::SerializeStatsToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLProperties::SerializeStatsToDXL(CXMLSerializer *pxmlser) const
 {
 	if (NULL != m_pdxlstatsderrel)
 	{

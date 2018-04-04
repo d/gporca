@@ -30,14 +30,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerLogicalGet::CParseHandlerLogicalGet
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerLogicalOp(pmp, pphm, pphRoot)
+CParseHandlerLogicalGet::CParseHandlerLogicalGet(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerLogicalOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -50,22 +46,22 @@ CParseHandlerLogicalGet::CParseHandlerLogicalGet
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalGet::StartElement
-	(
-	const XMLCh* const xmlszLocalname,
-	Edxltoken edxltoken
-	)
+CParseHandlerLogicalGet::StartElement(const XMLCh *const xmlszLocalname,
+									  Edxltoken edxltoken)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken), xmlszLocalname))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// create child node parsers
 
 	// parse handler for table descriptor
-	CParseHandlerBase *pphTD = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
+	CParseHandlerBase *pphTD = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphTD);
 
 	// store child parse handlers in array
@@ -81,13 +77,11 @@ CParseHandlerLogicalGet::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalGet::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& //attrs
-	)
+CParseHandlerLogicalGet::StartElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const,  // xmlszQname
+									  const Attributes &   //attrs
+)
 {
 	StartElement(xmlszLocalname, EdxltokenLogicalGet);
 }
@@ -101,19 +95,19 @@ CParseHandlerLogicalGet::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalGet::EndElement
-	(
-	const XMLCh* const xmlszLocalname,
-	Edxltoken edxltoken
-	)
+CParseHandlerLogicalGet::EndElement(const XMLCh *const xmlszLocalname,
+									Edxltoken edxltoken)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken), xmlszLocalname))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CParseHandlerTableDescr *pphTD = dynamic_cast<CParseHandlerTableDescr*>((*this)[0]);
+	CParseHandlerTableDescr *pphTD =
+		dynamic_cast<CParseHandlerTableDescr *>((*this)[0]);
 
 	GPOS_ASSERT(NULL != pphTD->Pdxltabdesc());
 
@@ -122,17 +116,19 @@ CParseHandlerLogicalGet::EndElement
 
 	if (EdxltokenLogicalGet == edxltoken)
 	{
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLLogicalGet(m_pmp, pdxltabdesc));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLLogicalGet(m_pmp, pdxltabdesc));
 	}
 	else
 	{
 		GPOS_ASSERT(EdxltokenLogicalExternalGet == edxltoken);
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLLogicalExternalGet(m_pmp, pdxltabdesc));
+		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(
+			m_pmp, GPOS_NEW(m_pmp) CDXLLogicalExternalGet(m_pmp, pdxltabdesc));
 	}
 
 #ifdef GPOS_DEBUG
 	m_pdxln->Pdxlop()->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();
@@ -147,12 +143,10 @@ CParseHandlerLogicalGet::EndElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalGet::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerLogicalGet::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
 	EndElement(xmlszLocalname, EdxltokenLogicalGet);
 }

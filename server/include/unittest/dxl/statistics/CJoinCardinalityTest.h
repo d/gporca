@@ -19,107 +19,104 @@
 
 namespace gpnaucrates
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CJoinCardinalityTest
+//
+//	@doc:
+//		Static unit tests for join cardinality estimation
+//
+//---------------------------------------------------------------------------
+class CJoinCardinalityTest
+{
+	// shorthand for functions for generating the join predicates
+	typedef DrgPstatspredjoin *(FnPdrgpstatjoin)(IMemoryPool *pmp);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CJoinCardinalityTest
-	//
-	//	@doc:
-	//		Static unit tests for join cardinality estimation
-	//
-	//---------------------------------------------------------------------------
-	class CJoinCardinalityTest
+private:
+	// test case for join evaluation
+	struct SStatsJoinSTestCase
 	{
-		// shorthand for functions for generating the join predicates
-		typedef DrgPstatspredjoin *(FnPdrgpstatjoin)(IMemoryPool *pmp);
+		// input stats dxl file
+		const CHAR *m_szInputFile;
 
-		private:
+		// output stats dxl file
+		const CHAR *m_szOutputFile;
 
-			// test case for join evaluation
-			struct SStatsJoinSTestCase
-			{
-				// input stats dxl file
-				const CHAR *m_szInputFile;
+		// is the join a left outer join
+		BOOL m_fLeftOuterJoin;
 
-				// output stats dxl file
-				const CHAR *m_szOutputFile;
+		// join predicate generation function pointer
+		FnPdrgpstatjoin *m_pf;
+	};  // SStatsJoinSTestCase
 
-				// is the join a left outer join
-				BOOL m_fLeftOuterJoin;
+	// test case for join evaluation with NDVRemain
+	struct SStatsJoinNDVRemainTestCase
+	{
+		// column identifier for the first histogram
+		ULONG m_ulCol1;
 
-				// join predicate generation function pointer
-				FnPdrgpstatjoin *m_pf;
-			}; // SStatsJoinSTestCase
+		// column identifier for the second histogram
+		ULONG m_ulCol2;
 
-			// test case for join evaluation with NDVRemain
-			struct SStatsJoinNDVRemainTestCase
-			{
-				// column identifier for the first histogram
-				ULONG m_ulCol1;
+		// number of buckets in the output
+		ULONG m_ulBucketsJoin;
 
-				// column identifier for the second histogram
-				ULONG m_ulCol2;
+		// cumulative number of distinct values in the buckets of the join histogram
+		CDouble m_dNDVBucketsJoin;
 
-				// number of buckets in the output
-				ULONG m_ulBucketsJoin;
+		// NDV remain of the join histogram
+		CDouble m_dNDVRemainJoin;
 
-				// cumulative number of distinct values in the buckets of the join histogram
-				CDouble m_dNDVBucketsJoin;
+		// frequency of the NDV remain in the join histogram
+		CDouble m_dFreqRemainJoin;
+	};  // SStatsJoinNDVRemainTestCase
 
-				// NDV remain of the join histogram
-				CDouble m_dNDVRemainJoin;
+	// int4 histogram test cases
+	struct SHistogramTestCase
+	{
+		// number of buckets in the histogram
+		ULONG m_ulBuckets;
 
-				// frequency of the NDV remain in the join histogram
-				CDouble m_dFreqRemainJoin;
-			}; // SStatsJoinNDVRemainTestCase
+		// number of distinct values per bucket
+		CDouble m_dNDVPerBucket;
 
-			// int4 histogram test cases
-			struct SHistogramTestCase
-			{
-				// number of buckets in the histogram
-				ULONG m_ulBuckets;
+		// percentage of tuples that are null
+		BOOL m_fNullFreq;
 
-				// number of distinct values per bucket
-				CDouble m_dNDVPerBucket;
+		// number of remain distinct values
+		CDouble m_dNDVRemain;
 
-				// percentage of tuples that are null
-				BOOL m_fNullFreq;
+	};  // SHistogramTestCase
 
-				// number of remain distinct values
-				CDouble m_dNDVRemain;
+	// helper method to generate a single join predicate
+	static DrgPstatspredjoin *
+	PdrgpstatspredjoinSingleJoinPredicate(IMemoryPool *pmp);
 
-			}; // SHistogramTestCase
+	// helper method to generate generate multiple join predicates
+	static DrgPstatspredjoin *
+	PdrgpstatspredjoinMultiplePredicates(IMemoryPool *pmp);
 
-			// helper method to generate a single join predicate
-			static
-			DrgPstatspredjoin *PdrgpstatspredjoinSingleJoinPredicate(IMemoryPool *pmp);
+	// helper method to generate join predicate over columns that contain null values
+	static DrgPstatspredjoin *
+	PdrgpstatspredjoinNullableCols(IMemoryPool *pmp);
 
-			// helper method to generate generate multiple join predicates
-			static
-			DrgPstatspredjoin *PdrgpstatspredjoinMultiplePredicates(IMemoryPool *pmp);
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
 
-			// helper method to generate join predicate over columns that contain null values
-			static
-			DrgPstatspredjoin *PdrgpstatspredjoinNullableCols(IMemoryPool *pmp);
+	// test join cardinality estimation over histograms with NDVRemain information
+	static GPOS_RESULT
+	EresUnittest_JoinNDVRemain();
 
-		public:
+	// join buckets tests
+	static GPOS_RESULT
+	EresUnittest_Join();
 
-			// unittests
-			static
-			GPOS_RESULT EresUnittest();
+};  // class CJoinCardinalityTest
+}  // namespace gpnaucrates
 
-			// test join cardinality estimation over histograms with NDVRemain information
-			static
-			GPOS_RESULT EresUnittest_JoinNDVRemain();
-
-			// join buckets tests
-			static
-			GPOS_RESULT EresUnittest_Join();
-
-	}; // class CJoinCardinalityTest
-}
-
-#endif // !GPNAUCRATES_CJoinCardinalityTest_H
+#endif  // !GPNAUCRATES_CJoinCardinalityTest_H
 
 
 // EOF

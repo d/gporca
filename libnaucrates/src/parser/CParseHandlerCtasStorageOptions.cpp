@@ -27,17 +27,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCtasStorageOptions::CParseHandlerCtasStorageOptions
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pmdnameTablespace(NULL),
-	m_pdxlctasopt(NULL),
-	m_pdrgpctasopt(NULL)
+CParseHandlerCtasStorageOptions::CParseHandlerCtasStorageOptions(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_pmdnameTablespace(NULL),
+	  m_pdxlctasopt(NULL),
+	  m_pdrgpctasopt(NULL)
 {
 }
 
@@ -63,42 +58,51 @@ CParseHandlerCtasStorageOptions::~CParseHandlerCtasStorageOptions()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCtasStorageOptions::StartElement
-	(
-	const XMLCh* const , // xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerCtasStorageOptions::StartElement(const XMLCh *const,  // xmlszUri
+											  const XMLCh *const xmlszLocalname,
+											  const XMLCh *const,  // xmlszQname
+											  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTASOptions), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTASOptions), xmlszLocalname))
 	{
-		const XMLCh *xmlszTablespace = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenTablespace));
+		const XMLCh *xmlszTablespace =
+			attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenTablespace));
 		if (NULL != xmlszTablespace)
 		{
-			m_pmdnameTablespace = CDXLUtils::PmdnameFromXmlsz(m_pphm->Pmm(), xmlszTablespace);
+			m_pmdnameTablespace =
+				CDXLUtils::PmdnameFromXmlsz(m_pphm->Pmm(), xmlszTablespace);
 		}
-		
+
 		m_ectascommit = CDXLOperatorFactory::EctascommitFromAttr(attrs);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTASOption), xmlszLocalname))
+	else if (0 ==
+			 XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTASOption), xmlszLocalname))
 	{
 		// parse option name and value
-		ULONG ulType = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCtasOptionType, EdxltokenCTASOption);
-		CWStringBase *pstrName = CDXLOperatorFactory::PstrValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenName, EdxltokenCTASOption);
-		CWStringBase *pstrValue = CDXLOperatorFactory::PstrValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenValue, EdxltokenCTASOption);
-		BOOL fNull = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenIsNull, EdxltokenCTASOption);
-		
+		ULONG ulType = CDXLOperatorFactory::UlValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenCtasOptionType, EdxltokenCTASOption);
+		CWStringBase *pstrName = CDXLOperatorFactory::PstrValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenName, EdxltokenCTASOption);
+		CWStringBase *pstrValue = CDXLOperatorFactory::PstrValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenValue, EdxltokenCTASOption);
+		BOOL fNull = CDXLOperatorFactory::FValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenIsNull, EdxltokenCTASOption);
+
 		if (NULL == m_pdrgpctasopt)
 		{
-			m_pdrgpctasopt = GPOS_NEW(m_pmp) CDXLCtasStorageOptions::DrgPctasOpt(m_pmp);
+			m_pdrgpctasopt =
+				GPOS_NEW(m_pmp) CDXLCtasStorageOptions::DrgPctasOpt(m_pmp);
 		}
-		m_pdrgpctasopt->Append(
-				GPOS_NEW(m_pmp) CDXLCtasStorageOptions::CDXLCtasOption(ulType, pstrName, pstrValue, fNull));
+		m_pdrgpctasopt->Append(GPOS_NEW(m_pmp)
+								   CDXLCtasStorageOptions::CDXLCtasOption(
+									   ulType, pstrName, pstrValue, fNull));
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -112,22 +116,25 @@ CParseHandlerCtasStorageOptions::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCtasStorageOptions::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerCtasStorageOptions::EndElement(const XMLCh *const,  // xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const  // xmlszQname
+)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTASOptions), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTASOptions), xmlszLocalname))
 	{
-		m_pdxlctasopt = GPOS_NEW(m_pmp) CDXLCtasStorageOptions(m_pmdnameTablespace, m_ectascommit, m_pdrgpctasopt);
+		m_pdxlctasopt = GPOS_NEW(m_pmp) CDXLCtasStorageOptions(
+			m_pmdnameTablespace, m_ectascommit, m_pdrgpctasopt);
 		// deactivate handler
 		m_pphm->DeactivateHandler();
 	}
-	else if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTASOption), xmlszLocalname))
+	else if (0 !=
+			 XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTASOption), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }

@@ -31,15 +31,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMetadataColumns::CParseHandlerMetadataColumns
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdrgpmdcol(NULL)
+CParseHandlerMetadataColumns::CParseHandlerMetadataColumns(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pdrgpmdcol(NULL)
 {
 }
 
@@ -65,37 +59,39 @@ CParseHandlerMetadataColumns::~CParseHandlerMetadataColumns()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMetadataColumns::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerMetadataColumns::StartElement(const XMLCh *const xmlszUri,
+										   const XMLCh *const xmlszLocalname,
+										   const XMLCh *const xmlszQname,
+										   const Attributes &attrs)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenColumns), xmlszLocalname))
+	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenColumns),
+									  xmlszLocalname))
 	{
 		// start of a columns' list
 		GPOS_ASSERT(NULL == m_pdrgpmdcol);
-		
+
 		m_pdrgpmdcol = GPOS_NEW(m_pmp) DrgPmdcol(m_pmp);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenColumn), xmlszLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenColumn), xmlszLocalname))
 	{
 		// column list must be initialized already
 		GPOS_ASSERT(NULL != m_pdrgpmdcol);
-		
+
 		// activate parse handler to parse the column info
-		CParseHandlerBase *pphCol = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumn), m_pphm, this);
-		
+		CParseHandlerBase *pphCol = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumn), m_pphm,
+			this);
+
 		m_pphm->ActivateParseHandler(pphCol);
 		this->Append(pphCol);
-		
+
 		pphCol->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -109,29 +105,29 @@ CParseHandlerMetadataColumns::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMetadataColumns::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerMetadataColumns::EndElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const  // xmlszQname
+)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenColumns), xmlszLocalname))
+	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenColumns),
+									  xmlszLocalname))
 	{
 		// end of the columns' list
 		GPOS_ASSERT(NULL != m_pdrgpmdcol);
-		
+
 		const ULONG ulSize = this->UlLength();
 		// add parsed columns to the list
 		for (ULONG ul = 0; ul < ulSize; ul++)
 		{
-			CParseHandlerMetadataColumn *pphCol = dynamic_cast<CParseHandlerMetadataColumn *>((*this)[ul]);
-			
+			CParseHandlerMetadataColumn *pphCol =
+				dynamic_cast<CParseHandlerMetadataColumn *>((*this)[ul]);
+
 			GPOS_ASSERT(NULL != pphCol->Pmdcol());
-			
+
 			CMDColumn *pmdcol = pphCol->Pmdcol();
 			pmdcol->AddRef();
-			
+
 			m_pdrgpmdcol->Append(pmdcol);
 		}
 		// deactivate handler
@@ -139,7 +135,8 @@ CParseHandlerMetadataColumns::EndElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }

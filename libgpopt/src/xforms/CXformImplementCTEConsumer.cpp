@@ -26,21 +26,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementCTEConsumer::CXformImplementCTEConsumer
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)
-				)
-		)
-{}
+CXformImplementCTEConsumer::CXformImplementCTEConsumer(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -51,11 +43,8 @@ CXformImplementCTEConsumer::CXformImplementCTEConsumer
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformImplementCTEConsumer::Exfp
-	(
-	CExpressionHandle & // exprhdl
-	)
-	const
+CXformImplementCTEConsumer::Exfp(CExpressionHandle &  // exprhdl
+								 ) const
 {
 	return CXform::ExfpHigh;
 }
@@ -70,19 +59,16 @@ CXformImplementCTEConsumer::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementCTEConsumer::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementCTEConsumer::Transform(CXformContext *pxfctxt,
+									  CXformResult *pxfres,
+									  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CLogicalCTEConsumer *popCTEConsumer = CLogicalCTEConsumer::PopConvert(pexpr->Pop());
+	CLogicalCTEConsumer *popCTEConsumer =
+		CLogicalCTEConsumer::PopConvert(pexpr->Pop());
 	IMemoryPool *pmp = pxfctxt->Pmp();
 
 	// extract components for alternative
@@ -96,12 +82,8 @@ CXformImplementCTEConsumer::Transform
 	phmulcr->AddRef();
 
 	// create physical CTE Consumer
-	CExpression *pexprAlt =
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalCTEConsumer(pmp, ulId, pdrgpcr, phmulcr)
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CPhysicalCTEConsumer(pmp, ulId, pdrgpcr, phmulcr));
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);

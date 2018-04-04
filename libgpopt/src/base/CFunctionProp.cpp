@@ -23,22 +23,18 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CFunctionProp::CFunctionProp
-	(
-	IMDFunction::EFuncStbl efsStability,
-	IMDFunction::EFuncDataAcc efdaDataAccess,
-	BOOL fHasVolatileFunctionScan,
-	BOOL fScan
-	)
-	:
-	m_efs(efsStability),
-	m_efda(efdaDataAccess),
-	m_fHasVolatileFunctionScan(fHasVolatileFunctionScan),
-	m_fScan(fScan)
+CFunctionProp::CFunctionProp(IMDFunction::EFuncStbl efsStability,
+							 IMDFunction::EFuncDataAcc efdaDataAccess,
+							 BOOL fHasVolatileFunctionScan, BOOL fScan)
+	: m_efs(efsStability),
+	  m_efda(efdaDataAccess),
+	  m_fHasVolatileFunctionScan(fHasVolatileFunctionScan),
+	  m_fScan(fScan)
 {
 	GPOS_ASSERT(IMDFunction::EfsSentinel > efsStability);
 	GPOS_ASSERT(IMDFunction::EfdaSentinel > efdaDataAccess);
-	GPOS_ASSERT_IMP(fScan && IMDFunction::EfsVolatile == efsStability, fHasVolatileFunctionScan);
+	GPOS_ASSERT_IMP(fScan && IMDFunction::EfsVolatile == efsStability,
+					fHasVolatileFunctionScan);
 }
 
 //---------------------------------------------------------------------------
@@ -72,8 +68,8 @@ CFunctionProp::FMasterOnly() const
 	// current return statement once all function properties are fixed
 	//return (IMDFunction::EfdaContainsSQL < m_efda || (m_fScan && IMDFunction::EfsVolatile == m_efs));
 
-	return m_fScan && (IMDFunction::EfsVolatile == m_efs || IMDFunction::EfsStable == m_efs);
-
+	return m_fScan && (IMDFunction::EfsVolatile == m_efs ||
+					   IMDFunction::EfsStable == m_efs);
 }
 
 //---------------------------------------------------------------------------
@@ -85,14 +81,11 @@ CFunctionProp::FMasterOnly() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CFunctionProp::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CFunctionProp::OsPrint(IOstream &os) const
 {
-	const CHAR *rgszStability[] = {"Immutable",	"Stable", "Volatile"};
-	const CHAR *rgszDataAccess[] = {"NoSQL", "ContainsSQL",	"ReadsSQLData",	"ModifiesSQLData"};
+	const CHAR *rgszStability[] = {"Immutable", "Stable", "Volatile"};
+	const CHAR *rgszDataAccess[] = {"NoSQL", "ContainsSQL", "ReadsSQLData",
+									"ModifiesSQLData"};
 
 	os << rgszStability[m_efs] << ", " << rgszDataAccess[m_efda];
 	return os;

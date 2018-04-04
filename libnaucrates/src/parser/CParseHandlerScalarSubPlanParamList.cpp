@@ -6,7 +6,7 @@
 //		CParseHandlerScalarSubPlanParamList.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing the ParamList
 //		of a scalar SubPlan
 //---------------------------------------------------------------------------
@@ -32,14 +32,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarSubPlanParamList::CParseHandlerScalarSubPlanParamList
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarSubPlanParamList::CParseHandlerScalarSubPlanParamList(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 	m_pdrgdxlcr = GPOS_NEW(pmp) DrgPdxlcr(pmp);
 	m_fParamList = false;
@@ -67,28 +62,30 @@ CParseHandlerScalarSubPlanParamList::~CParseHandlerScalarSubPlanParamList()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanParamList::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes &attrs
-	)
+CParseHandlerScalarSubPlanParamList::StartElement(
+	const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+	const XMLCh *const xmlszQname, const Attributes &attrs)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParamList), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParamList),
+				 xmlszLocalname))
 	{
 		// we can't have seen a paramlist already
 		GPOS_ASSERT(!m_fParamList);
 		// start the paramlist
 		m_fParamList = true;
 	}
-	else if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam), xmlszLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam),
+					  xmlszLocalname))
 	{
 		// we must have seen a paramlist already
 		GPOS_ASSERT(m_fParamList);
 
 		// start new param
-		CParseHandlerBase *pphParam = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam), m_pphm, this);
+		CParseHandlerBase *pphParam = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParam), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pphParam);
 
 		// store parse handler
@@ -98,7 +95,8 @@ CParseHandlerScalarSubPlanParamList::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -112,16 +110,19 @@ CParseHandlerScalarSubPlanParamList::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanParamList::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarSubPlanParamList::EndElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParamList), xmlszLocalname) && NULL != m_pdxln)
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanParamList),
+				 xmlszLocalname) &&
+		NULL != m_pdxln)
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -129,7 +130,8 @@ CParseHandlerScalarSubPlanParamList::EndElement
 	// add constructed children from child parse handlers
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerScalarSubPlanParam *pphParam = dynamic_cast<CParseHandlerScalarSubPlanParam *>((*this)[ul]);
+		CParseHandlerScalarSubPlanParam *pphParam =
+			dynamic_cast<CParseHandlerScalarSubPlanParam *>((*this)[ul]);
 
 		CDXLColRef *pdxlcr = pphParam->Pdxlcr();
 		pdxlcr->AddRef();

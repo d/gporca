@@ -27,14 +27,10 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalInnerHashJoin::CPhysicalInnerHashJoin
-	(
-	IMemoryPool *pmp,
-	DrgPexpr *pdrgpexprOuterKeys,
-	DrgPexpr *pdrgpexprInnerKeys
-	)
-	:
-	CPhysicalHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
+CPhysicalInnerHashJoin::CPhysicalInnerHashJoin(IMemoryPool *pmp,
+											   DrgPexpr *pdrgpexprOuterKeys,
+											   DrgPexpr *pdrgpexprInnerKeys)
+	: CPhysicalHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
 {
 }
 
@@ -61,26 +57,23 @@ CPhysicalInnerHashJoin::~CPhysicalInnerHashJoin()
 //
 //---------------------------------------------------------------------------
 CDistributionSpecHashed *
-CPhysicalInnerHashJoin::PdshashedCreateMatching
-	(
-	IMemoryPool *pmp,
-	CDistributionSpecHashed *pdshashed,
-	ULONG ulSourceChild // index of child that delivered the given hashed distribution
-	)
-	const
+CPhysicalInnerHashJoin::PdshashedCreateMatching(
+	IMemoryPool *pmp, CDistributionSpecHashed *pdshashed,
+	ULONG
+		ulSourceChild  // index of child that delivered the given hashed distribution
+	) const
 {
 	GPOS_ASSERT(NULL != pdshashed);
 
- 	CDistributionSpecHashed *pdshashedMatching = PdshashedMatching(pmp, pdshashed, ulSourceChild);
- 	pdshashed->Pdrgpexpr()->AddRef();
+	CDistributionSpecHashed *pdshashedMatching =
+		PdshashedMatching(pmp, pdshashed, ulSourceChild);
+	pdshashed->Pdrgpexpr()->AddRef();
 
 	// return a hashed distribution equivalent to created matching distribution
- 	return GPOS_NEW(pmp) CDistributionSpecHashed
- 			 (
- 			 pdshashed->Pdrgpexpr(),
- 			 pdshashed->FNullsColocated(),
- 			 pdshashedMatching // matching distribution spec is equivalent to passed distribution spec
- 			 );
+	return GPOS_NEW(pmp) CDistributionSpecHashed(
+		pdshashed->Pdrgpexpr(), pdshashed->FNullsColocated(),
+		pdshashedMatching  // matching distribution spec is equivalent to passed distribution spec
+	);
 }
 
 
@@ -94,30 +87,29 @@ CPhysicalInnerHashJoin::PdshashedCreateMatching
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalInnerHashJoin::PdsDeriveFromHashedChildren
-	(
-	IMemoryPool *pmp,
-	CDistributionSpec *pdsOuter,
-	CDistributionSpec *pdsInner
-	)
-	const
+CPhysicalInnerHashJoin::PdsDeriveFromHashedChildren(
+	IMemoryPool *pmp, CDistributionSpec *pdsOuter,
+	CDistributionSpec *pdsInner) const
 {
 	GPOS_ASSERT(NULL != pdsOuter);
 	GPOS_ASSERT(NULL != pdsInner);
 
-	CDistributionSpecHashed *pdshashedOuter = CDistributionSpecHashed::PdsConvert(pdsOuter);
- 	CDistributionSpecHashed *pdshashedInner = CDistributionSpecHashed::PdsConvert(pdsInner);
+	CDistributionSpecHashed *pdshashedOuter =
+		CDistributionSpecHashed::PdsConvert(pdsOuter);
+	CDistributionSpecHashed *pdshashedInner =
+		CDistributionSpecHashed::PdsConvert(pdsInner);
 
 	if (CUtils::FContains(PdrgpexprOuterKeys(), pdshashedOuter->Pdrgpexpr()) &&
- 		CUtils::FContains(PdrgpexprInnerKeys(), pdshashedInner->Pdrgpexpr()))
- 	{
- 	 	// if both sides are hashed on subsets of hash join keys, join's output can be
- 		// seen as distributed on outer spec or (equivalently) on inner spec,
- 	 	// in this case, we create a new spec based on outer side and mark inner
- 		// side as an equivalent one,
+		CUtils::FContains(PdrgpexprInnerKeys(), pdshashedInner->Pdrgpexpr()))
+	{
+		// if both sides are hashed on subsets of hash join keys, join's output can be
+		// seen as distributed on outer spec or (equivalently) on inner spec,
+		// in this case, we create a new spec based on outer side and mark inner
+		// side as an equivalent one,
 
-		return PdshashedCreateMatching(pmp, pdshashedOuter, 0 /*ulSourceChild*/);
- 	}
+		return PdshashedCreateMatching(pmp, pdshashedOuter,
+									   0 /*ulSourceChild*/);
+	}
 
 	return NULL;
 }
@@ -132,17 +124,14 @@ CPhysicalInnerHashJoin::PdsDeriveFromHashedChildren
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalInnerHashJoin::PdsDeriveFromReplicatedOuter
-	(
+CPhysicalInnerHashJoin::PdsDeriveFromReplicatedOuter(
 	IMemoryPool *pmp,
 	CDistributionSpec *
 #ifdef GPOS_DEBUG
-	pdsOuter
-#endif // GPOS_DEBUG
+		pdsOuter
+#endif  // GPOS_DEBUG
 	,
-	CDistributionSpec *pdsInner
-	)
-	const
+	CDistributionSpec *pdsInner) const
 {
 	GPOS_ASSERT(NULL != pdsOuter);
 	GPOS_ASSERT(NULL != pdsInner);
@@ -151,12 +140,15 @@ CPhysicalInnerHashJoin::PdsDeriveFromReplicatedOuter
 	// if outer child is replicated, join results distribution is defined by inner child
 	if (CDistributionSpec::EdtHashed == pdsInner->Edt())
 	{
-		CDistributionSpecHashed *pdshashedInner = CDistributionSpecHashed::PdsConvert(pdsInner);
-		if (CUtils::FContains(PdrgpexprInnerKeys(), pdshashedInner->Pdrgpexpr()))
+		CDistributionSpecHashed *pdshashedInner =
+			CDistributionSpecHashed::PdsConvert(pdsInner);
+		if (CUtils::FContains(PdrgpexprInnerKeys(),
+							  pdshashedInner->Pdrgpexpr()))
 		{
 			// inner child is hashed on a subset of inner hashkeys,
-		 	// return a hashed distribution equivalent to a matching outer distribution
-			return PdshashedCreateMatching(pmp, pdshashedInner, 1 /*ulSourceChild*/);
+			// return a hashed distribution equivalent to a matching outer distribution
+			return PdshashedCreateMatching(pmp, pdshashedInner,
+										   1 /*ulSourceChild*/);
 		}
 	}
 
@@ -176,31 +168,30 @@ CPhysicalInnerHashJoin::PdsDeriveFromReplicatedOuter
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalInnerHashJoin::PdsDeriveFromHashedOuter
-	(
-	IMemoryPool *pmp,
-	CDistributionSpec *pdsOuter,
-	CDistributionSpec *
+CPhysicalInnerHashJoin::PdsDeriveFromHashedOuter(IMemoryPool *pmp,
+												 CDistributionSpec *pdsOuter,
+												 CDistributionSpec *
 #ifdef GPOS_DEBUG
-	pdsInner
-#endif // GPOS_DEBUG
-	)
-	const
+													 pdsInner
+#endif  // GPOS_DEBUG
+												 ) const
 {
 	GPOS_ASSERT(NULL != pdsOuter);
 	GPOS_ASSERT(NULL != pdsInner);
 
 	GPOS_ASSERT(CDistributionSpec::EdtHashed == pdsOuter->Edt());
 
-	 CDistributionSpecHashed *pdshashedOuter = CDistributionSpecHashed::PdsConvert(pdsOuter);
-	 if (CUtils::FContains(PdrgpexprOuterKeys(), pdshashedOuter->Pdrgpexpr()))
-	 {
-	 	// outer child is hashed on a subset of outer hashkeys,
-	 	// return a hashed distribution equivalent to a matching outer distribution
-		return PdshashedCreateMatching(pmp, pdshashedOuter, 0 /*ulSourceChild*/);
-	 }
+	CDistributionSpecHashed *pdshashedOuter =
+		CDistributionSpecHashed::PdsConvert(pdsOuter);
+	if (CUtils::FContains(PdrgpexprOuterKeys(), pdshashedOuter->Pdrgpexpr()))
+	{
+		// outer child is hashed on a subset of outer hashkeys,
+		// return a hashed distribution equivalent to a matching outer distribution
+		return PdshashedCreateMatching(pmp, pdshashedOuter,
+									   0 /*ulSourceChild*/);
+	}
 
-	 return NULL;
+	return NULL;
 }
 
 
@@ -213,49 +204,48 @@ CPhysicalInnerHashJoin::PdsDeriveFromHashedOuter
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalInnerHashJoin::PdsDerive
-(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalInnerHashJoin::PdsDerive(IMemoryPool *pmp,
+								  CExpressionHandle &exprhdl) const
 {
 	CDistributionSpec *pdsOuter = exprhdl.Pdpplan(0 /*ulChildIndex*/)->Pds();
- 	CDistributionSpec *pdsInner = exprhdl.Pdpplan(1 /*ulChildIndex*/)->Pds();
+	CDistributionSpec *pdsInner = exprhdl.Pdpplan(1 /*ulChildIndex*/)->Pds();
 
- 	if (CDistributionSpec::EdtUniversal == pdsOuter->Edt())
- 	{
- 		// if outer is universal, pass through inner distribution
- 		pdsInner->AddRef();
- 		return pdsInner;
- 	}
+	if (CDistributionSpec::EdtUniversal == pdsOuter->Edt())
+	{
+		// if outer is universal, pass through inner distribution
+		pdsInner->AddRef();
+		return pdsInner;
+	}
 
- 	if (CDistributionSpec::EdtHashed == pdsOuter->Edt() && CDistributionSpec::EdtHashed == pdsInner->Edt())
- 	{
- 		CDistributionSpec *pdsDerived = PdsDeriveFromHashedChildren(pmp, pdsOuter, pdsInner);
- 		if (NULL != pdsDerived)
- 		{
- 			return pdsDerived;
- 		}
- 	}
+	if (CDistributionSpec::EdtHashed == pdsOuter->Edt() &&
+		CDistributionSpec::EdtHashed == pdsInner->Edt())
+	{
+		CDistributionSpec *pdsDerived =
+			PdsDeriveFromHashedChildren(pmp, pdsOuter, pdsInner);
+		if (NULL != pdsDerived)
+		{
+			return pdsDerived;
+		}
+	}
 
- 	if (CDistributionSpec::EdtReplicated == pdsOuter->Edt())
- 	{
- 		return PdsDeriveFromReplicatedOuter(pmp, pdsOuter, pdsInner);
- 	}
+	if (CDistributionSpec::EdtReplicated == pdsOuter->Edt())
+	{
+		return PdsDeriveFromReplicatedOuter(pmp, pdsOuter, pdsInner);
+	}
 
- 	if (CDistributionSpec::EdtHashed == pdsOuter->Edt())
- 	{
- 		CDistributionSpec *pdsDerived = PdsDeriveFromHashedOuter(pmp, pdsOuter, pdsInner);
- 		 if (NULL != pdsDerived)
- 		 {
- 		 	return pdsDerived;
- 		 }
- 	 }
+	if (CDistributionSpec::EdtHashed == pdsOuter->Edt())
+	{
+		CDistributionSpec *pdsDerived =
+			PdsDeriveFromHashedOuter(pmp, pdsOuter, pdsInner);
+		if (NULL != pdsDerived)
+		{
+			return pdsDerived;
+		}
+	}
 
- 	// otherwise, pass through outer distribution
- 	pdsOuter->AddRef();
- 	return pdsOuter;
+	// otherwise, pass through outer distribution
+	pdsOuter->AddRef();
+	return pdsOuter;
 }
 
 
@@ -268,31 +258,27 @@ CPhysicalInnerHashJoin::PdsDerive
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalInnerHashJoin::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq
-	)
+CPhysicalInnerHashJoin::PppsRequired(IMemoryPool *pmp,
+									 CExpressionHandle &exprhdl,
+									 CPartitionPropagationSpec *pppsRequired,
+									 ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+									 ULONG ulOptReq)
 {
-
 	if (1 == ulOptReq)
 	{
 		// request (1): push partition propagation requests to join's children,
 		// do not consider possible dynamic partition elimination using join predicate here,
 		// this is handled by optimization request (0) below
-		return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired, ulChildIndex);
+		return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired,
+												   ulChildIndex);
 	}
 
 	// request (0): push partition progagation requests to join child considering
 	// DPE possibility. For HJ, PS request is pushed to the inner child if there
 	// is a consumer (DTS) on the outer side of the join.
 	GPOS_ASSERT(0 == ulOptReq);
-	return PppsRequiredJoinChild(pmp, exprhdl, pppsRequired, ulChildIndex, pdrgpdpCtxt, false);
+	return PppsRequiredJoinChild(pmp, exprhdl, pppsRequired, ulChildIndex,
+								 pdrgpdpCtxt, false);
 }
 
 // EOF
-

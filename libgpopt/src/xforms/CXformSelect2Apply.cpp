@@ -25,23 +25,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformSelect2Apply::CXformSelect2Apply
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformSubqueryUnnest
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalSelect(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // relational child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// predicate tree
-				)
-		)
-{}
+CXformSelect2Apply::CXformSelect2Apply(IMemoryPool *pmp)
+	:  // pattern
+	  CXformSubqueryUnnest(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSelect(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
+		  ))
+{
+}
 
 // EOF
-

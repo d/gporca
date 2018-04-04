@@ -33,15 +33,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerHint::CParseHandlerHint
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_phint(NULL)
+CParseHandlerHint::CParseHandlerHint(IMemoryPool *pmp,
+									 CParseHandlerManager *pphm,
+									 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_phint(NULL)
 {
 }
 
@@ -67,37 +62,46 @@ CParseHandlerHint::~CParseHandlerHint()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerHint::StartElement
-	(
-	const XMLCh* const , //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , //xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerHint::StartElement(const XMLCh *const,  //xmlszUri,
+								const XMLCh *const xmlszLocalname,
+								const XMLCh *const,  //xmlszQname,
+								const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenHint), xmlszLocalname))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenHint),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse hint configuration options
-	ULONG ulMinNumOfPartsToRequireSortOnInsert = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenMinNumOfPartsToRequireSortOnInsert, EdxltokenHint);
-	ULONG ulJoinArityForAssociativityCommutativity = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenJoinArityForAssociativityCommutativity, EdxltokenHint, true, INT_MAX);
-	ULONG ulArrayExpansionThreshold = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenArrayExpansionThreshold, EdxltokenHint, true, INT_MAX);
-	ULONG ulJoinOrderDPThreshold = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenJoinOrderDPThreshold, EdxltokenHint, true, JOIN_ORDER_DP_THRESHOLD);
-	ULONG ulBroadcastThreshold = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenBroadcastThreshold, EdxltokenHint, true, BROADCAST_THRESHOLD);
-	ULONG fEnforceConstraintsOnDML = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenEnforceConstraintsOnDML, EdxltokenHint, true, true);
+	ULONG ulMinNumOfPartsToRequireSortOnInsert =
+		CDXLOperatorFactory::UlValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenMinNumOfPartsToRequireSortOnInsert,
+			EdxltokenHint);
+	ULONG ulJoinArityForAssociativityCommutativity =
+		CDXLOperatorFactory::UlValueFromAttrs(
+			m_pphm->Pmm(), attrs,
+			EdxltokenJoinArityForAssociativityCommutativity, EdxltokenHint,
+			true, INT_MAX);
+	ULONG ulArrayExpansionThreshold = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenArrayExpansionThreshold, EdxltokenHint,
+		true, INT_MAX);
+	ULONG ulJoinOrderDPThreshold = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenJoinOrderDPThreshold, EdxltokenHint,
+		true, JOIN_ORDER_DP_THRESHOLD);
+	ULONG ulBroadcastThreshold = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenBroadcastThreshold, EdxltokenHint, true,
+		BROADCAST_THRESHOLD);
+	ULONG fEnforceConstraintsOnDML = CDXLOperatorFactory::FValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenEnforceConstraintsOnDML, EdxltokenHint,
+		true, true);
 
-	m_phint = GPOS_NEW(m_pmp) CHint
-								(
-								ulMinNumOfPartsToRequireSortOnInsert,
-								ulJoinArityForAssociativityCommutativity,
-								ulArrayExpansionThreshold,
-								ulJoinOrderDPThreshold,
-								ulBroadcastThreshold,
-								fEnforceConstraintsOnDML
-								);
+	m_phint = GPOS_NEW(m_pmp) CHint(
+		ulMinNumOfPartsToRequireSortOnInsert,
+		ulJoinArityForAssociativityCommutativity, ulArrayExpansionThreshold,
+		ulJoinOrderDPThreshold, ulBroadcastThreshold, fEnforceConstraintsOnDML);
 }
 
 //---------------------------------------------------------------------------
@@ -109,17 +113,17 @@ CParseHandlerHint::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerHint::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerHint::EndElement(const XMLCh *const,  // xmlszUri,
+							  const XMLCh *const xmlszLocalname,
+							  const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenHint), xmlszLocalname))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenHint),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(NULL != m_phint);

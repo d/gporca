@@ -28,14 +28,11 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalLeftSemiApply::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalLeftSemiApply::Maxcard(IMemoryPool *,  // pmp
+							   CExpressionHandle &exprhdl) const
 {
-	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/, exprhdl.Pdprel(0)->Maxcard());
+	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/,
+							 exprhdl.Pdprel(0)->Maxcard());
 }
 
 //---------------------------------------------------------------------------
@@ -47,17 +44,15 @@ CLogicalLeftSemiApply::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftSemiApply::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalLeftSemiApply::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
 	(void) pxfs->FExchangeSet(CXform::ExfLeftSemiApply2LeftSemiJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftSemiApplyWithExternalCorrs2InnerJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftSemiApply2LeftSemiJoinNoCorrelations);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftSemiApplyWithExternalCorrs2InnerJoin);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftSemiApply2LeftSemiJoinNoCorrelations);
 
 	return pxfs;
 }
@@ -72,11 +67,8 @@ CLogicalLeftSemiApply::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalLeftSemiApply::PcrsDeriveOutput
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
+CLogicalLeftSemiApply::PcrsDeriveOutput(IMemoryPool *,  // pmp
+										CExpressionHandle &exprhdl)
 {
 	GPOS_ASSERT(3 == exprhdl.UlArity());
 
@@ -93,17 +85,15 @@ CLogicalLeftSemiApply::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalLeftSemiApply::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalLeftSemiApply::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+												  HMUlCr *phmulcr,
+												  BOOL fMustExist)
 {
-	DrgPcr *pdrgpcrInner = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
+	DrgPcr *pdrgpcrInner =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
 
-	return GPOS_NEW(pmp) CLogicalLeftSemiApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
+	return GPOS_NEW(pmp)
+		CLogicalLeftSemiApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
 }
 
 // EOF
-

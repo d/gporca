@@ -26,15 +26,9 @@ using namespace gpopt;
 //		Ctor: create a non order-preserving motion
 //
 //---------------------------------------------------------------------------
-CPhysicalMotionGather::CPhysicalMotionGather
-	(
-	IMemoryPool *pmp,
-	CDistributionSpecSingleton::ESegmentType est
-	)
-	:
-	CPhysicalMotion(pmp),
-	m_pdssSingeton(NULL),
-	m_pcrsSort(NULL)
+CPhysicalMotionGather::CPhysicalMotionGather(
+	IMemoryPool *pmp, CDistributionSpecSingleton::ESegmentType est)
+	: CPhysicalMotion(pmp), m_pdssSingeton(NULL), m_pcrsSort(NULL)
 {
 	GPOS_ASSERT(CDistributionSpecSingleton::EstSentinel != est);
 
@@ -51,17 +45,10 @@ CPhysicalMotionGather::CPhysicalMotionGather
 //		Ctor: create an order-preserving motion
 //
 //---------------------------------------------------------------------------
-CPhysicalMotionGather::CPhysicalMotionGather
-	(
-	IMemoryPool *pmp,
-	CDistributionSpecSingleton::ESegmentType est,
-	COrderSpec *pos
-	)
-	:
-	CPhysicalMotion(pmp),
-	m_pdssSingeton(NULL),
-	m_pos(pos),
-	m_pcrsSort(NULL)
+CPhysicalMotionGather::CPhysicalMotionGather(
+	IMemoryPool *pmp, CDistributionSpecSingleton::ESegmentType est,
+	COrderSpec *pos)
+	: CPhysicalMotion(pmp), m_pdssSingeton(NULL), m_pos(pos), m_pcrsSort(NULL)
 {
 	GPOS_ASSERT(CDistributionSpecSingleton::EstSentinel != est);
 	GPOS_ASSERT(NULL != pos);
@@ -95,19 +82,15 @@ CPhysicalMotionGather::~CPhysicalMotionGather()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionGather::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalMotionGather::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
 		return false;
 	}
-	
+
 	CPhysicalMotionGather *popGather = CPhysicalMotionGather::PopConvert(pop);
-	
+
 	return Est() == popGather->Est() && m_pos->FMatch(popGather->Pos());
 }
 
@@ -120,22 +103,21 @@ CPhysicalMotionGather::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalMotionGather::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalMotionGather::PcrsRequired(IMemoryPool *pmp,
+									CExpressionHandle &exprhdl,
+									CColRefSet *pcrsRequired,
+									ULONG ulChildIndex,
+									DrgPdp *,  // pdrgpdpCtxt
+									ULONG	  // ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *m_pcrsSort);
 	pcrs->Union(pcrsRequired);
-	
-	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
+
+	CColRefSet *pcrsChildReqd =
+		PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
 	pcrs->Release();
 
 	return pcrsChildReqd;
@@ -150,13 +132,10 @@ CPhysicalMotionGather::PcrsRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionGather::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalMotionGather::FProvidesReqdCols(CExpressionHandle &exprhdl,
+										 CColRefSet *pcrsRequired,
+										 ULONG  // ulOptReq
+										 ) const
 {
 	return FUnaryProvidesReqdCols(exprhdl, pcrsRequired);
 }
@@ -170,12 +149,8 @@ CPhysicalMotionGather::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalMotionGather::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalMotionGather::EpetOrder(CExpressionHandle &,  // exprhdl
+								 const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -184,7 +159,7 @@ CPhysicalMotionGather::EpetOrder
 	{
 		return CEnfdProp::EpetRequired;
 	}
-	
+
 	if (peo->FCompatible(m_pos))
 	{
 		// required order is already established by gather merge operator
@@ -206,16 +181,12 @@ CPhysicalMotionGather::EpetOrder
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionGather::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	COrderSpec *,//posInput,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalMotionGather::PosRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								   COrderSpec *,  //posInput,
+								   ULONG ulChildIndex,
+								   DrgPdp *,  // pdrgpdpCtxt
+								   ULONG	  // ulOptReq
+								   ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -236,12 +207,9 @@ CPhysicalMotionGather::PosRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionGather::PosDerive
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalMotionGather::PosDerive(IMemoryPool *,		  // pmp
+								 CExpressionHandle &  // exprhdl
+								 ) const
 {
 	m_pos->AddRef();
 	return m_pos;
@@ -257,20 +225,16 @@ CPhysicalMotionGather::PosDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalMotionGather::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalMotionGather::OsPrint(IOstream &os) const
 {
 	const CHAR *szLocation = FOnMaster() ? "(master)" : "(segment)";
-	os	<< SzId() << szLocation;
-	
+	os << SzId() << szLocation;
+
 	if (FOrderPreserving())
 	{
 		Pos()->OsPrint(os);
 	}
-	
+
 	return os;
 }
 
@@ -284,16 +248,12 @@ CPhysicalMotionGather::OsPrint
 //
 //---------------------------------------------------------------------------
 CPhysicalMotionGather *
-CPhysicalMotionGather::PopConvert
-	(
-	COperator *pop
-	)
+CPhysicalMotionGather::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(EopPhysicalMotionGather == pop->Eopid());
-	
-	return dynamic_cast<CPhysicalMotionGather*>(pop);
-}			
+
+	return dynamic_cast<CPhysicalMotionGather *>(pop);
+}
 
 // EOF
-

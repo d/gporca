@@ -17,58 +17,50 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarOp
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarOp : public CParseHandlerOp 
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarOp
+//
+//	@doc:
+//		Parse handler for parsing a scalar operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarOp : public CParseHandlerOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarOp(const CParseHandlerScalarOp &);
 
-			// private copy ctor
-			CParseHandlerScalarOp(const CParseHandlerScalarOp &);
-			
-		protected:
+protected:
+	// process notification of the beginning of an element.
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process notification of the beginning of an element.
-			virtual void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process notification of the end of an element.
-			virtual void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			CParseHandlerScalarOp
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-			virtual
-			~CParseHandlerScalarOp();
-			
-	};
-}
+	// process notification of the end of an element.
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-#endif // !GPDXL_CParseHandlerScalarOp_H
+public:
+	CParseHandlerScalarOp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						  CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerScalarOp();
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerScalarOp_H
 
 // EOF

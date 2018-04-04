@@ -27,22 +27,15 @@ using namespace gpmd;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLBucket::CDXLBucket
-	(
-	CDXLDatum *pdxldatumLower,
-	CDXLDatum *pdxldatumUpper,
-	BOOL fLowerClosed,
-	BOOL fUpperClosed,
-	CDouble dFrequency,
-	CDouble dDistinct
-	)
-	:
-	m_pdxldatumLower(pdxldatumLower),
-	m_pdxldatumUpper(pdxldatumUpper),
-	m_fLowerClosed(fLowerClosed),
-	m_fUpperClosed(fUpperClosed),
-	m_dFrequency(dFrequency),
-	m_dDistinct(dDistinct)
+CDXLBucket::CDXLBucket(CDXLDatum *pdxldatumLower, CDXLDatum *pdxldatumUpper,
+					   BOOL fLowerClosed, BOOL fUpperClosed, CDouble dFrequency,
+					   CDouble dDistinct)
+	: m_pdxldatumLower(pdxldatumLower),
+	  m_pdxldatumUpper(pdxldatumUpper),
+	  m_fLowerClosed(fLowerClosed),
+	  m_fUpperClosed(fUpperClosed),
+	  m_dFrequency(dFrequency),
+	  m_dDistinct(dDistinct)
 {
 	GPOS_ASSERT(NULL != pdxldatumLower);
 	GPOS_ASSERT(NULL != pdxldatumUpper);
@@ -130,23 +123,25 @@ CDXLBucket::DDistinct() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLBucket::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CDXLBucket::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenColumnStatsBucket));
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsFrequency), m_dFrequency);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsDistinct), m_dDistinct);
-	
-	SerializeBoundaryValue(pxmlser, CDXLTokens::PstrToken(EdxltokenStatsBucketLowerBound), m_pdxldatumLower, m_fLowerClosed);
-	SerializeBoundaryValue(pxmlser, CDXLTokens::PstrToken(EdxltokenStatsBucketUpperBound), m_pdxldatumUpper, m_fUpperClosed);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenColumnStatsBucket));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumnStatsBucket));
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsFrequency),
+						  m_dFrequency);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsDistinct),
+						  m_dDistinct);
+
+	SerializeBoundaryValue(
+		pxmlser, CDXLTokens::PstrToken(EdxltokenStatsBucketLowerBound),
+		m_pdxldatumLower, m_fLowerClosed);
+	SerializeBoundaryValue(
+		pxmlser, CDXLTokens::PstrToken(EdxltokenStatsBucketUpperBound),
+		m_pdxldatumUpper, m_fUpperClosed);
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumnStatsBucket));
 
 	GPOS_CHECK_ABORT;
 }
@@ -160,19 +155,18 @@ CDXLBucket::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CDXLBucket::SerializeBoundaryValue
-	(
-	CXMLSerializer *pxmlser,
-	const CWStringConst *pstrElem,
-	CDXLDatum *pdxldatum,
-	BOOL fBoundClosed
-	)
-	const
+CDXLBucket::SerializeBoundaryValue(CXMLSerializer *pxmlser,
+								   const CWStringConst *pstrElem,
+								   CDXLDatum *pdxldatum,
+								   BOOL fBoundClosed) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElem);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsBoundClosed), fBoundClosed);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElem);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStatsBoundClosed),
+						  fBoundClosed);
 	pdxldatum->Serialize(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElem);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElem);
 }
 
 #ifdef GPOS_DEBUG
@@ -185,16 +179,12 @@ CDXLBucket::SerializeBoundaryValue
 //
 //---------------------------------------------------------------------------
 void
-CDXLBucket::DebugPrint
-	(
-	IOstream & //os
-	)
-	const
+CDXLBucket::DebugPrint(IOstream &  //os
+					   ) const
 {
 	// TODO:  - Feb 13, 2012; implement
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

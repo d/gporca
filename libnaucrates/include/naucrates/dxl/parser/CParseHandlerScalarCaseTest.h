@@ -19,57 +19,44 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarCaseTest
-	//
-	//	@doc:
-	//		Parse handler for parsing a case test
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarCaseTest : public CParseHandlerScalarOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarCaseTest
+//
+//	@doc:
+//		Parse handler for parsing a case test
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarCaseTest : public CParseHandlerScalarOp
+{
+private:
+	// return type
+	IMDId *m_pmdidType;
 
-			// return type
-			IMDId *m_pmdidType;
+	// private copy ctor
+	CParseHandlerScalarCaseTest(const CParseHandlerScalarCaseTest &);
 
-			// private copy ctor
-			CParseHandlerScalarCaseTest(const CParseHandlerScalarCaseTest &);
+	// process the start of an element
+	void
+	StartElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+				 const XMLCh *const xmlszQname, const Attributes &attr);
 
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname,
-					const Attributes& attr
-					);
+	// process the end of an element
+	void
+	EndElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+			   const XMLCh *const xmlszQname);
 
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname
-					);
+public:
+	// ctor
+	CParseHandlerScalarCaseTest(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerScalarCaseTest
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-
-		};
-}
-
-#endif // !GPDXL_CParseHandlerScalarCaseTest_H
+#endif  // !GPDXL_CParseHandlerScalarCaseTest_H
 
 //EOF

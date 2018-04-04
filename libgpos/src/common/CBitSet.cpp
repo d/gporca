@@ -19,7 +19,7 @@
 
 #ifdef GPOS_DEBUG
 #include "gpos/error/CAutoTrace.h"
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 using namespace gpos;
 
@@ -32,14 +32,9 @@ using namespace gpos;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CBitSet::CBitSetLink::CBitSetLink
-	(
-	IMemoryPool *pmp, 
-	ULONG ulOffset, 
-	ULONG cSizeBits
-	)
-	: 
-	m_ulOffset(ulOffset)
+CBitSet::CBitSetLink::CBitSetLink(IMemoryPool *pmp, ULONG ulOffset,
+								  ULONG cSizeBits)
+	: m_ulOffset(ulOffset)
 {
 	m_pbv = GPOS_NEW(pmp) CBitVector(pmp, cSizeBits);
 }
@@ -53,13 +48,8 @@ CBitSet::CBitSetLink::CBitSetLink
 //		copy ctor
 //
 //---------------------------------------------------------------------------
-CBitSet::CBitSetLink::CBitSetLink
-	(
-	IMemoryPool *pmp, 
-	const CBitSetLink &bsl
-	)
-	: 
-	m_ulOffset(bsl.m_ulOffset)
+CBitSet::CBitSetLink::CBitSetLink(IMemoryPool *pmp, const CBitSetLink &bsl)
+	: m_ulOffset(bsl.m_ulOffset)
 {
 	m_pbv = GPOS_NEW(pmp) CBitVector(pmp, *bsl.Pbv());
 }
@@ -87,20 +77,15 @@ CBitSet::CBitSetLink::~CBitSetLink()
 //		Find bit set link for a given offset; if non-existent return previous
 //		link (may be NULL);
 //		By providing a starting link we can implement a number of operations
-//		in one sweep, ie O(N) 
+//		in one sweep, ie O(N)
 //
 //---------------------------------------------------------------------------
 CBitSet::CBitSetLink *
-CBitSet::PbslLocate
-	(
-	ULONG ulOffset,
-	CBitSetLink *pbsl
-	)
-	const
+CBitSet::PbslLocate(ULONG ulOffset, CBitSetLink *pbsl) const
 {
 	CBitSetLink *pbslFound = NULL;
 	CBitSetLink *pbslCursor = pbsl;
-	
+
 	if (NULL == pbsl)
 	{
 		// if no cursor provided start with first element
@@ -111,21 +96,23 @@ CBitSet::PbslLocate
 		GPOS_ASSERT(pbsl->UlOffset() <= ulOffset && "invalid start cursor");
 		pbslFound = pbsl;
 	}
-	
-	GPOS_ASSERT_IMP(NULL != pbslCursor, GPOS_OK == m_bsllist.EresFind(pbslCursor) && "cursor not in list");
-	
-	while(1)
+
+	GPOS_ASSERT_IMP(NULL != pbslCursor,
+					GPOS_OK == m_bsllist.EresFind(pbslCursor) &&
+						"cursor not in list");
+
+	while (1)
 	{
 		// no more links or we've overshot the target
 		if (NULL == pbslCursor || pbslCursor->UlOffset() > ulOffset)
 		{
 			break;
 		}
-		
-		pbslFound = pbslCursor;		
+
+		pbslFound = pbslCursor;
 		pbslCursor = m_bsllist.PtNext(pbslCursor);
 	}
-	
+
 	GPOS_ASSERT_IMP(pbslFound, pbslFound->UlOffset() <= ulOffset);
 	return pbslFound;
 }
@@ -144,15 +131,12 @@ CBitSet::RecomputeSize()
 {
 	m_cElements = 0;
 	CBitSetLink *pbsl = NULL;
-	
-	for (
-		pbsl = m_bsllist.PtFirst();
-		pbsl != NULL;
-		pbsl = m_bsllist.PtNext(pbsl)
-		)
+
+	for (pbsl = m_bsllist.PtFirst(); pbsl != NULL;
+		 pbsl = m_bsllist.PtNext(pbsl))
 	{
 		m_cElements += pbsl->Pbv()->CElements();
-	}	
+	}
 }
 
 
@@ -168,16 +152,16 @@ void
 CBitSet::Clear()
 {
 	CBitSetLink *pbsl = NULL;
-	
-	while(NULL != (pbsl = m_bsllist.PtFirst()))
-	{		
+
+	while (NULL != (pbsl = m_bsllist.PtFirst()))
+	{
 		CBitSetLink *pbslRemove = pbsl;
 		pbsl = m_bsllist.PtNext(pbsl);
-		
+
 		m_bsllist.Remove(pbslRemove);
 		GPOS_DELETE(pbslRemove);
 	}
-	
+
 	RecomputeSize();
 }
 
@@ -187,15 +171,11 @@ CBitSet::Clear()
 //		CBitSet::UlOffset
 //
 //	@doc:
-//		Compute offset 
+//		Compute offset
 //
 //---------------------------------------------------------------------------
 ULONG
-CBitSet::UlOffset
-	(
-	ULONG ul
-	)
-	const
+CBitSet::UlOffset(ULONG ul) const
 {
 	return (ul / m_cSizeBits) * m_cSizeBits;
 }
@@ -210,15 +190,8 @@ CBitSet::UlOffset
 //		ctor
 //
 //---------------------------------------------------------------------------
-CBitSet::CBitSet
-	(
-	IMemoryPool *pmp,
-	ULONG cSizeBits
-	)
-	:
-	m_pmp(pmp),
-	m_cSizeBits(cSizeBits),
-	m_cElements(0)
+CBitSet::CBitSet(IMemoryPool *pmp, ULONG cSizeBits)
+	: m_pmp(pmp), m_cSizeBits(cSizeBits), m_cElements(0)
 {
 	m_bsllist.Init(GPOS_OFFSET(CBitSetLink, m_link));
 }
@@ -232,15 +205,8 @@ CBitSet::CBitSet
 //		copy ctor;
 //
 //---------------------------------------------------------------------------
-CBitSet::CBitSet
-	(
-	IMemoryPool *pmp,
-	const CBitSet &bs
-	)
-	:
-	m_pmp(pmp),
-	m_cSizeBits(bs.m_cSizeBits),
-	m_cElements(0)
+CBitSet::CBitSet(IMemoryPool *pmp, const CBitSet &bs)
+	: m_pmp(pmp), m_cSizeBits(bs.m_cSizeBits), m_cElements(0)
 {
 	m_bsllist.Init(GPOS_OFFSET(CBitSetLink, m_link));
 	Union(&bs);
@@ -269,21 +235,17 @@ CBitSet::~CBitSet()
 //		Check if given bit is set
 //
 //---------------------------------------------------------------------------
-BOOL 
-CBitSet::FBit
-	(
-	ULONG ulBit
-	)
-	const
+BOOL
+CBitSet::FBit(ULONG ulBit) const
 {
 	ULONG ulOffset = UlOffset(ulBit);
-	
+
 	CBitSetLink *pbsl = PbslLocate(ulOffset);
 	if (NULL != pbsl && pbsl->UlOffset() == ulOffset)
 	{
 		return pbsl->Pbv()->FBit(ulBit - ulOffset);
 	}
-	
+
 	return false;
 }
 
@@ -296,18 +258,16 @@ CBitSet::FBit
 //		Set given bit; return previous value; allocate new link if necessary
 //
 //---------------------------------------------------------------------------
-BOOL 
-CBitSet::FExchangeSet
-	(
-	ULONG ulBit
-	)
+BOOL
+CBitSet::FExchangeSet(ULONG ulBit)
 {
 	ULONG ulOffset = UlOffset(ulBit);
-	
+
 	CBitSetLink *pbsl = PbslLocate(ulOffset);
 	if (NULL == pbsl || pbsl->UlOffset() != ulOffset)
 	{
-		CBitSetLink *pbslNew = GPOS_NEW(m_pmp) CBitSetLink(m_pmp, ulOffset, m_cSizeBits);
+		CBitSetLink *pbslNew =
+			GPOS_NEW(m_pmp) CBitSetLink(m_pmp, ulOffset, m_cSizeBits);
 		if (NULL == pbsl)
 		{
 			m_bsllist.Prepend(pbslNew);
@@ -317,18 +277,18 @@ CBitSet::FExchangeSet
 			// insert after found link
 			m_bsllist.Append(pbslNew, pbsl);
 		}
-		
+
 		pbsl = pbslNew;
 	}
-	
+
 	GPOS_ASSERT(pbsl->UlOffset() == ulOffset);
-	
+
 	BOOL fBit = pbsl->Pbv()->FExchangeSet(ulBit - ulOffset);
 	if (!fBit)
 	{
 		m_cElements++;
 	}
-	
+
 	return fBit;
 }
 
@@ -341,34 +301,31 @@ CBitSet::FExchangeSet
 //		Clear given bit; return previous value
 //
 //---------------------------------------------------------------------------
-BOOL 
-CBitSet::FExchangeClear
-	(
-	ULONG ulBit
-	)
+BOOL
+CBitSet::FExchangeClear(ULONG ulBit)
 {
 	ULONG ulOffset = UlOffset(ulBit);
-	
+
 	CBitSetLink *pbsl = PbslLocate(ulOffset);
 	if (NULL != pbsl && pbsl->UlOffset() == ulOffset)
 	{
 		BOOL fBit = pbsl->Pbv()->FExchangeClear(ulBit - ulOffset);
-		
+
 		// remove empty link
 		if (pbsl->Pbv()->FEmpty())
 		{
 			m_bsllist.Remove(pbsl);
 			GPOS_DELETE(pbsl);
 		}
-		
+
 		if (fBit)
 		{
 			m_cElements--;
 		}
-		
+
 		return fBit;
 	}
-	
+
 	return false;
 }
 
@@ -388,26 +345,20 @@ CBitSet::FExchangeClear
 //
 //---------------------------------------------------------------------------
 void
-CBitSet::Union
-	(
-	const CBitSet *pbsOther
-	)
+CBitSet::Union(const CBitSet *pbsOther)
 {
 	CBitSetLink *pbsl = NULL;
 	CBitSetLink *pbslOther = NULL;
 
 	// dynamic array of CBitSetLink
-	typedef CDynamicPtrArray <CBitSetLink, CleanupNULL> DrgBSL;
+	typedef CDynamicPtrArray<CBitSetLink, CleanupNULL> DrgBSL;
 
 	CAutoRef<DrgBSL> a_drgpbsl;
 	a_drgpbsl = GPOS_NEW(m_pmp) DrgBSL(m_pmp);
-	
+
 	// iterate through other's links and copy missing links to array
-	for (
-		pbslOther = pbsOther->m_bsllist.PtFirst();
-		pbslOther != NULL;
-		pbslOther = pbsOther->m_bsllist.PtNext(pbslOther)
-		)
+	for (pbslOther = pbsOther->m_bsllist.PtFirst(); pbslOther != NULL;
+		 pbslOther = pbsOther->m_bsllist.PtNext(pbslOther))
 	{
 		pbsl = PbslLocate(pbslOther->UlOffset(), pbsl);
 		if (NULL == pbsl || pbsl->UlOffset() != pbslOther->UlOffset())
@@ -416,7 +367,7 @@ CBitSet::Union
 			CAutoP<CBitSetLink> a_pbsl;
 			a_pbsl = GPOS_NEW(m_pmp) CBitSetLink(m_pmp, *pbslOther);
 			a_drgpbsl->Append(a_pbsl.Pt());
-			
+
 			a_pbsl.PtReset();
 		}
 	}
@@ -427,8 +378,9 @@ CBitSet::Union
 	{
 		CBitSetLink *pbslInsert = (*a_drgpbsl)[i];
 		pbsl = PbslLocate(pbslInsert->UlOffset(), pbsl);
-		
-		GPOS_ASSERT_IMP(NULL != pbsl, pbsl->UlOffset() < pbslInsert->UlOffset());
+
+		GPOS_ASSERT_IMP(NULL != pbsl,
+						pbsl->UlOffset() < pbslInsert->UlOffset());
 		if (NULL == pbsl)
 		{
 			m_bsllist.Prepend(pbslInsert);
@@ -438,7 +390,7 @@ CBitSet::Union
 			m_bsllist.Append(pbslInsert, pbsl);
 		}
 	}
-	
+
 	// iterate through all links and union them up
 	pbslOther = NULL;
 	pbsl = m_bsllist.PtFirst();
@@ -449,10 +401,10 @@ CBitSet::Union
 		{
 			pbsl->Pbv()->Union(pbslOther->Pbv());
 		}
-		
+
 		pbsl = m_bsllist.PtNext(pbsl);
 	}
-	
+
 	RecomputeSize();
 }
 
@@ -466,14 +418,11 @@ CBitSet::Union
 //
 //---------------------------------------------------------------------------
 void
-CBitSet::Intersection
-	(
-	const CBitSet *pbsOther
-	)
+CBitSet::Intersection(const CBitSet *pbsOther)
 {
 	CBitSetLink *pbslOther = NULL;
 	CBitSetLink *pbsl = m_bsllist.PtFirst();
-	
+
 	while (NULL != pbsl)
 	{
 		CBitSetLink *pbslRemove = NULL;
@@ -488,12 +437,12 @@ CBitSet::Intersection
 		{
 			pbslRemove = pbsl;
 			pbsl = m_bsllist.PtNext(pbsl);
-			
+
 			m_bsllist.Remove(pbslRemove);
 			GPOS_DELETE(pbslRemove);
 		}
 	}
-	
+
 	RecomputeSize();
 }
 
@@ -508,22 +457,19 @@ CBitSet::Intersection
 //
 //---------------------------------------------------------------------------
 void
-CBitSet::Difference
-	(
-	const CBitSet *pbs
-	)
+CBitSet::Difference(const CBitSet *pbs)
 {
 	if (FDisjoint(pbs))
 	{
 		return;
 	}
-	
+
 	CBitSetIter bsiter(*pbs);
 	while (bsiter.FAdvance())
 	{
 		(void) FExchangeClear(bsiter.UlBit());
 	}
-}	
+}
 
 
 //---------------------------------------------------------------------------
@@ -535,11 +481,7 @@ CBitSet::Difference
 //
 //---------------------------------------------------------------------------
 BOOL
-CBitSet::FSubset
-	(
-	const CBitSet *pbsOther
-	)
-	const
+CBitSet::FSubset(const CBitSet *pbsOther) const
 {
 	// skip iterating if we can already tell by the sizes
 	if (CElements() < pbsOther->CElements())
@@ -551,22 +493,18 @@ CBitSet::FSubset
 	CBitSetLink *pbslOther = NULL;
 
 	// iterate through other's links and check for subsets
-	for (
-		pbslOther = pbsOther->m_bsllist.PtFirst();
-		pbslOther != NULL;
-		pbslOther = pbsOther->m_bsllist.PtNext(pbslOther)
-		)
+	for (pbslOther = pbsOther->m_bsllist.PtFirst(); pbslOther != NULL;
+		 pbslOther = pbsOther->m_bsllist.PtNext(pbslOther))
 	{
 		pbsl = PbslLocate(pbslOther->UlOffset(), pbsl);
-		
-		if (NULL == pbsl ||
-			pbsl->UlOffset() != pbslOther->UlOffset() ||
+
+		if (NULL == pbsl || pbsl->UlOffset() != pbslOther->UlOffset() ||
 			!pbsl->Pbv()->FSubset(pbslOther->Pbv()))
 		{
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -580,11 +518,7 @@ CBitSet::FSubset
 //
 //---------------------------------------------------------------------------
 BOOL
-CBitSet::FEqual
-	(
-	const CBitSet *pbsOther
-	)
-	const
+CBitSet::FEqual(const CBitSet *pbsOther) const
 {
 	// check pointer equality first
 	if (this == pbsOther)
@@ -601,19 +535,18 @@ CBitSet::FEqual
 	CBitSetLink *pbsl = m_bsllist.PtFirst();
 	CBitSetLink *pbslOther = pbsOther->m_bsllist.PtFirst();
 
-	while(NULL != pbsl)
+	while (NULL != pbsl)
 	{
-		if (NULL == pbslOther || 
-			pbsl->UlOffset() != pbslOther->UlOffset() ||
+		if (NULL == pbslOther || pbsl->UlOffset() != pbslOther->UlOffset() ||
 			!pbsl->Pbv()->FEqual(pbslOther->Pbv()))
 		{
 			return false;
 		}
-				
+
 		pbsl = m_bsllist.PtNext(pbsl);
 		pbslOther = pbsOther->m_bsllist.PtNext(pbslOther);
 	}
-	
+
 	// same length implies pbslOther must have reached end as well
 	return pbslOther == NULL;
 }
@@ -629,32 +562,24 @@ CBitSet::FEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CBitSet::FDisjoint
-	(
-	const CBitSet *pbsOther
-	)
-	const
+CBitSet::FDisjoint(const CBitSet *pbsOther) const
 {
 	CBitSetLink *pbsl = NULL;
 	CBitSetLink *pbslOther = NULL;
 
 	// iterate through other's links an check if disjoint
-	for (
-		pbslOther = pbsOther->m_bsllist.PtFirst();
-		pbslOther != NULL;
-		pbslOther = pbsOther->m_bsllist.PtNext(pbslOther)
-		)
+	for (pbslOther = pbsOther->m_bsllist.PtFirst(); pbslOther != NULL;
+		 pbslOther = pbsOther->m_bsllist.PtNext(pbslOther))
 	{
 		pbsl = PbslLocate(pbslOther->UlOffset(), pbsl);
-		
-		if (NULL != pbsl && 
-			pbsl->UlOffset() == pbslOther->UlOffset() &&
+
+		if (NULL != pbsl && pbsl->UlOffset() == pbslOther->UlOffset() &&
 			!pbsl->Pbv()->FDisjoint(pbslOther->Pbv()))
 		{
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -692,11 +617,7 @@ CBitSet::UlHash() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CBitSet::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CBitSet::OsPrint(IOstream &os) const
 {
 	os << "{";
 
@@ -713,9 +634,10 @@ CBitSet::OsPrint
 			os << ", ";
 		}
 	}
-	
-	os << "} " << "Hash:" << UlHash();
-	
+
+	os << "} "
+	   << "Hash:" << UlHash();
+
 	return os;
 }
 
@@ -726,5 +648,5 @@ CBitSet::DbgPrint() const
 	CAutoTrace at(m_pmp);
 	(void) this->OsPrint(at.Os());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 // EOF

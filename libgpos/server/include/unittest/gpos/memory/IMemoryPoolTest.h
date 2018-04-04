@@ -18,24 +18,24 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMemoryPoolTest
-	//
-	//	@doc:
-	//		Unittest for IMemoryPool
-	//
-	//---------------------------------------------------------------------------
-	class CMemoryPoolTest
-	{
-		public:
+//---------------------------------------------------------------------------
+//	@class:
+//		CMemoryPoolTest
+//
+//	@doc:
+//		Unittest for IMemoryPool
+//
+//---------------------------------------------------------------------------
+class CMemoryPoolTest
+{
+public:
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_DeleteNULL();
+};
+}  // namespace gpos
 
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_DeleteNULL();
-	};
-}
-
-#endif // !GPOS_IMemoryPoolTest_H
+#endif  // !GPOS_IMemoryPoolTest_H
 
 // EOF
-

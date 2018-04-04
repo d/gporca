@@ -24,12 +24,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPartKeys::CPartKeys
-	(
-	DrgDrgPcr *pdrgpdrgpcr
-	)
-	:
-	m_pdrgpdrgpcr(pdrgpdrgpcr)
+CPartKeys::CPartKeys(DrgDrgPcr *pdrgpdrgpcr) : m_pdrgpdrgpcr(pdrgpdrgpcr)
 {
 	GPOS_ASSERT(NULL != pdrgpdrgpcr);
 	m_ulLevels = pdrgpdrgpcr->UlLength();
@@ -57,11 +52,7 @@ CPartKeys::~CPartKeys()
 //
 //---------------------------------------------------------------------------
 CColRef *
-CPartKeys::PcrKey
-	(
-	ULONG ulLevel
-	)
-	const
+CPartKeys::PcrKey(ULONG ulLevel) const
 {
 	GPOS_ASSERT(ulLevel < m_ulLevels);
 	DrgPcr *pdrgpcr = (*m_pdrgpdrgpcr)[ulLevel];
@@ -77,11 +68,7 @@ CPartKeys::PcrKey
 //
 //---------------------------------------------------------------------------
 BOOL
-CPartKeys::FOverlap
-	(
-	CColRefSet *pcrs
-	)
-	const
+CPartKeys::FOverlap(CColRefSet *pcrs) const
 {
 	for (ULONG ul = 0; ul < m_ulLevels; ul++)
 	{
@@ -104,10 +91,7 @@ CPartKeys::FOverlap
 //
 //---------------------------------------------------------------------------
 CPartKeys *
-CPartKeys::PpartkeysCopy
-	(
-	IMemoryPool *pmp
-	)
+CPartKeys::PpartkeysCopy(IMemoryPool *pmp)
 {
 	DrgDrgPcr *pdrgpdrgpcrCopy = GPOS_NEW(pmp) DrgDrgPcr(pmp);
 
@@ -136,11 +120,8 @@ CPartKeys::PpartkeysCopy
 //
 //---------------------------------------------------------------------------
 DrgPpartkeys *
-CPartKeys::PdrgppartkeysCopy
-	(
-	IMemoryPool *pmp,
-	const DrgPpartkeys *pdrgppartkeys
-	)
+CPartKeys::PdrgppartkeysCopy(IMemoryPool *pmp,
+							 const DrgPpartkeys *pdrgppartkeys)
 {
 	GPOS_ASSERT(NULL != pdrgppartkeys);
 
@@ -164,19 +145,15 @@ CPartKeys::PdrgppartkeysCopy
 //
 //---------------------------------------------------------------------------
 CPartKeys *
-CPartKeys::PpartkeysRemap
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr
-	)
-	const
+CPartKeys::PpartkeysRemap(IMemoryPool *pmp, HMUlCr *phmulcr) const
 {
 	GPOS_ASSERT(NULL != phmulcr);
 	DrgDrgPcr *pdrgpdrgpcr = GPOS_NEW(pmp) DrgDrgPcr(pmp);
 
 	for (ULONG ul = 0; ul < m_ulLevels; ul++)
 	{
-		CColRef *pcr = CUtils::PcrRemap(PcrKey(ul), phmulcr, false /*fMustExist*/);
+		CColRef *pcr =
+			CUtils::PcrRemap(PcrKey(ul), phmulcr, false /*fMustExist*/);
 
 		DrgPcr *pdrgpcr = GPOS_NEW(pmp) DrgPcr(pmp);
 		pdrgpcr->Append(pcr);
@@ -196,11 +173,7 @@ CPartKeys::PpartkeysRemap
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPartKeys::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPartKeys::OsPrint(IOstream &os) const
 {
 	os << "(";
 	for (ULONG ul = 0; ul < m_ulLevels; ul++)
@@ -221,10 +194,9 @@ CPartKeys::OsPrint
 void
 CPartKeys::DbgPrint() const
 {
-
 	IMemoryPool *pmp = COptCtxt::PoctxtFromTLS()->Pmp();
 	CAutoTrace at(pmp);
 	(void) this->OsPrint(at.Os());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 // EOF

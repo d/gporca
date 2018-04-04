@@ -31,12 +31,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalJoin::CLogicalJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp)
+CLogicalJoin::CLogicalJoin(IMemoryPool *pmp) : CLogical(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -51,11 +46,7 @@ CLogicalJoin::CLogicalJoin
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalJoin::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalJoin::FMatch(COperator *pop) const
 {
 	return (pop->Eopid() == Eopid());
 }
@@ -69,16 +60,10 @@ CLogicalJoin::FMatch
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalJoin::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat *pdrgpstatCtxt
-	)
-	const
+CLogicalJoin::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+						   DrgPstat *pdrgpstatCtxt) const
 {
 	return CJoinStatsProcessor::PstatsJoin(pmp, exprhdl, pdrgpstatCtxt);
 }
 
 // EOF
-

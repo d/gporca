@@ -27,14 +27,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSubquery::CDXLScalarSubquery
-	(
-	IMemoryPool *pmp,
-	ULONG ulColId
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulColId(ulColId)
+CDXLScalarSubquery::CDXLScalarSubquery(IMemoryPool *pmp, ULONG ulColId)
+	: CDXLScalar(pmp), m_ulColId(ulColId)
 {
 }
 
@@ -88,21 +82,19 @@ CDXLScalarSubquery::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubquery::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSubquery::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize computed column id
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulColId);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -111,24 +103,20 @@ CDXLScalarSubquery::SerializeToDXL
 //		CDXLScalarSubquery::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubquery::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarSubquery::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnChild = (*pdxln)[0];
 	GPOS_ASSERT(EdxloptypeLogical == pdxlnChild->Pdxlop()->Edxloperatortype());
 
 	pdxln->AssertValid(fValidateChildren);
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

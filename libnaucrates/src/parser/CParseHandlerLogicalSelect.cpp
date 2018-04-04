@@ -28,14 +28,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerLogicalSelect::CParseHandlerLogicalSelect
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerLogicalOp(pmp, pphm, pphRoot)
+CParseHandlerLogicalSelect::CParseHandlerLogicalSelect(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerLogicalOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -60,26 +55,29 @@ CParseHandlerLogicalSelect::~CParseHandlerLogicalSelect()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalSelect::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& //attrs
-	)
+CParseHandlerLogicalSelect::StartElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const,  // xmlszQname
+										 const Attributes &   //attrs
+)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalSelect), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalSelect), xmlszLocalname))
 	{
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLLogicalSelect(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLLogicalSelect(m_pmp));
 
 		// create child node parsers
 
 		// parse handler for logical operator
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// parse handler for the scalar condition
-		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphOp);
 
 		// store child parse handler in array
@@ -88,7 +86,8 @@ CParseHandlerLogicalSelect::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -102,30 +101,33 @@ CParseHandlerLogicalSelect::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalSelect::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerLogicalSelect::EndElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalSelect), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalSelect), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	GPOS_ASSERT(NULL != m_pdxln );
+	GPOS_ASSERT(NULL != m_pdxln);
 
-	CParseHandlerScalarOp *pphOp = dynamic_cast<CParseHandlerScalarOp*>((*this)[0]);
-	CParseHandlerLogicalOp *pphChild = dynamic_cast<CParseHandlerLogicalOp*>((*this)[1]);
+	CParseHandlerScalarOp *pphOp =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+	CParseHandlerLogicalOp *pphChild =
+		dynamic_cast<CParseHandlerLogicalOp *>((*this)[1]);
 
 	AddChildFromParseHandler(pphOp);
 	AddChildFromParseHandler(pphChild);
-	
+
 #ifdef GPOS_DEBUG
 	m_pdxln->Pdxlop()->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

@@ -16,32 +16,32 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTranslatorExprToDXLTest
-	//
-	//	@doc:
-	//		Unittests
-	//
-	//---------------------------------------------------------------------------
-	class CTranslatorExprToDXLTest
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CTranslatorExprToDXLTest
+//
+//	@doc:
+//		Unittests
+//
+//---------------------------------------------------------------------------
+class CTranslatorExprToDXLTest
+{
+private:
+	// counter used to mark last successful test
+	static ULONG m_ulTestCounter;
 
-			// counter used to mark last successful test
-			static ULONG m_ulTestCounter;
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_RunTests();
+	static GPOS_RESULT
+	EresUnittest_RunMinidumpTests();
 
-		public:
+};  // class CTranslatorExprToDXLTest
+}  // namespace gpopt
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_RunTests();
-			static GPOS_RESULT EresUnittest_RunMinidumpTests();
-
-	}; // class CTranslatorExprToDXLTest
-}
-
-#endif // !GPOPT_CTranslatorExprToDXLTest_H
+#endif  // !GPOPT_CTranslatorExprToDXLTest_H
 
 // EOF
-

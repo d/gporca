@@ -9,7 +9,7 @@
 //		Bitmap table scan physical operator
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -24,128 +24,113 @@
 
 namespace gpopt
 {
-	// fwd declarations
-	class CDistributionSpec;
-	class CTableDescriptor;
+// fwd declarations
+class CDistributionSpec;
+class CTableDescriptor;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalBitmapTableScan
-	//
-	//	@doc:
-	//		Bitmap table scan physical operator
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalBitmapTableScan : public CPhysicalScan
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalBitmapTableScan
+//
+//	@doc:
+//		Bitmap table scan physical operator
+//
+//---------------------------------------------------------------------------
+class CPhysicalBitmapTableScan : public CPhysicalScan
+{
+private:
+	// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+	ULONG m_ulOriginOpId;
+
+	// disable copy ctor
+	CPhysicalBitmapTableScan(const CPhysicalBitmapTableScan &);
+
+public:
+	// ctor
+	CPhysicalBitmapTableScan(IMemoryPool *pmp, CTableDescriptor *ptabdesc,
+							 ULONG ulOriginOpId, const CName *pnameTableAlias,
+							 DrgPcr *pdrgpcrOutput);
+
+	// dtor
+	virtual ~CPhysicalBitmapTableScan()
 	{
-		private:
+	}
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
-			ULONG m_ulOriginOpId;
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopPhysicalBitmapTableScan;
+	}
 
-			// disable copy ctor
-			CPhysicalBitmapTableScan(const CPhysicalBitmapTableScan &);
+	// operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalBitmapTableScan";
+	}
 
-		public:
-			// ctor
-			CPhysicalBitmapTableScan
-				(
-				IMemoryPool *pmp,
-				CTableDescriptor *ptabdesc,
-				ULONG ulOriginOpId,
-				const CName *pnameTableAlias,
-				DrgPcr *pdrgpcrOutput
-				);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-			// dtor
-			virtual
-			~CPhysicalBitmapTableScan()
-			{}
+	// origin operator id -- ULONG_MAX if operator was not generated via a transformation
+	ULONG
+	UlOriginOpId() const
+	{
+		return m_ulOriginOpId;
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalBitmapTableScan;
-			}
+	// operator specific hash function
+	virtual ULONG
+	UlHash() const;
 
-			// operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalBitmapTableScan";
-			}
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
+	// derive partition index map
+	virtual CPartIndexMap *
+	PpimDerive(IMemoryPool *pmp,
+			   CExpressionHandle &,  // exprhdl
+			   CDrvdPropCtxt *		 //pdpctxt
+			   ) const
+	{
+		return GPOS_NEW(pmp) CPartIndexMap(pmp);
+	}
 
-			// origin operator id -- ULONG_MAX if operator was not generated via a transformation
-			ULONG UlOriginOpId() const
-			{
-				return m_ulOriginOpId;
-			}
+	// statistics derivation during costing
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *,		   // pmp
+				 CExpressionHandle &,  // exprhdl
+				 CReqdPropPlan *,	  // prpplan
+				 DrgPstat *			   //pdrgpstatCtxt
+				 ) const
+	{
+		GPOS_ASSERT(!"stats derivation during costing for bitmap table scan is invalid");
 
-			// operator specific hash function
-			virtual
-			ULONG UlHash() const;
+		return NULL;
+	}
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
+	// debug print
+	virtual IOstream &
+	OsPrint(IOstream &) const;
 
-			// derive partition index map
-			virtual
-			CPartIndexMap *PpimDerive
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &, // exprhdl
-				CDrvdPropCtxt * //pdpctxt
-				)
-				const
-			{
-				return GPOS_NEW(pmp) CPartIndexMap(pmp);
-			}
+	// conversion function
+	static CPhysicalBitmapTableScan *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalBitmapTableScan == pop->Eopid());
 
-			// statistics derivation during costing
-			virtual
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *, // pmp
-				CExpressionHandle &, // exprhdl
-				CReqdPropPlan *, // prpplan
-				DrgPstat * //pdrgpstatCtxt
-				)
-				const
-			{
-				GPOS_ASSERT(!"stats derivation during costing for bitmap table scan is invalid");
+		return dynamic_cast<CPhysicalBitmapTableScan *>(pop);
+	}
+};
+}  // namespace gpopt
 
-				return NULL;
-			}
-
-			// debug print
-			virtual
-			IOstream &OsPrint(IOstream &) const;
-
-			// conversion function
-			static
-			CPhysicalBitmapTableScan *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalBitmapTableScan == pop->Eopid());
-
-				return dynamic_cast<CPhysicalBitmapTableScan *>(pop);
-			}
-
-	};
-}
-
-#endif // !GPOPT_CPhysicalBitmapTableScan_H
+#endif  // !GPOPT_CPhysicalBitmapTableScan_H
 
 // EOF

@@ -8,11 +8,12 @@
 
 namespace gpopt
 {
-	class CPhysicalParallelUnionAllTest
-	{
-		public:
-			static gpos::GPOS_RESULT EresUnittest();
-	};
-}
+class CPhysicalParallelUnionAllTest
+{
+public:
+	static gpos::GPOS_RESULT
+	EresUnittest();
+};
+}  // namespace gpopt
 
 #endif

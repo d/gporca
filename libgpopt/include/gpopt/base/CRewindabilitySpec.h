@@ -19,92 +19,88 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CRewindabilitySpec
-	//
-	//	@doc:
-	//		Rewindability specification
-	//
-	//---------------------------------------------------------------------------
-	class CRewindabilitySpec : public CPropSpec
+//---------------------------------------------------------------------------
+//	@class:
+//		CRewindabilitySpec
+//
+//	@doc:
+//		Rewindability specification
+//
+//---------------------------------------------------------------------------
+class CRewindabilitySpec : public CPropSpec
+{
+public:
+	enum ERewindabilityType
 	{
+		ErtGeneral,		 // rewindability of all intermediate query results
+		ErtMarkRestore,  // rewindability of a subset of intermediate query results
+		ErtNone,		 // no rewindability
 
-		public:
+		ErtSentinel
+	};
 
-			enum ERewindabilityType
-			{
-				ErtGeneral,			// rewindability of all intermediate query results
-				ErtMarkRestore,		// rewindability of a subset of intermediate query results
-				ErtNone,			// no rewindability
+private:
+	// rewindability support
+	ERewindabilityType m_ert;
 
-				ErtSentinel
-			};
+public:
+	// ctor
+	explicit CRewindabilitySpec(ERewindabilityType ert);
 
-		private:
+	// dtor
+	virtual ~CRewindabilitySpec();
 
-			// rewindability support
-			ERewindabilityType m_ert;
+	// accessor of rewindablility type
+	ERewindabilityType
+	Ert() const
+	{
+		return m_ert;
+	}
 
-		public:
+	// check if rewindability specs match
+	BOOL
+	FMatch(const CRewindabilitySpec *prs) const;
 
-			// ctor
-			explicit
-			CRewindabilitySpec(ERewindabilityType ert);
+	// check if rewindability spec satisfies a req'd rewindability spec
+	BOOL
+	FSatisfies(const CRewindabilitySpec *prs) const;
 
-			// dtor
-			virtual
-			~CRewindabilitySpec();
+	// append enforcers to dynamic array for the given plan properties
+	virtual void
+	AppendEnforcers(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+					CReqdPropPlan *prpp, DrgPexpr *pdrgpexpr,
+					CExpression *pexpr);
 
-			// accessor of rewindablility type
-			ERewindabilityType Ert() const
-			{
-				return m_ert;
-			}
+	// hash function
+	virtual ULONG
+	UlHash() const;
 
-			// check if rewindability specs match
- 			BOOL FMatch(const CRewindabilitySpec *prs) const;
+	// extract columns used by the rewindability spec
+	virtual CColRefSet *
+	PcrsUsed(IMemoryPool *pmp) const
+	{
+		// return an empty set
+		return GPOS_NEW(pmp) CColRefSet(pmp);
+	}
 
-			// check if rewindability spec satisfies a req'd rewindability spec
-			BOOL FSatisfies(const CRewindabilitySpec *prs) const;
+	// property type
+	virtual EPropSpecType
+	Epst() const
+	{
+		return EpstRewindability;
+	}
 
-			// append enforcers to dynamic array for the given plan properties
-			virtual
-			void AppendEnforcers(IMemoryPool *pmp, CExpressionHandle &exprhdl, CReqdPropPlan *prpp, DrgPexpr *pdrgpexpr, CExpression *pexpr);
+	// print
+	IOstream &
+	OsPrint(IOstream &os) const;
 
-			// hash function
-			virtual
-			ULONG UlHash() const;
+};  // class CRewindabilitySpec
 
-			// extract columns used by the rewindability spec
-			virtual
-			CColRefSet *PcrsUsed
-				(
-				IMemoryPool *pmp
-				)
-				const
-			{
-				// return an empty set
-				return GPOS_NEW(pmp) CColRefSet(pmp);
-			}
+}  // namespace gpopt
 
-			// property type
-			virtual
-			EPropSpecType Epst() const
-			{
-				return EpstRewindability;
-			}
-
-			// print
-			IOstream &OsPrint(IOstream &os) const;
-
-	}; // class CRewindabilitySpec
-
-}
-
-#endif // !GPOPT_CRewindabilitySpec_H
+#endif  // !GPOPT_CRewindabilitySpec_H
 
 // EOF

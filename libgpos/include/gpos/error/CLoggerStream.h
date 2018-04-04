@@ -16,59 +16,49 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLoggerStream
-	//
-	//	@doc:
-	//		Stream logging.
-	//
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CLoggerStream
+//
+//	@doc:
+//		Stream logging.
+//
+//---------------------------------------------------------------------------
 
-	class CLoggerStream : public CLogger
+class CLoggerStream : public CLogger
+{
+private:
+	// log stream
+	IOstream &m_os;
+
+	// write string to stream
+	void
+	Write(const WCHAR *wszLogEntry,
+		  ULONG  // ulSev
+	)
 	{
-		private:
+		m_os = m_os << wszLogEntry;
+	}
 
-			// log stream
-			IOstream &m_os;
+	// no copy ctor
+	CLoggerStream(const CLoggerStream &);
 
-			// write string to stream
-			void Write
-				(
-				const WCHAR *wszLogEntry,
-				ULONG // ulSev
-				)
-			{
-				 m_os = m_os << wszLogEntry;
-			}
+public:
+	// ctor
+	CLoggerStream(IOstream &os);
 
-			// no copy ctor
-			CLoggerStream(const CLoggerStream&);
+	// dtor
+	virtual ~CLoggerStream();
 
-		public:
+	// wrapper for stdout
+	static CLoggerStream m_plogStdOut;
 
-			// ctor
-			CLoggerStream
-				(
-				IOstream &os
-				);
+	// wrapper for stderr
+	static CLoggerStream m_plogStdErr;
 
-			// dtor
-			virtual
-			~CLoggerStream();
+};  // class CLoggerStream
+}  // namespace gpos
 
-			// wrapper for stdout
-			static
-			CLoggerStream m_plogStdOut;
-
-			// wrapper for stderr
-			static
-			CLoggerStream m_plogStdErr;
-
-	};	// class CLoggerStream
-}
-
-#endif // !GPOS_CLoggerStream_H
+#endif  // !GPOS_CLoggerStream_H
 
 // EOF
-

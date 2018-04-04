@@ -26,13 +26,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalMotionBroadcast::CPhysicalMotionBroadcast
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CPhysicalMotion(pmp),
-	m_pdsReplicated(NULL)
+CPhysicalMotionBroadcast::CPhysicalMotionBroadcast(IMemoryPool *pmp)
+	: CPhysicalMotion(pmp), m_pdsReplicated(NULL)
 {
 	m_pdsReplicated = GPOS_NEW(pmp) CDistributionSpecReplicated();
 }
@@ -61,11 +56,7 @@ CPhysicalMotionBroadcast::~CPhysicalMotionBroadcast()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionBroadcast::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalMotionBroadcast::FMatch(COperator *pop) const
 {
 	return Eopid() == pop->Eopid();
 }
@@ -79,21 +70,20 @@ CPhysicalMotionBroadcast::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalMotionBroadcast::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalMotionBroadcast::PcrsRequired(IMemoryPool *pmp,
+									   CExpressionHandle &exprhdl,
+									   CColRefSet *pcrsRequired,
+									   ULONG ulChildIndex,
+									   DrgPdp *,  // pdrgpdpCtxt
+									   ULONG	  // ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *pcrsRequired);
-	
-	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
+
+	CColRefSet *pcrsChildReqd =
+		PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
 	pcrs->Release();
 
 	return pcrsChildReqd;
@@ -108,13 +98,10 @@ CPhysicalMotionBroadcast::PcrsRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionBroadcast::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalMotionBroadcast::FProvidesReqdCols(CExpressionHandle &exprhdl,
+											CColRefSet *pcrsRequired,
+											ULONG  // ulOptReq
+											) const
 {
 	return FUnaryProvidesReqdCols(exprhdl, pcrsRequired);
 }
@@ -128,12 +115,9 @@ CPhysicalMotionBroadcast::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalMotionBroadcast::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder * // peo
-	)
-	const
+CPhysicalMotionBroadcast::EpetOrder(CExpressionHandle &,  // exprhdl
+									const CEnfdOrder *	// peo
+									) const
 {
 	// broadcast motion is not order-preserving
 	return CEnfdProp::EpetRequired;
@@ -149,20 +133,17 @@ CPhysicalMotionBroadcast::EpetOrder
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionBroadcast::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl
-	COrderSpec *,//posInput
-	ULONG 
+CPhysicalMotionBroadcast::PosRequired(IMemoryPool *pmp,
+									  CExpressionHandle &,  // exprhdl
+									  COrderSpec *,			//posInput
+									  ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+										  ulChildIndex
+#endif  // GPOS_DEBUG
+									  ,
+									  DrgPdp *,  // pdrgpdpCtxt
+									  ULONG		 // ulOptReq
+									  ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -179,12 +160,9 @@ CPhysicalMotionBroadcast::PosRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionBroadcast::PosDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalMotionBroadcast::PosDerive(IMemoryPool *pmp,
+									CExpressionHandle &  // exprhdl
+									) const
 {
 	// broadcast motion is not order-preserving
 	return GPOS_NEW(pmp) COrderSpec(pmp);
@@ -200,11 +178,7 @@ CPhysicalMotionBroadcast::PosDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalMotionBroadcast::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalMotionBroadcast::OsPrint(IOstream &os) const
 {
 	os << SzId() << " ";
 	return os;
@@ -220,16 +194,12 @@ CPhysicalMotionBroadcast::OsPrint
 //
 //---------------------------------------------------------------------------
 CPhysicalMotionBroadcast *
-CPhysicalMotionBroadcast::PopConvert
-	(
-	COperator *pop
-	)
+CPhysicalMotionBroadcast::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(EopPhysicalMotionBroadcast == pop->Eopid());
-	
-	return dynamic_cast<CPhysicalMotionBroadcast*>(pop);
-}			
+
+	return dynamic_cast<CPhysicalMotionBroadcast *>(pop);
+}
 
 // EOF
-

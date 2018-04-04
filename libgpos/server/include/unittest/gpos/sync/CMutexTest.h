@@ -19,33 +19,37 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMutexTest
-	//
-	//	@doc:
-	//		Static unit tests
-	//
-	//---------------------------------------------------------------------------
-	class CMutexTest
-	{
-		public:
-
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_LockRelease();
-			static GPOS_RESULT EresUnittest_Recursion();
-			static GPOS_RESULT EresUnittest_Concurrency();
-			static void *PvUnittest_ConcurrencyRun(void *);
+//---------------------------------------------------------------------------
+//	@class:
+//		CMutexTest
+//
+//	@doc:
+//		Static unit tests
+//
+//---------------------------------------------------------------------------
+class CMutexTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_LockRelease();
+	static GPOS_RESULT
+	EresUnittest_Recursion();
+	static GPOS_RESULT
+	EresUnittest_Concurrency();
+	static void *
+	PvUnittest_ConcurrencyRun(void *);
 
 #ifdef GPOS_DEBUG
-			static GPOS_RESULT EresUnittest_SelfDeadlock();
-#endif // GPOS_DEBUG
+	static GPOS_RESULT
+	EresUnittest_SelfDeadlock();
+#endif  // GPOS_DEBUG
 
-	}; // CMutexTest
-}
+};  // CMutexTest
+}  // namespace gpos
 
-#endif // !GPOS_CMutexTest_H
+#endif  // !GPOS_CMutexTest_H
 
 // EOF
-

@@ -31,11 +31,10 @@ GPOS_RESULT
 CPointTest::EresUnittest()
 {
 	// tests that use shared optimization context
-	CUnittest rgutSharedOptCtxt[] =
-		{
+	CUnittest rgutSharedOptCtxt[] = {
 		GPOS_UNITTEST_FUNC(CPointTest::EresUnittest_CPointInt4),
 		GPOS_UNITTEST_FUNC(CPointTest::EresUnittest_CPointBool),
-		};
+	};
 
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
@@ -48,7 +47,8 @@ CPointTest::EresUnittest()
 	// install opt context in TLS
 	CAutoOptCtxt aoc(pmp, &mda, NULL /* pceeval */, CTestUtils::Pcm(pmp));
 
-	return CUnittest::EresExecute(rgutSharedOptCtxt, GPOS_ARRAY_SIZE(rgutSharedOptCtxt));
+	return CUnittest::EresExecute(rgutSharedOptCtxt,
+								  GPOS_ARRAY_SIZE(rgutSharedOptCtxt));
 }
 
 // basic int4 point tests;
@@ -72,8 +72,8 @@ CPointTest::EresUnittest_CPointInt4()
 	CDouble dDistance = ppoint2->DDistance(ppoint1);
 
 	// should be 1.0
-	GPOS_RTL_ASSERT_MSG(0.99 < dDistance
-						&& dDistance < 1.01, "incorrect distance calculation");
+	GPOS_RTL_ASSERT_MSG(0.99 < dDistance && dDistance < 1.01,
+						"incorrect distance calculation");
 
 	ppoint1->Release();
 	ppoint2->Release();
@@ -97,7 +97,8 @@ CPointTest::EresUnittest_CPointBool()
 	GPOS_RTL_ASSERT_MSG(ppoint1->FEqual(ppoint1), "true must be equal to true");
 
 	// true != false
-	GPOS_RTL_ASSERT_MSG(ppoint1->FNotEqual(ppoint2), "true must not be equal to false");
+	GPOS_RTL_ASSERT_MSG(ppoint1->FNotEqual(ppoint2),
+						"true must not be equal to false");
 
 	ppoint1->Release();
 	ppoint2->Release();
@@ -106,4 +107,3 @@ CPointTest::EresUnittest_CPointBool()
 }
 
 // EOF
-

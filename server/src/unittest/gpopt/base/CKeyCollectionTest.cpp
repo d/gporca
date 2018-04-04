@@ -35,11 +35,9 @@ using namespace gpopt;
 GPOS_RESULT
 CKeyCollectionTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CKeyCollectionTest::EresUnittest_Basics),
-		GPOS_UNITTEST_FUNC(CKeyCollectionTest::EresUnittest_Subsumes)
-		};
+		GPOS_UNITTEST_FUNC(CKeyCollectionTest::EresUnittest_Subsumes)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -68,17 +66,12 @@ CKeyCollectionTest::EresUnittest_Basics()
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
 
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-				(
-				pmp,
-				&mda,
-				NULL, /* pceeval */
-				CTestUtils::Pcm(pmp)
-				);
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	// get column factory from optimizer context object
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
-	
+
 	// create test set
 	CWStringConst strName(GPOS_WSZ_LIT("Test Column"));
 	CName name(&strName);
@@ -87,23 +80,23 @@ CKeyCollectionTest::EresUnittest_Basics()
 	CKeyCollection *pkc = GPOS_NEW(pmp) CKeyCollection(pmp);
 
 	const ULONG ulCols = 10;
-	for(ULONG i = 0; i < ulCols; i++)
+	for (ULONG i = 0; i < ulCols; i++)
 	{
 		CColRef *pcr = pcf->PcrCreate(pmdtypeint4, IDefaultTypeModifier, name);
 		pcrs->Include(pcr);
 	}
 
-	pkc->Add(pcrs);	
+	pkc->Add(pcrs);
 	GPOS_ASSERT(pkc->FKey(pcrs));
-	
+
 	DrgPcr *pdrgpcr = pkc->PdrgpcrKey(pmp);
 	GPOS_ASSERT(pkc->FKey(pmp, pdrgpcr));
-	
+
 	pcrs->Include(pdrgpcr);
 	GPOS_ASSERT(pkc->FKey(pcrs));
 
 	pdrgpcr->Release();
-	
+
 	pkc->Release();
 
 	return GPOS_OK;
@@ -131,13 +124,8 @@ CKeyCollectionTest::EresUnittest_Subsumes()
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
 
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL, /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	// get column factory from optimizer context object
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
@@ -155,7 +143,7 @@ CKeyCollectionTest::EresUnittest_Subsumes()
 
 	const ULONG ulCols = 10;
 	const ULONG ulLen1 = 3;
-	for(ULONG ul = 0; ul < ulCols; ul++)
+	for (ULONG ul = 0; ul < ulCols; ul++)
 	{
 		CColRef *pcr = pcf->PcrCreate(pmdtypeint4, IDefaultTypeModifier, name);
 		pcrs0->Include(pcr);
@@ -196,7 +184,7 @@ CKeyCollectionTest::EresUnittest_Subsumes()
 		CColRef *pcr = (*pdrgpcrSubsumed)[ul];
 		GPOS_ASSERT(pcrsSubsumed->FMember(pcr));
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	pcrsSubsumed->Release();
 	pdrgpcr->Release();

@@ -23,14 +23,11 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalExternalGet::CDXLLogicalExternalGet
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc
-	)
-	:
-	CDXLLogicalGet(pmp, pdxltabdesc)
-{}
+CDXLLogicalExternalGet::CDXLLogicalExternalGet(IMemoryPool *pmp,
+											   CDXLTableDescr *pdxltabdesc)
+	: CDXLLogicalGet(pmp, pdxltabdesc)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:

@@ -17,7 +17,7 @@
 
 #include "unittest/gpos/sync/CMutexTest.h"
 
-#define GPOS_MUTEX_THREADS	8
+#define GPOS_MUTEX_THREADS 8
 
 using namespace gpos;
 
@@ -32,17 +32,16 @@ using namespace gpos;
 GPOS_RESULT
 CMutexTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CMutexTest::EresUnittest_LockRelease),
 		GPOS_UNITTEST_FUNC(CMutexTest::EresUnittest_Recursion),
 		GPOS_UNITTEST_FUNC(CMutexTest::EresUnittest_Concurrency)
 #ifdef GPOS_DEBUG
-		,
+			,
 		GPOS_UNITTEST_FUNC(CMutexTest::EresUnittest_SelfDeadlock)
-#endif // GPOS_DEBUG
-		};
-		
+#endif  // GPOS_DEBUG
+	};
+
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
 
@@ -65,13 +64,13 @@ CMutexTest::EresUnittest_LockRelease()
 	GPOS_ASSERT(mutex.FOwned());
 
 	mutex.Unlock();
-	
+
 	GPOS_ASSERT(!mutex.FOwned());
-	
-	(void)mutex.FTryLock();
-	
+
+	(void) mutex.FTryLock();
+
 	GPOS_ASSERT(mutex.FOwned());
-	
+
 	mutex.Unlock();
 
 	return GPOS_OK;
@@ -92,12 +91,12 @@ CMutexTest::EresUnittest_Recursion()
 	CMutexRecursive mutex;
 	ULONG c = 100;
 
-	for(ULONG i = 0; i < c; i++)
+	for (ULONG i = 0; i < c; i++)
 	{
 		mutex.Lock();
 	}
 
-	for(ULONG i = 0; i < c; i++)
+	for (ULONG i = 0; i < c; i++)
 	{
 		GPOS_ASSERT(mutex.FOwned());
 		mutex.Unlock();
@@ -106,7 +105,6 @@ CMutexTest::EresUnittest_Recursion()
 	GPOS_ASSERT(!mutex.FOwned());
 
 	return GPOS_OK;
-
 }
 
 
@@ -136,7 +134,8 @@ CMutexTest::EresUnittest_Concurrency()
 
 		for (ULONG i = 0; i < GPOS_MUTEX_THREADS; i++)
 		{
-			rgPtsk[i] = atp.PtskCreate(CMutexTest::PvUnittest_ConcurrencyRun, &mutex);
+			rgPtsk[i] =
+				atp.PtskCreate(CMutexTest::PvUnittest_ConcurrencyRun, &mutex);
 		}
 
 		for (ULONG i = 0; i < GPOS_MUTEX_THREADS; i++)
@@ -167,12 +166,9 @@ CMutexTest::EresUnittest_Concurrency()
 //
 //---------------------------------------------------------------------------
 void *
-CMutexTest::PvUnittest_ConcurrencyRun
-	(
-	void *pv
-	)
+CMutexTest::PvUnittest_ConcurrencyRun(void *pv)
 {
-	CMutexOS *pmutex = (CMutexOS*)pv;
+	CMutexOS *pmutex = (CMutexOS *) pv;
 
 	for (ULONG i = 0; i < 10000; i++)
 	{
@@ -181,7 +177,7 @@ CMutexTest::PvUnittest_ConcurrencyRun
 		CAutoMutex am(*pmutex);
 		am.Lock();
 		am.Unlock();
-		
+
 		if (am.FTryLock())
 		{
 			am.Unlock();
@@ -216,7 +212,8 @@ CMutexTest::EresUnittest_SelfDeadlock()
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert));
 		mutex.Unlock();
 
 		GPOS_RESET_EX;
@@ -229,7 +226,6 @@ CMutexTest::EresUnittest_SelfDeadlock()
 }
 
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

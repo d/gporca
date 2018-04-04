@@ -29,27 +29,22 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDCheckConstraintGPDB::CMDCheckConstraintGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidRel,
-	CDXLNode *pdxln
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidRel(pmdidRel),
-	m_pdxln(pdxln)
+CMDCheckConstraintGPDB::CMDCheckConstraintGPDB(IMemoryPool *pmp, IMDId *pmdid,
+											   CMDName *pmdname,
+											   IMDId *pmdidRel, CDXLNode *pdxln)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidRel(pmdidRel),
+	  m_pdxln(pdxln)
 {
 	GPOS_ASSERT(pmdid->FValid());
 	GPOS_ASSERT(pmdidRel->FValid());
 	GPOS_ASSERT(NULL != pmdname);
 	GPOS_ASSERT(NULL != pdxln);
 
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -78,13 +73,8 @@ CMDCheckConstraintGPDB::~CMDCheckConstraintGPDB()
 //
 //---------------------------------------------------------------------------
 CExpression *
-CMDCheckConstraintGPDB::Pexpr
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	DrgPcr *pdrgpcr
-	)
-	const
+CMDCheckConstraintGPDB::Pexpr(IMemoryPool *pmp, CMDAccessor *pmda,
+							  DrgPcr *pdrgpcr) const
 {
 	GPOS_ASSERT(NULL != pdrgpcr);
 
@@ -93,13 +83,15 @@ CMDCheckConstraintGPDB::Pexpr
 	const ULONG ulLen = pdrgpcr->UlLength();
 	GPOS_ASSERT(ulLen > 0);
 
-	const ULONG ulArity = pmdrel->UlNonDroppedCols() - pmdrel->UlSystemColumns();
+	const ULONG ulArity =
+		pmdrel->UlNonDroppedCols() - pmdrel->UlSystemColumns();
 	GPOS_ASSERT(ulArity == ulLen);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// translate the DXL representation of the check constraint expression
 	CTranslatorDXLToExpr dxltr(pmp, pmda);
-	return dxltr.PexprTranslateScalar(m_pdxln, pdrgpcr, pmdrel->PdrgpulNonDroppedCols());
+	return dxltr.PexprTranslateScalar(m_pdxln, pdrgpcr,
+									  pmdrel->PdrgpulNonDroppedCols());
 }
 
 //---------------------------------------------------------------------------
@@ -111,24 +103,22 @@ CMDCheckConstraintGPDB::Pexpr
 //
 //---------------------------------------------------------------------------
 void
-CMDCheckConstraintGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CMDCheckConstraintGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenCheckConstraint));
+						 CDXLTokens::PstrToken(EdxltokenCheckConstraint));
 
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	m_pmdidRel->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenRelationMdid));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
+	m_pmdidRel->Serialize(pxmlser,
+						  CDXLTokens::PstrToken(EdxltokenRelationMdid));
 
 	// serialize the scalar expression
 	m_pdxln->SerializeToDXL(pxmlser);
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenCheckConstraint));
+						  CDXLTokens::PstrToken(EdxltokenCheckConstraint));
 }
 
 #ifdef GPOS_DEBUG
@@ -141,11 +131,7 @@ CMDCheckConstraintGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CMDCheckConstraintGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDCheckConstraintGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Constraint Id: ";
 	Pmdid()->OsPrint(os);
@@ -158,6 +144,6 @@ CMDCheckConstraintGPDB::DebugPrint
 	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

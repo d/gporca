@@ -27,18 +27,13 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalDynamicTableScan::CDXLPhysicalDynamicTableScan
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc,
-	ULONG ulPartIndexId,
-	ULONG ulPartIndexIdPrintable
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdxltabdesc(pdxltabdesc),
-	m_ulPartIndexId(ulPartIndexId),
-	m_ulPartIndexIdPrintable(ulPartIndexIdPrintable)
+CDXLPhysicalDynamicTableScan::CDXLPhysicalDynamicTableScan(
+	IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc, ULONG ulPartIndexId,
+	ULONG ulPartIndexIdPrintable)
+	: CDXLPhysical(pmp),
+	  m_pdxltabdesc(pdxltabdesc),
+	  m_ulPartIndexId(ulPartIndexId),
+	  m_ulPartIndexIdPrintable(ulPartIndexIdPrintable)
 {
 	GPOS_ASSERT(NULL != pdxltabdesc);
 }
@@ -137,25 +132,26 @@ CDXLPhysicalDynamicTableScan::UlPartIndexIdPrintable() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDynamicTableScan::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalDynamicTableScan::SerializeToDXL(CXMLSerializer *pxmlser,
+											 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexId), m_ulPartIndexId);
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexId),
+						  m_ulPartIndexId);
 	if (m_ulPartIndexIdPrintable != m_ulPartIndexId)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexIdPrintable), m_ulPartIndexIdPrintable);
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenPartIndexIdPrintable),
+			m_ulPartIndexIdPrintable);
 	}
 	pdxln->SerializePropertiesToDXL(pxmlser);
 	pdxln->SerializeChildrenToDXL(pxmlser);
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);		
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -164,24 +160,21 @@ CDXLPhysicalDynamicTableScan::SerializeToDXL
 //		CDXLPhysicalDynamicTableScan::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDynamicTableScan::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	) 
-	const
+CDXLPhysicalDynamicTableScan::AssertValid(const CDXLNode *pdxln,
+										  BOOL  // fValidateChildren
+										  ) const
 {
 	GPOS_ASSERT(2 == pdxln->UlArity());
-	
+
 	// assert validity of table descriptor
 	GPOS_ASSERT(NULL != m_pdxltabdesc);
 	GPOS_ASSERT(NULL != m_pdxltabdesc->Pmdname());
 	GPOS_ASSERT(m_pdxltabdesc->Pmdname()->Pstr()->FValid());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

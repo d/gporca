@@ -19,58 +19,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerProjElem
-	//
-	//	@doc:
-	//		Parse handler for projection elements
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerProjElem : public CParseHandlerScalarOp
-	{
-		private:
-					
-			// project elem operator
-			CDXLScalarProjElem *m_pdxlop;
-						
-			// private copy ctor
-			CParseHandlerProjElem(const CParseHandlerProjElem&); 
-			
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerProjElem
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
+XERCES_CPP_NAMESPACE_USE
 
-			
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerProjElem
+//
+//	@doc:
+//		Parse handler for projection elements
+//
+//---------------------------------------------------------------------------
+class CParseHandlerProjElem : public CParseHandlerScalarOp
+{
+private:
+	// project elem operator
+	CDXLScalarProjElem *m_pdxlop;
 
-#endif // !GPDXL_CParseHandlerProjElem_H
+	// private copy ctor
+	CParseHandlerProjElem(const CParseHandlerProjElem &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerProjElem(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerProjElem_H
 
 // EOF

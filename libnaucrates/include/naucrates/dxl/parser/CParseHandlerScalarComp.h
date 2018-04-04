@@ -19,66 +19,59 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarComp
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar comparison operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarComp : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			
-			// the scalar comparison operator
-			CDXLScalarComp *m_pdxlop;
-			
-			// the left side of the comparison
-			CDXLNode *m_pdxlnLeft;
-			
-			// the right side of the comparison
-			CDXLNode *m_pdxlnRight;
-			
-			// private copy ctor
-			CParseHandlerScalarComp(const CParseHandlerScalarComp &);
-			
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerScalarComp
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarComp
+//
+//	@doc:
+//		Parse handler for parsing a scalar comparison operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarComp : public CParseHandlerScalarOp
+{
+private:
+	// the scalar comparison operator
+	CDXLScalarComp *m_pdxlop;
 
-			virtual
-			~CParseHandlerScalarComp();
-	};
-}
+	// the left side of the comparison
+	CDXLNode *m_pdxlnLeft;
 
-#endif // !GPDXL_CParseHandlerScalarComp_H
+	// the right side of the comparison
+	CDXLNode *m_pdxlnRight;
+
+	// private copy ctor
+	CParseHandlerScalarComp(const CParseHandlerScalarComp &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerScalarComp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerScalarComp();
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerScalarComp_H
 
 // EOF

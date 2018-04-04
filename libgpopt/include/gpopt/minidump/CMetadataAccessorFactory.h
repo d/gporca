@@ -11,21 +11,18 @@
 
 namespace gpopt
 {
-	class CMetadataAccessorFactory
-	{
-		public:
-			CMetadataAccessorFactory
-				(
-					IMemoryPool *pmp,
-					CDXLMinidump *pdxlmd,
-					const CHAR *szFileName
-				);
+class CMetadataAccessorFactory
+{
+public:
+	CMetadataAccessorFactory(IMemoryPool *pmp, CDXLMinidump *pdxlmd,
+							 const CHAR *szFileName);
 
-			CMDAccessor *Pmda();
+	CMDAccessor *
+	Pmda();
 
-		private:
-			CAutoP<CMDAccessor> m_apmda;
-	};
+private:
+	CAutoP<CMDAccessor> m_apmda;
+};
 
-}
+}  // namespace gpopt
 #endif

@@ -16,34 +16,30 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		COptimizationJobsTest
+//
+//	@doc:
+//		unittest for optimization jobs
+//
+//---------------------------------------------------------------------------
+class COptimizationJobsTest
+{
+public:
+	// unittests driver
+	static GPOS_RESULT
+	EresUnittest();
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		COptimizationJobsTest
-	//
-	//	@doc:
-	//		unittest for optimization jobs
-	//
-	//---------------------------------------------------------------------------
-	class COptimizationJobsTest
-	{
+	// test of optimization jobs state machines
+	static GPOS_RESULT
+	EresUnittest_StateMachine();
 
+};  // COptimizationJobsTest
 
-		public:
+}  // namespace gpopt
 
-			// unittests driver
-			static
-			GPOS_RESULT EresUnittest();
-
-			// test of optimization jobs state machines
-			static
-			GPOS_RESULT EresUnittest_StateMachine();
-
-	}; // COptimizationJobsTest
-
-}
-
-#endif // !GPOPT_COptimizationJobsTest_H
+#endif  // !GPOPT_COptimizationJobsTest_H
 
 
 // EOF

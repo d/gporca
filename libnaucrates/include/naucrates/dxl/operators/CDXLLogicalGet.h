@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Class for representing DXL logical get operators
-//		
+//
 //---------------------------------------------------------------------------
 
 #ifndef GPDXL_CDXLLogicalGet_H
@@ -20,67 +20,65 @@
 
 namespace gpdxl
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalGet
-	//
-	//	@doc:
-	//		Class for representing DXL logical get operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalGet : public CDXLLogical
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalGet
+//
+//	@doc:
+//		Class for representing DXL logical get operators
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalGet : public CDXLLogical
+{
+private:
+	// table descriptor for the scanned table
+	CDXLTableDescr *m_pdxltabdesc;
+
+	// private copy ctor
+	CDXLLogicalGet(CDXLLogicalGet &);
+
+public:
+	// ctor
+	CDXLLogicalGet(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc);
+
+	// dtor
+	virtual ~CDXLLogicalGet();
+
+	// accessors
+	Edxlopid
+	Edxlop() const;
+	const CWStringConst *
+	PstrOpName() const;
+	CDXLTableDescr *
+	Pdxltabdesc() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// check if given column is defined by operator
+	virtual BOOL
+	FDefinesColumn(ULONG ulColId) const;
+
+	// conversion function
+	static CDXLLogicalGet *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalGet == pdxlop->Edxlop() ||
+					EdxlopLogicalExternalGet == pdxlop->Edxlop());
 
-			// table descriptor for the scanned table
-			CDXLTableDescr *m_pdxltabdesc;
-
-			// private copy ctor
-			CDXLLogicalGet(CDXLLogicalGet&);
-
-		public:
-			// ctor
-			CDXLLogicalGet(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc);
-
-			// dtor
-			virtual
-			~CDXLLogicalGet();
-
-			// accessors
-			Edxlopid Edxlop() const;
-			const CWStringConst *PstrOpName() const;
-			CDXLTableDescr *Pdxltabdesc() const;
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// check if given column is defined by operator
-			virtual
-			BOOL FDefinesColumn(ULONG ulColId) const;
-
-			// conversion function
-			static
-			CDXLLogicalGet *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalGet == pdxlop->Edxlop() ||
-							EdxlopLogicalExternalGet == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLLogicalGet*>(pdxlop);
-			}
+		return dynamic_cast<CDXLLogicalGet *>(pdxlop);
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-
-	};
-}
-#endif // !GPDXL_CDXLLogicalGet_H
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLLogicalGet_H
 
 // EOF

@@ -18,74 +18,57 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CWindowPreprocessor
+//
+//	@doc:
+//		Preprocessing routines of window functions
+//
+//---------------------------------------------------------------------------
+class CWindowPreprocessor
+{
+private:
+	// private copy ctor
+	CWindowPreprocessor(const CWindowPreprocessor &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CWindowPreprocessor
-	//
-	//	@doc:
-	//		Preprocessing routines of window functions
-	//
-	//---------------------------------------------------------------------------
-	class CWindowPreprocessor
-	{
-		private:
+	// iterate over project elements and split them elements between Distinct Aggs list, and Others list
+	static void
+	SplitPrjList(IMemoryPool *pmp, CExpression *pexprSeqPrj,
+				 DrgPexpr **ppdrgpexprDistinctAggsPrjElems,
+				 DrgPexpr **ppdrgpexprOtherPrjElems, DrgPos **ppdrgposOther,
+				 DrgPwf **ppdrgpwfOther);
 
-			// private copy ctor
-			CWindowPreprocessor(const CWindowPreprocessor &);
+	// split given SeqPrj expression into:
+	//	- A GbAgg expression containing distinct Aggs, and
+	//	- A SeqPrj expression containing all other window functions
+	static void
+	SplitSeqPrj(IMemoryPool *pmp, CExpression *pexprSeqPrj,
+				CExpression **ppexprGbAgg, CExpression **ppexprOutputSeqPrj);
 
-			// iterate over project elements and split them elements between Distinct Aggs list, and Others list
-			static
-			void SplitPrjList
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprSeqPrj,
-				DrgPexpr **ppdrgpexprDistinctAggsPrjElems,
-				DrgPexpr **ppdrgpexprOtherPrjElems,
-				DrgPos **ppdrgposOther,
-				DrgPwf **ppdrgpwfOther
-				);
+	// create a CTE with two consumers using the child expression of Sequence Project
+	static void
+	CreateCTE(IMemoryPool *pmp, CExpression *pexprSeqPrj,
+			  CExpression **ppexprFirstConsumer,
+			  CExpression **ppexprSecondConsumer);
 
-			// split given SeqPrj expression into:
-			//	- A GbAgg expression containing distinct Aggs, and
-			//	- A SeqPrj expression containing all other window functions
-			static
-			void SplitSeqPrj
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprSeqPrj,
-				CExpression **ppexprGbAgg,
-				CExpression **ppexprOutputSeqPrj
-				);
+	// extract grouping columns from given expression
+	static DrgPcr *
+	PdrgpcrGrpCols(CExpression *pexprJoinDQAs);
 
-			// create a CTE with two consumers using the child expression of Sequence Project
-			static
-			void CreateCTE
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprSeqPrj,
-				CExpression **ppexprFirstConsumer,
-				CExpression **ppexprSecondConsumer
-				);
+	// transform sequence project expression into an inner join expression
+	static CExpression *
+	PexprSeqPrj2Join(IMemoryPool *pmp, CExpression *pexprSeqPrj);
 
-			// extract grouping columns from given expression
-			static
-			DrgPcr *PdrgpcrGrpCols(CExpression *pexprJoinDQAs);
+public:
+	// main driver
+	static CExpression *
+	PexprPreprocess(IMemoryPool *pmp, CExpression *pexpr);
 
-			// transform sequence project expression into an inner join expression
-			static
-			CExpression *PexprSeqPrj2Join(IMemoryPool *pmp, CExpression *pexprSeqPrj);
-
-		public:
-
-			// main driver
-			static
-			CExpression *PexprPreprocess(IMemoryPool *pmp, CExpression *pexpr);
-
-	}; // class CWindowPreprocessor
-}
+};  // class CWindowPreprocessor
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CWindowPreprocessor_H
+#endif  // !GPOPT_CWindowPreprocessor_H
 
 // EOF

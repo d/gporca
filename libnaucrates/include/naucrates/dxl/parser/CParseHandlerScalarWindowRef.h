@@ -6,7 +6,7 @@
 //		CParseHandlerScalarWindowRef.h
 //
 //	@doc:
-//		
+//
 //		SAX parse handler class for parsing scalar WindowRef
 //---------------------------------------------------------------------------
 
@@ -20,52 +20,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarWindowRef
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar WindowRef
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarWindowRef : public CParseHandlerScalarOp
-	{
-		private:
-			// private copy ctor
-			CParseHandlerScalarWindowRef(const CParseHandlerScalarWindowRef &);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarWindowRef
+//
+//	@doc:
+//		Parse handler for parsing a scalar WindowRef
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarWindowRef : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarWindowRef(const CParseHandlerScalarWindowRef &);
 
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-		public:
-			// ctor
-			CParseHandlerScalarWindowRef
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
+public:
+	// ctor
+	CParseHandlerScalarWindowRef(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								 CParseHandlerBase *pphRoot);
+};
 
-}
-#endif // !GPDXL_CParseHandlerScalarWindowRef_H
+}  // namespace gpdxl
+#endif  // !GPDXL_CParseHandlerScalarWindowRef_H
 
 //EOF

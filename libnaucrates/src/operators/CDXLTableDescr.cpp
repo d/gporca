@@ -28,19 +28,13 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLTableDescr::CDXLTableDescr
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	ULONG ulExecuteAsUser
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pdrgdxlcd(NULL),
-	m_ulExecuteAsUser(ulExecuteAsUser)
+CDXLTableDescr::CDXLTableDescr(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+							   ULONG ulExecuteAsUser)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pdrgdxlcd(NULL),
+	  m_ulExecuteAsUser(ulExecuteAsUser)
 {
 	GPOS_ASSERT(NULL != m_pmdname);
 	m_pdrgdxlcd = GPOS_NEW(pmp) DrgPdxlcd(pmp);
@@ -73,7 +67,7 @@ CDXLTableDescr::~CDXLTableDescr()
 //---------------------------------------------------------------------------
 IMDId *
 CDXLTableDescr::Pmdid() const
-{	
+{
 	return m_pmdid;
 }
 
@@ -128,10 +122,7 @@ CDXLTableDescr::UlExecuteAsUser() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLTableDescr::SetColumnDescriptors
-	(
-	DrgPdxlcd *pdrgpdxlcd
-	)
+CDXLTableDescr::SetColumnDescriptors(DrgPdxlcd *pdrgpdxlcd)
 {
 	CRefCount::SafeRelease(m_pdrgdxlcd);
 	m_pdrgdxlcd = pdrgpdxlcd;
@@ -146,10 +137,7 @@ CDXLTableDescr::SetColumnDescriptors
 //
 //---------------------------------------------------------------------------
 void
-CDXLTableDescr::AddColumnDescr
-	(
-	CDXLColDescr *pdxlcr
-	)
+CDXLTableDescr::AddColumnDescr(CDXLColDescr *pdxlcr)
 {
 	GPOS_ASSERT(NULL != m_pdrgdxlcd);
 	GPOS_ASSERT(NULL != pdxlcr);
@@ -165,14 +153,10 @@ CDXLTableDescr::AddColumnDescr
 //
 //---------------------------------------------------------------------------
 const CDXLColDescr *
-CDXLTableDescr::Pdxlcd
-	(
-	ULONG ul
-	)
-	const
+CDXLTableDescr::Pdxlcd(ULONG ul) const
 {
 	GPOS_ASSERT(ul < UlArity());
-	
+
 	return (*m_pdrgdxlcd)[ul];
 }
 
@@ -185,10 +169,7 @@ CDXLTableDescr::Pdxlcd
 //
 //---------------------------------------------------------------------------
 void
-CDXLTableDescr::SerializeMDId
-	(
-	CXMLSerializer *pxmlser
-	) const
+CDXLTableDescr::SerializeMDId(CXMLSerializer *pxmlser) const
 {
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
 }
@@ -202,27 +183,27 @@ CDXLTableDescr::SerializeMDId
 //
 //---------------------------------------------------------------------------
 void
-CDXLTableDescr::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLTableDescr::SerializeToDXL(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenTableDescr));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenTableDescr));
+
 	SerializeMDId(pxmlser);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTableName), m_pmdname->Pstr());
-	
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTableName),
+						  m_pmdname->Pstr());
+
 	if (GPDXL_DEFAULT_USERID != m_ulExecuteAsUser)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecuteAsUser), m_ulExecuteAsUser);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecuteAsUser),
+							  m_ulExecuteAsUser);
 	}
-	
+
 	// serialize columns
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumns));
 	GPOS_ASSERT(NULL != m_pdrgdxlcd);
-	
+
 	const ULONG ulArity = UlArity();
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
@@ -230,9 +211,11 @@ CDXLTableDescr::SerializeToDXL
 		pdxlcd->SerializeToDXL(pxmlser);
 	}
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenTableDescr));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumns));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenTableDescr));
 }
 
 // EOF

@@ -25,22 +25,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformUnion2UnionAll::CXformUnion2UnionAll
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalUnion(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-						)
-		)
-{}
+CXformUnion2UnionAll::CXformUnion2UnionAll(IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalUnion(pmp),
+		  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -51,13 +42,8 @@ CXformUnion2UnionAll::CXformUnion2UnionAll
 //
 //---------------------------------------------------------------------------
 void
-CXformUnion2UnionAll::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformUnion2UnionAll::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -84,24 +70,22 @@ CXformUnion2UnionAll::Transform
 	pdrgpdrgpcrInput->AddRef();
 
 	// assemble new logical operator
-	CExpression *pexprUnionAll = GPOS_NEW(pmp) CExpression
-									(
-									pmp,
-									GPOS_NEW(pmp) CLogicalUnionAll(pmp, pdrgpcrOutput, pdrgpdrgpcrInput),
-									pdrgpexpr
-									);
+	CExpression *pexprUnionAll = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp) CLogicalUnionAll(pmp, pdrgpcrOutput, pdrgpdrgpcrInput),
+		pdrgpexpr);
 
 	pdrgpcrOutput->AddRef();
 
-	CExpression *pexprProjList = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp), GPOS_NEW(pmp) DrgPexpr(pmp));
+	CExpression *pexprProjList =
+		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp),
+								  GPOS_NEW(pmp) DrgPexpr(pmp));
 
-	CExpression *pexprAgg = GPOS_NEW(pmp) CExpression
-										(
-										pmp,
-										GPOS_NEW(pmp) CLogicalGbAgg(pmp, pdrgpcrOutput, COperator::EgbaggtypeGlobal /*egbaggtype*/),
-										pexprUnionAll,
-										pexprProjList
-										);
+	CExpression *pexprAgg = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp) CLogicalGbAgg(pmp, pdrgpcrOutput,
+									COperator::EgbaggtypeGlobal /*egbaggtype*/),
+		pexprUnionAll, pexprProjList);
 
 	// add alternative to results
 	pxfres->Add(pexprAgg);

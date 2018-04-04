@@ -31,15 +31,11 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalTableScan::CPhysicalTableScan
-	(
-	IMemoryPool *pmp,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
+CPhysicalTableScan::CPhysicalTableScan(IMemoryPool *pmp,
+									   const CName *pnameAlias,
+									   CTableDescriptor *ptabdesc,
+									   DrgPcr *pdrgpcrOutput)
+	: CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
 {
 }
 
@@ -54,13 +50,15 @@ CPhysicalTableScan::CPhysicalTableScan
 ULONG
 CPhysicalTableScan::UlHash() const
 {
-	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(), m_ptabdesc->Pmdid()->UlHash());
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
+	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(),
+										 m_ptabdesc->Pmdid()->UlHash());
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
 
 	return ulHash;
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CPhysicalTableScan::FMatch
@@ -70,11 +68,7 @@ CPhysicalTableScan::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalTableScan::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalTableScan::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
@@ -83,7 +77,7 @@ CPhysicalTableScan::FMatch
 
 	CPhysicalTableScan *popTableScan = CPhysicalTableScan::PopConvert(pop);
 	return m_ptabdesc->Pmdid()->FEquals(popTableScan->Ptabdesc()->Pmdid()) &&
-			m_pdrgpcrOutput->FEqual(popTableScan->PdrgpcrOutput());
+		   m_pdrgpcrOutput->FEqual(popTableScan->PdrgpcrOutput());
 }
 
 
@@ -96,14 +90,10 @@ CPhysicalTableScan::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalTableScan::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalTableScan::OsPrint(IOstream &os) const
 {
 	os << SzId() << " ";
-	
+
 	// alias of table as referenced in the query
 	m_pnameAlias->OsPrint(os);
 
@@ -111,11 +101,10 @@ CPhysicalTableScan::OsPrint
 	os << " (";
 	m_ptabdesc->Name().OsPrint(os);
 	os << ")";
-	
+
 	return os;
 }
 
 
 
 // EOF
-

@@ -39,15 +39,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMDRelationCtas::CParseHandlerMDRelationCtas
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerMDRelation(pmp, pphm, pphRoot),
-	m_pdrgpiVarTypeMod(NULL)
+CParseHandlerMDRelationCtas::CParseHandlerMDRelationCtas(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerMDRelation(pmp, pphm, pphRoot), m_pdrgpiVarTypeMod(NULL)
 {
 }
 
@@ -60,17 +54,17 @@ CParseHandlerMDRelationCtas::CParseHandlerMDRelationCtas
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelationCtas::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerMDRelationCtas::StartElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const,  // xmlszQname
+										  const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationCTAS), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationCTAS),
+								 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -79,60 +73,51 @@ CParseHandlerMDRelationCtas::StartElement
 
 	GPOS_ASSERT(IMDId::EmdidGPDBCtas == m_pmdid->Emdidt());
 
-	const XMLCh *xmlszSchema = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenSchema));
+	const XMLCh *xmlszSchema =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenSchema));
 	if (NULL != xmlszSchema)
 	{
-		m_pmdnameSchema = CDXLUtils::PmdnameFromXmlsz(m_pphm->Pmm(), xmlszSchema);
+		m_pmdnameSchema =
+			CDXLUtils::PmdnameFromXmlsz(m_pphm->Pmm(), xmlszSchema);
 	}
-	
+
 	// parse whether relation is temporary
-	m_fTemporary = CDXLOperatorFactory::FValueFromAttrs
-											(
-											m_pphm->Pmm(),
-											attrs,
-											EdxltokenRelTemporary,
-											EdxltokenRelation
-											);
+	m_fTemporary = CDXLOperatorFactory::FValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenRelTemporary, EdxltokenRelation);
 
 	// parse whether relation has oids
-	const XMLCh *xmlszHasOids = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenRelHasOids));
+	const XMLCh *xmlszHasOids =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenRelHasOids));
 	if (NULL != xmlszHasOids)
 	{
-		m_fHasOids = CDXLOperatorFactory::FValueFromXmlstr(m_pphm->Pmm(), xmlszHasOids, EdxltokenRelHasOids, EdxltokenRelation);
+		m_fHasOids = CDXLOperatorFactory::FValueFromXmlstr(
+			m_pphm->Pmm(), xmlszHasOids, EdxltokenRelHasOids,
+			EdxltokenRelation);
 	}
 
 	// parse storage type
-	const XMLCh *xmlszStorageType = CDXLOperatorFactory::XmlstrFromAttrs
-															(
-															attrs,
-															EdxltokenRelStorageType,
-															EdxltokenRelation
-															);
-	m_erelstorage = CDXLOperatorFactory::ErelstoragetypeFromXmlstr(xmlszStorageType);
+	const XMLCh *xmlszStorageType = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenRelStorageType, EdxltokenRelation);
+	m_erelstorage =
+		CDXLOperatorFactory::ErelstoragetypeFromXmlstr(xmlszStorageType);
 
 	// parse vartypemod
-	const XMLCh *xmlszVarTypeMod = CDXLOperatorFactory::XmlstrFromAttrs
-															(
-															attrs,
-															EdxltokenVarTypeModList,
-															EdxltokenRelation
-															);
-	m_pdrgpiVarTypeMod = CDXLOperatorFactory::PdrgpiFromXMLCh
-						(
-						m_pphm->Pmm(),
-						xmlszVarTypeMod,
-						EdxltokenVarTypeModList,
-						EdxltokenRelation
-						);
+	const XMLCh *xmlszVarTypeMod = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenVarTypeModList, EdxltokenRelation);
+	m_pdrgpiVarTypeMod = CDXLOperatorFactory::PdrgpiFromXMLCh(
+		m_pphm->Pmm(), xmlszVarTypeMod, EdxltokenVarTypeModList,
+		EdxltokenRelation);
 
 	//parse handler for the storage options
-	CParseHandlerBase *pphCTASOptions = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenCTASOptions), m_pphm, this);
+	CParseHandlerBase *pphCTASOptions = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenCTASOptions), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphCTASOptions);
-	
+
 	// parse handler for the columns
-	CParseHandlerBase *pphColumns = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumns), m_pphm, this);
+	CParseHandlerBase *pphColumns = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumns), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphColumns);
-	
+
 	// store parse handlers
 	this->Append(pphColumns);
 	this->Append(pphCTASOptions);
@@ -147,21 +132,24 @@ CParseHandlerMDRelationCtas::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelationCtas::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerMDRelationCtas::EndElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationCTAS), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationCTAS),
+								 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CParseHandlerMetadataColumns *pphMdCol = dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
-	CParseHandlerCtasStorageOptions *pphCTASOptions = dynamic_cast<CParseHandlerCtasStorageOptions *>((*this)[1]);
+	CParseHandlerMetadataColumns *pphMdCol =
+		dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
+	CParseHandlerCtasStorageOptions *pphCTASOptions =
+		dynamic_cast<CParseHandlerCtasStorageOptions *>((*this)[1]);
 
 	GPOS_ASSERT(NULL != pphMdCol->Pdrgpmdcol());
 	GPOS_ASSERT(NULL != pphCTASOptions->Pdxlctasopt());
@@ -172,22 +160,10 @@ CParseHandlerMDRelationCtas::EndElement
 	pdrgpmdcol->AddRef();
 	pdxlctasopt->AddRef();
 
-	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationCtasGPDB
-								(
-									m_pmp,
-									m_pmdid,
-									m_pmdnameSchema,
-									m_pmdname,
-									m_fTemporary,
-									m_fHasOids,
-									m_erelstorage,
-									m_ereldistrpolicy,
-									pdrgpmdcol,
-									m_pdrgpulDistrColumns,
-									m_pdrgpdrgpulKeys,									
-									pdxlctasopt,
-									m_pdrgpiVarTypeMod
-								);
+	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationCtasGPDB(
+		m_pmp, m_pmdid, m_pmdnameSchema, m_pmdname, m_fTemporary, m_fHasOids,
+		m_erelstorage, m_ereldistrpolicy, pdrgpmdcol, m_pdrgpulDistrColumns,
+		m_pdrgpdrgpulKeys, pdxlctasopt, m_pdrgpiVarTypeMod);
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

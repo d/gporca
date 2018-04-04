@@ -9,7 +9,7 @@
 //		Base class for physical dynamic scan operators
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -35,29 +35,19 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalDynamicScan::CPhysicalDynamicScan
-	(
-	IMemoryPool *pmp,
-	BOOL fPartial,
-	CTableDescriptor *ptabdesc,
-	ULONG ulOriginOpId,
-	const CName *pnameAlias,
-	ULONG ulScanId,
-	DrgPcr *pdrgpcrOutput,
-	DrgDrgPcr *pdrgpdrgpcrParts,
-	ULONG ulSecondaryScanId,
-	CPartConstraint *ppartcnstr,
-	CPartConstraint *ppartcnstrRel
-	)
-	:
-	CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput),
-	m_ulOriginOpId(ulOriginOpId),
-	m_fPartial(fPartial),
-	m_ulScanId(ulScanId),
-	m_pdrgpdrgpcrPart(pdrgpdrgpcrParts),
-	m_ulSecondaryScanId(ulSecondaryScanId),
-	m_ppartcnstr(ppartcnstr),
-	m_ppartcnstrRel(ppartcnstrRel)
+CPhysicalDynamicScan::CPhysicalDynamicScan(
+	IMemoryPool *pmp, BOOL fPartial, CTableDescriptor *ptabdesc,
+	ULONG ulOriginOpId, const CName *pnameAlias, ULONG ulScanId,
+	DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrParts, ULONG ulSecondaryScanId,
+	CPartConstraint *ppartcnstr, CPartConstraint *ppartcnstrRel)
+	: CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput),
+	  m_ulOriginOpId(ulOriginOpId),
+	  m_fPartial(fPartial),
+	  m_ulScanId(ulScanId),
+	  m_pdrgpdrgpcrPart(pdrgpdrgpcrParts),
+	  m_ulSecondaryScanId(ulSecondaryScanId),
+	  m_ppartcnstr(ppartcnstr),
+	  m_ppartcnstrRel(ppartcnstrRel)
 {
 	GPOS_ASSERT(NULL != pdrgpdrgpcrParts);
 	GPOS_ASSERT(0 < pdrgpdrgpcrParts->UlLength());
@@ -91,10 +81,12 @@ CPhysicalDynamicScan::~CPhysicalDynamicScan()
 ULONG
 CPhysicalDynamicScan::UlHash() const
 {
-	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(),
-								gpos::UlCombineHashes(gpos::UlHash(&m_ulScanId),
-								                      m_ptabdesc->Pmdid()->UlHash()));
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
+	ULONG ulHash = gpos::UlCombineHashes(
+		COperator::UlHash(),
+		gpos::UlCombineHashes(gpos::UlHash(&m_ulScanId),
+							  m_ptabdesc->Pmdid()->UlHash()));
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
 
 	return ulHash;
 }
@@ -108,13 +100,9 @@ CPhysicalDynamicScan::UlHash() const
 //
 //---------------------------------------------------------------------------
 CPartIndexMap *
-CPhysicalDynamicScan::PpimDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, //exprhdl
-	CDrvdPropCtxt *pdpctxt
-	)
-	const
+CPhysicalDynamicScan::PpimDerive(IMemoryPool *pmp,
+								 CExpressionHandle &,  //exprhdl
+								 CDrvdPropCtxt *pdpctxt) const
 {
 	GPOS_ASSERT(NULL != pdpctxt);
 	IMDId *pmdid = m_ptabdesc->Pmdid();
@@ -122,9 +110,13 @@ CPhysicalDynamicScan::PpimDerive
 	m_pdrgpdrgpcrPart->AddRef();
 	m_ppartcnstr->AddRef();
 	m_ppartcnstrRel->AddRef();
-	ULONG ulExpectedPartitionSelectors = CDrvdPropCtxtPlan::PdpctxtplanConvert(pdpctxt)->UlExpectedPartitionSelectors();
+	ULONG ulExpectedPartitionSelectors =
+		CDrvdPropCtxtPlan::PdpctxtplanConvert(pdpctxt)
+			->UlExpectedPartitionSelectors();
 
-	return PpimDeriveFromDynamicScan(pmp, m_ulScanId, pmdid, m_pdrgpdrgpcrPart, m_ulSecondaryScanId, m_ppartcnstr, m_ppartcnstrRel, ulExpectedPartitionSelectors);
+	return PpimDeriveFromDynamicScan(
+		pmp, m_ulScanId, pmdid, m_pdrgpdrgpcrPart, m_ulSecondaryScanId,
+		m_ppartcnstr, m_ppartcnstrRel, ulExpectedPartitionSelectors);
 }
 
 //---------------------------------------------------------------------------
@@ -136,11 +128,7 @@ CPhysicalDynamicScan::PpimDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalDynamicScan::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalDynamicScan::OsPrint(IOstream &os) const
 {
 	os << SzId() << " ";
 
@@ -173,13 +161,11 @@ CPhysicalDynamicScan::OsPrint
 //
 //---------------------------------------------------------------------------
 CPhysicalDynamicScan *
-CPhysicalDynamicScan::PopConvert
-	(
-	COperator *pop
-	)
+CPhysicalDynamicScan::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
-	GPOS_ASSERT(CUtils::FPhysicalScan(pop) && CPhysicalScan::PopConvert(pop)->FDynamicScan());
+	GPOS_ASSERT(CUtils::FPhysicalScan(pop) &&
+				CPhysicalScan::PopConvert(pop)->FDynamicScan());
 
 	return dynamic_cast<CPhysicalDynamicScan *>(pop);
 }

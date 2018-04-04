@@ -23,12 +23,9 @@
 using namespace gpopt;
 using namespace gpmd;
 
-const WCHAR CScalarBoolOp::m_rgwszBool[EboolopSentinel][30] =
-{
-	GPOS_WSZ_LIT("EboolopAnd"),
-	GPOS_WSZ_LIT("EboolopOr"),
-	GPOS_WSZ_LIT("EboolopNot")
-};
+const WCHAR CScalarBoolOp::m_rgwszBool[EboolopSentinel][30] = {
+	GPOS_WSZ_LIT("EboolopAnd"), GPOS_WSZ_LIT("EboolopOr"),
+	GPOS_WSZ_LIT("EboolopNot")};
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -44,7 +41,7 @@ CScalarBoolOp::UlHash() const
 {
 	ULONG ulBoolop = (ULONG) Eboolop();
 	return gpos::UlCombineHashes(COperator::UlHash(),
-							    gpos::UlHash<ULONG>(&ulBoolop));
+								 gpos::UlHash<ULONG>(&ulBoolop));
 }
 
 
@@ -57,11 +54,7 @@ CScalarBoolOp::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarBoolOp::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarBoolOp::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
@@ -84,12 +77,9 @@ CScalarBoolOp::FMatch
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarBoolOp::FCommutative
-	(
-	EBoolOperator eboolop
-	)
+CScalarBoolOp::FCommutative(EBoolOperator eboolop)
 {
-	switch(eboolop)
+	switch (eboolop)
 	{
 		case EboolopAnd:
 		case EboolopOr:
@@ -127,11 +117,7 @@ CScalarBoolOp::PmdidType() const
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarBoolOp::Eber
-	(
-	DrgPul *pdrgpulChildren
-	)
-	const
+CScalarBoolOp::Eber(DrgPul *pdrgpulChildren) const
 {
 	if (EboolopAnd == m_eboolop)
 	{
@@ -147,7 +133,7 @@ CScalarBoolOp::Eber
 	GPOS_ASSERT(NULL != pdrgpulChildren);
 	GPOS_ASSERT(1 == pdrgpulChildren->UlLength());
 
-	EBoolEvalResult eber = (EBoolEvalResult) *((*pdrgpulChildren)[0]);
+	EBoolEvalResult eber = (EBoolEvalResult) * ((*pdrgpulChildren)[0]);
 	switch (eber)
 	{
 		case EberTrue:
@@ -174,11 +160,7 @@ CScalarBoolOp::Eber
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarBoolOp::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarBoolOp::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << m_rgwszBool[m_eboolop];
@@ -189,4 +171,3 @@ CScalarBoolOp::OsPrint
 
 
 // EOF
-

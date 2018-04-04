@@ -24,17 +24,12 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalAgg::CDXLPhysicalAgg
-	(
-	IMemoryPool *pmp,
-	EdxlAggStrategy edxlaggstr,
-	BOOL fStreamSafe
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdrgpulGroupingCols(NULL),
-	m_edxlaggstr(edxlaggstr),
-	m_fStreamSafe(fStreamSafe)
+CDXLPhysicalAgg::CDXLPhysicalAgg(IMemoryPool *pmp, EdxlAggStrategy edxlaggstr,
+								 BOOL fStreamSafe)
+	: CDXLPhysical(pmp),
+	  m_pdrgpulGroupingCols(NULL),
+	  m_edxlaggstr(edxlaggstr),
+	  m_fStreamSafe(fStreamSafe)
 {
 	GPOS_ASSERT_IMP(fStreamSafe, (EdxlaggstrategyHashed == edxlaggstr));
 }
@@ -136,7 +131,7 @@ CDXLPhysicalAgg::PstrAggStrategy() const
 const DrgPul *
 CDXLPhysicalAgg::PdrgpulGroupingCols() const
 {
-	return m_pdrgpulGroupingCols; 
+	return m_pdrgpulGroupingCols;
 }
 
 
@@ -165,30 +160,33 @@ CDXLPhysicalAgg::SetGroupingCols(DrgPul *pdrgpul)
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAgg::SerializeGroupingColsToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLPhysicalAgg::SerializeGroupingColsToDXL(CXMLSerializer *pxmlser) const
 {
 	GPOS_ASSERT(NULL != m_pdrgpulGroupingCols);
-	
-	const CWStringConst *pstrTokenGroupingCols = CDXLTokens::PstrToken(EdxltokenGroupingCols);
-	const CWStringConst *pstrTokenGroupingCol = CDXLTokens::PstrToken(EdxltokenGroupingCol);
-		
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenGroupingCols);
-	
+
+	const CWStringConst *pstrTokenGroupingCols =
+		CDXLTokens::PstrToken(EdxltokenGroupingCols);
+	const CWStringConst *pstrTokenGroupingCol =
+		CDXLTokens::PstrToken(EdxltokenGroupingCol);
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrTokenGroupingCols);
+
 	for (ULONG ul = 0; ul < m_pdrgpulGroupingCols->UlLength(); ul++)
 	{
 		GPOS_ASSERT(NULL != (*m_pdrgpulGroupingCols)[ul]);
 		ULONG ulGroupingCol = *((*m_pdrgpulGroupingCols)[ul]);
-		
-		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenGroupingCol);
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), ulGroupingCol);
-		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenGroupingCol);
+
+		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							 pstrTokenGroupingCol);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId),
+							  ulGroupingCol);
+		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							  pstrTokenGroupingCol);
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenGroupingCols);	
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrTokenGroupingCols);
 }
 
 //---------------------------------------------------------------------------
@@ -200,27 +198,27 @@ CDXLPhysicalAgg::SerializeGroupingColsToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAgg::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalAgg::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggStrategy), PstrAggStrategy());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggStreamSafe), m_fStreamSafe);
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggStrategy),
+						  PstrAggStrategy());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggStreamSafe),
+						  m_fStreamSafe);
+
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
 	SerializeGroupingColsToDXL(pxmlser);
-	
+
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);		
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -230,32 +228,30 @@ CDXLPhysicalAgg::SerializeToDXL
 //		CDXLPhysicalAgg::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAgg::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalAgg::AssertValid(const CDXLNode *pdxln,
+							 BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
-	
-	GPOS_ASSERT((EdxlaggstrategySentinel > m_edxlaggstr) && (EdxlaggstrategyPlain <= m_edxlaggstr));
+
+	GPOS_ASSERT((EdxlaggstrategySentinel > m_edxlaggstr) &&
+				(EdxlaggstrategyPlain <= m_edxlaggstr));
 
 	GPOS_ASSERT(EdxlaggIndexSentinel == pdxln->UlArity());
 	GPOS_ASSERT(NULL != m_pdrgpulGroupingCols);
-	
+
 	CDXLNode *pdxlnChild = (*pdxln)[EdxlaggIndexChild];
 	GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -21,102 +21,93 @@
 
 namespace gpdxl
 {
+using namespace gpmd;
 
-	using namespace gpmd;
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarSortCol
+//
+//	@doc:
+//		Sorting column info in DXL Sort and Motion nodes
+//
+//---------------------------------------------------------------------------
+class CDXLScalarSortCol : public CDXLScalar
+{
+private:
+	// id of the sorting column
+	ULONG m_ulColId;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarSortCol
-	//
-	//	@doc:
-	//		Sorting column info in DXL Sort and Motion nodes
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarSortCol : public CDXLScalar
+	// catalog Oid of the sorting operator
+	IMDId *m_pmdidSortOp;
+
+	// name of sorting operator
+	CWStringConst *m_pstrSortOpName;
+
+	// sort nulls before other values
+	BOOL m_fSortNullsFirst;
+
+	// private copy ctor
+	CDXLScalarSortCol(CDXLScalarSortCol &);
+
+public:
+	// ctor/dtor
+	CDXLScalarSortCol(IMemoryPool *pmp, ULONG ulColId, IMDId *pmdidSortOp,
+					  CWStringConst *pstrTypeName, BOOL fSortNullsFirst);
+
+	virtual ~CDXLScalarSortCol();
+
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
+
+	// name of the operator
+	const CWStringConst *
+	PstrOpName() const;
+
+	// Id of the sorting column
+	ULONG
+	UlColId() const;
+
+	// mdid of the sorting operator
+	IMDId *
+	PmdidSortOp() const;
+
+	// whether nulls are sorted before other values
+	BOOL
+	FSortNullsFirst() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *, const CDXLNode *) const;
+
+	// conversion function
+	static CDXLScalarSortCol *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
-		
-			// id of the sorting column
-			ULONG m_ulColId;
-			
-			// catalog Oid of the sorting operator
-			IMDId *m_pmdidSortOp;
-			
-			// name of sorting operator 
-			CWStringConst *m_pstrSortOpName;
-			
-			// sort nulls before other values
-			BOOL m_fSortNullsFirst;
-			
-			// private copy ctor
-			CDXLScalarSortCol(CDXLScalarSortCol&);
-			
-		public:
-			// ctor/dtor
-			CDXLScalarSortCol
-				(
-				IMemoryPool *pmp,
-				ULONG ulColId,
-				IMDId *pmdidSortOp,
-				CWStringConst *pstrTypeName,
-				BOOL fSortNullsFirst
-				);
-			
-			virtual
-			~CDXLScalarSortCol();
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarSortCol == pdxlop->Edxlop());
 
-			// ident accessors
-			Edxlopid Edxlop() const;
-			
-			// name of the operator
-			const CWStringConst *PstrOpName() const;
-			
-			// Id of the sorting column
-			ULONG UlColId() const;
-			
-			// mdid of the sorting operator
-			IMDId *PmdidSortOp() const;
-			
-			// whether nulls are sorted before other values
-			BOOL FSortNullsFirst() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *, const CDXLNode *) const;
+		return dynamic_cast<CDXLScalarSortCol *>(pdxlop);
+	}
 
-			// conversion function
-			static
-			CDXLScalarSortCol *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarSortCol == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLScalarSortCol*>(pdxlop);
-			}
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-					(
-					CMDAccessor *//pmda
-					)
-					const
-			{
-				GPOS_ASSERT(!"Invalid function call for this operator");
-				return false;
-			}
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
+	{
+		GPOS_ASSERT(!"Invalid function call for this operator");
+		return false;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG			
-	};
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarSortCol_H
+#endif  // !GPDXL_CDXLScalarSortCol_H
 
 // EOF

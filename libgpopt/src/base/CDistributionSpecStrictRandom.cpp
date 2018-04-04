@@ -9,12 +9,14 @@ CDistributionSpecStrictRandom::CDistributionSpecStrictRandom()
 {
 }
 
-BOOL CDistributionSpecStrictRandom::FMatch(const CDistributionSpec *pds) const
+BOOL
+CDistributionSpecStrictRandom::FMatch(const CDistributionSpec *pds) const
 {
-    return pds->Edt() == Edt();
+	return pds->Edt() == Edt();
 }
 
-BOOL CDistributionSpecStrictRandom::FSatisfies(const CDistributionSpec *pds) const
+BOOL
+CDistributionSpecStrictRandom::FSatisfies(const CDistributionSpec *pds) const
 {
-    return FMatch(pds);
+	return FMatch(pds);
 }

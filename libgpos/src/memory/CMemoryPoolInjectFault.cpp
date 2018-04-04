@@ -33,13 +33,9 @@ using namespace gpos;
 //	  Ctor
 //
 //---------------------------------------------------------------------------
-CMemoryPoolInjectFault::CMemoryPoolInjectFault
-	(
-	IMemoryPool *pmp,
-	BOOL fOwnsUnderlying
-	)
-	:
-	CMemoryPool(pmp, fOwnsUnderlying, true /*fThreadSafe*/)
+CMemoryPoolInjectFault::CMemoryPoolInjectFault(IMemoryPool *pmp,
+											   BOOL fOwnsUnderlying)
+	: CMemoryPool(pmp, fOwnsUnderlying, true /*fThreadSafe*/)
 {
 	GPOS_ASSERT(pmp != NULL);
 }
@@ -55,12 +51,8 @@ CMemoryPoolInjectFault::CMemoryPoolInjectFault
 //
 //---------------------------------------------------------------------------
 void *
-CMemoryPoolInjectFault::PvAllocate
-	(
-	const ULONG ulNumBytes,
-	const CHAR *szFilename,
-	const ULONG ulLine
-	)
+CMemoryPoolInjectFault::PvAllocate(const ULONG ulNumBytes,
+								   const CHAR *szFilename, const ULONG ulLine)
 {
 #ifdef GPOS_FPSIMULATOR
 	if (FSimulateAllocFailure())
@@ -88,10 +80,7 @@ CMemoryPoolInjectFault::PvAllocate
 //
 //---------------------------------------------------------------------------
 void
-CMemoryPoolInjectFault::Free
-	(
-	void *pvMemory
-	)
+CMemoryPoolInjectFault::Free(void *pvMemory)
 {
 	PmpUnderlying()->Free(pvMemory);
 }
@@ -113,16 +102,15 @@ CMemoryPoolInjectFault::FSimulateAllocFailure()
 	ITask *ptsk = ITask::PtskSelf();
 	if (NULL != ptsk)
 	{
-		return
-			ptsk->FTrace(EtraceSimulateOOM) &&
-			CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem, CException::ExmiOOM);
+		return ptsk->FTrace(EtraceSimulateOOM) &&
+			   CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem,
+											   CException::ExmiOOM);
 	}
 
 	return false;
 }
 
-#endif // GPOS_FPSIMULATOR
+#endif  // GPOS_FPSIMULATOR
 
 
 // EOF
-

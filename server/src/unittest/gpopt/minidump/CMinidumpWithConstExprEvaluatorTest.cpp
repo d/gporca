@@ -9,7 +9,7 @@
 //		Tests minidumps with constant expression evaluator turned on
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -38,11 +38,12 @@ using namespace gpos;
 ULONG CMinidumpWithConstExprEvaluatorTest::m_ulTestCounter = 0;
 
 // minidump files we run with constant expression evaluator on
-const CHAR *rgszConstExprEvaluatorOnFileNames[] =
-	{
-	 	"../data/dxl/minidump/DynamicIndexScan-Homogenous-EnabledDateConstraint.mdp",
-	 	"../data/dxl/minidump/DynamicIndexScan-Heterogenous-EnabledDateConstraint.mdp",
-	};
+const CHAR *rgszConstExprEvaluatorOnFileNames[] = {
+	"../data/dxl/minidump/"
+	"DynamicIndexScan-Homogenous-EnabledDateConstraint.mdp",
+	"../data/dxl/minidump/"
+	"DynamicIndexScan-Heterogenous-EnabledDateConstraint.mdp",
+};
 
 
 //---------------------------------------------------------------------------
@@ -56,13 +57,13 @@ const CHAR *rgszConstExprEvaluatorOnFileNames[] =
 GPOS_RESULT
 CMinidumpWithConstExprEvaluatorTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(
-			CMinidumpWithConstExprEvaluatorTest::EresUnittest_RunMinidumpTestsWithConstExprEvaluatorOn),
-		};
+			CMinidumpWithConstExprEvaluatorTest::
+				EresUnittest_RunMinidumpTestsWithConstExprEvaluatorOn),
+	};
 
-	GPOS_RESULT eres =  CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
+	GPOS_RESULT eres = CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 
 	return eres;
 }
@@ -77,14 +78,17 @@ CMinidumpWithConstExprEvaluatorTest::EresUnittest()
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CMinidumpWithConstExprEvaluatorTest::EresUnittest_RunMinidumpTestsWithConstExprEvaluatorOn()
+CMinidumpWithConstExprEvaluatorTest::
+	EresUnittest_RunMinidumpTestsWithConstExprEvaluatorOn()
 {
-	CAutoTraceFlag atf(EopttraceEnableConstantExpressionEvaluation, true /*fVal*/);
+	CAutoTraceFlag atf(EopttraceEnableConstantExpressionEvaluation,
+					   true /*fVal*/);
 
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
 
-	IConstExprEvaluator *pceeval = GPOS_NEW(pmp) CConstExprEvaluatorForDates(pmp);
+	IConstExprEvaluator *pceeval =
+		GPOS_NEW(pmp) CConstExprEvaluatorForDates(pmp);
 
 	BOOL fMatchPlans = true;
 
@@ -96,20 +100,14 @@ CMinidumpWithConstExprEvaluatorTest::EresUnittest_RunMinidumpTestsWithConstExprE
 
 	const ULONG ulTests = GPOS_ARRAY_SIZE(rgszConstExprEvaluatorOnFileNames);
 
-	GPOS_RESULT eres =
-			CTestUtils::EresRunMinidumps
-						(
-						pmp,
-						rgszConstExprEvaluatorOnFileNames,
-						ulTests,
-						&m_ulTestCounter,
-						1, // ulSessionId
-						1,  // ulCmdId
-						fMatchPlans,
-						false, // fTestSpacePruning
-						NULL,  // szMDFilePath
-						pceeval
-						);
+	GPOS_RESULT eres = CTestUtils::EresRunMinidumps(
+		pmp, rgszConstExprEvaluatorOnFileNames, ulTests, &m_ulTestCounter,
+		1,  // ulSessionId
+		1,  // ulCmdId
+		fMatchPlans,
+		false,  // fTestSpacePruning
+		NULL,   // szMDFilePath
+		pceeval);
 	pceeval->Release();
 
 	return eres;

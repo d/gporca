@@ -28,24 +28,16 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDScCmpGPDB::CMDScCmpGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidLeft,
-	IMDId *pmdidRight,
-	IMDType::ECmpType ecmpt,
-	IMDId *pmdidOp
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidLeft(pmdidLeft),
-	m_pmdidRight(pmdidRight),
-	m_ecmpt(ecmpt),
-	m_pmdidOp(pmdidOp)
+CMDScCmpGPDB::CMDScCmpGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+						   IMDId *pmdidLeft, IMDId *pmdidRight,
+						   IMDType::ECmpType ecmpt, IMDId *pmdidOp)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidLeft(pmdidLeft),
+	  m_pmdidRight(pmdidRight),
+	  m_ecmpt(ecmpt),
+	  m_pmdidOp(pmdidOp)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 	GPOS_ASSERT(m_pmdidLeft->FValid());
@@ -53,7 +45,8 @@ CMDScCmpGPDB::CMDScCmpGPDB
 	GPOS_ASSERT(m_pmdidOp->FValid());
 	GPOS_ASSERT(IMDType::EcmptOther != m_ecmpt);
 
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -150,7 +143,7 @@ CMDScCmpGPDB::PmdidOp() const
 //		CMDScCmpGPDB::FBinaryCoercible
 //
 //	@doc:
-//		Returns whether this is a cast between binary coercible types, i.e. the 
+//		Returns whether this is a cast between binary coercible types, i.e. the
 //		types are binary compatible
 //
 //---------------------------------------------------------------------------
@@ -169,27 +162,27 @@ CMDScCmpGPDB::Ecmpt() const
 //
 //---------------------------------------------------------------------------
 void
-CMDScCmpGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CMDScCmpGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBMDScCmp));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenGPDBMDScCmp));
+
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBScalarOpCmpType), IMDType::PstrCmpType(m_ecmpt));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 
-	m_pmdidLeft->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBScalarOpLeftTypeId));
-	m_pmdidRight->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBScalarOpRightTypeId));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBScalarOpCmpType),
+						  IMDType::PstrCmpType(m_ecmpt));
+
+	m_pmdidLeft->Serialize(
+		pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBScalarOpLeftTypeId));
+	m_pmdidRight->Serialize(
+		pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBScalarOpRightTypeId));
 	m_pmdidOp->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBMDScCmp));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenGPDBMDScCmp));
 
 	GPOS_CHECK_ABORT;
 }
@@ -206,11 +199,7 @@ CMDScCmpGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CMDScCmpGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDScCmpGPDB::DebugPrint(IOstream &os) const
 {
 	os << "ComparisonOp ";
 	PmdidLeft()->OsPrint(os);
@@ -222,9 +211,9 @@ CMDScCmpGPDB::DebugPrint
 
 	os << ", type: " << IMDType::PstrCmpType(m_ecmpt);
 
-	os << std::endl;	
+	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

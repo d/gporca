@@ -29,22 +29,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CQueryContext::CQueryContext
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CReqdPropPlan *prpp,
-	DrgPcr *pdrgpcr,
-	DrgPmdname *pdrgpmdname,
-	BOOL fDeriveStats
-	)
-	:
-	m_pmp(pmp),
-	m_prpp(prpp),
-	m_pdrgpcr(pdrgpcr),
-	m_pdrgpcrSystemCols(NULL),
-	m_pdrgpmdname(pdrgpmdname),
-	m_fDeriveStats(fDeriveStats)
+CQueryContext::CQueryContext(IMemoryPool *pmp, CExpression *pexpr,
+							 CReqdPropPlan *prpp, DrgPcr *pdrgpcr,
+							 DrgPmdname *pdrgpmdname, BOOL fDeriveStats)
+	: m_pmp(pmp),
+	  m_prpp(prpp),
+	  m_pdrgpcr(pdrgpcr),
+	  m_pdrgpcrSystemCols(NULL),
+	  m_pdrgpmdname(pdrgpmdname),
+	  m_fDeriveStats(fDeriveStats)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != prpp);
@@ -54,7 +47,7 @@ CQueryContext::CQueryContext
 
 #ifdef GPOS_DEBUG
 	const ULONG ulReqdColumns = m_pdrgpcr->UlLength();
-#endif //GPOS_DEBUG
+#endif  //GPOS_DEBUG
 
 	// mark unused CTEs
 	CCTEInfo *pcteinfo = COptCtxt::PoctxtFromTLS()->Pcteinfo();
@@ -67,7 +60,8 @@ CQueryContext::CQueryContext
 	pcrsOutputAndOrderingCols->Include(pcrsOrderSpec);
 	pcrsOrderSpec->Release();
 
-	m_pexpr = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr, pcrsOutputAndOrderingCols);
+	m_pexpr = CExpressionPreprocessor::PexprPreprocess(
+		pmp, pexpr, pcrsOutputAndOrderingCols);
 
 	pcrsOutputAndOrderingCols->Release();
 	GPOS_ASSERT(m_pdrgpcr->UlLength() == ulReqdColumns);
@@ -114,10 +108,7 @@ CQueryContext::~CQueryContext()
 //
 //---------------------------------------------------------------------------
 COperator *
-CQueryContext::PopTop
-	(
-	CExpression *pexpr
-	)
+CQueryContext::PopTop(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -141,10 +132,7 @@ CQueryContext::PopTop
 //
 //---------------------------------------------------------------------------
 void
-CQueryContext::SetSystemCols
-	(
-	IMemoryPool *pmp
-	)
+CQueryContext::SetSystemCols(IMemoryPool *pmp)
 {
 	GPOS_ASSERT(NULL == m_pdrgpcrSystemCols);
 	GPOS_ASSERT(NULL != m_pdrgpcr);
@@ -172,14 +160,9 @@ CQueryContext::SetSystemCols
 //
 //---------------------------------------------------------------------------
 CQueryContext *
-CQueryContext::PqcGenerate
-	(
-	IMemoryPool *pmp,
-	CExpression * pexpr,
-	DrgPul *pdrgpulQueryOutputColRefId,
-	DrgPmdname *pdrgpmdname,
-	BOOL fDeriveStats
-	)
+CQueryContext::PqcGenerate(IMemoryPool *pmp, CExpression *pexpr,
+						   DrgPul *pdrgpulQueryOutputColRefId,
+						   DrgPmdname *pdrgpmdname, BOOL fDeriveStats)
 {
 	GPOS_ASSERT(NULL != pexpr && NULL != pdrgpulQueryOutputColRefId);
 
@@ -225,7 +208,7 @@ CQueryContext::PqcGenerate
 	}
 
 	CDistributionSpec *pds = NULL;
-	
+
 	BOOL fDML = CUtils::FLogicalDML(pexpr->Pop());
 	poptctxt->MarkDMLQuery(fDML);
 
@@ -237,16 +220,20 @@ CQueryContext::PqcGenerate
 	}
 	else
 	{
-		pds = GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		pds = GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	// By default, no rewindability requirement needs to be satisfied at the top level
-	CRewindabilitySpec *prs = GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
+	CRewindabilitySpec *prs =
+		GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
 
 	// Ensure order, distribution and rewindability meet 'satisfy' matching at the top level
 	CEnfdOrder *peo = GPOS_NEW(pmp) CEnfdOrder(pos, CEnfdOrder::EomSatisfy);
-	CEnfdDistribution *ped = GPOS_NEW(pmp) CEnfdDistribution(pds, CEnfdDistribution::EdmSatisfy);
-	CEnfdRewindability *per = GPOS_NEW(pmp) CEnfdRewindability(prs, CEnfdRewindability::ErmSatisfy);
+	CEnfdDistribution *ped =
+		GPOS_NEW(pmp) CEnfdDistribution(pds, CEnfdDistribution::EdmSatisfy);
+	CEnfdRewindability *per =
+		GPOS_NEW(pmp) CEnfdRewindability(prs, CEnfdRewindability::ErmSatisfy);
 
 	// Required CTEs are obtained from the CTEInfo global information in the optimizer context
 	CCTEReq *pcter = poptctxt->Pcteinfo()->PcterProducers(pmp);
@@ -255,11 +242,13 @@ CQueryContext::PqcGenerate
 	// constructed later based on derived relation properties (CPartInfo) by
 	// CReqdPropPlan::InitReqdPartitionPropagation().
 
-	CReqdPropPlan *prpp = GPOS_NEW(pmp) CReqdPropPlan(pcrs, peo, ped, per, pcter);
+	CReqdPropPlan *prpp =
+		GPOS_NEW(pmp) CReqdPropPlan(pcrs, peo, ped, per, pcter);
 
 	// Finally, create the CQueryContext
 	pdrgpmdname->AddRef();
-	return GPOS_NEW(pmp) CQueryContext(pmp, pexprResult, prpp, pdrgpcr, pdrgpmdname, fDeriveStats);
+	return GPOS_NEW(pmp) CQueryContext(pmp, pexprResult, prpp, pdrgpcr,
+									   pdrgpmdname, fDeriveStats);
 }
 
 #ifdef GPOS_DEBUG
@@ -273,11 +262,7 @@ CQueryContext::PqcGenerate
 //
 //---------------------------------------------------------------------------
 IOstream &
-CQueryContext::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CQueryContext::OsPrint(IOstream &os) const
 {
 	return os << *m_pexpr << std::endl << *m_prpp;
 }
@@ -288,7 +273,7 @@ CQueryContext::DbgPrint() const
 	CAutoTrace at(m_pmp);
 	(void) this->OsPrint(at.Os());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 //---------------------------------------------------------------------------
@@ -301,11 +286,7 @@ CQueryContext::DbgPrint() const
 //
 //---------------------------------------------------------------------------
 void
-CQueryContext::MapComputedToUsedCols
-	(
-	CColumnFactory *pcf,
-	CExpression *pexpr
-	)
+CQueryContext::MapComputedToUsedCols(CColumnFactory *pcf, CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -330,4 +311,3 @@ CQueryContext::MapComputedToUsedCols
 }
 
 // EOF
-

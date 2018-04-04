@@ -17,60 +17,54 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CJoinOrderMinCard
-	//
-	//	@doc:
-	//		Helper class for creating join orders based on cardinality of results
-	//
-	//---------------------------------------------------------------------------
-	class CJoinOrderMinCard : public CJoinOrder
-	{
+//---------------------------------------------------------------------------
+//	@class:
+//		CJoinOrderMinCard
+//
+//	@doc:
+//		Helper class for creating join orders based on cardinality of results
+//
+//---------------------------------------------------------------------------
+class CJoinOrderMinCard : public CJoinOrder
+{
+private:
+	// result component
+	SComponent *m_pcompResult;
 
-		private:
+	// combine the two given components using applicable edges
+	SComponent *
+	PcompCombine(SComponent *pcompOuter, SComponent *pcompInner);
 
-			// result component
-			SComponent *m_pcompResult;
+	// mark edges used by result component
+	void
+	MarkUsedEdges();
 
-			// combine the two given components using applicable edges
-			SComponent *PcompCombine(SComponent *pcompOuter, SComponent *pcompInner);
+	// derive stats on a given component
+	static void
+	DeriveStats(IMemoryPool *pmp, SComponent *pcomp);
 
-			// mark edges used by result component
-			void MarkUsedEdges();
+public:
+	// ctor
+	CJoinOrderMinCard(IMemoryPool *pmp, DrgPexpr *pdrgpexprComponents,
+					  DrgPexpr *pdrgpexprConjuncts);
 
-			// derive stats on a given component
-			static
-			void DeriveStats(IMemoryPool *pmp, SComponent *pcomp);
+	// dtor
+	virtual ~CJoinOrderMinCard();
 
-		public:
+	// main handler
+	virtual CExpression *
+	PexprExpand();
 
-			// ctor
-			CJoinOrderMinCard
-				(
-				IMemoryPool *pmp,
-				DrgPexpr *pdrgpexprComponents,
-				DrgPexpr *pdrgpexprConjuncts
-				);
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &) const;
 
-			// dtor
-			virtual
-			~CJoinOrderMinCard();
+};  // class CJoinOrderMinCard
 
-			// main handler
-			virtual
-			CExpression *PexprExpand();
+}  // namespace gpopt
 
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &) const;
-
-	}; // class CJoinOrderMinCard
-
-}
-
-#endif // !GPOPT_CJoinOrderMinCard_H
+#endif  // !GPOPT_CJoinOrderMinCard_H
 
 // EOF

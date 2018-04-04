@@ -2,7 +2,7 @@
 //	Greenplum Database
 //	Copyright (C) 2008 Greenplum, Inc.
 //
-//	@filename: 
+//	@filename:
 //		CAutoMutex.h
 //
 //	@doc:
@@ -19,79 +19,70 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CAutoMutex
-	//
-	//	@doc:
-	//		Auto wrapper;
-	//
-	//---------------------------------------------------------------------------
-	class CAutoMutex : public CStackObject
+//---------------------------------------------------------------------------
+//	@class:
+//		CAutoMutex
+//
+//	@doc:
+//		Auto wrapper;
+//
+//---------------------------------------------------------------------------
+class CAutoMutex : public CStackObject
+{
+private:
+	// actual mutex
+	CMutexBase &m_mutex;
+
+	// lock count
+	ULONG m_cLock;
+
+	// no copy ctor
+	CAutoMutex(const CAutoMutex &);
+
+public:
+	// ctor
+	explicit CAutoMutex(CMutexBase &mutex) : m_mutex(mutex), m_cLock(0)
 	{
-		private:
-
-			// actual mutex
-			CMutexBase &m_mutex;
-
-			// lock count
-			ULONG m_cLock;
-
-			// no copy ctor
-			CAutoMutex
-				(
-				const CAutoMutex&
-				);
-			
-		public:
-		
-			// ctor
-			explicit
-			CAutoMutex
-				(
-				CMutexBase &mutex
-				)
-				:
-				m_mutex(mutex),
-				m_cLock(0)
-			{}
+	}
 
 
-			// ctor
-			~CAutoMutex ();
-			
+	// ctor
+	~CAutoMutex();
 
-			// acquire lock
-			void Lock()
-			{
-				m_mutex.Lock();
-				++m_cLock;
-			}
-			
-			// attempt locking
-			BOOL FTryLock()
-			{
-				if (m_mutex.FTryLock())
-				{
-					++m_cLock;
-					return true;
-				}
-				return false;
-			}
-			
-			// release lock
-			void Unlock()
-			{
-				GPOS_ASSERT(0 < m_cLock && "Mutex not locked");
-				
-				--m_cLock;
-				m_mutex.Unlock();
-			}
 
-	}; // class CAutoMutex
-}
+	// acquire lock
+	void
+	Lock()
+	{
+		m_mutex.Lock();
+		++m_cLock;
+	}
 
-#endif // !GPOS_CAutoMutex_H
+	// attempt locking
+	BOOL
+	FTryLock()
+	{
+		if (m_mutex.FTryLock())
+		{
+			++m_cLock;
+			return true;
+		}
+		return false;
+	}
+
+	// release lock
+	void
+	Unlock()
+	{
+		GPOS_ASSERT(0 < m_cLock && "Mutex not locked");
+
+		--m_cLock;
+		m_mutex.Unlock();
+	}
+
+};  // class CAutoMutex
+}  // namespace gpos
+
+#endif  // !GPOS_CAutoMutex_H
 
 // EOF
-

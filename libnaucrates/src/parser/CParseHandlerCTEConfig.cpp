@@ -33,15 +33,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCTEConfig::CParseHandlerCTEConfig
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pcteconf(NULL)
+CParseHandlerCTEConfig::CParseHandlerCTEConfig(IMemoryPool *pmp,
+											   CParseHandlerManager *pphm,
+											   CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pcteconf(NULL)
 {
 }
 
@@ -67,22 +62,22 @@ CParseHandlerCTEConfig::~CParseHandlerCTEConfig()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCTEConfig::StartElement
-	(
-	const XMLCh* const , //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , //xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerCTEConfig::StartElement(const XMLCh *const,  //xmlszUri,
+									 const XMLCh *const xmlszLocalname,
+									 const XMLCh *const,  //xmlszQname,
+									 const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTEConfig), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTEConfig), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse CTE configuration options
-	ULONG ulCTEInliningCutoff = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCTEInliningCutoff, EdxltokenCTEConfig);
+	ULONG ulCTEInliningCutoff = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenCTEInliningCutoff, EdxltokenCTEConfig);
 
 	m_pcteconf = GPOS_NEW(m_pmp) CCTEConfig(ulCTEInliningCutoff);
 }
@@ -96,17 +91,17 @@ CParseHandlerCTEConfig::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCTEConfig::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerCTEConfig::EndElement(const XMLCh *const,  // xmlszUri,
+								   const XMLCh *const xmlszLocalname,
+								   const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCTEConfig), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCTEConfig), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(NULL != m_pcteconf);

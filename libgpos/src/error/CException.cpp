@@ -16,35 +16,21 @@
 
 using namespace gpos;
 
-const CHAR*
-CException::m_rgszSeverity[] =
-{
-	"INVALID",
-	"PANIC",
-	"FATAL",
-	"ERROR",
-	"WARNING",
-	"NOTICE",
-	"TRACE"
-};
+const CHAR *CException::m_rgszSeverity[] = {
+	"INVALID", "PANIC", "FATAL", "ERROR", "WARNING", "NOTICE", "TRACE"};
 
 
 // invalid exception
-const CException CException::m_excInvalid
-					(
-					CException::ExmaInvalid,
-					CException::ExmiInvalid
-					);
+const CException CException::m_excInvalid(CException::ExmaInvalid,
+										  CException::ExmiInvalid);
 
 // standard SQL error codes
-const CException::SErrCodeElem
-CException::m_rgerrcode[] =
-{
-	{ExmiSQLDefault, "XX000"},					// internal error
-	{ExmiSQLNotNullViolation, "23502"},			// not null violation
-	{ExmiSQLCheckConstraintViolation, "23514"},	// check constraint violation
-	{ExmiSQLMaxOneRow, "P0003"},				// max one row
-	{ExmiSQLTest, "XXXXX"}						// test sql state
+const CException::SErrCodeElem CException::m_rgerrcode[] = {
+	{ExmiSQLDefault, "XX000"},					 // internal error
+	{ExmiSQLNotNullViolation, "23502"},			 // not null violation
+	{ExmiSQLCheckConstraintViolation, "23514"},  // check constraint violation
+	{ExmiSQLMaxOneRow, "P0003"},				 // max one row
+	{ExmiSQLTest, "XXXXX"}						 // test sql state
 };
 
 
@@ -58,38 +44,25 @@ CException::m_rgerrcode[] =
 //		dynamically
 //
 //---------------------------------------------------------------------------
-CException::CException
-	(
-	ULONG ulMajor,
-	ULONG ulMinor,
-	const CHAR *szFilename,
-	ULONG ulLine
-	)
-	:
-	m_ulMajor(ulMajor),
-	m_ulMinor(ulMinor),
-	m_szFilename(const_cast<CHAR*>(szFilename)),
-	m_ulLine(ulLine)
+CException::CException(ULONG ulMajor, ULONG ulMinor, const CHAR *szFilename,
+					   ULONG ulLine)
+	: m_ulMajor(ulMajor),
+	  m_ulMinor(ulMinor),
+	  m_szFilename(const_cast<CHAR *>(szFilename)),
+	  m_ulLine(ulLine)
 {
 	m_ulSeverityLevel = CException::ExsevSentinel;
 	m_szSQLState = SzSQLState(ulMajor, ulMinor);
 }
 
 // ctor
-CException::CException
-(
-	ULONG ulMajor,
-	ULONG ulMinor,
-	const CHAR *szFilename,
-	ULONG ulLine,
-	ULONG ulSeverityLevel
-	)
-	:
-	m_ulMajor(ulMajor),
-	m_ulMinor(ulMinor),
-	m_szFilename(const_cast<CHAR*>(szFilename)),
-	m_ulLine(ulLine),
-	m_ulSeverityLevel(ulSeverityLevel)
+CException::CException(ULONG ulMajor, ULONG ulMinor, const CHAR *szFilename,
+					   ULONG ulLine, ULONG ulSeverityLevel)
+	: m_ulMajor(ulMajor),
+	  m_ulMinor(ulMinor),
+	  m_szFilename(const_cast<CHAR *>(szFilename)),
+	  m_ulLine(ulLine),
+	  m_ulSeverityLevel(ulSeverityLevel)
 {
 	m_szSQLState = SzSQLState(ulMajor, ulMinor);
 }
@@ -103,16 +76,8 @@ CException::CException
 //		in lookup structures etc.
 //
 //---------------------------------------------------------------------------
-CException::CException
-	(
-	ULONG ulMajor,
-	ULONG ulMinor
-	)
-	:
-	m_ulMajor(ulMajor),
-	m_ulMinor(ulMinor),
-	m_szFilename(NULL),
-	m_ulLine(0)
+CException::CException(ULONG ulMajor, ULONG ulMinor)
+	: m_ulMajor(ulMajor), m_ulMinor(ulMinor), m_szFilename(NULL), m_ulLine(0)
 {
 	m_ulSeverityLevel = CException::ExsevSentinel;
 	m_szSQLState = SzSQLState(ulMajor, ulMinor);
@@ -124,25 +89,19 @@ CException::CException
 //		CException::Raise
 //
 //	@doc:
-//		Actual point where an exception is thrown; encapsulated in a function 
+//		Actual point where an exception is thrown; encapsulated in a function
 //		(a) to facilitate debugging, i.e. function to set a breakpoint
 //		(b) to allow for additional debugging tools such as stack dumps etc.
 //			at a later point in time
 //
 //---------------------------------------------------------------------------
 void
-CException::Raise
-	(
-	const CHAR *szFilename,
-	ULONG ulLine,
-	ULONG ulMajor,
-	ULONG ulMinor,
-	...
-	)
+CException::Raise(const CHAR *szFilename, ULONG ulLine, ULONG ulMajor,
+				  ULONG ulMinor, ...)
 {
 	// manufacture actual exception object
 	CException exc(ulMajor, ulMinor, szFilename, ulLine);
-	
+
 	// during bootstrap there's no context object otherwise, record
 	// all details in the context object
 	if (NULL != ITask::PtskSelf())
@@ -164,15 +123,8 @@ CException::Raise
 
 
 void
-CException::Raise
-(
-	const CHAR *szFilename,
-	ULONG ulLine,
-	ULONG ulMajor,
-	ULONG ulMinor,
-	ULONG ulSeverityLevel
-	...
-	)
+CException::Raise(const CHAR *szFilename, ULONG ulLine, ULONG ulMajor,
+				  ULONG ulMinor, ULONG ulSeverityLevel...)
 {
 	// manufacture actual exception object
 	CException exc(ulMajor, ulMinor, szFilename, ulLine, ulSeverityLevel);
@@ -207,11 +159,7 @@ CException::Raise
 //
 //---------------------------------------------------------------------------
 void
-CException::Reraise
-	(
-	CException exc,
-	BOOL fPropagate
-	)
+CException::Reraise(CException exc, BOOL fPropagate)
 {
 	if (NULL != ITask::PtskSelf())
 	{
@@ -242,21 +190,18 @@ CException::Reraise
 //
 //---------------------------------------------------------------------------
 void
-CException::Raise
-	(
-	CException exc
-	)
+CException::Raise(CException exc)
 {
 #ifdef GPOS_DEBUG
 	if (NULL != ITask::PtskSelf())
 	{
 		IErrorContext *perrctxt = ITask::PtskSelf()->Perrctxt();
-		GPOS_ASSERT_IMP(perrctxt->FPending(), 
-				perrctxt->Exc() == exc &&
-				"Rethrow inconsistent with current error context");
+		GPOS_ASSERT_IMP(perrctxt->FPending(),
+						perrctxt->Exc() == exc &&
+							"Rethrow inconsistent with current error context");
 	}
-#endif // GPOS_DEBUG
-	
+#endif  // GPOS_DEBUG
+
 	throw exc;
 }
 
@@ -269,11 +214,7 @@ CException::Raise
 //
 //---------------------------------------------------------------------------
 const CHAR *
-CException::SzSQLState
-	(
-	ULONG ulMajor,
-	ULONG ulMinor
-	)
+CException::SzSQLState(ULONG ulMajor, ULONG ulMinor)
 {
 	const CHAR *szSQLState = m_rgerrcode[0].m_szSQLState;
 	if (ExmaSQL == ulMajor)
@@ -289,9 +230,8 @@ CException::SzSQLState
 			}
 		}
 	}
-	
+
 	return szSQLState;
 }
 
 // EOF
-

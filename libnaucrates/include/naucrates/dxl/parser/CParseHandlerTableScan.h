@@ -21,66 +21,60 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerTableScan
-	//
-	//	@doc:
-	//		Parse handler for parsing a table scan operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerTableScan : public CParseHandlerPhysicalOp
-	{
-		private:
-			
-			// the table scan operator
-			CDXLPhysicalTableScan *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerTableScan(const CParseHandlerTableScan &);
+XERCES_CPP_NAMESPACE_USE
 
-			// process the start of an element
-			virtual
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			virtual
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		protected:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerTableScan
+//
+//	@doc:
+//		Parse handler for parsing a table scan operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerTableScan : public CParseHandlerPhysicalOp
+{
+private:
+	// the table scan operator
+	CDXLPhysicalTableScan *m_pdxlop;
 
-			// start element helper function
-			void StartElement(const XMLCh* const xmlszLocalname, Edxltoken edxltoken);
+	// private copy ctor
+	CParseHandlerTableScan(const CParseHandlerTableScan &);
 
-			// end element helper function
-			void EndElement(const XMLCh* const xmlszLocalname, Edxltoken edxltoken);
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-		public:
-			// ctor
-			CParseHandlerTableScan
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-#endif // !GPDXL_CParseHandlerTableScan_H
+protected:
+	// start element helper function
+	void
+	StartElement(const XMLCh *const xmlszLocalname, Edxltoken edxltoken);
+
+	// end element helper function
+	void
+	EndElement(const XMLCh *const xmlszLocalname, Edxltoken edxltoken);
+
+public:
+	// ctor
+	CParseHandlerTableScan(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerTableScan_H
 
 // EOF

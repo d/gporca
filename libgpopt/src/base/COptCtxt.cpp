@@ -34,26 +34,19 @@ ULONG COptCtxt::m_ulFirstValidPartId = 1;
 //		ctor
 //
 //---------------------------------------------------------------------------
-COptCtxt::COptCtxt
-	(
-	IMemoryPool *pmp,
-	CColumnFactory *pcf,
-	CMDAccessor *pmda,
-	IConstExprEvaluator *pceeval,
-	COptimizerConfig *poconf
-	)
-	:
-	CTaskLocalStorageObject(CTaskLocalStorage::EtlsidxOptCtxt),
-	m_pmp(pmp),
-	m_pcf(pcf),
-	m_pmda(pmda),
-	m_pceeval(pceeval),
-	m_pcomp(GPOS_NEW(m_pmp) CDefaultComparator(pceeval)),
-	m_auPartId(m_ulFirstValidPartId),
-	m_pcteinfo(NULL),
-	m_pdrgpcrSystemCols(NULL),
-	m_poconf(poconf),
-	m_fDMLQuery(false)
+COptCtxt::COptCtxt(IMemoryPool *pmp, CColumnFactory *pcf, CMDAccessor *pmda,
+				   IConstExprEvaluator *pceeval, COptimizerConfig *poconf)
+	: CTaskLocalStorageObject(CTaskLocalStorage::EtlsidxOptCtxt),
+	  m_pmp(pmp),
+	  m_pcf(pcf),
+	  m_pmda(pmda),
+	  m_pceeval(pceeval),
+	  m_pcomp(GPOS_NEW(m_pmp) CDefaultComparator(pceeval)),
+	  m_auPartId(m_ulFirstValidPartId),
+	  m_pcteinfo(NULL),
+	  m_pdrgpcrSystemCols(NULL),
+	  m_poconf(poconf),
+	  m_fDMLQuery(false)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != pcf);
@@ -62,7 +55,7 @@ COptCtxt::COptCtxt
 	GPOS_ASSERT(NULL != m_pcomp);
 	GPOS_ASSERT(NULL != poconf);
 	GPOS_ASSERT(NULL != poconf->Pcm());
-	
+
 	m_pcteinfo = GPOS_NEW(m_pmp) CCTEInfo(m_pmp);
 	m_pcm = poconf->Pcm();
 }
@@ -97,13 +90,8 @@ COptCtxt::~COptCtxt()
 //
 //---------------------------------------------------------------------------
 COptCtxt *
-COptCtxt::PoctxtCreate
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	IConstExprEvaluator *pceeval,
-	COptimizerConfig *poconf
-	)
+COptCtxt::PoctxtCreate(IMemoryPool *pmp, CMDAccessor *pmda,
+					   IConstExprEvaluator *pceeval, COptimizerConfig *poconf)
 {
 	GPOS_ASSERT(NULL != poconf);
 
@@ -164,17 +152,12 @@ COptCtxt::FAllEnforcersEnabled()
 //
 //---------------------------------------------------------------------------
 IOstream &
-COptCtxt::OsPrint
-	(
-	IOstream &os
-	)
-	const
+COptCtxt::OsPrint(IOstream &os) const
 {
 	// NOOP
 	return os;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

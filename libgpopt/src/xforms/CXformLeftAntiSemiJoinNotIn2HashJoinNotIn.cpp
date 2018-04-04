@@ -26,24 +26,20 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::CXformLeftAntiSemiJoinNotIn2HashJoinNotIn
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalLeftAntiSemiJoinNotIn(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
-					)
-		)
-{}
+CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::
+	CXformLeftAntiSemiJoinNotIn2HashJoinNotIn(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalLeftAntiSemiJoinNotIn(pmp),
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -54,11 +50,8 @@ CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::CXformLeftAntiSemiJoinNotIn2HashJoinN
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::Exfp(
+	CExpressionHandle &exprhdl) const
 {
 	return CXformUtils::ExfpLogicalJoin2PhysicalJoin(exprhdl);
 }
@@ -72,19 +65,16 @@ CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformLeftAntiSemiJoinNotIn2HashJoinNotIn::Transform(CXformContext *pxfctxt,
+													 CXformResult *pxfres,
+													 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CXformUtils::ImplementHashJoin<CPhysicalLeftAntiSemiHashJoinNotIn>(pxfctxt, pxfres, pexpr, true /*fAntiSemiJoin*/);
+	CXformUtils::ImplementHashJoin<CPhysicalLeftAntiSemiHashJoinNotIn>(
+		pxfctxt, pxfres, pexpr, true /*fAntiSemiJoin*/);
 }
 
 // EOF

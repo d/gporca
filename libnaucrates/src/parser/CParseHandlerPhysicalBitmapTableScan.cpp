@@ -24,13 +24,12 @@ using namespace gpdxl;
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalBitmapTableScan::StartElement
-	(
-	const XMLCh* const,  // xmlszUri
- 	const XMLCh* const xmlszLocalname,
-	const XMLCh* const,  // xmlszQname
-	const Attributes&  // attrs
-	)
+CParseHandlerPhysicalBitmapTableScan::StartElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const,  // xmlszQname
+	const Attributes &   // attrs
+)
 {
 	StartElementHelper(xmlszLocalname, EdxltokenPhysicalBitmapTableScan);
 }
@@ -44,13 +43,11 @@ CParseHandlerPhysicalBitmapTableScan::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalBitmapTableScan::EndElement
-	(
-	const XMLCh* const,  // xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const  // xmlszQname
-	)
+CParseHandlerPhysicalBitmapTableScan::EndElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
 	EndElementHelper(xmlszLocalname, EdxltokenPhysicalBitmapTableScan);
 }
-

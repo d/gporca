@@ -18,53 +18,47 @@
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpdxl;
+using namespace gpos;
+using namespace gpdxl;
 
-	// class for indexinfo in relation metadata
-	class CMDIndexInfo : public IMDInterface
-	{
-		private:
+// class for indexinfo in relation metadata
+class CMDIndexInfo : public IMDInterface
+{
+private:
+	// index mdid
+	IMDId *m_pmdid;
 
-			// index mdid
-			IMDId *m_pmdid;
+	// is the index partial
+	BOOL m_fPartial;
 
-			// is the index partial
-			BOOL m_fPartial;
+public:
+	// ctor
+	CMDIndexInfo(IMDId *pmdid, BOOL fIsPartial);
 
-		public:
+	// dtor
+	virtual ~CMDIndexInfo();
 
-			// ctor
-			CMDIndexInfo
-				(
-				IMDId *pmdid,
-				BOOL fIsPartial
-				);
+	// index mdid
+	IMDId *
+	Pmdid() const;
 
-			// dtor
-			virtual
-			~CMDIndexInfo();
+	// is the index partial
+	BOOL
+	FPartial() const;
 
-			// index mdid
-			IMDId *Pmdid() const;
-
-			// is the index partial
-			BOOL FPartial() const;
-
-			// serialize indexinfo in DXL format given a serializer object
-			virtual
-			void Serialize(CXMLSerializer *) const;
+	// serialize indexinfo in DXL format given a serializer object
+	virtual void
+	Serialize(CXMLSerializer *) const;
 
 #ifdef GPOS_DEBUG
-			// debug print of the index info
-			virtual
-			void DebugPrint(IOstream &os) const;
+	// debug print of the index info
+	virtual void
+	DebugPrint(IOstream &os) const;
 #endif
+};
 
-	};
+}  // namespace gpmd
 
-}
-
-#endif // !GPMD_CMDIndexInfo_H
+#endif  // !GPMD_CMDIndexInfo_H
 
 // EOF

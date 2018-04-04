@@ -30,10 +30,10 @@
 using namespace gpopt;
 
 // number of non-redistribute requests created by hash join
-#define GPOPT_NON_HASH_DIST_REQUESTS	3
+#define GPOPT_NON_HASH_DIST_REQUESTS 3
 
 // maximum number of redistribute requests on single hash join keys
-#define GPOPT_MAX_HASH_DIST_REQUESTS	6
+#define GPOPT_MAX_HASH_DIST_REQUESTS 6
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -43,22 +43,19 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalHashJoin::CPhysicalHashJoin
-	(
-	IMemoryPool *pmp,
-	DrgPexpr *pdrgpexprOuterKeys,
-	DrgPexpr *pdrgpexprInnerKeys
-	)
-	:
-	CPhysicalJoin(pmp),
-	m_pdrgpexprOuterKeys(pdrgpexprOuterKeys),
-	m_pdrgpexprInnerKeys(pdrgpexprInnerKeys),
-	m_pdrgpdsRedistributeRequests(NULL)
+CPhysicalHashJoin::CPhysicalHashJoin(IMemoryPool *pmp,
+									 DrgPexpr *pdrgpexprOuterKeys,
+									 DrgPexpr *pdrgpexprInnerKeys)
+	: CPhysicalJoin(pmp),
+	  m_pdrgpexprOuterKeys(pdrgpexprOuterKeys),
+	  m_pdrgpexprInnerKeys(pdrgpexprInnerKeys),
+	  m_pdrgpdsRedistributeRequests(NULL)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != pdrgpexprOuterKeys);
 	GPOS_ASSERT(NULL != pdrgpexprInnerKeys);
-	GPOS_ASSERT(pdrgpexprOuterKeys->UlLength() == pdrgpexprInnerKeys->UlLength());
+	GPOS_ASSERT(pdrgpexprOuterKeys->UlLength() ==
+				pdrgpexprInnerKeys->UlLength());
 
 	CreateHashRedistributeRequests(pmp);
 
@@ -73,7 +70,8 @@ CPhysicalHashJoin::CPhysicalHashJoin
 	// Req(N + 2) (non-singleton, broadcast)
 	// Req(N + 3) (singleton, singleton)
 
-	ULONG ulDistrReqs = GPOPT_NON_HASH_DIST_REQUESTS + m_pdrgpdsRedistributeRequests->UlLength();
+	ULONG ulDistrReqs = GPOPT_NON_HASH_DIST_REQUESTS +
+						m_pdrgpdsRedistributeRequests->UlLength();
 	SetDistrRequests(ulDistrReqs);
 
 	// With DP enabled, there are several (max 10 controlled by macro)
@@ -120,10 +118,7 @@ CPhysicalHashJoin::~CPhysicalHashJoin()
 //
 //---------------------------------------------------------------------------
 void
-CPhysicalHashJoin::CreateHashRedistributeRequests
-	(
-	IMemoryPool *pmp
-	)
+CPhysicalHashJoin::CreateHashRedistributeRequests(IMemoryPool *pmp)
 {
 	GPOS_ASSERT(NULL == m_pdrgpdsRedistributeRequests);
 	GPOS_ASSERT(NULL != m_pdrgpexprOuterKeys);
@@ -140,7 +135,8 @@ CPhysicalHashJoin::CreateHashRedistributeRequests
 	}
 
 	m_pdrgpdsRedistributeRequests = GPOS_NEW(pmp) DrgPds(pmp);
-	const ULONG ulExprs = std::min((ULONG) GPOPT_MAX_HASH_DIST_REQUESTS, pdrgpexpr->UlLength());
+	const ULONG ulExprs =
+		std::min((ULONG) GPOPT_MAX_HASH_DIST_REQUESTS, pdrgpexpr->UlLength());
 	if (1 < ulExprs)
 	{
 		for (ULONG ul = 0; ul < ulExprs; ul++)
@@ -154,13 +150,16 @@ CPhysicalHashJoin::CreateHashRedistributeRequests
 
 			// TODO:  - Dec 30, 2011; change fNullsColocated to false when our
 			// distribution matching can handle differences in NULL colocation
-			CDistributionSpecHashed *pdshashedCurrent = GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexprCurrent, true /* fNullsCollocated */);
+			CDistributionSpecHashed *pdshashedCurrent = GPOS_NEW(pmp)
+				CDistributionSpecHashed(pdrgpexprCurrent,
+										true /* fNullsCollocated */);
 			m_pdrgpdsRedistributeRequests->Append(pdshashedCurrent);
 		}
 	}
 	// add a request that contains all hash join keys
 	pdrgpexpr->AddRef();
-	CDistributionSpecHashed *pdshashed = GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexpr, true /* fNullsCollocated */);
+	CDistributionSpecHashed *pdshashed = GPOS_NEW(pmp)
+		CDistributionSpecHashed(pdrgpexpr, true /* fNullsCollocated */);
 	m_pdrgpdsRedistributeRequests->Append(pdshashed);
 }
 
@@ -174,23 +173,21 @@ CPhysicalHashJoin::CreateHashRedistributeRequests
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalHashJoin::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, //exprhdl
-	COrderSpec *, // posInput,
-	ULONG
+CPhysicalHashJoin::PosRequired(IMemoryPool *pmp,
+							   CExpressionHandle &,  //exprhdl
+							   COrderSpec *,		 // posInput,
+							   ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+								   ulChildIndex
+#endif  // GPOS_DEBUG
+							   ,
+							   DrgPdp *,  // pdrgpdpCtxt
+							   ULONG	  // ulOptReq
+							   ) const
 {
-	GPOS_ASSERT(ulChildIndex < 2 &&
-				"Required sort order can be computed on the relational child only");
+	GPOS_ASSERT(
+		ulChildIndex < 2 &&
+		"Required sort order can be computed on the relational child only");
 
 	// hash join does not have order requirements to both children, and it
 	// does not preserve any sort order
@@ -207,19 +204,16 @@ CPhysicalHashJoin::PosRequired
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalHashJoin::PrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CRewindabilitySpec *prsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalHashJoin::PrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							   CRewindabilitySpec *prsRequired,
+							   ULONG ulChildIndex,
+							   DrgPdp *,  // pdrgpdpCtxt
+							   ULONG	  // ulOptReq
+							   ) const
 {
-	GPOS_ASSERT(ulChildIndex < 2 &&
-				"Required rewindability can be computed on the relational child only");
+	GPOS_ASSERT(
+		ulChildIndex < 2 &&
+		"Required rewindability can be computed on the relational child only");
 
 	// if there are outer references, then we need a materialize on both children
 	if (exprhdl.FHasOuterRefs())
@@ -230,9 +224,10 @@ CPhysicalHashJoin::PrsRequired
 	if (1 == ulChildIndex)
 	{
 		// inner child does not have to be rewindable
-		return GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
+		return GPOS_NEW(pmp)
+			CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
 	}
-		
+
 	// pass through requirements to outer child
 	return PrsPassThru(pmp, exprhdl, prsRequired, 0 /*ulChildIndex*/);
 }
@@ -247,13 +242,8 @@ CPhysicalHashJoin::PrsRequired
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalHashJoin::PdsMatch
-	(
-	IMemoryPool *pmp,
-	CDistributionSpec *pds,
-	ULONG ulSourceChildIndex
-	)
-	const
+CPhysicalHashJoin::PdsMatch(IMemoryPool *pmp, CDistributionSpec *pds,
+							ULONG ulSourceChildIndex) const
 {
 	GPOS_ASSERT(NULL != pds);
 
@@ -264,16 +254,20 @@ CPhysicalHashJoin::PdsMatch
 	{
 		case CDistributionSpec::EdtUniversal:
 			// first child is universal, request second child to execute on the master to avoid duplicates
-			return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+			return GPOS_NEW(pmp) CDistributionSpecSingleton(
+				CDistributionSpecSingleton::EstMaster);
 
 		case CDistributionSpec::EdtSingleton:
 		case CDistributionSpec::EdtStrictSingleton:
 			// require second child to provide a matching singleton distribution
-			return PdssMatching(pmp, CDistributionSpecSingleton::PdssConvert(pds));
+			return PdssMatching(pmp,
+								CDistributionSpecSingleton::PdssConvert(pds));
 
 		case CDistributionSpec::EdtHashed:
 			// require second child to provide a matching hashed distribution
-			return PdshashedMatching(pmp, CDistributionSpecHashed::PdsConvert(pds), ulSourceChildIndex);
+			return PdshashedMatching(pmp,
+									 CDistributionSpecHashed::PdsConvert(pds),
+									 ulSourceChildIndex);
 
 		default:
 			GPOS_ASSERT(CDistributionSpec::EdtReplicated == pds->Edt());
@@ -302,13 +296,11 @@ CPhysicalHashJoin::PdsMatch
 //
 //---------------------------------------------------------------------------
 CDistributionSpecHashed *
-CPhysicalHashJoin::PdshashedMatching
-	(
-	IMemoryPool *pmp,
-	CDistributionSpecHashed *pdshashed,
-	ULONG ulSourceChild // index of child that delivered the given hashed distribution
-	)
-	const
+CPhysicalHashJoin::PdshashedMatching(
+	IMemoryPool *pmp, CDistributionSpecHashed *pdshashed,
+	ULONG
+		ulSourceChild  // index of child that delivered the given hashed distribution
+	) const
 {
 	GPOS_ASSERT(2 > ulSourceChild);
 
@@ -328,11 +320,13 @@ CPhysicalHashJoin::PdshashedMatching
 	DrgPexpr *pdrgpexprTargetNoCast = GPOS_NEW(pmp) DrgPexpr(pmp);
 	for (ULONG ul = 0; ul < ulSourceSize; ul++)
 	{
-		CExpression *pexpr = CCastUtils::PexprWithoutBinaryCoercibleCasts((*pdrgpexprSource)[ul]);
+		CExpression *pexpr = CCastUtils::PexprWithoutBinaryCoercibleCasts(
+			(*pdrgpexprSource)[ul]);
 		pexpr->AddRef();
 		pdrgpexprSourceNoCast->Append(pexpr);
 
-		pexpr = CCastUtils::PexprWithoutBinaryCoercibleCasts((*pdrgpexprTarget)[ul]);
+		pexpr = CCastUtils::PexprWithoutBinaryCoercibleCasts(
+			(*pdrgpexprTarget)[ul]);
 		pexpr->AddRef();
 		pdrgpexprTargetNoCast->Append(pexpr);
 	}
@@ -341,7 +335,8 @@ CPhysicalHashJoin::PdshashedMatching
 	DrgPexpr *pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	for (ULONG ulDlvrdIdx = 0; ulDlvrdIdx < ulDlvrdSize; ulDlvrdIdx++)
 	{
-		CExpression *pexprDlvrd = CCastUtils::PexprWithoutBinaryCoercibleCasts((*pdrgpexprDist)[ulDlvrdIdx]);
+		CExpression *pexprDlvrd = CCastUtils::PexprWithoutBinaryCoercibleCasts(
+			(*pdrgpexprDist)[ulDlvrdIdx]);
 		for (ULONG ulIdx = 0; ulIdx < ulSourceSize; ulIdx++)
 		{
 			if (CUtils::FEqual(pexprDlvrd, (*pdrgpexprSourceNoCast)[ulIdx]))
@@ -367,12 +362,14 @@ CPhysicalHashJoin::PdshashedMatching
 		if (NULL != pdshashed->PdshashedEquiv())
 		{
 			// try again using the equivalent hashed distribution
-			return PdshashedMatching(pmp, pdshashed->PdshashedEquiv(), ulSourceChild);
+			return PdshashedMatching(pmp, pdshashed->PdshashedEquiv(),
+									 ulSourceChild);
 		}
 	}
 	GPOS_ASSERT(pdrgpexpr->UlLength() == ulDlvrdSize);
 
-	return GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexpr, true /* fNullsCollocated */);
+	return GPOS_NEW(pmp)
+		CDistributionSpecHashed(pdrgpexpr, true /* fNullsCollocated */);
 }
 
 
@@ -386,38 +383,38 @@ CPhysicalHashJoin::PdshashedMatching
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalHashJoin::PdsRequiredSingleton
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle  &, // exprhdl
-	CDistributionSpec *, // pdsInput
-	ULONG  ulChildIndex,
-	DrgPdp *pdrgpdpCtxt
-	)
-	const
+CPhysicalHashJoin::PdsRequiredSingleton(IMemoryPool *pmp,
+										CExpressionHandle &,  // exprhdl
+										CDistributionSpec *,  // pdsInput
+										ULONG ulChildIndex,
+										DrgPdp *pdrgpdpCtxt) const
 {
 	if (FFirstChildToOptimize(ulChildIndex))
 	{
 		// require first child to be singleton
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	// require a matching distribution from second child
 	GPOS_ASSERT(NULL != pdrgpdpCtxt);
-	CDistributionSpec *pdsFirst = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
+	CDistributionSpec *pdsFirst =
+		CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
 	GPOS_ASSERT(NULL != pdsFirst);
 
 	if (CDistributionSpec::EdtUniversal == pdsFirst->Edt())
 	{
 		// first child is universal, request second child to execute on the master to avoid duplicates
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	GPOS_ASSERT(CDistributionSpec::EdtSingleton == pdsFirst->Edt() ||
-		CDistributionSpec::EdtStrictSingleton == pdsFirst->Edt());
+				CDistributionSpec::EdtStrictSingleton == pdsFirst->Edt());
 
 	// require second child to have matching singleton distribution
-	return CPhysical::PdssMatching(pmp, CDistributionSpecSingleton::PdssConvert(pdsFirst));
+	return CPhysical::PdssMatching(
+		pmp, CDistributionSpecSingleton::PdssConvert(pdsFirst));
 }
 
 
@@ -431,22 +428,18 @@ CPhysicalHashJoin::PdsRequiredSingleton
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalHashJoin::PdsRequiredReplicate
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle  &exprhdl,
-	CDistributionSpec *pdsInput,
-	ULONG  ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq
-	)
-	const
+CPhysicalHashJoin::PdsRequiredReplicate(IMemoryPool *pmp,
+										CExpressionHandle &exprhdl,
+										CDistributionSpec *pdsInput,
+										ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+										ULONG ulOptReq) const
 {
 	EChildExecOrder eceo = Eceo();
 	if (EceoLeftToRight == eceo)
 	{
 		// if optimization order is left to right, fall-back to implementation of parent Join operator
-		return CPhysicalJoin::PdsRequired(pmp, exprhdl, pdsInput, ulChildIndex, pdrgpdpCtxt, 0 /*ulOptReq*/);
+		return CPhysicalJoin::PdsRequired(pmp, exprhdl, pdsInput, ulChildIndex,
+										  pdrgpdpCtxt, 0 /*ulOptReq*/);
 	}
 	GPOS_ASSERT(EceoRightToLeft == eceo);
 
@@ -458,21 +451,24 @@ CPhysicalHashJoin::PdsRequiredReplicate
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	// require a matching distribution from outer child
-	CDistributionSpec *pdsInner = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
+	CDistributionSpec *pdsInner =
+		CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
 	GPOS_ASSERT(NULL != pdsInner);
 
 	if (CDistributionSpec::EdtUniversal == pdsInner->Edt())
 	{
 		// first child is universal, request second child to execute on the master to avoid duplicates
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	if (ulOptReq == m_pdrgpdsRedistributeRequests->UlLength() &&
 		CDistributionSpec::EdtHashed == pdsInput->Edt())
 	{
 		// attempt to propagate hashed request to child
-		CDistributionSpecHashed *pdshashed =
-			PdshashedPassThru(pmp, exprhdl, CDistributionSpecHashed::PdsConvert(pdsInput), ulChildIndex, pdrgpdpCtxt, ulOptReq);
+		CDistributionSpecHashed *pdshashed = PdshashedPassThru(
+			pmp, exprhdl, CDistributionSpecHashed::PdsConvert(pdsInput),
+			ulChildIndex, pdrgpdpCtxt, ulOptReq);
 		if (NULL != pdshashed)
 		{
 			return pdshashed;
@@ -497,19 +493,16 @@ CPhysicalHashJoin::PdsRequiredReplicate
 //
 //---------------------------------------------------------------------------
 CDistributionSpecHashed *
-CPhysicalHashJoin::PdshashedPassThru
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle  &exprhdl,
-	CDistributionSpecHashed *pdshashedInput,
-	ULONG  , // ulChildIndex
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG
+CPhysicalHashJoin::PdshashedPassThru(IMemoryPool *pmp,
+									 CExpressionHandle &exprhdl,
+									 CDistributionSpecHashed *pdshashedInput,
+									 ULONG,		// ulChildIndex
+									 DrgPdp *,  // pdrgpdpCtxt
+									 ULONG
 #ifdef GPOS_DEBUG
-	 ulOptReq
-#endif // GPOS_DEBUG
-	)
-	const
+										 ulOptReq
+#endif  // GPOS_DEBUG
+									 ) const
 {
 	GPOS_ASSERT(ulOptReq == m_pdrgpdsRedistributeRequests->UlLength());
 	GPOS_ASSERT(NULL != pdshashedInput);
@@ -521,9 +514,11 @@ CPhysicalHashJoin::PdshashedPassThru
 	}
 
 	// since incoming request is hashed, we attempt here to propagate this request to outer child
-	CColRefSet *pcrsOuterOutput = exprhdl.Pdprel(0 /*ulChildIndex*/)->PcrsOutput();
+	CColRefSet *pcrsOuterOutput =
+		exprhdl.Pdprel(0 /*ulChildIndex*/)->PcrsOutput();
 	DrgPexpr *pdrgpexprIncomingRequest = pdshashedInput->Pdrgpexpr();
-	CColRefSet *pcrsAllUsed = CUtils::PcrsExtractColumns(pmp, pdrgpexprIncomingRequest);
+	CColRefSet *pcrsAllUsed =
+		CUtils::PcrsExtractColumns(pmp, pdrgpexprIncomingRequest);
 	BOOL fSubset = pcrsOuterOutput->FSubset(pcrsAllUsed);
 	BOOL fDisjoint = pcrsOuterOutput->FDisjoint(pcrsAllUsed);
 	pcrsAllUsed->Release();
@@ -536,29 +531,32 @@ CPhysicalHashJoin::PdshashedPassThru
 
 	if (!fDisjoint)
 	{
-		 // incoming request intersects with columns from outer child,
-		 // we restrict the request to outer child columns only, then we pass it through
-		 DrgPexpr *pdrgpexprChildRequest = GPOS_NEW(pmp) DrgPexpr(pmp);
-		 const ULONG ulSize = pdrgpexprIncomingRequest->UlLength();
-		 for (ULONG ul = 0; ul < ulSize; ul++)
-		 {
-			 CExpression *pexpr = (*pdrgpexprIncomingRequest)[ul];
-			 CColRefSet *pcrsUsed = CDrvdPropScalar::Pdpscalar(pexpr->PdpDerive())->PcrsUsed();
-			 if (pcrsOuterOutput->FSubset(pcrsUsed))
-			 {
-				 // hashed expression uses columns from outer child only, add it to request
-				 pexpr->AddRef();
-				 pdrgpexprChildRequest->Append(pexpr);
-			 }
-		 }
-		 GPOS_ASSERT(0 < pdrgpexprChildRequest->UlLength());
+		// incoming request intersects with columns from outer child,
+		// we restrict the request to outer child columns only, then we pass it through
+		DrgPexpr *pdrgpexprChildRequest = GPOS_NEW(pmp) DrgPexpr(pmp);
+		const ULONG ulSize = pdrgpexprIncomingRequest->UlLength();
+		for (ULONG ul = 0; ul < ulSize; ul++)
+		{
+			CExpression *pexpr = (*pdrgpexprIncomingRequest)[ul];
+			CColRefSet *pcrsUsed =
+				CDrvdPropScalar::Pdpscalar(pexpr->PdpDerive())->PcrsUsed();
+			if (pcrsOuterOutput->FSubset(pcrsUsed))
+			{
+				// hashed expression uses columns from outer child only, add it to request
+				pexpr->AddRef();
+				pdrgpexprChildRequest->Append(pexpr);
+			}
+		}
+		GPOS_ASSERT(0 < pdrgpexprChildRequest->UlLength());
 
-		 CDistributionSpecHashed *pdshashed = GPOS_NEW(pmp) CDistributionSpecHashed(pdrgpexprChildRequest, pdshashedInput->FNullsColocated());
+		CDistributionSpecHashed *pdshashed = GPOS_NEW(pmp)
+			CDistributionSpecHashed(pdrgpexprChildRequest,
+									pdshashedInput->FNullsColocated());
 
-		 // since the other child of the join is replicated, we need to enforce hashed-distribution across segments here
-		 pdshashed->MarkUnsatisfiableBySingleton();
+		// since the other child of the join is replicated, we need to enforce hashed-distribution across segments here
+		pdshashed->MarkUnsatisfiableBySingleton();
 
-		 return pdshashed;
+		return pdshashed;
 	}
 
 	return NULL;
@@ -574,16 +572,12 @@ CPhysicalHashJoin::PdshashedPassThru
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalHashJoin::PdsRequiredRedistribute
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl
-	CDistributionSpec *, // pdsInput
-	ULONG  ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq
-	)
-	const
+CPhysicalHashJoin::PdsRequiredRedistribute(IMemoryPool *pmp,
+										   CExpressionHandle &,  // exprhdl
+										   CDistributionSpec *,  // pdsInput
+										   ULONG ulChildIndex,
+										   DrgPdp *pdrgpdpCtxt,
+										   ULONG ulOptReq) const
 {
 	if (FFirstChildToOptimize(ulChildIndex))
 	{
@@ -592,7 +586,8 @@ CPhysicalHashJoin::PdsRequiredRedistribute
 	}
 
 	// find the distribution delivered by first child
-	CDistributionSpec *pdsFirst = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
+	CDistributionSpec *pdsFirst =
+		CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
 	GPOS_ASSERT(NULL != pdsFirst);
 
 	// find the index of the first child
@@ -630,16 +625,11 @@ CPhysicalHashJoin::PdsRequiredRedistribute
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalHashJoin::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsInput,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq // identifies which optimization request should be created
-	)
-	const
+CPhysicalHashJoin::PdsRequired(
+	IMemoryPool *pmp, CExpressionHandle &exprhdl, CDistributionSpec *pdsInput,
+	ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+	ULONG ulOptReq  // identifies which optimization request should be created
+	) const
 {
 	GPOS_ASSERT(2 > ulChildIndex);
 	GPOS_ASSERT(ulOptReq < UlDistrRequests());
@@ -660,11 +650,13 @@ CPhysicalHashJoin::PdsRequired
 		return GPOS_NEW(pmp) CDistributionSpecReplicated();
 	}
 
-	const ULONG ulHashDistributeRequests = m_pdrgpdsRedistributeRequests->UlLength();
+	const ULONG ulHashDistributeRequests =
+		m_pdrgpdsRedistributeRequests->UlLength();
 	if (ulOptReq < ulHashDistributeRequests)
 	{
 		// requests 1 .. N are (redistribute, redistribute)
-		return PdsRequiredRedistribute(pmp, exprhdl, pdsInput, ulChildIndex, pdrgpdpCtxt, ulOptReq);
+		return PdsRequiredRedistribute(pmp, exprhdl, pdsInput, ulChildIndex,
+									   pdrgpdpCtxt, ulOptReq);
 	}
 
 	if (ulOptReq == ulHashDistributeRequests ||
@@ -672,14 +664,16 @@ CPhysicalHashJoin::PdsRequired
 	{
 		// requests N+1, N+2 are (hashed/non-singleton, replicate)
 
-		return PdsRequiredReplicate(pmp, exprhdl, pdsInput, ulChildIndex, pdrgpdpCtxt, ulOptReq);
+		return PdsRequiredReplicate(pmp, exprhdl, pdsInput, ulChildIndex,
+									pdrgpdpCtxt, ulOptReq);
 	}
 
 	GPOS_ASSERT(ulOptReq == ulHashDistributeRequests + 2);
 
 	// requests N+3 is (singleton, singleton)
 
-	return PdsRequiredSingleton(pmp, exprhdl, pdsInput, ulChildIndex, pdrgpdpCtxt);
+	return PdsRequiredSingleton(pmp, exprhdl, pdsInput, ulChildIndex,
+								pdrgpdpCtxt);
 }
 
 
@@ -692,13 +686,9 @@ CPhysicalHashJoin::PdsRequired
 //
 //---------------------------------------------------------------------------
 CDistributionSpecHashed *
-CPhysicalHashJoin::PdshashedRequired
-	(
-	IMemoryPool *, // pmp
-	ULONG, // ulChildIndex
-	ULONG ulReqIndex
-	)
-	const
+CPhysicalHashJoin::PdshashedRequired(IMemoryPool *,  // pmp
+									 ULONG,			 // ulChildIndex
+									 ULONG ulReqIndex) const
 {
 	GPOS_ASSERT(ulReqIndex < m_pdrgpdsRedistributeRequests->UlLength());
 	CDistributionSpec *pds = (*m_pdrgpdsRedistributeRequests)[ulReqIndex];
@@ -717,15 +707,12 @@ CPhysicalHashJoin::PdshashedRequired
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalHashJoin::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *
+CPhysicalHashJoin::EpetOrder(CExpressionHandle &,  // exprhdl
+							 const CEnfdOrder *
 #ifdef GPOS_DEBUG
-	peo
-#endif // GPOS_DEBUG
-	)
-	const
+								 peo
+#endif  // GPOS_DEBUG
+							 ) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -746,12 +733,7 @@ CPhysicalHashJoin::EpetOrder
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalHashJoin::FNullableHashKeys
-	(
-	CColRefSet *pcrsNotNull,
-	BOOL fInner
-	)
-	const
+CPhysicalHashJoin::FNullableHashKeys(CColRefSet *pcrsNotNull, BOOL fInner) const
 {
 	ULONG ulHashKeys = 0;
 	if (fInner)
@@ -783,13 +765,8 @@ CPhysicalHashJoin::FNullableHashKeys
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalHashJoin::FNullableHashKey
-	(
-	ULONG ulKey,
-	CColRefSet *pcrsNotNull,
-	BOOL fInner
-	)
-	const
+CPhysicalHashJoin::FNullableHashKey(ULONG ulKey, CColRefSet *pcrsNotNull,
+									BOOL fInner) const
 {
 	COperator *pop = NULL;
 	if (fInner)

@@ -33,18 +33,13 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarSubqueryQuantified::CScalarSubqueryQuantified
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidScalarOp,
-	const CWStringConst *pstrScalarOp,
-	const CColRef *pcr
-	)
-	:
-	CScalar(pmp),
-	m_pmdidScalarOp(pmdidScalarOp),
-	m_pstrScalarOp(pstrScalarOp),
-	m_pcr(pcr)
+CScalarSubqueryQuantified::CScalarSubqueryQuantified(
+	IMemoryPool *pmp, IMDId *pmdidScalarOp, const CWStringConst *pstrScalarOp,
+	const CColRef *pcr)
+	: CScalar(pmp),
+	  m_pmdidScalarOp(pmdidScalarOp),
+	  m_pstrScalarOp(pstrScalarOp),
+	  m_pcr(pcr)
 {
 	GPOS_ASSERT(pmdidScalarOp->FValid());
 	GPOS_ASSERT(NULL != pstrScalarOp);
@@ -123,15 +118,10 @@ CScalarSubqueryQuantified::PmdidType() const
 ULONG
 CScalarSubqueryQuantified::UlHash() const
 {
-	return gpos::UlCombineHashes
-				(
-				COperator::UlHash(),
-				gpos::UlCombineHashes
-						(
-						m_pmdidScalarOp->UlHash(),
-						gpos::UlHashPtr<CColRef>(m_pcr)
-						)
-				);
+	return gpos::UlCombineHashes(
+		COperator::UlHash(),
+		gpos::UlCombineHashes(m_pmdidScalarOp->UlHash(),
+							  gpos::UlHashPtr<CColRef>(m_pcr)));
 }
 
 
@@ -144,11 +134,7 @@ CScalarSubqueryQuantified::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarSubqueryQuantified::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarSubqueryQuantified::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -156,8 +142,10 @@ CScalarSubqueryQuantified::FMatch
 	}
 
 	// match if contents are identical
-	CScalarSubqueryQuantified *popSsq = CScalarSubqueryQuantified::PopConvert(pop);
-	return popSsq->Pcr() == m_pcr && popSsq->PmdidOp()->FEquals(m_pmdidScalarOp);
+	CScalarSubqueryQuantified *popSsq =
+		CScalarSubqueryQuantified::PopConvert(pop);
+	return popSsq->Pcr() == m_pcr &&
+		   popSsq->PmdidOp()->FEquals(m_pmdidScalarOp);
 }
 
 
@@ -170,20 +158,18 @@ CScalarSubqueryQuantified::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CScalarSubqueryQuantified::PcrsUsed
-	(
-	IMemoryPool *pmp,
-	 CExpressionHandle &exprhdl
-	)
+CScalarSubqueryQuantified::PcrsUsed(IMemoryPool *pmp,
+									CExpressionHandle &exprhdl)
 {
 	// used columns is an empty set unless subquery column is an outer reference
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 
-	CColRefSet *pcrsChildOutput = exprhdl.Pdprel(0 /* ulChildIndex */)->PcrsOutput();
+	CColRefSet *pcrsChildOutput =
+		exprhdl.Pdprel(0 /* ulChildIndex */)->PcrsOutput();
 	if (!pcrsChildOutput->FMember(m_pcr))
 	{
 		// subquery column is not produced by relational child, add it to used columns
-		 pcrs->Include(m_pcr);
+		pcrs->Include(m_pcr);
 	}
 
 	return pcrs;
@@ -199,12 +185,8 @@ CScalarSubqueryQuantified::PcrsUsed
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CScalarSubqueryQuantified::PpartinfoDerive
-	(
-	IMemoryPool *, // pmp, 
-	CExpressionHandle &exprhdl
-	)
-	const
+CScalarSubqueryQuantified::PpartinfoDerive(IMemoryPool *,  // pmp,
+										   CExpressionHandle &exprhdl) const
 {
 	CPartInfo *ppartinfoChild = exprhdl.Pdprel(0 /*ulChildIndex*/)->Ppartinfo();
 	GPOS_ASSERT(NULL != ppartinfoChild);
@@ -263,14 +245,10 @@ CScalarSubqueryQuantified::PpartinfoDerive
 //
 //---------------------------------------------------------------------------
 CExpression *
-CScalarSubqueryQuantified::PexprSubqueryPred
-	(
-	CSubqueryHandler &sh,
-	CExpression *pexprOuter,
-	CExpression *pexprSubquery,
-	CExpression **ppexprResult
-	)
-	const
+CScalarSubqueryQuantified::PexprSubqueryPred(CSubqueryHandler &sh,
+											 CExpression *pexprOuter,
+											 CExpression *pexprSubquery,
+											 CExpression **ppexprResult) const
 {
 	GPOS_ASSERT(this == pexprSubquery->Pop());
 
@@ -279,17 +257,10 @@ CScalarSubqueryQuantified::PexprSubqueryPred
 
 	CExpression *pexprScalarChild = (*pexprSubquery)[1];
 
-	if (!CSubqueryHandler::FProcess
-			(
-			sh,
-			pexprOuter,
-			pexprScalarChild,
-			false, /* fDisjunctionOrNegation */
-			CSubqueryHandler::EsqctxtFilter,
-			&pexprNewLogical,
-			&pexprNewScalar
-			)
-		)
+	if (!CSubqueryHandler::FProcess(sh, pexprOuter, pexprScalarChild,
+									false, /* fDisjunctionOrNegation */
+									CSubqueryHandler::EsqctxtFilter,
+									&pexprNewLogical, &pexprNewScalar))
 	{
 		// subquery unnesting failed; attempt to create a predicate directly
 		*ppexprResult = pexprOuter;
@@ -307,14 +278,16 @@ CScalarSubqueryQuantified::PexprSubqueryPred
 
 	GPOS_ASSERT(NULL != pexprNewScalar);
 
-	CScalarSubqueryQuantified *popSqQuantified = CScalarSubqueryQuantified::PopConvert(pexprSubquery->Pop());
+	CScalarSubqueryQuantified *popSqQuantified =
+		CScalarSubqueryQuantified::PopConvert(pexprSubquery->Pop());
 
 	const CColRef *pcr = popSqQuantified->Pcr();
 	IMDId *pmdidOp = popSqQuantified->PmdidOp();
 	const CWStringConst *pstr = popSqQuantified->PstrOp();
 
 	pmdidOp->AddRef();
-	CExpression *pexprPredicate = CUtils::PexprScalarCmp(m_pmp, pexprNewScalar, pcr, *pstr, pmdidOp);
+	CExpression *pexprPredicate =
+		CUtils::PexprScalarCmp(m_pmp, pexprNewScalar, pcr, *pstr, pmdidOp);
 
 	return pexprPredicate;
 }
@@ -329,11 +302,7 @@ CScalarSubqueryQuantified::PexprSubqueryPred
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarSubqueryQuantified::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarSubqueryQuantified::OsPrint(IOstream &os) const
 {
 	os << SzId();
 	os << "(" << PstrOp()->Wsz() << ")";
@@ -346,4 +315,3 @@ CScalarSubqueryQuantified::OsPrint
 
 
 // EOF
-

@@ -21,15 +21,12 @@ using namespace gpmd;
 
 // conversion function
 CScalarIsDistinctFrom *
-CScalarIsDistinctFrom::PopConvert
-(
- COperator *pop
- )
+CScalarIsDistinctFrom::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(EopScalarIsDistinctFrom == pop->Eopid());
-	
-	return reinterpret_cast<CScalarIsDistinctFrom*>(pop);
+
+	return reinterpret_cast<CScalarIsDistinctFrom *>(pop);
 }
 
 // perform boolean expression evaluation
@@ -40,13 +37,12 @@ CScalarIsDistinctFrom::Eber(DrgPul *pdrgpulChildren) const
 
 	// Is Distinct From(IDF) expression will always evaluate
 	// to a true/false/unknown but not a NULL
-	EBoolEvalResult firstResult = (EBoolEvalResult) *(*pdrgpulChildren)[0];
-	EBoolEvalResult secondResult = (EBoolEvalResult) *(*pdrgpulChildren)[1];
+	EBoolEvalResult firstResult = (EBoolEvalResult) * (*pdrgpulChildren)[0];
+	EBoolEvalResult secondResult = (EBoolEvalResult) * (*pdrgpulChildren)[1];
 
 	if (firstResult == EberUnknown || secondResult == EberUnknown)
 	{
 		return CScalar::EberUnknown;
-
 	}
 	else if (firstResult != secondResult)
 	{
@@ -56,40 +52,31 @@ CScalarIsDistinctFrom::Eber(DrgPul *pdrgpulChildren) const
 }
 
 BOOL
-CScalarIsDistinctFrom::FMatch
-(
- COperator *pop
- )
-const
+CScalarIsDistinctFrom::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CScalarIsDistinctFrom *popIDF = CScalarIsDistinctFrom::PopConvert(pop);
-		
+
 		// match if operator mdids are identical
 		return PmdidOp()->FEquals(popIDF->PmdidOp());
 	}
-	
+
 	return false;
 }
 
 // get commuted scalar IDF operator
 CScalarIsDistinctFrom *
-CScalarIsDistinctFrom::PopCommutedOp
-	(
-	IMemoryPool *pmp,
-	COperator *pop
-	)
+CScalarIsDistinctFrom::PopCommutedOp(IMemoryPool *pmp, COperator *pop)
 {
-	
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 	IMDId *pmdid = PmdidCommuteOp(pmda, pop);
 	if (NULL != pmdid && pmdid->FValid())
 	{
-		return GPOS_NEW(pmp) CScalarIsDistinctFrom(pmp, pmdid, Pstr(pmp, pmda, pmdid));
+		return GPOS_NEW(pmp)
+			CScalarIsDistinctFrom(pmp, pmdid, Pstr(pmp, pmda, pmdid));
 	}
 	return NULL;
 }
 
 // EOF
-

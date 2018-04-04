@@ -21,105 +21,95 @@
 // fwd decl
 namespace gpdxl
 {
-	class CXMLSerializer;
+class CXMLSerializer;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpdxl;
+using namespace gpos;
+using namespace gpdxl;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMDCheckConstraintGPDB
-	//
-	//	@doc:
-	//		Class representing a GPDB check constraint in a metadata cache relation
-	//
-	//---------------------------------------------------------------------------
-	class CMDCheckConstraintGPDB : public IMDCheckConstraint
+//---------------------------------------------------------------------------
+//	@class:
+//		CMDCheckConstraintGPDB
+//
+//	@doc:
+//		Class representing a GPDB check constraint in a metadata cache relation
+//
+//---------------------------------------------------------------------------
+class CMDCheckConstraintGPDB : public IMDCheckConstraint
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
+
+	// check constraint mdid
+	IMDId *m_pmdid;
+
+	// check constraint name
+	CMDName *m_pmdname;
+
+	// relation mdid
+	IMDId *m_pmdidRel;
+
+	// the DXL representation of the check constraint
+	CDXLNode *m_pdxln;
+
+	// DXL for object
+	const CWStringDynamic *m_pstr;
+
+public:
+	// ctor
+	CMDCheckConstraintGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+						   IMDId *pmdidRel, CDXLNode *pdxln);
+
+	// dtor
+	virtual ~CMDCheckConstraintGPDB();
+
+	// check constraint mdid
+	virtual IMDId *
+	Pmdid() const
 	{
-		private:
+		return m_pmdid;
+	}
 
-			// memory pool
-			IMemoryPool *m_pmp;
+	// check constraint name
+	virtual CMDName
+	Mdname() const
+	{
+		return *m_pmdname;
+	}
 
-			// check constraint mdid
-			IMDId *m_pmdid;
+	// mdid of the relation
+	virtual IMDId *
+	PmdidRel() const
+	{
+		return m_pmdidRel;
+	}
 
-			// check constraint name
-			CMDName *m_pmdname;
+	// DXL string for check constraint
+	virtual const CWStringDynamic *
+	Pstr() const
+	{
+		return m_pstr;
+	}
 
-			// relation mdid
-			IMDId *m_pmdidRel;
+	// the scalar expression of the check constraint
+	virtual CExpression *
+	Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const;
 
-			// the DXL representation of the check constraint
-			CDXLNode *m_pdxln;
-
-			// DXL for object
-			const CWStringDynamic *m_pstr;
-
-		public:
-
-			// ctor
-			CMDCheckConstraintGPDB
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdid,
-				CMDName *pmdname,
-				IMDId *pmdidRel,
-				CDXLNode *pdxln
-				);
-
-			// dtor
-			virtual
-			~CMDCheckConstraintGPDB();
-
-			// check constraint mdid
-			virtual
-			IMDId *Pmdid() const
-			{
-				return m_pmdid;
-			}
-
-			// check constraint name
-			virtual
-			CMDName Mdname() const
-			{
-				return *m_pmdname;
-			}
-
-			// mdid of the relation
-			virtual
-			IMDId *PmdidRel() const
-			{
-				return m_pmdidRel;
-			}
-
-			// DXL string for check constraint
-			virtual
-			const CWStringDynamic *Pstr() const
-			{
-				return m_pstr;
-			}
-
-			// the scalar expression of the check constraint
-			virtual
-			CExpression *Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const;
-
-			// serialize MD check constraint in DXL format given a serializer object
-			virtual
-			void Serialize(gpdxl::CXMLSerializer *) const;
+	// serialize MD check constraint in DXL format given a serializer object
+	virtual void
+	Serialize(gpdxl::CXMLSerializer *) const;
 
 #ifdef GPOS_DEBUG
-			// debug print of the MD check constraint
-			virtual
-			void DebugPrint(IOstream &os) const;
+	// debug print of the MD check constraint
+	virtual void
+	DebugPrint(IOstream &os) const;
 #endif
-	};
-}
+};
+}  // namespace gpmd
 
-#endif // !GPMD_CMDCheckConstraintGPDB_H
+#endif  // !GPMD_CMDCheckConstraintGPDB_H
 
 // EOF
-

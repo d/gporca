@@ -22,50 +22,48 @@ using namespace gpdxl;
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CSerializableQuery
-	//
-	//	@doc:
-	//		Serializable query object 
-	//
-	//---------------------------------------------------------------------------
-	class CSerializableQuery : public CSerializable
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CSerializableQuery
+//
+//	@doc:
+//		Serializable query object
+//
+//---------------------------------------------------------------------------
+class CSerializableQuery : public CSerializable
+{
+private:
+	IMemoryPool *m_pmp;
 
-			IMemoryPool *m_pmp;
+	// query DXL node;
+	const CDXLNode *m_pdxlnQuery;
 
-			// query DXL node;
-			const CDXLNode *m_pdxlnQuery;
+	// query output
+	const DrgPdxln *m_pdrgpdxlnQueryOutput;
 
-			// query output
-			const DrgPdxln *m_pdrgpdxlnQueryOutput;
+	// CTE DXL nodes
+	const DrgPdxln *m_pdrgpdxlnCTE;
 
-			// CTE DXL nodes
-			const DrgPdxln *m_pdrgpdxlnCTE;
 
-			
-			// private copy ctor
-			CSerializableQuery(const CSerializableQuery&);
+	// private copy ctor
+	CSerializableQuery(const CSerializableQuery &);
 
-		public:
+public:
+	// ctor
+	CSerializableQuery(IMemoryPool *pmp, const CDXLNode *pdxlnQuery,
+					   const DrgPdxln *pdrgpdxlnQueryOutput,
+					   const DrgPdxln *pdrgpdxlnCTE);
 
-			// ctor
-			CSerializableQuery(IMemoryPool *pmp, const CDXLNode *pdxlnQuery, const DrgPdxln *pdrgpdxlnQueryOutput, const DrgPdxln *pdrgpdxlnCTE);
+	// dtor
+	virtual ~CSerializableQuery();
 
-			// dtor
-			virtual
-			~CSerializableQuery();
+	// serialize object to passed stream
+	virtual void
+	Serialize(COstream &oos);
 
-			// serialize object to passed stream
-			virtual
-			void Serialize(COstream &oos);
+};  // class CSerializableQuery
+}  // namespace gpopt
 
-	}; // class CSerializableQuery
-}
-
-#endif // !GPOS_CSerializableQuery_H
+#endif  // !GPOS_CSerializableQuery_H
 
 // EOF
-

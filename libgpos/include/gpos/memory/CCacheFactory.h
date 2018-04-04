@@ -29,94 +29,80 @@ using namespace gpos;
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CCacheFactory
-	//
-	//	@doc:
-	//		Definition of cache factory;
-	//
-	//		This class is responsible of creating cache objects and allocating the
-	//		memory pools they need
-	//
-	//---------------------------------------------------------------------------
-	class CCacheFactory
+//---------------------------------------------------------------------------
+//	@class:
+//		CCacheFactory
+//
+//	@doc:
+//		Definition of cache factory;
+//
+//		This class is responsible of creating cache objects and allocating the
+//		memory pools they need
+//
+//---------------------------------------------------------------------------
+class CCacheFactory
+{
+private:
+	// global instance
+	static CCacheFactory *m_pcf;
+
+	// memory pool allocated to caches
+	IMemoryPool *m_pmp;
+
+	// private ctor
+	CCacheFactory(IMemoryPool *pmp);
+
+	// no copy ctor
+	CCacheFactory(const CCacheFactory &);
+
+
+
+public:
+	// private dtor
+	~CCacheFactory()
 	{
-		private:
+		GPOS_ASSERT(NULL == m_pcf && "Cache factory has not been shut down");
+	}
 
-			// global instance
-			static CCacheFactory *m_pcf;
+	// initialize global memory pool
+	static GPOS_RESULT
+	EresInit();
 
-			// memory pool allocated to caches
-			IMemoryPool *m_pmp;
+	// destroy global instance
+	void
+	Shutdown();
 
-			// private ctor
-			CCacheFactory(IMemoryPool *pmp);
+	// global accessor
+	inline static CCacheFactory *
+	Pcf()
+	{
+		return m_pcf;
+	}
 
-			// no copy ctor
-			CCacheFactory(const CCacheFactory&);
+	// create a cache instance
+	template <class T, class K>
+	static CCache<T, K> *
+	PCacheCreate(BOOL fUnique, ULLONG ullCacheQuota,
+				 typename CCache<T, K>::HashFuncPtr pfuncHash,
+				 typename CCache<T, K>::EqualFuncPtr pfuncEqual)
+	{
+		GPOS_ASSERT(NULL != Pcf() && "Cache factory has not been initialized");
 
+		IMemoryPool *pmp = Pcf()->Pmp();
+		CCache<T, K> *pcache = GPOS_NEW(pmp)
+			CCache<T, K>(pmp, fUnique, ullCacheQuota,
+						 CCACHE_GCLOCK_INIT_COUNTER, pfuncHash, pfuncEqual);
 
+		return pcache;
+	}
 
-		public:
+	IMemoryPool *
+	Pmp() const;
 
-			// private dtor
-			~CCacheFactory()
-			{
-				GPOS_ASSERT(NULL == m_pcf &&
-							"Cache factory has not been shut down");
-			}
-
-			// initialize global memory pool
-			static
-			GPOS_RESULT EresInit();
-
-			// destroy global instance
-			void Shutdown();
-
-			// global accessor
-			inline
-			static CCacheFactory *Pcf()
-			{
-				return m_pcf;
-			}
-
-			// create a cache instance
-			template <class T, class K>
-			static
-			CCache<T, K> *PCacheCreate
-				(
-				BOOL fUnique,
-				ULLONG ullCacheQuota,
-				typename CCache<T, K>::HashFuncPtr pfuncHash,
-				typename CCache<T, K>::EqualFuncPtr pfuncEqual
-				)
-			{
-				GPOS_ASSERT(NULL != Pcf() &&
-						    "Cache factory has not been initialized");
-
-				IMemoryPool *pmp = Pcf()->Pmp();
-				CCache<T, K> *pcache = GPOS_NEW(pmp) CCache<T, K>
-							(
-							pmp,
-							fUnique,
-							ullCacheQuota,
-							CCACHE_GCLOCK_INIT_COUNTER,
-							pfuncHash,
-							pfuncEqual
-							);
-
-				return pcache;
-
-			}
-
-			IMemoryPool *Pmp() const;
-
-	}; // CCacheFactory
-} // namespace gpos
+};  // CCacheFactory
+}  // namespace gpos
 
 
-#endif // CCACHEFACTORY_H_
+#endif  // CCACHEFACTORY_H_
 
 // EOF
-

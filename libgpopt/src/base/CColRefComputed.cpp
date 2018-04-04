@@ -24,15 +24,9 @@ using namespace gpopt;
 //		takes ownership of string; verify string is properly formatted
 //
 //---------------------------------------------------------------------------
-CColRefComputed::CColRefComputed
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier,
-	ULONG ulId,
-	const CName *pname
-	)
-	:
-	CColRef(pmdtype, iTypeModifier, ulId, pname)
+CColRefComputed::CColRefComputed(const IMDType *pmdtype, INT iTypeModifier,
+								 ULONG ulId, const CName *pname)
+	: CColRef(pmdtype, iTypeModifier, ulId, pname)
 {
 	GPOS_ASSERT(NULL != pmdtype);
 	GPOS_ASSERT(pmdtype->Pmdid()->FValid());
@@ -49,8 +43,8 @@ CColRefComputed::CColRefComputed
 //
 //---------------------------------------------------------------------------
 CColRefComputed::~CColRefComputed()
-{}
+{
+}
 
 
 // EOF
-

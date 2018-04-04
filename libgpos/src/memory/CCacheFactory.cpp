@@ -27,14 +27,8 @@ CCacheFactory *CCacheFactory::m_pcf = NULL;
 //		Ctor;
 //
 //---------------------------------------------------------------------------
-CCacheFactory::CCacheFactory
-	(
-		IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp)
+CCacheFactory::CCacheFactory(IMemoryPool *pmp) : m_pmp(pmp)
 {
-
 }
 
 
@@ -64,18 +58,13 @@ CCacheFactory::Pmp() const
 GPOS_RESULT
 CCacheFactory::EresInit()
 {
-	GPOS_ASSERT(NULL == Pcf() &&
-			    "Cache factory was already initialized");
+	GPOS_ASSERT(NULL == Pcf() && "Cache factory was already initialized");
 
 	GPOS_RESULT eres = GPOS_OK;
 
 	// create cache factory memory pool
-	IMemoryPool *pmp = CMemoryPoolManager::Pmpm()->PmpCreate
-							(
-							CMemoryPoolManager::EatTracker,
-							true /*fThreadSafe*/,
-							ULLONG_MAX
-							);
+	IMemoryPool *pmp = CMemoryPoolManager::Pmpm()->PmpCreate(
+		CMemoryPoolManager::EatTracker, true /*fThreadSafe*/, ULLONG_MAX);
 	GPOS_TRY
 	{
 		// create cache factory instance
@@ -115,8 +104,7 @@ CCacheFactory::Shutdown()
 {
 	CCacheFactory *pcf = CCacheFactory::Pcf();
 
-	GPOS_ASSERT(NULL != pcf &&
-			    "Cache factory has not been initialized");
+	GPOS_ASSERT(NULL != pcf && "Cache factory has not been initialized");
 
 	IMemoryPool *pmp = pcf->m_pmp;
 

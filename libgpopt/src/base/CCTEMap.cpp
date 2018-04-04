@@ -24,13 +24,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CCTEMap::CCTEMap
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp),
-	m_phmcm(NULL)
+CCTEMap::CCTEMap(IMemoryPool *pmp) : m_pmp(pmp), m_phmcm(NULL)
 {
 	GPOS_ASSERT(NULL != pmp);
 
@@ -59,12 +53,7 @@ CCTEMap::~CCTEMap()
 //
 //---------------------------------------------------------------------------
 void
-CCTEMap::Insert
-	(
-	ULONG ulCteId,
-	ECteType ect,
-	CDrvdPropPlan *pdpplan
-	)
+CCTEMap::Insert(ULONG ulCteId, ECteType ect, CDrvdPropPlan *pdpplan)
 {
 	GPOS_ASSERT(EctSentinel > ect);
 
@@ -76,8 +65,8 @@ CCTEMap::Insert
 	CCTEMapEntry *pcme = GPOS_NEW(m_pmp) CCTEMapEntry(ulCteId, ect, pdpplan);
 #ifdef GPOS_DEBUG
 	BOOL fSuccess =
-#endif // GPOS_DEBUG
-	m_phmcm->FInsert(GPOS_NEW(m_pmp) ULONG(ulCteId), pcme);
+#endif  // GPOS_DEBUG
+		m_phmcm->FInsert(GPOS_NEW(m_pmp) ULONG(ulCteId), pcme);
 	GPOS_ASSERT(fSuccess);
 }
 
@@ -96,11 +85,10 @@ CCTEMap::Insert
 //
 //---------------------------------------------------------------------------
 CDrvdPropPlan *
-CCTEMap::PdpplanProducer
-	(
-	ULONG *pulId // output: CTE producer Id, set to ULONG_MAX if no producer found
-	)
-	const
+CCTEMap::PdpplanProducer(
+	ULONG *
+		pulId  // output: CTE producer Id, set to ULONG_MAX if no producer found
+	) const
 {
 	GPOS_ASSERT(NULL != pulId);
 
@@ -128,7 +116,7 @@ CCTEMap::PdpplanProducer
 		GPOS_ASSERT(CCTEMap::EctConsumer == ect &&
 					"CTE map has properties of more than one producer");
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	return pdpplanProducer;
 }
@@ -144,12 +132,8 @@ CCTEMap::PdpplanProducer
 //
 //---------------------------------------------------------------------------
 void
-CCTEMap::AddUnresolved
-	(
-	const CCTEMap &cmFirst,
-	const CCTEMap &cmSecond,
-	CCTEMap* pcmResult
-	)
+CCTEMap::AddUnresolved(const CCTEMap &cmFirst, const CCTEMap &cmSecond,
+					   CCTEMap *pcmResult)
 {
 	GPOS_ASSERT(NULL != pcmResult);
 	// iterate on first map and lookup entries in second map
@@ -188,11 +172,7 @@ CCTEMap::AddUnresolved
 //
 //---------------------------------------------------------------------------
 CCTEMap::CCTEMapEntry *
-CCTEMap::PcmeLookup
-	(
-	ULONG ulCteId
-	)
-	const
+CCTEMap::PcmeLookup(ULONG ulCteId) const
 {
 	return m_phmcm->PtLookup(&ulCteId);
 }
@@ -206,11 +186,7 @@ CCTEMap::PcmeLookup
 //
 //---------------------------------------------------------------------------
 BOOL
-CCTEMap::FSubset
-	(
-	const CCTEMap *pcm
-	)
-	const
+CCTEMap::FSubset(const CCTEMap *pcm) const
 {
 	GPOS_ASSERT(NULL != pcm);
 
@@ -270,11 +246,7 @@ CCTEMap::UlHash() const
 //
 //---------------------------------------------------------------------------
 CCTEMap::ECteType
-CCTEMap::Ect
-	(
-	const ULONG ulId
-	)
-	const
+CCTEMap::Ect(const ULONG ulId) const
 {
 	CCTEMapEntry *pcme = PcmeLookup(ulId);
 	if (NULL == pcme)
@@ -294,12 +266,8 @@ CCTEMap::Ect
 //
 //---------------------------------------------------------------------------
 CCTEMap *
-CCTEMap::PcmCombine
-	(
-	IMemoryPool *pmp,
-	const CCTEMap &cmFirst,
-	const CCTEMap &cmSecond
-	)
+CCTEMap::PcmCombine(IMemoryPool *pmp, const CCTEMap &cmFirst,
+					const CCTEMap &cmSecond)
 {
 	CCTEMap *pcmResult = GPOS_NEW(pmp) CCTEMap(pmp);
 
@@ -321,11 +289,7 @@ CCTEMap::PcmCombine
 //
 //---------------------------------------------------------------------------
 BOOL
-CCTEMap::FSatisfies
-	(
-	const CCTEReq *pcter
-	)
-	const
+CCTEMap::FSatisfies(const CCTEReq *pcter) const
 {
 	GPOS_ASSERT(NULL != pcter);
 	// every CTE marked as "Required" must be in the current map
@@ -350,7 +314,8 @@ CCTEMap::FSatisfies
 	{
 		const CCTEMapEntry *pcme = hmcmi.Pt();
 		ECteType ect = pcme->Ect();
-		if (CCTEMap::EctConsumer == ect && !pcter->FContainsRequirement(pcme->UlId(), ect))
+		if (CCTEMap::EctConsumer == ect &&
+			!pcter->FContainsRequirement(pcme->UlId(), ect))
 		{
 			return false;
 		}
@@ -368,12 +333,8 @@ CCTEMap::FSatisfies
 //
 //---------------------------------------------------------------------------
 DrgPul *
-CCTEMap::PdrgpulAdditionalProducers
-	(
-	IMemoryPool *pmp,
-	const CCTEReq *pcter
-	)
-	const
+CCTEMap::PdrgpulAdditionalProducers(IMemoryPool *pmp,
+									const CCTEReq *pcter) const
 {
 	GPOS_ASSERT(NULL != pcter);
 	DrgPul *pdrgpul = GPOS_NEW(pmp) DrgPul(pmp);
@@ -385,7 +346,8 @@ CCTEMap::PdrgpulAdditionalProducers
 		ULONG ulId = pcme->UlId();
 		ECteType ect = pcme->Ect();
 
-		if (CCTEMap::EctProducer == ect && !pcter->FContainsRequirement(ulId, ect))
+		if (CCTEMap::EctProducer == ect &&
+			!pcter->FContainsRequirement(ulId, ect))
 		{
 			pdrgpul->Append(GPOS_NEW(pmp) ULONG(ulId));
 		}
@@ -403,11 +365,7 @@ CCTEMap::PdrgpulAdditionalProducers
 //
 //---------------------------------------------------------------------------
 IOstream &
-CCTEMap::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CCTEMap::OsPrint(IOstream &os) const
 {
 	HMCteMapIter hmcmi(m_phmcm);
 	while (hmcmi.FAdvance())
@@ -420,13 +378,14 @@ CCTEMap::OsPrint
 	return os;
 }
 
-namespace gpopt {
-
-  IOstream &operator << (IOstream &os, CCTEMap &cm)
-  {
-    return cm.OsPrint(os);
-  }
-
+namespace gpopt
+{
+IOstream &
+operator<<(IOstream &os, CCTEMap &cm)
+{
+	return cm.OsPrint(os);
 }
+
+}  // namespace gpopt
 
 // EOF

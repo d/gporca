@@ -26,26 +26,18 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalSplit::CDXLPhysicalSplit
-	(
-	IMemoryPool *pmp,
-	DrgPul *pdrgpulDelete,
-	DrgPul *pdrgpulInsert,
-	ULONG ulAction,
-	ULONG ulCtid,
-	ULONG ulSegmentId,
-	BOOL fPreserveOids,
-	ULONG ulTupleOid
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdrgpulDelete(pdrgpulDelete),
-	m_pdrgpulInsert(pdrgpulInsert),
-	m_ulAction(ulAction),
-	m_ulCtid(ulCtid),
-	m_ulSegmentId(ulSegmentId),
-	m_fPreserveOids(fPreserveOids),
-	m_ulTupleOid(ulTupleOid)
+CDXLPhysicalSplit::CDXLPhysicalSplit(IMemoryPool *pmp, DrgPul *pdrgpulDelete,
+									 DrgPul *pdrgpulInsert, ULONG ulAction,
+									 ULONG ulCtid, ULONG ulSegmentId,
+									 BOOL fPreserveOids, ULONG ulTupleOid)
+	: CDXLPhysical(pmp),
+	  m_pdrgpulDelete(pdrgpulDelete),
+	  m_pdrgpulInsert(pdrgpulInsert),
+	  m_ulAction(ulAction),
+	  m_ulCtid(ulCtid),
+	  m_ulSegmentId(ulSegmentId),
+	  m_fPreserveOids(fPreserveOids),
+	  m_ulTupleOid(ulTupleOid)
 {
 	GPOS_ASSERT(NULL != pdrgpulDelete);
 	GPOS_ASSERT(NULL != pdrgpulInsert);
@@ -102,35 +94,40 @@ CDXLPhysicalSplit::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalSplit::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalSplit::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
-	CWStringDynamic *pstrColsDel = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDelete);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDeleteCols), pstrColsDel);
+	CWStringDynamic *pstrColsDel =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDelete);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDeleteCols),
+						  pstrColsDel);
 	GPOS_DELETE(pstrColsDel);
 
-	CWStringDynamic *pstrColsIns = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulInsert);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInsertCols), pstrColsIns);
+	CWStringDynamic *pstrColsIns =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulInsert);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInsertCols),
+						  pstrColsIns);
 	GPOS_DELETE(pstrColsIns);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenActionColId), m_ulAction);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenActionColId),
+						  m_ulAction);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCtidColId), m_ulCtid);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId), m_ulSegmentId);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId),
+						  m_ulSegmentId);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenUpdatePreservesOids), m_fPreserveOids);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenUpdatePreservesOids),
+						  m_fPreserveOids);
 
 	if (m_fPreserveOids)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTupleOidColId), m_ulTupleOid);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTupleOidColId),
+							  m_ulTupleOid);
 	}
-	
+
 	pdxln->SerializePropertiesToDXL(pxmlser);
 
 	// serialize project list
@@ -139,7 +136,8 @@ CDXLPhysicalSplit::SerializeToDXL
 	// serialize physical child
 	(*pdxln)[1]->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -152,12 +150,8 @@ CDXLPhysicalSplit::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalSplit::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalSplit::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(2 == pdxln->UlArity());
 	CDXLNode *pdxlnChild = (*pdxln)[1];
@@ -169,7 +163,7 @@ CDXLPhysicalSplit::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

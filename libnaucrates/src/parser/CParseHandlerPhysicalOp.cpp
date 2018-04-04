@@ -26,14 +26,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerPhysicalOp::CParseHandlerPhysicalOp
-	(
-	IMemoryPool *pmp, 
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerOp(pmp, pphm, pphRoot)
+CParseHandlerPhysicalOp::CParseHandlerPhysicalOp(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -61,22 +57,20 @@ CParseHandlerPhysicalOp::~CParseHandlerPhysicalOp()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalOp::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerPhysicalOp::StartElement(const XMLCh *const xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const xmlszQname,
+									  const Attributes &attrs)
 {
 	// instantiate the parse handler
-	CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+	CParseHandlerBase *pph =
+		CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
 
 	GPOS_ASSERT(NULL != pph);
 
 	// activate the parse handler
 	m_pphm->ReplaceHandler(pph, m_pphRoot);
-		
+
 	// pass the startElement message for the specialized parse handler to process
 	pph->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 }
@@ -92,12 +86,10 @@ CParseHandlerPhysicalOp::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalOp::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const, // xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerPhysicalOp::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const,  // xmlszLocalname,
+									const XMLCh *const   // xmlszQname
+)
 {
 	GPOS_ASSERT(!"Invalid call of endElement inside CParseHandlerPhysicalOp");
 }
@@ -105,4 +97,3 @@ CParseHandlerPhysicalOp::EndElement
 
 
 // EOF
-

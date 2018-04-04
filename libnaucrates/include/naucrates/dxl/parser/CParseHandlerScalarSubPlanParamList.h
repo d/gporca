@@ -6,7 +6,7 @@
 //		CParseHandlerScalarSubPlanParamList.h
 //
 //	@doc:
-//		
+//
 //		SAX parse handler class for parsing SubPlan ParamList
 //---------------------------------------------------------------------------
 
@@ -18,69 +18,65 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarSubPlanParamList
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar SubPlan ParamList
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarSubPlanParamList : public CParseHandlerScalarOp
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarSubPlanParamList
+//
+//	@doc:
+//		Parse handler for parsing a scalar SubPlan ParamList
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarSubPlanParamList : public CParseHandlerScalarOp
+{
+private:
+	BOOL m_fParamList;
+
+	// array of outer column references
+	DrgPdxlcr *m_pdrgdxlcr;
+
+	// private copy ctor
+	CParseHandlerScalarSubPlanParamList(
+		const CParseHandlerScalarSubPlanParamList &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerScalarSubPlanParamList(IMemoryPool *pmp,
+										CParseHandlerManager *pphm,
+										CParseHandlerBase *pphRoot);
+
+	// dtor
+	virtual ~CParseHandlerScalarSubPlanParamList();
+
+	// return param column references
+	DrgPdxlcr *
+	Pdrgdxlcr() const
 	{
-		private:
-	
-			BOOL m_fParamList;
+		return m_pdrgdxlcr;
+	}
+};
 
-			// array of outer column references
-			DrgPdxlcr *m_pdrgdxlcr;
-
-			// private copy ctor
-			CParseHandlerScalarSubPlanParamList(const CParseHandlerScalarSubPlanParamList &);
-	
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
-	
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
-	
-		public:
-			// ctor
-			CParseHandlerScalarSubPlanParamList
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-
-			// dtor
-			virtual
-			~CParseHandlerScalarSubPlanParamList();
-
-			// return param column references
-			DrgPdxlcr *Pdrgdxlcr()
-			const
-			{
-				return m_pdrgdxlcr;
-			}
-	};
-
-}
-#endif // GPDXL_CParseHandlerScalarSubPlanParamList_H
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerScalarSubPlanParamList_H
 
 //EOF

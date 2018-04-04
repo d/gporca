@@ -18,89 +18,82 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalInnerCorrelatedApply
+//
+//	@doc:
+//		Logical Apply operator used in scalar subquery transformations
+//
+//---------------------------------------------------------------------------
+class CLogicalInnerCorrelatedApply : public CLogicalInnerApply
+{
+private:
+	// private copy ctor
+	CLogicalInnerCorrelatedApply(const CLogicalInnerCorrelatedApply &);
 
+public:
+	// ctor
+	CLogicalInnerCorrelatedApply(IMemoryPool *pmp, DrgPcr *pdrgpcrInner,
+								 EOperatorId eopidOriginSubq);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalInnerCorrelatedApply
-	//
-	//	@doc:
-	//		Logical Apply operator used in scalar subquery transformations
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalInnerCorrelatedApply : public CLogicalInnerApply
+	// ctor for patterns
+	explicit CLogicalInnerCorrelatedApply(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CLogicalInnerCorrelatedApply()
 	{
+	}
 
-		private:
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopLogicalInnerCorrelatedApply;
+	}
 
-			// private copy ctor
-			CLogicalInnerCorrelatedApply(const CLogicalInnerCorrelatedApply &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalInnerCorrelatedApply";
+	}
 
-		public:
+	// applicable transformations
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// ctor
-			CLogicalInnerCorrelatedApply(IMemoryPool *pmp,  DrgPcr *pdrgpcrInner, EOperatorId eopidOriginSubq);
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// ctor for patterns
-			explicit
-			CLogicalInnerCorrelatedApply(IMemoryPool *pmp);
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// dtor
-			virtual
-			~CLogicalInnerCorrelatedApply()
-			{}
+	// return true if operator is a correlated apply
+	virtual BOOL
+	FCorrelated() const
+	{
+		return true;
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalInnerCorrelatedApply;
-			}
+	// conversion function
+	static CLogicalInnerCorrelatedApply *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalInnerCorrelatedApply == pop->Eopid());
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalInnerCorrelatedApply";
-			}
+		return dynamic_cast<CLogicalInnerCorrelatedApply *>(pop);
+	}
 
-			// applicable transformations
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+};  // class CLogicalInnerCorrelatedApply
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
-
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
-
-			// return true if operator is a correlated apply
-			virtual
-			BOOL FCorrelated() const
-			{
-				return true;
-			}
-
-			// conversion function
-			static
-			CLogicalInnerCorrelatedApply *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalInnerCorrelatedApply == pop->Eopid());
-
-				return dynamic_cast<CLogicalInnerCorrelatedApply*>(pop);
-			}
-
-	}; // class CLogicalInnerCorrelatedApply
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CLogicalInnerCorrelatedApply_H
+#endif  // !GPOPT_CLogicalInnerCorrelatedApply_H
 
 // EOF

@@ -29,358 +29,327 @@
 
 namespace gpopt
 {
-	// fwd declarations
-	class CExpressionHandle;
+// fwd declarations
+class CExpressionHandle;
 
-	using namespace gpos;
-	using namespace gpmd;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpmd;
+using namespace gpnaucrates;
 
-	// dynamic array of cost model params
-	typedef CDynamicPtrArray<ICostModelParams::SCostParam, CleanupDelete> DrgPcp;
+// dynamic array of cost model params
+typedef CDynamicPtrArray<ICostModelParams::SCostParam, CleanupDelete> DrgPcp;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		ICostModel
+//
+//	@doc:
+//		Interface for the underlying cost model
+//
+//---------------------------------------------------------------------------
+class ICostModel : public CRefCount
+{
+public:
+	enum ECostModelType
+	{
+		EcmtGPDBLegacy = 0,
+		EcmtGPDBCalibrated = 1,
+		EcmtSentinel = 2
+	};
 
 	//---------------------------------------------------------------------------
 	//	@class:
-	//		ICostModel
+	//		SCostingStas
 	//
 	//	@doc:
-	//		Interface for the underlying cost model
+	//		Stast information used during cost computation
 	//
 	//---------------------------------------------------------------------------
-	class ICostModel : public CRefCount
+	class CCostingStats : public CRefCount
 	{
-		public:
+	private:
+		// stats of the root
+		IStatistics *m_pstats;
 
-			enum
-			ECostModelType
+	public:
+		// ctor
+		CCostingStats(IStatistics *pstats) : m_pstats(pstats)
+		{
+			GPOS_ASSERT(NULL != pstats);
+		}
+
+		// dtor
+		~CCostingStats()
+		{
+			m_pstats->Release();
+		}
+
+		// the risk of errors in cardinality estimation
+		ULONG
+		UlStatsEstimationRisk() const
+		{
+			return m_pstats->UlStatsEstimationRisk();
+		}
+
+		// look up the number of distinct values of a particular column
+		CDouble
+		DNDV(const CColRef *pcr)
+		{
+			return m_pstats->DNDV(pcr);
+		}
+	};  // class CCostingStats
+
+	//---------------------------------------------------------------------------
+	//	@class:
+	//		SCostingInfo
+	//
+	//	@doc:
+	//		Information used during cost computation
+	//
+	//---------------------------------------------------------------------------
+	struct SCostingInfo
+	{
+	private:
+		// number of children excluding scalar children
+		ULONG m_ulChildren;
+
+		// stats of the root
+		CCostingStats *m_pcstats;
+
+		// row estimate of root
+		DOUBLE m_dRows;
+
+		// width estimate of root
+		DOUBLE m_dWidth;
+
+		// number of rebinds of root
+		DOUBLE m_dRebinds;
+
+		// row estimates of child operators
+		DOUBLE *m_pdRowsChildren;
+
+		// width estimates of child operators
+		DOUBLE *m_pdWidthChildren;
+
+		// number of rebinds of child operators
+		DOUBLE *m_pdRebindsChildren;
+
+		// computed cost of child operators
+		DOUBLE *m_pdCostChildren;
+
+	public:
+		// ctor
+		SCostingInfo(ULONG ulChildren, CCostingStats *pcstats, DOUBLE dRows,
+					 DOUBLE dWidth, DOUBLE dRebinds, DOUBLE *pdRowsChildren,
+					 DOUBLE *pdWidthChildren, DOUBLE *pdRebindsChildren,
+					 DOUBLE *pdCostChildren)
+			: m_ulChildren(ulChildren),
+			  m_pcstats(pcstats),
+			  m_dRows(dRows),
+			  m_dWidth(dWidth),
+			  m_dRebinds(dRebinds),
+			  m_pdRowsChildren(pdRowsChildren),
+			  m_pdWidthChildren(pdWidthChildren),
+			  m_pdRebindsChildren(pdRebindsChildren),
+			  m_pdCostChildren(pdCostChildren)
+		{
+			GPOS_ASSERT(NULL != pcstats);
+		};
+
+		// ctor
+		SCostingInfo(IMemoryPool *pmp, ULONG ulChildren, CCostingStats *pcstats)
+			: m_ulChildren(ulChildren),
+			  m_pcstats(pcstats),
+			  m_dRows(0),
+			  m_dWidth(0),
+			  m_dRebinds(GPOPT_DEFAULT_REBINDS),
+			  m_pdRowsChildren(NULL),
+			  m_pdWidthChildren(NULL),
+			  m_pdRebindsChildren(NULL),
+			  m_pdCostChildren(NULL)
+		{
+			GPOS_ASSERT(NULL != pcstats);
+			if (0 < ulChildren)
 			{
-				EcmtGPDBLegacy = 0,
-				EcmtGPDBCalibrated = 1,
-				EcmtSentinel = 2
-			};
-			
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		SCostingStas
-			//
-			//	@doc:
-			//		Stast information used during cost computation
-			//
-			//---------------------------------------------------------------------------
-			class CCostingStats : public CRefCount
-			{
-				private:
-					// stats of the root
-					IStatistics *m_pstats;
+				m_pdRowsChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
+				m_pdWidthChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
+				m_pdRebindsChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
+				m_pdCostChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
+			}
+		}
 
-				public:
-					// ctor
-					CCostingStats
-						(
-						IStatistics *pstats
-						)
-						:
-						m_pstats(pstats)
-					{
-						GPOS_ASSERT(NULL != pstats);
-					}
+		// dtor
+		~SCostingInfo()
+		{
+			GPOS_DELETE_ARRAY(m_pdRowsChildren);
+			GPOS_DELETE_ARRAY(m_pdWidthChildren);
+			GPOS_DELETE_ARRAY(m_pdRebindsChildren);
+			GPOS_DELETE_ARRAY(m_pdCostChildren);
+			m_pcstats->Release();
+		}
 
-					// dtor
-					~CCostingStats()
-					{
-						m_pstats->Release();
-					}
+		// children accessor
+		ULONG
+		UlChildren() const
+		{
+			return m_ulChildren;
+		}
 
-					// the risk of errors in cardinality estimation
-					ULONG UlStatsEstimationRisk() const
-					{
-						return m_pstats->UlStatsEstimationRisk();
-					}
+		// rows accessor
+		DOUBLE
+		DRows() const
+		{
+			return m_dRows;
+		}
 
-					// look up the number of distinct values of a particular column
-					CDouble DNDV(const CColRef *pcr)
-					{
-						return m_pstats->DNDV(pcr);
-					}
-			};  // class CCostingStats
+		// rows setter
+		void
+		SetRows(DOUBLE dRows)
+		{
+			GPOS_ASSERT(0 <= dRows);
 
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		SCostingInfo
-			//
-			//	@doc:
-			//		Information used during cost computation
-			//
-			//---------------------------------------------------------------------------
-			struct SCostingInfo
-			{
+			m_dRows = dRows;
+		}
 
-				private:
+		// width accessor
+		DOUBLE
+		DWidth() const
+		{
+			return m_dWidth;
+		}
 
-					// number of children excluding scalar children
-					ULONG m_ulChildren;
+		// width setter
+		void
+		SetWidth(DOUBLE dWidth)
+		{
+			GPOS_ASSERT(0 <= dWidth);
 
-					// stats of the root
-					CCostingStats *m_pcstats;
+			m_dWidth = dWidth;
+		}
 
-					// row estimate of root
-					DOUBLE m_dRows;
+		// rebinds accessor
+		DOUBLE
+		DRebinds() const
+		{
+			return m_dRebinds;
+		}
 
-					// width estimate of root
-					DOUBLE m_dWidth;
+		// rebinds setter
+		void
+		SetRebinds(DOUBLE dRebinds)
+		{
+			GPOS_ASSERT(GPOPT_DEFAULT_REBINDS <= dRebinds);
 
-					// number of rebinds of root
-					DOUBLE m_dRebinds;
+			m_dRebinds = dRebinds;
+		}
 
-					// row estimates of child operators
-					DOUBLE *m_pdRowsChildren;
+		// children rows accessor
+		DOUBLE *
+		PdRows() const
+		{
+			return m_pdRowsChildren;
+		}
 
-					// width estimates of child operators
-					DOUBLE *m_pdWidthChildren;
+		// child rows setter
+		void
+		SetChildRows(ULONG ulPos, DOUBLE dRowsChild)
+		{
+			GPOS_ASSERT(0 <= dRowsChild);
+			GPOS_ASSERT(ulPos < m_ulChildren);
 
-					 // number of rebinds of child operators
-					DOUBLE *m_pdRebindsChildren;
+			m_pdRowsChildren[ulPos] = dRowsChild;
+		}
 
-					// computed cost of child operators
-					DOUBLE *m_pdCostChildren;
+		// children width accessor
+		DOUBLE *
+		PdWidth() const
+		{
+			return m_pdWidthChildren;
+		}
 
-				public:
+		// child width setter
+		void
+		SetChildWidth(ULONG ulPos, DOUBLE dWidthChild)
+		{
+			GPOS_ASSERT(0 <= dWidthChild);
+			GPOS_ASSERT(ulPos < m_ulChildren);
 
-					// ctor
-					SCostingInfo
-						(
-						ULONG ulChildren,
-						CCostingStats *pcstats,
-						DOUBLE dRows,
-						DOUBLE dWidth,
-						DOUBLE dRebinds,
-						DOUBLE *pdRowsChildren,
-						DOUBLE *pdWidthChildren,
-						DOUBLE *pdRebindsChildren,
-						DOUBLE *pdCostChildren
-						)
-						:
-						m_ulChildren(ulChildren),
-						m_pcstats(pcstats),
-						m_dRows(dRows),
-						m_dWidth(dWidth),
-						m_dRebinds(dRebinds),
-						m_pdRowsChildren(pdRowsChildren),
-						m_pdWidthChildren(pdWidthChildren),
-						m_pdRebindsChildren(pdRebindsChildren),
-						m_pdCostChildren(pdCostChildren)
-					{
-						GPOS_ASSERT(NULL != pcstats);
-					};
+			m_pdWidthChildren[ulPos] = dWidthChild;
+		}
 
-					// ctor
-					SCostingInfo
-						(
-						IMemoryPool *pmp,
-						ULONG ulChildren,
-						CCostingStats *pcstats
-						)
-						:
-						m_ulChildren(ulChildren),
-						m_pcstats(pcstats),
-						m_dRows(0),
-						m_dWidth(0),
-						m_dRebinds(GPOPT_DEFAULT_REBINDS),
-						m_pdRowsChildren(NULL),
-						m_pdWidthChildren(NULL),
-						m_pdRebindsChildren(NULL),
-						m_pdCostChildren(NULL)
-					{
-						GPOS_ASSERT(NULL != pcstats);
-						if (0 < ulChildren)
-						{
-							m_pdRowsChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
-							m_pdWidthChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
-							m_pdRebindsChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
-							m_pdCostChildren = GPOS_NEW_ARRAY(pmp, DOUBLE, ulChildren);
-						}
-					}
+		// children rebinds accessor
+		DOUBLE *
+		PdRebinds() const
+		{
+			return m_pdRebindsChildren;
+		}
 
-					// dtor
-					~SCostingInfo()
-					{
-						GPOS_DELETE_ARRAY(m_pdRowsChildren);
-						GPOS_DELETE_ARRAY(m_pdWidthChildren);
-						GPOS_DELETE_ARRAY(m_pdRebindsChildren);
-						GPOS_DELETE_ARRAY(m_pdCostChildren);
-						m_pcstats->Release();
-					}
+		// child rebinds setter
+		void
+		SetChildRebinds(ULONG ulPos, DOUBLE dRebindsChild)
+		{
+			GPOS_ASSERT(GPOPT_DEFAULT_REBINDS <= dRebindsChild);
+			GPOS_ASSERT(ulPos < m_ulChildren);
 
-					// children accessor
-					ULONG UlChildren() const
-					{
-						return m_ulChildren;
-					}
+			m_pdRebindsChildren[ulPos] = dRebindsChild;
+		}
 
-					// rows accessor
-					DOUBLE DRows() const
-					{
-						return m_dRows;
-					}
+		// children cost accessor
+		DOUBLE *
+		PdCost() const
+		{
+			return m_pdCostChildren;
+		}
 
-					// rows setter
-					void SetRows
-						(
-						DOUBLE dRows
-						)
-					{
-						GPOS_ASSERT(0 <= dRows);
+		// child cost setter
+		void
+		SetChildCost(ULONG ulPos, DOUBLE dCostChild)
+		{
+			GPOS_ASSERT(0 <= dCostChild);
+			GPOS_ASSERT(ulPos < m_ulChildren);
 
-						m_dRows = dRows;
-					}
+			m_pdCostChildren[ulPos] = dCostChild;
+		}
 
-					// width accessor
-					DOUBLE DWidth() const
-					{
-						return m_dWidth;
-					}
+		// return additional cost statistics
+		CCostingStats *
+		Pcstats() const
+		{
+			return m_pcstats;
+		}
 
-					// width setter
-					void SetWidth
-						(
-						DOUBLE dWidth
-						)
-					{
-						GPOS_ASSERT(0 <= dWidth);
+	};  // struct SCostingInfo
 
-						m_dWidth = dWidth;
-					}
+	// return number of hosts (nodes) that store data
+	virtual ULONG
+	UlHosts() const = 0;
 
-					// rebinds accessor
-					DOUBLE DRebinds() const
-					{
-						return m_dRebinds;
-					}
+	// return number of rows per host
+	virtual CDouble
+	DRowsPerHost(CDouble dRowsTotal) const = 0;
 
-					// rebinds setter
-					void SetRebinds
-						(
-						DOUBLE dRebinds
-						)
-					{
-						GPOS_ASSERT(GPOPT_DEFAULT_REBINDS <= dRebinds);
+	// return cost model parameters
+	virtual ICostModelParams *
+	Pcp() const = 0;
 
-						m_dRebinds = dRebinds;
-					}
+	// main driver for cost computation
+	virtual CCost
+	Cost(CExpressionHandle &exprhdl, const SCostingInfo *pci) const = 0;
 
-					// children rows accessor
-					DOUBLE *PdRows() const
-					{
-						return m_pdRowsChildren;
-					}
+	// cost model type
+	virtual ECostModelType
+	Ecmt() const = 0;
 
-					// child rows setter
-					void SetChildRows
-						(
-						ULONG ulPos,
-						DOUBLE dRowsChild
-						)
-					{
-						GPOS_ASSERT(0 <= dRowsChild);
-						GPOS_ASSERT(ulPos < m_ulChildren);
+	// set cost model params
+	void
+	SetParams(DrgPcp *pdrgpcp);
 
-						m_pdRowsChildren[ulPos] = dRowsChild;
-					}
+	// create a default cost model instance
+	static ICostModel *
+	PcmDefault(IMemoryPool *pmp);
+};
+}  // namespace gpopt
 
-					// children width accessor
-					DOUBLE *PdWidth() const
-					{
-						return m_pdWidthChildren;
-					}
-
-					// child width setter
-					void SetChildWidth
-						(
-						ULONG ulPos,
-						DOUBLE dWidthChild
-						)
-					{
-						GPOS_ASSERT(0 <= dWidthChild);
-						GPOS_ASSERT(ulPos < m_ulChildren);
-
-						m_pdWidthChildren[ulPos] = dWidthChild;
-					}
-
-					// children rebinds accessor
-					DOUBLE *PdRebinds() const
-					{
-						return m_pdRebindsChildren;
-					}
-
-					// child rebinds setter
-					void SetChildRebinds
-						(
-						ULONG ulPos,
-						DOUBLE dRebindsChild
-						)
-					{
-						GPOS_ASSERT(GPOPT_DEFAULT_REBINDS <= dRebindsChild);
-						GPOS_ASSERT(ulPos < m_ulChildren);
-
-						m_pdRebindsChildren[ulPos] = dRebindsChild;
-					}
-
-					// children cost accessor
-					DOUBLE *PdCost() const
-					{
-						return m_pdCostChildren;
-					}
-
-					// child cost setter
-					void SetChildCost
-						(
-						ULONG ulPos,
-						DOUBLE dCostChild
-						)
-					{
-						GPOS_ASSERT(0 <= dCostChild);
-						GPOS_ASSERT(ulPos < m_ulChildren);
-
-						m_pdCostChildren[ulPos] = dCostChild;
-					}
-
-					// return additional cost statistics
-					CCostingStats *Pcstats() const
-					{
-						return m_pcstats;
-					}
-
-			}; // struct SCostingInfo
-
-			// return number of hosts (nodes) that store data
-			virtual
-			ULONG UlHosts() const = 0;
-
-			// return number of rows per host
-			virtual
-			CDouble DRowsPerHost(CDouble dRowsTotal) const = 0;
-
-			// return cost model parameters
-			virtual
-			ICostModelParams *Pcp() const = 0;
-
-			// main driver for cost computation
-			virtual
-			CCost Cost(CExpressionHandle &exprhdl, const SCostingInfo *pci) const = 0;
-			
-			// cost model type
-			virtual
-			ECostModelType Ecmt() const = 0;
-			
-			// set cost model params
-			void SetParams(DrgPcp *pdrgpcp);
-
-			// create a default cost model instance
-			static
-			ICostModel *PcmDefault(IMemoryPool *pmp);
-	};
-}
-
-#endif // !GPOPT_ICostModel_H
+#endif  // !GPOPT_ICostModel_H
 
 // EOF

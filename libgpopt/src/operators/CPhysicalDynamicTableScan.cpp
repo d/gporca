@@ -34,23 +34,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalDynamicTableScan::CPhysicalDynamicTableScan
-	(
-	IMemoryPool *pmp,
-	BOOL fPartial,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc,
-	ULONG ulOriginOpId,
-	ULONG ulScanId,
-	DrgPcr *pdrgpcrOutput,
-	DrgDrgPcr *pdrgpdrgpcrParts,
-	ULONG ulSecondaryScanId,
-	CPartConstraint *ppartcnstr,
-	CPartConstraint *ppartcnstrRel
-	)
-	:
-	CPhysicalDynamicScan(pmp, fPartial, ptabdesc, ulOriginOpId, pnameAlias, ulScanId, pdrgpcrOutput, pdrgpdrgpcrParts, ulSecondaryScanId, ppartcnstr, ppartcnstrRel)
-{}
+CPhysicalDynamicTableScan::CPhysicalDynamicTableScan(
+	IMemoryPool *pmp, BOOL fPartial, const CName *pnameAlias,
+	CTableDescriptor *ptabdesc, ULONG ulOriginOpId, ULONG ulScanId,
+	DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrParts, ULONG ulSecondaryScanId,
+	CPartConstraint *ppartcnstr, CPartConstraint *ppartcnstrRel)
+	: CPhysicalDynamicScan(pmp, fPartial, ptabdesc, ulOriginOpId, pnameAlias,
+						   ulScanId, pdrgpcrOutput, pdrgpdrgpcrParts,
+						   ulSecondaryScanId, ppartcnstr, ppartcnstrRel)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -61,11 +54,7 @@ CPhysicalDynamicTableScan::CPhysicalDynamicTableScan
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalDynamicTableScan::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalDynamicTableScan::FMatch(COperator *pop) const
 {
 	return CUtils::FMatchDynamicScan(this, pop);
 }
@@ -79,18 +68,16 @@ CPhysicalDynamicTableScan::FMatch
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CPhysicalDynamicTableScan::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CReqdPropPlan *prpplan,
-	DrgPstat * // pdrgpstatCtxt
-	)
-	const
+CPhysicalDynamicTableScan::PstatsDerive(IMemoryPool *pmp,
+										CExpressionHandle &exprhdl,
+										CReqdPropPlan *prpplan,
+										DrgPstat *  // pdrgpstatCtxt
+										) const
 {
 	GPOS_ASSERT(NULL != prpplan);
 
-	return CStatisticsUtils::PstatsDynamicScan(pmp, exprhdl, UlScanId(), prpplan->Pepp()->PpfmDerived());
+	return CStatisticsUtils::PstatsDynamicScan(pmp, exprhdl, UlScanId(),
+											   prpplan->Pepp()->PpfmDerived());
 }
 
 // EOF

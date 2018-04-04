@@ -34,11 +34,9 @@
 GPOS_RESULT
 CDecorrelatorTest::EresUnittest()
 {
-
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CDecorrelatorTest::EresUnittest_Decorrelate),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -62,50 +60,48 @@ CDecorrelatorTest::EresUnittest_Decorrelate()
 	CMDProviderMemory *pmdp = CTestUtils::m_pmdpf;
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
-	
+
 	// test cases
-	typedef CExpression *(*Pfpexpr)(IMemoryPool*);
-	Pfpexpr rgpf[] =
-		{
-		CTestUtils::PexprLogicalGbAggCorrelated,
-		CTestUtils::PexprLogicalSelectCorrelated,
-		CTestUtils::PexprLogicalJoinCorrelated,
-		CTestUtils::PexprLogicalProjectGbAggCorrelated
-		};
+	typedef CExpression *(*Pfpexpr)(IMemoryPool *);
+	Pfpexpr rgpf[] = {CTestUtils::PexprLogicalGbAggCorrelated,
+					  CTestUtils::PexprLogicalSelectCorrelated,
+					  CTestUtils::PexprLogicalJoinCorrelated,
+					  CTestUtils::PexprLogicalProjectGbAggCorrelated};
 
 	for (ULONG ulCase = 0; ulCase < GPOS_ARRAY_SIZE(rgpf); ulCase++)
 	{
 		// install opt context in TLS
-		CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL,  /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
+		CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+						 CTestUtils::Pcm(pmp));
 
 		// generate expression
 		CExpression *pexpr = rgpf[ulCase](pmp);
 
 		CWStringDynamic str(pmp);
 		COstreamString oss(&str);
-		oss	<< std::endl << "INPUT:" << std::endl << *pexpr << std::endl;
+		oss << std::endl << "INPUT:" << std::endl << *pexpr << std::endl;
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 
 		CExpression *pexprResult = NULL;
 		DrgPexpr *pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 #ifdef GPOS_DEBUG
-		BOOL fSuccess = 
-#endif // GPOS_DEBUG
-		CDecorrelator::FProcess(pmp, pexpr, false /*fEqualityOnly*/, &pexprResult, pdrgpexpr);
+		BOOL fSuccess =
+#endif  // GPOS_DEBUG
+			CDecorrelator::FProcess(pmp, pexpr, false /*fEqualityOnly*/,
+									&pexprResult, pdrgpexpr);
 		GPOS_ASSERT(fSuccess);
-		
-		// convert residuals into one single conjunct
-		CExpression *pexprResidual = CPredicateUtils::PexprConjunction(pmp, pdrgpexpr);
 
-		oss	<< std::endl << "RESIDUAL RELATIONAL:" << std::endl << *pexprResult << std::endl;
-		oss	<< std::endl << "RESIDUAL SCALAR:" << std::endl << *pexprResidual << std::endl;
+		// convert residuals into one single conjunct
+		CExpression *pexprResidual =
+			CPredicateUtils::PexprConjunction(pmp, pdrgpexpr);
+
+		oss << std::endl
+			<< "RESIDUAL RELATIONAL:" << std::endl
+			<< *pexprResult << std::endl;
+		oss << std::endl
+			<< "RESIDUAL SCALAR:" << std::endl
+			<< *pexprResidual << std::endl;
 
 		GPOS_TRACE(str.Wsz());
 		str.Reset();

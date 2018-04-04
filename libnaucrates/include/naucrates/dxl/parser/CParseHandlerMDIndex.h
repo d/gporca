@@ -19,90 +19,84 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpmd;
+using namespace gpnaucrates;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerMDIndex
-	//
-	//	@doc:
-	//		Parse handler class for parsing an MD index
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerMDIndex : public CParseHandlerMetadataObject
-	{
-		private:
-		
-			// mdid of the index
-			IMDId *m_pmdid;
-			
-			// name of the index
-			CMDName *m_pmdname;
+XERCES_CPP_NAMESPACE_USE
 
-			// mdid of the indexed relation
-			IMDId *m_pmdidRel;
-			
-			// is the index clustered
-			BOOL m_fClustered;
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerMDIndex
+//
+//	@doc:
+//		Parse handler class for parsing an MD index
+//
+//---------------------------------------------------------------------------
+class CParseHandlerMDIndex : public CParseHandlerMetadataObject
+{
+private:
+	// mdid of the index
+	IMDId *m_pmdid;
 
-			// index type
-			IMDIndex::EmdindexType m_emdindt;
-			
-			// type id of index items
-			// for instance, for bitmap indexes, this is the type id of the bitmap
-			IMDId *m_pmdidItemType;
+	// name of the index
+	CMDName *m_pmdname;
 
-			// index keys
-			DrgPul *m_pdrgpulKeyCols;
+	// mdid of the indexed relation
+	IMDId *m_pmdidRel;
 
-			// included columns
-			DrgPul *m_pdrgpulIncludedCols;
-			
-			// index part constraint
-			CMDPartConstraintGPDB *m_ppartcnstr;
-			
-			// levels that include default partitions
-			DrgPul *m_pdrgpulDefaultParts;
-			
-			// is constraint unbounded
-			BOOL m_fPartConstraintUnbounded; 
-			
-			// private copy ctor
-			CParseHandlerMDIndex(const CParseHandlerMDIndex&);
+	// is the index clustered
+	BOOL m_fClustered;
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
- 				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// index type
+	IMDIndex::EmdindexType m_emdindt;
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+	// type id of index items
+	// for instance, for bitmap indexes, this is the type id of the bitmap
+	IMDId *m_pmdidItemType;
 
-		public:
+	// index keys
+	DrgPul *m_pdrgpulKeyCols;
 
-			// ctor
-			CParseHandlerMDIndex
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+	// included columns
+	DrgPul *m_pdrgpulIncludedCols;
 
-#endif // !GPDXL_CParseHandlerMDIndex_H
+	// index part constraint
+	CMDPartConstraintGPDB *m_ppartcnstr;
+
+	// levels that include default partitions
+	DrgPul *m_pdrgpulDefaultParts;
+
+	// is constraint unbounded
+	BOOL m_fPartConstraintUnbounded;
+
+	// private copy ctor
+	CParseHandlerMDIndex(const CParseHandlerMDIndex &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerMDIndex(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						 CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerMDIndex_H
 
 // EOF

@@ -23,58 +23,58 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformInnerJoinWithInnerSelect2DynamicIndexGetApply
-	//
-	//	@doc:
-	//		Transform Inner Join with Select over Dynamic Get on the inner branch into IndexGet Apply
-	//
-	//---------------------------------------------------------------------------
-	class CXformInnerJoinWithInnerSelect2DynamicIndexGetApply : public CXformJoin2IndexApplyBase
-		<CLogicalInnerJoin, CLogicalIndexApply, CLogicalDynamicGet,
-		true /*fWithSelect*/, false /*fPartial*/, IMDIndex::EmdindBtree>
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformInnerJoinWithInnerSelect2DynamicIndexGetApply
+//
+//	@doc:
+//		Transform Inner Join with Select over Dynamic Get on the inner branch into IndexGet Apply
+//
+//---------------------------------------------------------------------------
+class CXformInnerJoinWithInnerSelect2DynamicIndexGetApply
+	: public CXformJoin2IndexApplyBase<
+		  CLogicalInnerJoin, CLogicalIndexApply, CLogicalDynamicGet,
+		  true /*fWithSelect*/, false /*fPartial*/, IMDIndex::EmdindBtree>
+{
+private:
+	// private copy ctor
+	CXformInnerJoinWithInnerSelect2DynamicIndexGetApply(
+		const CXformInnerJoinWithInnerSelect2DynamicIndexGetApply &);
+
+public:
+	// ctor
+	explicit CXformInnerJoinWithInnerSelect2DynamicIndexGetApply(
+		IMemoryPool *pmp)
+		: CXformJoin2IndexApplyBase<CLogicalInnerJoin, CLogicalIndexApply,
+									CLogicalDynamicGet, true /*fWithSelect*/,
+									false /*fPartial*/, IMDIndex::EmdindBtree>(
+			  pmp)
 	{
-		private:
-			// private copy ctor
-			CXformInnerJoinWithInnerSelect2DynamicIndexGetApply
-				(
-				const CXformInnerJoinWithInnerSelect2DynamicIndexGetApply &
-				);
+	}
 
-		public:
-			// ctor
-			explicit
-			CXformInnerJoinWithInnerSelect2DynamicIndexGetApply(IMemoryPool *pmp)
-				: CXformJoin2IndexApplyBase
-				 <CLogicalInnerJoin, CLogicalIndexApply, CLogicalDynamicGet,
-				 true /*fWithSelect*/, false /*fPartial*/, IMDIndex::EmdindBtree>
-				(pmp)
-			{}
+	// dtor
+	virtual ~CXformInnerJoinWithInnerSelect2DynamicIndexGetApply()
+	{
+	}
 
-			// dtor
-			virtual
-			~CXformInnerJoinWithInnerSelect2DynamicIndexGetApply()
-			{}
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfInnerJoinWithInnerSelect2DynamicIndexGetApply;
+	}
 
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfInnerJoinWithInnerSelect2DynamicIndexGetApply;
-			}
-
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformInnerJoinWithInnerSelect2DynamicIndexGetApply";
-			}
-	};
-}
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformInnerJoinWithInnerSelect2DynamicIndexGetApply";
+	}
+};
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CXformInnerJoinWithInnerSelect2DynamicIndexGetApply_H
+#endif  // !GPOPT_CXformInnerJoinWithInnerSelect2DynamicIndexGetApply_H
 
 // EOF

@@ -17,81 +17,64 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTaskId
-	//
-	//	@doc:
-	//		Identification class; uses a serial number.
-	//
-	//---------------------------------------------------------------------------
-	class CTaskId
+//---------------------------------------------------------------------------
+//	@class:
+//		CTaskId
+//
+//	@doc:
+//		Identification class; uses a serial number.
+//
+//---------------------------------------------------------------------------
+class CTaskId
+{
+private:
+	// task id
+	ULONG_PTR m_ulptid;
+
+	// atomic counter
+	static CAtomicULONG_PTR m_aupl;
+
+public:
+	// ctor
+	CTaskId() : m_ulptid(m_aupl.TIncr())
 	{
+	}
 
-		private:
+	// simple comparison
+	BOOL
+	FEqual(const CTaskId &tid) const
+	{
+		return m_ulptid == tid.m_ulptid;
+	}
 
-			// task id
-			ULONG_PTR m_ulptid;
+	// comparison operator
+	inline BOOL
+	operator==(const CTaskId &tid) const
+	{
+		return this->FEqual(tid);
+	}
 
-			// atomic counter
-			static CAtomicULONG_PTR m_aupl;
+	// comparison function; used in hashtables
+	static BOOL
+	FEqual(const CTaskId &tid, const CTaskId &tidOther)
+	{
+		return tid == tidOther;
+	}
 
-		public:
+	// primitive hash function
+	static ULONG
+	UlHash(const CTaskId &tid)
+	{
+		return gpos::UlHash<ULONG_PTR>(&tid.m_ulptid);
+	}
 
-			// ctor
-			CTaskId()
-				:
-				m_ulptid(m_aupl.TIncr())
-			{}
+	// invalid id
+	static const CTaskId m_tidInvalid;
 
-			// simple comparison
-			BOOL FEqual
-				(
-				const CTaskId &tid
-				)
-				const
-			{
-				return m_ulptid == tid.m_ulptid;
-			}
+};  // class CTaskId
 
-			// comparison operator
-			inline
-			BOOL operator ==
-				(
-				const CTaskId &tid
-				)
-				const
-			{
-				return this->FEqual(tid);
-			}
+}  // namespace gpos
 
-			// comparison function; used in hashtables
-			static
-			BOOL FEqual
-				(
-				const CTaskId &tid,
-				const CTaskId &tidOther
-				)
-			{
-				return tid == tidOther;
-			}
-
-			// primitive hash function
-			static
-			ULONG UlHash(const CTaskId &tid)
-			{
-				return gpos::UlHash<ULONG_PTR>(&tid.m_ulptid);
-			}
-
-			// invalid id
-			static
-			const CTaskId m_tidInvalid;
-
-	}; // class CTaskId
-
-}
-
-#endif // !GPOS_CTaskId_H
+#endif  // !GPOS_CTaskId_H
 
 // EOF
-

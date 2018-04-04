@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL logical select operator
-//		
+//
 //---------------------------------------------------------------------------
 
 
@@ -27,11 +27,7 @@ using namespace gpdxl;
 //		Construct a DXL Logical select node
 //
 //---------------------------------------------------------------------------
-CDXLLogicalSelect::CDXLLogicalSelect
-	(
-	IMemoryPool *pmp
-	)
-	:CDXLLogical(pmp)
+CDXLLogicalSelect::CDXLLogicalSelect(IMemoryPool *pmp) : CDXLLogical(pmp)
 {
 }
 
@@ -72,21 +68,19 @@ CDXLLogicalSelect::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalSelect::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalSelect::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -99,26 +93,23 @@ CDXLLogicalSelect::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalSelect::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLLogicalSelect::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(2 == pdxln->UlArity());
 
 	CDXLNode *pdxlnCond = (*pdxln)[0];
 	CDXLNode *pdxlnChild = (*pdxln)[1];
 
-	GPOS_ASSERT(EdxloptypeScalar ==  pdxlnCond->Pdxlop()->Edxloperatortype());
+	GPOS_ASSERT(EdxloptypeScalar == pdxlnCond->Pdxlop()->Edxloperatortype());
 	GPOS_ASSERT(EdxloptypeLogical == pdxlnChild->Pdxlop()->Edxloperatortype());
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnCond->Pdxlop()->AssertValid(pdxlnCond, fValidateChildren);
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

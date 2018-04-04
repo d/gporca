@@ -7,14 +7,14 @@
 //		CMemoryPool.cpp
 //
 //	@doc:
-//		Implementation of abstract interface; 
+//		Implementation of abstract interface;
 //		implements helper functions for extraction of allocation
 //		header from memory block;
 //---------------------------------------------------------------------------
 
 #ifdef GPOS_DEBUG
 #include "gpos/error/CFSimulator.h"
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 #include "gpos/memory/CMemoryPool.h"
 #include "gpos/memory/CMemoryPoolManager.h"
 #include "gpos/memory/CMemoryVisitorPrint.h"
@@ -36,25 +36,20 @@ const ULONG_PTR CMemoryPool::m_ulpInvalid = ULONG_PTR_MAX;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMemoryPool::CMemoryPool
-	(
-	IMemoryPool *pmpUnderlying,
-	BOOL fOwnsUnderlying,
-	BOOL fThreadSafe
-	)
-	:
-	m_ulRef(0),
-	m_ulpKey(0),
-	m_pmpUnderlying(pmpUnderlying),
-	m_fOwnsUnderlying(fOwnsUnderlying),
-	m_fThreadSafe(fThreadSafe)
+CMemoryPool::CMemoryPool(IMemoryPool *pmpUnderlying, BOOL fOwnsUnderlying,
+						 BOOL fThreadSafe)
+	: m_ulRef(0),
+	  m_ulpKey(0),
+	  m_pmpUnderlying(pmpUnderlying),
+	  m_fOwnsUnderlying(fOwnsUnderlying),
+	  m_fThreadSafe(fThreadSafe)
 {
 	GPOS_ASSERT_IMP(fOwnsUnderlying, NULL != pmpUnderlying);
 
 	m_ulpKey = reinterpret_cast<ULONG_PTR>(this);
 #ifdef GPOS_DEBUG
 	m_sd.BackTrace();
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
 
@@ -84,20 +79,15 @@ CMemoryPool::~CMemoryPool()
 //
 //---------------------------------------------------------------------------
 void *
-CMemoryPool::PvFinalizeAlloc
-	(
-	void *pv,
-	ULONG ulAlloc,
-	EAllocationType eat
-	)
+CMemoryPool::PvFinalizeAlloc(void *pv, ULONG ulAlloc, EAllocationType eat)
 {
 	GPOS_ASSERT(NULL != pv);
 
-	SAllocHeader *pah = static_cast<SAllocHeader*>(pv);
+	SAllocHeader *pah = static_cast<SAllocHeader *>(pv);
 	pah->m_pmp = this;
 	pah->m_ulAlloc = ulAlloc;
 
-	BYTE *pbAllocType = reinterpret_cast<BYTE*>(pah + 1) + ulAlloc;
+	BYTE *pbAllocType = reinterpret_cast<BYTE *>(pah + 1) + ulAlloc;
 	*pbAllocType = eat;
 
 	return pah + 1;
@@ -113,31 +103,23 @@ CMemoryPool::PvFinalizeAlloc
 //
 //---------------------------------------------------------------------------
 void
-CMemoryPool::FreeAlloc
-	(
-	void *pv,
-	EAllocationType eat
-	)
+CMemoryPool::FreeAlloc(void *pv, EAllocationType eat)
 {
 	GPOS_ASSERT(pv != NULL);
 
-	SAllocHeader *pah = static_cast<SAllocHeader*>(pv) - 1;
-	BYTE *pbAllocType = static_cast<BYTE*>(pv) + pah->m_ulAlloc;
+	SAllocHeader *pah = static_cast<SAllocHeader *>(pv) - 1;
+	BYTE *pbAllocType = static_cast<BYTE *>(pv) + pah->m_ulAlloc;
 	GPOS_RTL_ASSERT(*pbAllocType == eat);
 	pah->m_pmp->Free(pah);
-
 }
 
 
 ULONG
-CMemoryPool::UlSizeOfAlloc
-	(
-	const void *pv
-	)
+CMemoryPool::UlSizeOfAlloc(const void *pv)
 {
 	GPOS_ASSERT(NULL != pv);
 
-	const SAllocHeader *pah = static_cast<const SAllocHeader*>(pv) - 1;
+	const SAllocHeader *pah = static_cast<const SAllocHeader *>(pv) - 1;
 	return pah->m_ulAlloc;
 }
 
@@ -152,10 +134,7 @@ CMemoryPool::UlSizeOfAlloc
 //
 //---------------------------------------------------------------------------
 IOstream &
-CMemoryPool::OsPrint
-	(
-	IOstream &os
-	)
+CMemoryPool::OsPrint(IOstream &os)
 {
 	os << "Memory pool: " << this;
 
@@ -191,34 +170,25 @@ CMemoryPool::OsPrint
 //
 //---------------------------------------------------------------------------
 void
-CMemoryPool::AssertEmpty
-	(
-	IOstream &os
-	)
+CMemoryPool::AssertEmpty(IOstream &os)
 {
 	if (FSupportsLiveObjectWalk() && NULL != ITask::PtskSelf() &&
-	    !GPOS_FTRACE(EtraceDisablePrintMemoryLeak))
+		!GPOS_FTRACE(EtraceDisablePrintMemoryLeak))
 	{
 		CMemoryVisitorPrint movpi(os);
 		WalkLiveObjects(&movpi);
 
 		if (0 != movpi.UllVisits())
 		{
-			os
-				<< "Unfreed memory in memory pool "
-				<< (void*)this
-				<< ": "
-				<< movpi.UllVisits()
-				<< " objects leaked"
-				<< std::endl;
+			os << "Unfreed memory in memory pool " << (void *) this << ": "
+			   << movpi.UllVisits() << " objects leaked" << std::endl;
 
 			GPOS_ASSERT(!"leak detected");
 		}
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF
-

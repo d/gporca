@@ -30,10 +30,9 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CReqdPropRelational::CReqdPropRelational()
-	:
-	m_pcrsStat(NULL),
-	m_pexprPartPred(NULL)
-{}
+	: m_pcrsStat(NULL), m_pexprPartPred(NULL)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -43,13 +42,8 @@ CReqdPropRelational::CReqdPropRelational()
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CReqdPropRelational::CReqdPropRelational
-	(
-	CColRefSet *pcrs
-	)
-	:
-	m_pcrsStat(pcrs),
-	m_pexprPartPred(NULL)
+CReqdPropRelational::CReqdPropRelational(CColRefSet *pcrs)
+	: m_pcrsStat(pcrs), m_pexprPartPred(NULL)
 {
 	GPOS_ASSERT(NULL != pcrs);
 }
@@ -62,14 +56,9 @@ CReqdPropRelational::CReqdPropRelational
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CReqdPropRelational::CReqdPropRelational
-	(
-	CColRefSet *pcrs,
-	CExpression *pexprPartPred
-	)
-	:
-	m_pcrsStat(pcrs),
-	m_pexprPartPred(pexprPartPred)
+CReqdPropRelational::CReqdPropRelational(CColRefSet *pcrs,
+										 CExpression *pexprPartPred)
+	: m_pcrsStat(pcrs), m_pexprPartPred(pexprPartPred)
 {
 	GPOS_ASSERT(NULL != pcrs);
 	GPOS_ASSERT_IMP(NULL != pexprPartPred, pexprPartPred->Pop()->FScalar());
@@ -98,23 +87,21 @@ CReqdPropRelational::~CReqdPropRelational()
 //
 //---------------------------------------------------------------------------
 void
-CReqdPropRelational::Compute
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CReqdProp *prpInput,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CReqdPropRelational::Compute(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CReqdProp *prpInput, ULONG ulChildIndex,
+							 DrgPdp *,  // pdrgpdpCtxt
+							 ULONG		// ulOptReq
+)
 {
 	GPOS_CHECK_ABORT;
 
-	CReqdPropRelational *prprelInput =  CReqdPropRelational::Prprel(prpInput);
+	CReqdPropRelational *prprelInput = CReqdPropRelational::Prprel(prpInput);
 	CLogical *popLogical = CLogical::PopConvert(exprhdl.Pop());
 
-	m_pcrsStat = popLogical->PcrsStat(pmp, exprhdl, prprelInput->PcrsStat(), ulChildIndex);
-	m_pexprPartPred = popLogical->PexprPartPred(pmp, exprhdl, prprelInput->PexprPartPred(), ulChildIndex);
+	m_pcrsStat = popLogical->PcrsStat(pmp, exprhdl, prprelInput->PcrsStat(),
+									  ulChildIndex);
+	m_pexprPartPred = popLogical->PexprPartPred(
+		pmp, exprhdl, prprelInput->PexprPartPred(), ulChildIndex);
 
 	exprhdl.DeriveProducerStats(ulChildIndex, m_pcrsStat);
 }
@@ -128,12 +115,9 @@ CReqdPropRelational::Compute
 //
 //---------------------------------------------------------------------------
 CReqdPropRelational *
-CReqdPropRelational::Prprel
-	(
-	CReqdProp *prp
-	)
+CReqdPropRelational::Prprel(CReqdProp *prp)
 {
-	return dynamic_cast<CReqdPropRelational*>(prp);
+	return dynamic_cast<CReqdPropRelational *>(prp);
 }
 
 
@@ -146,11 +130,8 @@ CReqdPropRelational::Prprel
 //
 //---------------------------------------------------------------------------
 CReqdPropRelational *
-CReqdPropRelational::PrprelDifference
-	(
-	IMemoryPool *pmp,
-	CReqdPropRelational *prprel
-	)
+CReqdPropRelational::PrprelDifference(IMemoryPool *pmp,
+									  CReqdPropRelational *prprel)
 {
 	GPOS_ASSERT(NULL != prprel);
 
@@ -185,11 +166,7 @@ CReqdPropRelational::FEmpty() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CReqdPropRelational::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CReqdPropRelational::OsPrint(IOstream &os) const
 {
 	os << "req stat columns: [" << *m_pcrsStat << "]";
 	if (NULL != m_pexprPartPred)

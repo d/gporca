@@ -20,80 +20,76 @@
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMDIdGPDBCtas
-	//
-	//	@doc:
-	//		Class for representing ids of GPDB CTAS metadata objects
-	//
-	//---------------------------------------------------------------------------
-	class CMDIdGPDBCtas : public CMDIdGPDB
+//---------------------------------------------------------------------------
+//	@class:
+//		CMDIdGPDBCtas
+//
+//	@doc:
+//		Class for representing ids of GPDB CTAS metadata objects
+//
+//---------------------------------------------------------------------------
+class CMDIdGPDBCtas : public CMDIdGPDB
+{
+public:
+	// ctor
+	explicit CMDIdGPDBCtas(OID oid);
+
+	// copy ctor
+	explicit CMDIdGPDBCtas(const CMDIdGPDBCtas &mdidSource);
+
+	// mdid type
+	virtual EMDIdType
+	Emdidt() const
 	{
-			
-		public:
-			// ctor
-			explicit 
-			CMDIdGPDBCtas(OID oid);
-			
-			// copy ctor
-			explicit
-			CMDIdGPDBCtas(const CMDIdGPDBCtas &mdidSource);
+		return EmdidGPDBCtas;
+	}
 
-			// mdid type
-			virtual
-			EMDIdType Emdidt() const
-			{
-				return EmdidGPDBCtas;
-			}
-			
-			// source system id
-			virtual
-			CSystemId Sysid() const
-			{
-				return m_sysid;
-			}
+	// source system id
+	virtual CSystemId
+	Sysid() const
+	{
+		return m_sysid;
+	}
 
-			// equality check
-			virtual
-			BOOL FEquals(const IMDId *pmdid) const;
-			
-			// is the mdid valid
-			virtual
-			BOOL FValid() const;
-						
-			// debug print of the metadata id
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
-			
-			// invalid mdid
-			static 
-			CMDIdGPDBCtas m_mdidInvalidKey;
-			
-			// const converter
-			static
-			const CMDIdGPDBCtas *PmdidConvert(const IMDId *pmdid)
-			{
-				GPOS_ASSERT(NULL != pmdid && EmdidGPDBCtas == pmdid->Emdidt());
+	// equality check
+	virtual BOOL
+	FEquals(const IMDId *pmdid) const;
 
-				return dynamic_cast<const CMDIdGPDBCtas *>(pmdid);
-			}
-			
-			// non-const converter
-			static
-			CMDIdGPDBCtas *PmdidConvert(IMDId *pmdid)
-			{
-				GPOS_ASSERT(NULL != pmdid && EmdidGPDBCtas == pmdid->Emdidt());
+	// is the mdid valid
+	virtual BOOL
+	FValid() const;
 
-				return dynamic_cast<CMDIdGPDBCtas *>(pmdid);
-			}
-	};
+	// debug print of the metadata id
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-}
+	// invalid mdid
+	static CMDIdGPDBCtas m_mdidInvalidKey;
 
-#endif // !GPMD_CMDIdGPDBCTAS_H
+	// const converter
+	static const CMDIdGPDBCtas *
+	PmdidConvert(const IMDId *pmdid)
+	{
+		GPOS_ASSERT(NULL != pmdid && EmdidGPDBCtas == pmdid->Emdidt());
+
+		return dynamic_cast<const CMDIdGPDBCtas *>(pmdid);
+	}
+
+	// non-const converter
+	static CMDIdGPDBCtas *
+	PmdidConvert(IMDId *pmdid)
+	{
+		GPOS_ASSERT(NULL != pmdid && EmdidGPDBCtas == pmdid->Emdidt());
+
+		return dynamic_cast<CMDIdGPDBCtas *>(pmdid);
+	}
+};
+
+}  // namespace gpmd
+
+#endif  // !GPMD_CMDIdGPDBCTAS_H
 
 // EOF

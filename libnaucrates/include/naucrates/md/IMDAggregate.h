@@ -20,51 +20,51 @@
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDAggregate
-	//
-	//	@doc:
-	//		Interface for aggregates in the metadata cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDAggregate : public IMDCacheObject
-	{		
-		public:
 
-			// object type
-			virtual
-			Emdtype Emdt() const
-			{
-				return EmdtAgg;
-			}
-			
-			// type of intermediate results computed by the aggregate's 
-			// transformation function
-			virtual 
-			IMDId *PmdidTypeIntermediate() const = 0;
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDAggregate
+//
+//	@doc:
+//		Interface for aggregates in the metadata cache
+//
+//---------------------------------------------------------------------------
+class IMDAggregate : public IMDCacheObject
+{
+public:
+	// object type
+	virtual Emdtype
+	Emdt() const
+	{
+		return EmdtAgg;
+	}
 
-			// result type
-			virtual 
-			IMDId *PmdidTypeResult() const = 0;
+	// type of intermediate results computed by the aggregate's
+	// transformation function
+	virtual IMDId *
+	PmdidTypeIntermediate() const = 0;
 
-			// is aggregate ordered
-			virtual
-			BOOL FOrdered() const = 0;
-			
-			// is aggregate splittable
-			virtual
-			BOOL FSplittable() const = 0;
+	// result type
+	virtual IMDId *
+	PmdidTypeResult() const = 0;
 
-			virtual
-			// is aggregate hash capable
-			BOOL FHashAggCapable() const = 0;
-	};
-}
+	// is aggregate ordered
+	virtual BOOL
+	FOrdered() const = 0;
 
-#endif // !GPMD_IMDAggregate_H
+	// is aggregate splittable
+	virtual BOOL
+	FSplittable() const = 0;
+
+	virtual
+		// is aggregate hash capable
+		BOOL
+		FHashAggCapable() const = 0;
+};
+}  // namespace gpmd
+
+#endif  // !GPMD_IMDAggregate_H
 
 // EOF

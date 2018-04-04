@@ -23,132 +23,127 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
+//---------------------------------------------------------------------------
+//	@class:
+//		ICostModelParams
+//
+//	@doc:
+//		Interface for the parameters of the underlying cost model
+//
+//---------------------------------------------------------------------------
+class ICostModelParams : public CRefCount
+{
+public:
 	//---------------------------------------------------------------------------
 	//	@class:
-	//		ICostModelParams
+	//		SCostParam
 	//
 	//	@doc:
-	//		Interface for the parameters of the underlying cost model
+	//		Internal structure to represent cost model parameter
 	//
 	//---------------------------------------------------------------------------
-	class ICostModelParams : public CRefCount
+	struct SCostParam
 	{
-		public:
+	private:
+		// param identifier
+		ULONG m_ulId;
 
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		SCostParam
-			//
-			//	@doc:
-			//		Internal structure to represent cost model parameter
-			//
-			//---------------------------------------------------------------------------
-			struct SCostParam
-			{
+		// param value
+		CDouble m_dVal;
 
-				private:
+		// param lower bound
+		CDouble m_dLowerBound;
 
-					// param identifier
-					ULONG m_ulId;
+		// param upper bound
+		CDouble m_dUpperBound;
 
-					// param value
-					CDouble m_dVal;
+	public:
+		// ctor
+		SCostParam(ULONG ulId, CDouble dVal, CDouble dLowerBound,
+				   CDouble dUpperBound)
+			: m_ulId(ulId),
+			  m_dVal(dVal),
+			  m_dLowerBound(dLowerBound),
+			  m_dUpperBound(dUpperBound)
+		{
+			GPOS_ASSERT(dVal >= dLowerBound);
+			GPOS_ASSERT(dVal <= dUpperBound);
+		}
 
-					// param lower bound
-					CDouble m_dLowerBound;
+		// dtor
+		virtual ~SCostParam(){};
 
-					// param upper bound
-					CDouble m_dUpperBound;
+		// return param identifier
+		ULONG
+		UlId() const
+		{
+			return m_ulId;
+		}
 
-				public:
+		// return value
+		CDouble
+		DVal() const
+		{
+			return m_dVal;
+		}
 
-					// ctor
-					SCostParam
-						(
-						ULONG ulId,
-						CDouble dVal,
-						CDouble dLowerBound,
-						CDouble dUpperBound
-						)
-						:
-						m_ulId(ulId),
-						m_dVal(dVal),
-						m_dLowerBound(dLowerBound),
-						m_dUpperBound(dUpperBound)
-					{
-						GPOS_ASSERT(dVal >= dLowerBound);
-						GPOS_ASSERT(dVal <= dUpperBound);
-					}
+		// return lower bound value
+		CDouble
+		DLowerBound() const
+		{
+			return m_dLowerBound;
+		}
 
-					// dtor
-					virtual
-					~SCostParam()
-					{};
+		// return upper bound value
+		CDouble
+		DUpperBound() const
+		{
+			return m_dUpperBound;
+		}
 
-					// return param identifier
-					ULONG UlId() const
-					{
-						return m_ulId;
-					}
+		BOOL
+		FEquals(SCostParam *pcm) const
+		{
+			return UlId() == pcm->UlId() && DVal() == pcm->DVal() &&
+				   DLowerBound() == pcm->DLowerBound() &&
+				   DUpperBound() == pcm->DUpperBound();
+		}
 
-					// return value
-					CDouble DVal() const
-					{
-						return m_dVal;
-					}
+	};  // struct SCostParam
 
-					// return lower bound value
-					CDouble DLowerBound() const
-					{
-						return m_dLowerBound;
-					}
+	// lookup param by id
+	virtual SCostParam *
+	PcpLookup(ULONG ulId) const = 0;
 
-					// return upper bound value
-					CDouble DUpperBound() const
-					{
-						return m_dUpperBound;
-					}
+	// lookup param by name
+	virtual SCostParam *
+	PcpLookup(const CHAR *szName) const = 0;
 
-					BOOL FEquals(SCostParam *pcm) const
-					{
-						return UlId() == pcm->UlId() && DVal() == pcm->DVal() &&
-							   DLowerBound() == pcm->DLowerBound() &&
-							   DUpperBound() == pcm->DUpperBound();
-					}
+	// set param by id
+	virtual void
+	SetParam(ULONG ulId, CDouble dVal, CDouble dLowerBound,
+			 CDouble dUpperBound) = 0;
 
-			}; // struct SCostParam
+	// set param by name
+	virtual void
+	SetParam(const CHAR *szName, CDouble dVal, CDouble dLowerBound,
+			 CDouble dUpperBound) = 0;
 
-			// lookup param by id
-			virtual
-			SCostParam *PcpLookup(ULONG ulId) const = 0;
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &os) const = 0;
 
-			// lookup param by name
-			virtual
-			SCostParam *PcpLookup(const CHAR *szName) const = 0;
+	virtual BOOL
+	FEquals(ICostModelParams *pcm) const = 0;
 
-			// set param by id
-			virtual
-			void SetParam(ULONG ulId, CDouble dVal, CDouble dLowerBound, CDouble dUpperBound) = 0;
+	virtual const CHAR *
+	SzNameLookup(ULONG ulId) const = 0;
+};
+}  // namespace gpopt
 
-			// set param by name
-			virtual
-			void SetParam(const CHAR *szName, CDouble dVal, CDouble dLowerBound, CDouble dUpperBound) = 0;
-
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &os) const = 0;
-
-			virtual BOOL
-			FEquals(ICostModelParams *pcm) const = 0;
-
-			virtual const CHAR *
-			SzNameLookup(ULONG ulId) const = 0;
-	};
-}
-
-#endif // !GPOPT_ICostModelParams_H
+#endif  // !GPOPT_ICostModelParams_H
 
 // EOF

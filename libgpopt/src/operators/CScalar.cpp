@@ -29,11 +29,7 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CDrvdProp *
-CScalar::PdpCreate
-	(
-	IMemoryPool *pmp
-	)
-	const
+CScalar::PdpCreate(IMemoryPool *pmp) const
 {
 	return GPOS_NEW(pmp) CDrvdPropScalar();
 }
@@ -48,11 +44,8 @@ CScalar::PdpCreate
 //
 //---------------------------------------------------------------------------
 CReqdProp *
-CScalar::PrpCreate
-	(
-	IMemoryPool * // pmp
-	)
-	const
+CScalar::PrpCreate(IMemoryPool *  // pmp
+				   ) const
 {
 	GPOS_ASSERT(!"Cannot compute required properties on scalar");
 	return NULL;
@@ -68,10 +61,7 @@ CScalar::PrpCreate
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalar::FHasSubquery
-	(
-	CExpressionHandle &exprhdl
-	)
+CScalar::FHasSubquery(CExpressionHandle &exprhdl)
 {
 	// if operator is a subquery, return immediately
 	if (CUtils::FSubquery(exprhdl.Pop()))
@@ -106,10 +96,7 @@ CScalar::FHasSubquery
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalar::EberConjunction
-	(
-	DrgPul *pdrgpulChildren
-	)
+CScalar::EberConjunction(DrgPul *pdrgpulChildren)
 {
 	GPOS_ASSERT(NULL != pdrgpulChildren);
 	GPOS_ASSERT(1 < pdrgpulChildren->UlLength());
@@ -121,7 +108,7 @@ CScalar::EberConjunction
 	const ULONG ulChildren = pdrgpulChildren->UlLength();
 	for (ULONG ul = 0; ul < ulChildren; ul++)
 	{
-		EBoolEvalResult eber = (EBoolEvalResult) *((*pdrgpulChildren)[ul]);
+		EBoolEvalResult eber = (EBoolEvalResult) * ((*pdrgpulChildren)[ul]);
 		switch (eber)
 		{
 			case EberFalse:
@@ -179,10 +166,7 @@ CScalar::EberConjunction
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalar::EberDisjunction
-	(
-	DrgPul *pdrgpulChildren
-	)
+CScalar::EberDisjunction(DrgPul *pdrgpulChildren)
 {
 	GPOS_ASSERT(NULL != pdrgpulChildren);
 	GPOS_ASSERT(1 < pdrgpulChildren->UlLength());
@@ -194,7 +178,7 @@ CScalar::EberDisjunction
 	const ULONG ulChildren = pdrgpulChildren->UlLength();
 	for (ULONG ul = 0; ul < ulChildren; ul++)
 	{
-		EBoolEvalResult eber = (EBoolEvalResult) *((*pdrgpulChildren)[ul]);
+		EBoolEvalResult eber = (EBoolEvalResult) * ((*pdrgpulChildren)[ul]);
 		switch (eber)
 		{
 			case EberTrue:
@@ -253,17 +237,14 @@ CScalar::EberDisjunction
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalar::EberNullOnAnyNullChild
-	(
-	DrgPul *pdrgpulChildren
-	)
+CScalar::EberNullOnAnyNullChild(DrgPul *pdrgpulChildren)
 {
 	GPOS_ASSERT(NULL != pdrgpulChildren);
 
 	const ULONG ulChildren = pdrgpulChildren->UlLength();
 	for (ULONG ul = 0; ul < ulChildren; ul++)
 	{
-		EBoolEvalResult eber = (EBoolEvalResult) *((*pdrgpulChildren)[ul]);
+		EBoolEvalResult eber = (EBoolEvalResult) * ((*pdrgpulChildren)[ul]);
 		if (EberNull == eber)
 		{
 			return EberNull;
@@ -283,17 +264,14 @@ CScalar::EberNullOnAnyNullChild
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalar::EberNullOnAllNullChildren
-	(
-	DrgPul *pdrgpulChildren
-	)
+CScalar::EberNullOnAllNullChildren(DrgPul *pdrgpulChildren)
 {
 	GPOS_ASSERT(NULL != pdrgpulChildren);
 
 	const ULONG ulChildren = pdrgpulChildren->UlLength();
 	for (ULONG ul = 0; ul < ulChildren; ul++)
 	{
-		EBoolEvalResult eber = (EBoolEvalResult) *((*pdrgpulChildren)[ul]);
+		EBoolEvalResult eber = (EBoolEvalResult) * ((*pdrgpulChildren)[ul]);
 		if (EberNull != eber)
 		{
 			return EberUnknown;
@@ -313,11 +291,7 @@ CScalar::EberNullOnAllNullChildren
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalar::EberEvaluate
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprScalar
-	)
+CScalar::EberEvaluate(IMemoryPool *pmp, CExpression *pexprScalar)
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pexprScalar);
@@ -359,10 +333,7 @@ CScalar::EberEvaluate
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalar::FHasNonScalarFunction
-	(
-	CExpressionHandle &exprhdl
-	)
+CScalar::FHasNonScalarFunction(CExpressionHandle &exprhdl)
 {
 	// if operator is a subquery, return immediately
 	if (CUtils::FSubquery(exprhdl.Pop()))
@@ -397,24 +368,22 @@ CScalar::FHasNonScalarFunction
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CScalar::PpartinfoDeriveCombineScalar
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
+CScalar::PpartinfoDeriveCombineScalar(IMemoryPool *pmp,
+									  CExpressionHandle &exprhdl)
 {
 	const ULONG ulArity = exprhdl.UlArity();
 	GPOS_ASSERT(0 < ulArity);
 
 	CPartInfo *ppartinfo = GPOS_NEW(pmp) CPartInfo(pmp);
-	
+
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
 		if (exprhdl.FScalarChild(ul))
 		{
 			CPartInfo *ppartinfoChild = exprhdl.Pdpscalar(ul)->Ppartinfo();
 			GPOS_ASSERT(NULL != ppartinfoChild);
-			CPartInfo *ppartinfoCombined = CPartInfo::PpartinfoCombine(pmp, ppartinfo, ppartinfoChild);
+			CPartInfo *ppartinfoCombined =
+				CPartInfo::PpartinfoCombine(pmp, ppartinfo, ppartinfoChild);
 			ppartinfo->Release();
 			ppartinfo = ppartinfoCombined;
 		}
@@ -424,4 +393,3 @@ CScalar::PpartinfoDeriveCombineScalar
 }
 
 // EOF
-

@@ -32,21 +32,17 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarFunc::CScalarFunc
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CScalar(pmp),
-	m_pmdidFunc(NULL),
-	m_pmdidRetType(NULL),
-	m_iRetTypeModifier(IDefaultTypeModifier),
-	m_pstrFunc(NULL),
-	m_efs(IMDFunction::EfsSentinel),
-	m_efda(IMDFunction::EfdaSentinel),
-	m_fReturnsSet(false),
-	m_fReturnsNullOnNullInput(false),
-	m_fBoolReturnType(false)
+CScalarFunc::CScalarFunc(IMemoryPool *pmp)
+	: CScalar(pmp),
+	  m_pmdidFunc(NULL),
+	  m_pmdidRetType(NULL),
+	  m_iRetTypeModifier(IDefaultTypeModifier),
+	  m_pstrFunc(NULL),
+	  m_efs(IMDFunction::EfsSentinel),
+	  m_efda(IMDFunction::EfdaSentinel),
+	  m_fReturnsSet(false),
+	  m_fReturnsNullOnNullInput(false),
+	  m_fBoolReturnType(false)
 {
 }
 
@@ -58,23 +54,17 @@ CScalarFunc::CScalarFunc
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarFunc::CScalarFunc
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	INT iRetTypeModifier,
-	const CWStringConst *pstrFunc
-	)
-	:
-	CScalar(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_iRetTypeModifier(iRetTypeModifier),
-	m_pstrFunc(pstrFunc),
-	m_fReturnsSet(false),
-	m_fReturnsNullOnNullInput(false),
-	m_fBoolReturnType(false)
+CScalarFunc::CScalarFunc(IMemoryPool *pmp, IMDId *pmdidFunc,
+						 IMDId *pmdidRetType, INT iRetTypeModifier,
+						 const CWStringConst *pstrFunc)
+	: CScalar(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_iRetTypeModifier(iRetTypeModifier),
+	  m_pstrFunc(pstrFunc),
+	  m_fReturnsSet(false),
+	  m_fReturnsNullOnNullInput(false),
+	  m_fBoolReturnType(false)
 {
 	GPOS_ASSERT(pmdidFunc->FValid());
 	GPOS_ASSERT(pmdidRetType->FValid());
@@ -161,13 +151,11 @@ ULONG
 CScalarFunc::UlHash() const
 {
 	return gpos::UlCombineHashes(
-					COperator::UlHash(),
-					gpos::UlCombineHashes(
-						m_pmdidFunc->UlHash(),
-						m_pmdidRetType->UlHash()));
+		COperator::UlHash(),
+		gpos::UlCombineHashes(m_pmdidFunc->UlHash(), m_pmdidRetType->UlHash()));
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CScalarFunc::FMatch
@@ -177,22 +165,17 @@ CScalarFunc::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarFunc::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarFunc::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
 		return false;
-		
 	}
 	CScalarFunc *popScFunc = CScalarFunc::PopConvert(pop);
 
 	// match if func ids are identical
 	return popScFunc->PmdidFunc()->FEquals(m_pmdidFunc) &&
-			popScFunc->PmdidType()->FEquals(m_pmdidRetType);
+		   popScFunc->PmdidType()->FEquals(m_pmdidRetType);
 }
 
 //---------------------------------------------------------------------------
@@ -224,10 +207,8 @@ CScalarFunc::ITypeModifier() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarFunc::FHasNonScalarFunction
-	(
-	CExpressionHandle & //exprhdl
-	)
+CScalarFunc::FHasNonScalarFunction(CExpressionHandle &  //exprhdl
+)
 {
 	return m_fReturnsSet;
 }
@@ -242,16 +223,12 @@ CScalarFunc::FHasNonScalarFunction
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarFunc::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarFunc::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << PstrFunc()->Wsz();
 	os << ")";
-	
+
 	return os;
 }
 
@@ -264,11 +241,7 @@ CScalarFunc::OsPrint
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarFunc::Eber
-	(
-	DrgPul *pdrgpulChildren
-	)
-	const
+CScalarFunc::Eber(DrgPul *pdrgpulChildren) const
 {
 	if (m_fReturnsNullOnNullInput)
 	{
@@ -280,4 +253,3 @@ CScalarFunc::Eber
 
 
 // EOF
-

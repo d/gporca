@@ -21,67 +21,59 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLMemoryManager
-	//
-	//	@doc:
-	//		Memory manager for parsing DXL documents used in the Xerces XML parser.
-	//		Provides a wrapper around the GPOS IMemoryPool interface.
-	//
-	//---------------------------------------------------------------------------
-	class CDXLMemoryManager : public MemoryManager
+XERCES_CPP_NAMESPACE_USE
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLMemoryManager
+//
+//	@doc:
+//		Memory manager for parsing DXL documents used in the Xerces XML parser.
+//		Provides a wrapper around the GPOS IMemoryPool interface.
+//
+//---------------------------------------------------------------------------
+class CDXLMemoryManager : public MemoryManager
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
+
+	// private copy ctor
+	CDXLMemoryManager(const CDXLMemoryManager &);
+
+public:
+	// ctor
+	CDXLMemoryManager(IMemoryPool *pmp);
+
+	// MemoryManager interface functions
+
+	// allocates memory
+	void *allocate(XMLSize_t  // size
+	);
+
+	// deallocates memory
+	void
+	deallocate(void *pv);
+
+	// accessor to the underlying memory pool
+	IMemoryPool *
+	Pmp()
 	{
-		private:
-			// memory pool
-			IMemoryPool *m_pmp;
-			
-			// private copy ctor
-			CDXLMemoryManager
-				(
-				const CDXLMemoryManager&
-				);
-			
-		public:
-			// ctor
-			CDXLMemoryManager
-				(
-				IMemoryPool *pmp
-				);
-			
-			// MemoryManager interface functions
-			
-			// allocates memory
-			void *allocate
-				(
-				XMLSize_t // size
-				);
-			
-			// deallocates memory
-			void deallocate
-				(
-				void *pv
-				);
-			
-			// accessor to the underlying memory pool
-			IMemoryPool *Pmp()
-			{
-				return m_pmp;
-			}
-			
-			// returns the memory manager responsible for memory allocation
-			// during exceptions
-		    MemoryManager* getExceptionMemoryManager()
-			{
-		    	return (MemoryManager*) this;
-			}
-	};
-}
+		return m_pmp;
+	}
 
-#endif // GPDXL_CDXLMemoryManager_H
+	// returns the memory manager responsible for memory allocation
+	// during exceptions
+	MemoryManager *
+	getExceptionMemoryManager()
+	{
+		return (MemoryManager *) this;
+	}
+};
+}  // namespace gpdxl
+
+#endif  // GPDXL_CDXLMemoryManager_H
 
 // EOF

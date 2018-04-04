@@ -18,108 +18,95 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarSwitchCase
-	//
-	//	@doc:
-	//		Scalar SwitchCase operator
-	//
-	//---------------------------------------------------------------------------
-	class CScalarSwitchCase : public CScalar
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarSwitchCase
+//
+//	@doc:
+//		Scalar SwitchCase operator
+//
+//---------------------------------------------------------------------------
+class CScalarSwitchCase : public CScalar
+{
+private:
+	// private copy ctor
+	CScalarSwitchCase(const CScalarSwitchCase &);
+
+public:
+	// ctor
+	explicit CScalarSwitchCase(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CScalarSwitchCase()
 	{
+	}
 
-		private:
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopScalarSwitchCase;
+	}
 
-			// private copy ctor
-			CScalarSwitchCase(const CScalarSwitchCase &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarSwitchCase";
+	}
 
-		public:
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// ctor
-			explicit
-			CScalarSwitchCase(IMemoryPool *pmp);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-			// dtor
-			virtual
-			~CScalarSwitchCase()
-			{}
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarSwitchCase;
-			}
+	virtual IMDId *
+	PmdidType() const
+	{
+		GPOS_ASSERT(!"Invalid function call: CScalarSwitchCase::PmdidType()");
+		return NULL;
+	}
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarSwitchCase";
-			}
+	// boolean expression evaluation
+	virtual EBoolEvalResult
+	Eber(DrgPul *pdrgpulChildren) const
+	{
+		return EberNullOnAllNullChildren(pdrgpulChildren);
+	}
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
+	// conversion function
+	static CScalarSwitchCase *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarSwitchCase == pop->Eopid());
 
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
+		return dynamic_cast<CScalarSwitchCase *>(pop);
+	}
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
+};  // class CScalarSwitchCase
 
-			virtual
-			IMDId *PmdidType() const
-			{
-				GPOS_ASSERT(!"Invalid function call: CScalarSwitchCase::PmdidType()");
-				return NULL;
-			}
-
-			// boolean expression evaluation
-			virtual
-			EBoolEvalResult Eber
-				(
-				DrgPul *pdrgpulChildren
-				)
-				const
-			{
-				return EberNullOnAllNullChildren(pdrgpulChildren);
-			}
-
-			// conversion function
-			static
-			CScalarSwitchCase *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarSwitchCase == pop->Eopid());
-
-				return dynamic_cast<CScalarSwitchCase*>(pop);
-			}
-
-	}; // class CScalarSwitchCase
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarSwitchCase_H
+#endif  // !GPOPT_CScalarSwitchCase_H
 
 // EOF

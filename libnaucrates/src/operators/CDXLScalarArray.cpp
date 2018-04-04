@@ -25,18 +25,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarArray::CDXLScalarArray
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidElem,
-	IMDId *pmdidArray,
-	BOOL fMultiDimensional
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidElem(pmdidElem),
-	m_pmdidArray(pmdidArray),
-	m_fMultiDimensional(fMultiDimensional)
+CDXLScalarArray::CDXLScalarArray(IMemoryPool *pmp, IMDId *pmdidElem,
+								 IMDId *pmdidArray, BOOL fMultiDimensional)
+	: CDXLScalar(pmp),
+	  m_pmdidElem(pmdidElem),
+	  m_pmdidArray(pmdidArray),
+	  m_fMultiDimensional(fMultiDimensional)
 {
 	GPOS_ASSERT(m_pmdidElem->FValid());
 	GPOS_ASSERT(m_pmdidArray->FValid());
@@ -136,23 +130,23 @@ CDXLScalarArray::FMultiDimensional() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArray::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarArray::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidArray->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenArrayType));
-	m_pmdidElem->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenArrayElementType));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenArrayMultiDim),m_fMultiDimensional);
-	
+	m_pmdidElem->Serialize(pxmlser,
+						   CDXLTokens::PstrToken(EdxltokenArrayElementType));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenArrayMultiDim),
+						  m_fMultiDimensional);
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -165,25 +159,22 @@ CDXLScalarArray::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArray::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarArray::AssertValid(const CDXLNode *pdxln,
+							 BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

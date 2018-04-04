@@ -28,35 +28,28 @@ using namespace gpdxl;
 //		Constructs a metadata func
 //
 //---------------------------------------------------------------------------
-CMDFunctionGPDB::CMDFunctionGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidTypeResult,
-	DrgPmdid *pdrgpmdidTypes,
-	BOOL fReturnsSet,
-	EFuncStbl efsStability,
-	EFuncDataAcc efdaDataAccess,
-	BOOL fStrict
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidTypeResult(pmdidTypeResult),
-	m_pdrgpmdidTypes(pdrgpmdidTypes),
-	m_fReturnsSet(fReturnsSet),
-	m_efsStability(efsStability),
-	m_efdaDataAccess(efdaDataAccess),
-	m_fStrict(fStrict)
+CMDFunctionGPDB::CMDFunctionGPDB(IMemoryPool *pmp, IMDId *pmdid,
+								 CMDName *pmdname, IMDId *pmdidTypeResult,
+								 DrgPmdid *pdrgpmdidTypes, BOOL fReturnsSet,
+								 EFuncStbl efsStability,
+								 EFuncDataAcc efdaDataAccess, BOOL fStrict)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidTypeResult(pmdidTypeResult),
+	  m_pdrgpmdidTypes(pdrgpmdidTypes),
+	  m_fReturnsSet(fReturnsSet),
+	  m_efsStability(efsStability),
+	  m_efdaDataAccess(efdaDataAccess),
+	  m_fStrict(fStrict)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 	GPOS_ASSERT(EfsSentinel > efsStability);
 	GPOS_ASSERT(EfdaSentinel > efdaDataAccess);
 
 	InitDXLTokenArrays();
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -195,7 +188,8 @@ CMDFunctionGPDB::PstrOutArgTypes() const
 		}
 		else
 		{
-			pstr->AppendFormat(GPOS_WSZ_LIT("%ls%ls"), pmdid->Wsz(), CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
+			pstr->AppendFormat(GPOS_WSZ_LIT("%ls%ls"), pmdid->Wsz(),
+							   CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
 		}
 	}
 
@@ -211,41 +205,44 @@ CMDFunctionGPDB::PstrOutArgTypes() const
 //
 //---------------------------------------------------------------------------
 void
-CMDFunctionGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CMDFunctionGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBFunc));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenGPDBFunc));
+
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncReturnsSet), m_fReturnsSet);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncStability), PstrStability());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncDataAccess), PstrDataAccess());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncStrict), m_fStrict);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 
-	SerializeMDIdAsElem(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBFuncResultTypeId), m_pmdidTypeResult);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncReturnsSet),
+						  m_fReturnsSet);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncStability),
+						  PstrStability());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncDataAccess),
+						  PstrDataAccess());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBFuncStrict),
+						  m_fStrict);
+
+	SerializeMDIdAsElem(pxmlser,
+						CDXLTokens::PstrToken(EdxltokenGPDBFuncResultTypeId),
+						m_pmdidTypeResult);
 
 	if (NULL != m_pdrgpmdidTypes)
 	{
 		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-							CDXLTokens::PstrToken(EdxltokenOutputCols));
+							 CDXLTokens::PstrToken(EdxltokenOutputCols));
 
 		CWStringDynamic *pstrOutArgTypes = PstrOutArgTypes();
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeIds), pstrOutArgTypes);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeIds),
+							  pstrOutArgTypes);
 		GPOS_DELETE(pstrOutArgTypes);
 
 		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-							CDXLTokens::PstrToken(EdxltokenOutputCols));
-
+							  CDXLTokens::PstrToken(EdxltokenOutputCols));
 	}
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBFunc));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenGPDBFunc));
 }
 
 //---------------------------------------------------------------------------
@@ -299,41 +296,37 @@ CMDFunctionGPDB::PstrDataAccess() const
 //
 //---------------------------------------------------------------------------
 void
-CMDFunctionGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDFunctionGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Function id: ";
 	Pmdid()->OsPrint(os);
 	os << std::endl;
-	
+
 	os << "Function name: " << (Mdname()).Pstr()->Wsz() << std::endl;
-	
+
 	os << "Result type id: ";
 	PmdidTypeResult()->OsPrint(os);
 	os << std::endl;
-	
-	const CWStringConst *pstrReturnsSet = FReturnsSet() ? 
-			CDXLTokens::PstrToken(EdxltokenTrue): 
-			CDXLTokens::PstrToken(EdxltokenFalse); 
+
+	const CWStringConst *pstrReturnsSet =
+		FReturnsSet() ? CDXLTokens::PstrToken(EdxltokenTrue)
+					  : CDXLTokens::PstrToken(EdxltokenFalse);
 
 	os << "Returns set: " << pstrReturnsSet->Wsz() << std::endl;
 
 	os << "Function is " << PstrStability()->Wsz() << std::endl;
-	
+
 	os << "Data access: " << PstrDataAccess()->Wsz() << std::endl;
 
-	const CWStringConst *pstrIsStrict = FStrict() ? 
-			CDXLTokens::PstrToken(EdxltokenTrue): 
-			CDXLTokens::PstrToken(EdxltokenFalse); 
+	const CWStringConst *pstrIsStrict =
+		FStrict() ? CDXLTokens::PstrToken(EdxltokenTrue)
+				  : CDXLTokens::PstrToken(EdxltokenFalse);
 
 	os << "Is strict: " << pstrIsStrict->Wsz() << std::endl;
-	
-	os << std::endl;	
+
+	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

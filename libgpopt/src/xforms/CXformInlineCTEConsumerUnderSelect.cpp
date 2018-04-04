@@ -27,22 +27,17 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformInlineCTEConsumerUnderSelect::CXformInlineCTEConsumerUnderSelect
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalSelect(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)),  // relational child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// predicate tree
-				)
-		)
-{}
+CXformInlineCTEConsumerUnderSelect::CXformInlineCTEConsumerUnderSelect(
+	IMemoryPool *pmp)
+	: CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSelect(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalCTEConsumer(pmp)),  // relational child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -53,11 +48,8 @@ CXformInlineCTEConsumerUnderSelect::CXformInlineCTEConsumerUnderSelect
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformInlineCTEConsumerUnderSelect::Exfp
-	(
-	CExpressionHandle & //exprhdl
-	)
-	const
+CXformInlineCTEConsumerUnderSelect::Exfp(CExpressionHandle &  //exprhdl
+										 ) const
 {
 	return CXform::ExfpHigh;
 }
@@ -71,13 +63,9 @@ CXformInlineCTEConsumerUnderSelect::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformInlineCTEConsumerUnderSelect::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformInlineCTEConsumerUnderSelect::Transform(CXformContext *pxfctxt,
+											  CXformResult *pxfres,
+											  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -86,7 +74,8 @@ CXformInlineCTEConsumerUnderSelect::Transform
 	CExpression *pexprConsumer = (*pexpr)[0];
 	CExpression *pexprScalar = (*pexpr)[1];
 
-	CLogicalCTEConsumer *popConsumer = CLogicalCTEConsumer::PopConvert(pexprConsumer->Pop());
+	CLogicalCTEConsumer *popConsumer =
+		CLogicalCTEConsumer::PopConvert(pexprConsumer->Pop());
 	ULONG ulId = popConsumer->UlCTEId();
 	CCTEInfo *pcteinfo = COptCtxt::PoctxtFromTLS()->Pcteinfo();
 	// only continue if inlining is enabled or if this CTE has only 1 consumer
@@ -97,7 +86,8 @@ CXformInlineCTEConsumerUnderSelect::Transform
 
 	// don't push down selects with a const true or false, in case we end up
 	// with a select(1) (coming from the anchor) right on top of the consumer
-	if (CUtils::FScalarConstTrue(pexprScalar) || CUtils::FScalarConstFalse(pexprScalar) ||
+	if (CUtils::FScalarConstTrue(pexprScalar) ||
+		CUtils::FScalarConstFalse(pexprScalar) ||
 		!CXformUtils::FInlinableCTE(ulId))
 	{
 		return;
@@ -111,9 +101,11 @@ CXformInlineCTEConsumerUnderSelect::Transform
 	pexprInlinedConsumer->AddRef();
 	pexprScalar->AddRef();
 
-	CExpression *pexprSelect = CUtils::PexprLogicalSelect(pmp, pexprInlinedConsumer, pexprScalar);
+	CExpression *pexprSelect =
+		CUtils::PexprLogicalSelect(pmp, pexprInlinedConsumer, pexprScalar);
 
-	CExpression *pexprNormalized = CNormalizer::PexprNormalize(pmp, pexprSelect);
+	CExpression *pexprNormalized =
+		CNormalizer::PexprNormalize(pmp, pexprSelect);
 	pexprSelect->Release();
 
 	// add alternative to xform result

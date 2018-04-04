@@ -33,15 +33,8 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarCoalesce::CScalarCoalesce
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType
-	)
-	:
-	CScalar(pmp),
-	m_pmdidType(pmdidType),
-	m_fBoolReturnType(false)
+CScalarCoalesce::CScalarCoalesce(IMemoryPool *pmp, IMDId *pmdidType)
+	: CScalar(pmp), m_pmdidType(pmdidType), m_fBoolReturnType(false)
 {
 	GPOS_ASSERT(pmdidType->FValid());
 
@@ -86,13 +79,9 @@ CScalarCoalesce::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarCoalesce::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarCoalesce::FMatch(COperator *pop) const
 {
-	if(pop->Eopid() == Eopid())
+	if (pop->Eopid() == Eopid())
 	{
 		CScalarCoalesce *popScCoalesce = CScalarCoalesce::PopConvert(pop);
 
@@ -105,4 +94,3 @@ CScalarCoalesce::FMatch
 
 
 // EOF
-

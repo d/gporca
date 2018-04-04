@@ -17,47 +17,45 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CEnumSetIter
-	//
-	//	@doc:
-	//		Template derived from CBitSetIter
-	//
-	//---------------------------------------------------------------------------
-	template<class T, ULONG eSentinel>
-	class CEnumSetIter : public CBitSetIter
+//---------------------------------------------------------------------------
+//	@class:
+//		CEnumSetIter
+//
+//	@doc:
+//		Template derived from CBitSetIter
+//
+//---------------------------------------------------------------------------
+template <class T, ULONG eSentinel>
+class CEnumSetIter : public CBitSetIter
+{
+private:
+	// private copy ctor
+	CEnumSetIter<T, eSentinel>(const CEnumSetIter<T, eSentinel> &);
+
+public:
+	// ctor
+	explicit CEnumSetIter<T, eSentinel>(const CEnumSet<T, eSentinel> &es)
+		: CBitSetIter(es)
 	{
+	}
 
-		private:
+	// dtor
+	~CEnumSetIter<T, eSentinel>()
+	{
+	}
 
-			// private copy ctor
-			CEnumSetIter<T, eSentinel>(const CEnumSetIter<T, eSentinel>&);
-			
-		public:
-				
-			// ctor
-			explicit
-			CEnumSetIter<T, eSentinel>(const CEnumSet<T, eSentinel> &es)
-				:
-				CBitSetIter(es)
-			{}
-			
-			// dtor
-			~CEnumSetIter<T, eSentinel>() {}
+	// current enum
+	T
+	TBit() const
+	{
+		GPOS_ASSERT(eSentinel > CBitSetIter::UlBit() && "Out of range of enum");
+		return static_cast<T>(CBitSetIter::UlBit());
+	}
 
-			// current enum
-			T TBit() const
-			{
-				GPOS_ASSERT(eSentinel > CBitSetIter::UlBit() && "Out of range of enum");
-				return static_cast<T>(CBitSetIter::UlBit());				
-			}
-
-	}; // class CEnumSetIter
-}
+};  // class CEnumSetIter
+}  // namespace gpos
 
 
-#endif // !GPOS_CEnumSetIter_H
+#endif  // !GPOS_CEnumSetIter_H
 
 // EOF
-

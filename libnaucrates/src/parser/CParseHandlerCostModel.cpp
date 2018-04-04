@@ -38,17 +38,13 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCostModel::CParseHandlerCostModel
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_ulSegments(0),
-	m_pcm(NULL),
-	m_pphcp(NULL)
+CParseHandlerCostModel::CParseHandlerCostModel(IMemoryPool *pmp,
+											   CParseHandlerManager *pphm,
+											   CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_ulSegments(0),
+	  m_pcm(NULL),
+	  m_pphcp(NULL)
 {
 }
 
@@ -75,34 +71,40 @@ CParseHandlerCostModel::~CParseHandlerCostModel()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostModel::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerCostModel::StartElement(const XMLCh *const xmlszUri,
+									 const XMLCh *const xmlszLocalname,
+									 const XMLCh *const xmlszQname,
+									 const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostModelConfig), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenCostModelConfig), xmlszLocalname))
 	{
-		m_ulSegments = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenSegmentsForCosting,
-															 EdxltokenCostModelConfig);
+		m_ulSegments = CDXLOperatorFactory::UlValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenSegmentsForCosting,
+			EdxltokenCostModelConfig);
 
-		m_ecmt = (ICostModel::ECostModelType) CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs,
-																					EdxltokenCostModelType,
-																					EdxltokenCostModelConfig);
+		m_ecmt =
+			(ICostModel::ECostModelType) CDXLOperatorFactory::UlValueFromAttrs(
+				m_pphm->Pmm(), attrs, EdxltokenCostModelType,
+				EdxltokenCostModelConfig);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlszLocalname))
+	else if (0 ==
+			 XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlszLocalname))
 	{
-		CParseHandlerBase *pphCostParams = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenCostParams), m_pphm, this);
+		CParseHandlerBase *pphCostParams = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenCostParams), m_pphm, this);
 		m_pphcp = static_cast<CParseHandlerCostParams *>(pphCostParams);
 		m_pphm->ActivateParseHandler(pphCostParams);
 
-		pphCostParams->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
+		pphCostParams->startElement(xmlszUri, xmlszLocalname, xmlszQname,
+									attrs);
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -116,17 +118,18 @@ CParseHandlerCostModel::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostModel::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerCostModel::EndElement(const XMLCh *const,  // xmlszUri,
+								   const XMLCh *const xmlszLocalname,
+								   const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostModelConfig), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenCostModelConfig), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	switch (m_ecmt)
@@ -155,7 +158,7 @@ CParseHandlerCostModel::EndElement
 			break;
 	}
 
-    // deactivate handler
+	// deactivate handler
 	m_pphm->DeactivateHandler();
 }
 

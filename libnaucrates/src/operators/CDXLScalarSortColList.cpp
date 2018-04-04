@@ -25,12 +25,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSortColList::CDXLScalarSortColList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarSortColList::CDXLScalarSortColList(IMemoryPool *pmp) : CDXLScalar(pmp)
 {
 }
 
@@ -73,17 +68,15 @@ CDXLScalarSortColList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSortColList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSortColList::SerializeToDXL(CXMLSerializer *pxmlser,
+									  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -92,29 +85,25 @@ CDXLScalarSortColList::SerializeToDXL
 //		CDXLScalarSortColList::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSortColList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarSortColList::AssertValid(const CDXLNode *pdxln,
+								   BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
 		GPOS_ASSERT(EdxlopScalarSortCol == pdxlnChild->Pdxlop()->Edxlop());
-		
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

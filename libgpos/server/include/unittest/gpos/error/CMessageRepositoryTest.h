@@ -16,26 +16,25 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CMessageRepositoryTest
+//
+//	@doc:
+//		Static unit tests for message table
+//
+//---------------------------------------------------------------------------
+class CMessageRepositoryTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_Basic();
+};
+}  // namespace gpos
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMessageRepositoryTest
-	//
-	//	@doc:
-	//		Static unit tests for message table
-	//
-	//---------------------------------------------------------------------------
-	class CMessageRepositoryTest
-	{
-		public:
-
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_Basic();
-	};
-}
-
-#endif // !GPOS_CMessageRepositoryTest_H
+#endif  // !GPOS_CMessageRepositoryTest_H
 
 // EOF
-

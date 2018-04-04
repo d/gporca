@@ -34,17 +34,13 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerPhysicalTVF::CParseHandlerPhysicalTVF
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_pmdidFunc(NULL),
-	m_pmdidRetType(NULL),
-	m_pstr(NULL)
+CParseHandlerPhysicalTVF::CParseHandlerPhysicalTVF(IMemoryPool *pmp,
+												   CParseHandlerManager *pphm,
+												   CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
+	  m_pmdidFunc(NULL),
+	  m_pmdidRetType(NULL),
+	  m_pstr(NULL)
 {
 }
 
@@ -57,40 +53,40 @@ CParseHandlerPhysicalTVF::CParseHandlerPhysicalTVF
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalTVF::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes &attrs
-	)
+CParseHandlerPhysicalTVF::StartElement(const XMLCh *const xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const xmlszQname,
+									   const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalTVF), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalTVF), xmlszLocalname))
 	{
 		// parse function id
-		m_pmdidFunc = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenFuncId, EdxltokenPhysicalTVF);
+		m_pmdidFunc = CDXLOperatorFactory::PmdidFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenFuncId, EdxltokenPhysicalTVF);
 
 		// parse function name
-		const XMLCh *xmlszFuncName = CDXLOperatorFactory::XmlstrFromAttrs
-																(
-																attrs,
-																EdxltokenName,
-																EdxltokenPhysicalTVF
-																);
+		const XMLCh *xmlszFuncName = CDXLOperatorFactory::XmlstrFromAttrs(
+			attrs, EdxltokenName, EdxltokenPhysicalTVF);
 
-		CWStringDynamic *pstrFuncName = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszFuncName);
+		CWStringDynamic *pstrFuncName =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszFuncName);
 		m_pstr = GPOS_NEW(m_pmp) CWStringConst(m_pmp, pstrFuncName->Wsz());
 		GPOS_DELETE(pstrFuncName);
 
 		// parse return type
-		m_pmdidRetType = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenPhysicalTVF);
+		m_pmdidRetType = CDXLOperatorFactory::PmdidFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenPhysicalTVF);
 
 		// parse handler for the proj list
-		CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+		CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pphPrL);
 
 		//parse handler for the properties of the operator
-		CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+		CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphProp);
 
 		// store parse handlers
@@ -100,7 +96,8 @@ CParseHandlerPhysicalTVF::StartElement
 	else
 	{
 		// parse scalar child
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handler
@@ -119,34 +116,38 @@ CParseHandlerPhysicalTVF::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalTVF::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerPhysicalTVF::EndElement(const XMLCh *const,  // xmlszUri,
+									 const XMLCh *const xmlszLocalname,
+									 const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalTVF), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalTVF), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CDXLPhysicalTVF *pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalTVF(m_pmp, m_pmdidFunc, m_pmdidRetType, m_pstr);
+	CDXLPhysicalTVF *pdxlop = GPOS_NEW(m_pmp)
+		CDXLPhysicalTVF(m_pmp, m_pmdidFunc, m_pmdidRetType, m_pstr);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
 
 	// set statistics and physical properties
 	CParseHandlerUtils::SetProperties(m_pdxln, pphProp);
 
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
 	AddChildFromParseHandler(pphPrL);
 
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 2; ul < ulSize; ul++)
 	{
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphChild);
 	}
 
@@ -155,4 +156,3 @@ CParseHandlerPhysicalTVF::EndElement
 }
 
 // EOF
-

@@ -18,64 +18,59 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerQueryOutput
-	//
-	//	@doc:
-	//		Parse handler class for parsing the list of output column references
-	//		in a DXL representation of the query
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerQueryOutput : public CParseHandlerBase
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerQueryOutput
+//
+//	@doc:
+//		Parse handler class for parsing the list of output column references
+//		in a DXL representation of the query
+//
+//---------------------------------------------------------------------------
+class CParseHandlerQueryOutput : public CParseHandlerBase
+{
+private:
+	// list of scalar ident nodes representing the query output
+	DrgPdxln *m_pdrgpdxln;
 
-			// list of scalar ident nodes representing the query output
-			DrgPdxln *m_pdrgpdxln;
+	// private copy ctor
+	CParseHandlerQueryOutput(const CParseHandlerQueryOutput &);
 
-			// private copy ctor
-			CParseHandlerQueryOutput(const CParseHandlerQueryOutput&);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor/dtor
+	CParseHandlerQueryOutput(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							 CParseHandlerBase *pphRoot);
 
-		public:
-			// ctor/dtor
-			CParseHandlerQueryOutput
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-
-			virtual
-			~CParseHandlerQueryOutput();
+	virtual ~CParseHandlerQueryOutput();
 
 
-			// return the list of output scalar ident nodes
-			DrgPdxln *PdrgpdxlnOutputCols();
-	};
-}
+	// return the list of output scalar ident nodes
+	DrgPdxln *
+	PdrgpdxlnOutputCols();
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CParseHandlerQueryOutput_H
+#endif  // !GPDXL_CParseHandlerQueryOutput_H
 
 // EOF

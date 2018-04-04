@@ -20,90 +20,85 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerSearchStage
-	//
-	//	@doc:
-	//		Parse handler for search stage
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerSearchStage : public CParseHandlerBase
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerSearchStage
+//
+//	@doc:
+//		Parse handler for search stage
+//
+//---------------------------------------------------------------------------
+class CParseHandlerSearchStage : public CParseHandlerBase
+{
+private:
+	// set of search stage xforms
+	CXformSet *m_pxfs;
+
+	// cost threshold
+	CCost m_costThreshold;
+
+	// time threshold in milliseconds
+	ULONG m_ulTimeThreshold;
+
+	// private ctor
+	CParseHandlerSearchStage(const CParseHandlerSearchStage &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlstrUri,		 // URI of element's namespace
+		const XMLCh *const xmlstrLocalname,  // local part of element's name
+		const XMLCh *const xmlstrQname,		 // element's qname
+		const Attributes &attr				 // element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlstrUri,		 // URI of element's namespace
+		const XMLCh *const xmlstrLocalname,  // local part of element's name
+		const XMLCh *const xmlstrQname		 // element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerSearchStage(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							 CParseHandlerBase *pphRoot);
+
+	// dtor
+	virtual ~CParseHandlerSearchStage();
+
+	// returns stage xforms
+	CXformSet *
+	Pxfs() const
 	{
+		return m_pxfs;
+	}
 
-		private:
+	// returns stage cost threshold
+	CCost
+	CostThreshold() const
+	{
+		return m_costThreshold;
+	}
 
-			// set of search stage xforms
-			CXformSet *m_pxfs;
+	// returns time threshold
+	ULONG
+	UlTimeThreshold() const
+	{
+		return m_ulTimeThreshold;
+	}
 
-			// cost threshold
-			CCost m_costThreshold;
+	EDxlParseHandlerType
+	Edxlphtype() const
+	{
+		return EdxlphSearchStrategy;
+	}
+};
+}  // namespace gpdxl
 
-			// time threshold in milliseconds
-			ULONG m_ulTimeThreshold;
-
-			// private ctor
-			CParseHandlerSearchStage(const CParseHandlerSearchStage&);
-
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlstrUri, 		// URI of element's namespace
- 				const XMLCh* const xmlstrLocalname,	// local part of element's name
-				const XMLCh* const xmlstrQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlstrUri, 		// URI of element's namespace
-				const XMLCh* const xmlstrLocalname,	// local part of element's name
-				const XMLCh* const xmlstrQname		// element's qname
-				);
-
-		public:
-
-			// ctor
-			CParseHandlerSearchStage
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-
-			// dtor
-			virtual
-			~CParseHandlerSearchStage();
-
-			// returns stage xforms
-			CXformSet *Pxfs() const
-			{
-				return m_pxfs;
-			}
-
-			// returns stage cost threshold
-			CCost CostThreshold() const
-			{
-				return m_costThreshold;
-			}
-
-			// returns time threshold
-			ULONG UlTimeThreshold() const
-			{
-				return m_ulTimeThreshold;
-			}
-
-			EDxlParseHandlerType Edxlphtype() const
-			{
-				return EdxlphSearchStrategy;
-			}
-
-	};
-}
-
-#endif // !GPDXL_CParseHandlerSearchStage_H
+#endif  // !GPDXL_CParseHandlerSearchStage_H
 
 // EOF

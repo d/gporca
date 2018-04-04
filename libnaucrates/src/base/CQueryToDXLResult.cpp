@@ -24,16 +24,11 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CQueryToDXLResult::CQueryToDXLResult
-	(
-	CDXLNode *pdxln,
-	DrgPdxln *pdrgpdxlnOutput,
-	DrgPdxln *pdrgpdxlnCTE
-	)
-	:
-	m_pdxln(pdxln),
-	m_pdrgpdxlnQueryOutput(pdrgpdxlnOutput),
-	m_pdrgpdxlnCTE(pdrgpdxlnCTE)
+CQueryToDXLResult::CQueryToDXLResult(CDXLNode *pdxln, DrgPdxln *pdrgpdxlnOutput,
+									 DrgPdxln *pdrgpdxlnCTE)
+	: m_pdxln(pdxln),
+	  m_pdrgpdxlnQueryOutput(pdrgpdxlnOutput),
+	  m_pdrgpdxlnCTE(pdrgpdxlnCTE)
 {
 	GPOS_ASSERT(NULL != pdxln);
 }
@@ -51,7 +46,6 @@ CQueryToDXLResult::~CQueryToDXLResult()
 	m_pdxln->Release();
 	CRefCount::SafeRelease(m_pdrgpdxlnQueryOutput);
 	CRefCount::SafeRelease(m_pdrgpdxlnCTE);
-
 }
 
 //---------------------------------------------------------------------------
@@ -62,7 +56,7 @@ CQueryToDXLResult::~CQueryToDXLResult()
 //		Return the array of dxl nodes representing the query output
 //
 //---------------------------------------------------------------------------
-const DrgPdxln*
+const DrgPdxln *
 CQueryToDXLResult::PdrgpdxlnOutputCols() const
 {
 	return m_pdrgpdxlnQueryOutput;
@@ -76,7 +70,7 @@ CQueryToDXLResult::PdrgpdxlnOutputCols() const
 //		Return the array of CTEs
 //
 //---------------------------------------------------------------------------
-const DrgPdxln*
+const DrgPdxln *
 CQueryToDXLResult::PdrgpdxlnCTE() const
 {
 	return m_pdrgpdxlnCTE;

@@ -19,48 +19,47 @@
 // fwd declarations
 namespace gpopt
 {
-	class CMDAccessor;
+class CMDAccessor;
 }
 
 namespace gpdxl
 {
-	using namespace gpopt;
+using namespace gpopt;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalar
-	//
-	//	@doc:
-	//		Base class for representing scalar DXL operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalar : public CDXLOperator
-	{
-		private:
-			// private copy ctor
-			CDXLScalar(CDXLScalar&);
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalar
+//
+//	@doc:
+//		Base class for representing scalar DXL operators
+//
+//---------------------------------------------------------------------------
+class CDXLScalar : public CDXLOperator
+{
+private:
+	// private copy ctor
+	CDXLScalar(CDXLScalar &);
 
-		public:
-			// ctor/dtor
-			explicit
-			CDXLScalar(IMemoryPool *pmp);
-			
-			virtual
-			~CDXLScalar(){};
-			
-			Edxloptype Edxloperatortype() const;
-			
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean(CMDAccessor *pmda) const = 0;
+public:
+	// ctor/dtor
+	explicit CDXLScalar(IMemoryPool *pmp);
+
+	virtual ~CDXLScalar(){};
+
+	Edxloptype
+	Edxloperatortype() const;
+
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *pmda) const = 0;
 
 #ifdef GPOS_DEBUG
-			virtual
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const = 0;
-#endif // GPOS_DEBUG
-	};
-}
+	virtual void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const = 0;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalar_H
+#endif  // !GPDXL_CDXLScalar_H
 
 // EOF

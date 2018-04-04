@@ -9,7 +9,7 @@
 //		Dynamic bitmap table scan physical operator
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -24,80 +24,71 @@
 
 namespace gpopt
 {
-	// fwd declarations
-	class CTableDescriptor;
-	class CName;
-	class CPartConstraint;
+// fwd declarations
+class CTableDescriptor;
+class CName;
+class CPartConstraint;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalDynamicBitmapTableScan
-	//
-	//	@doc:
-	//		Dynamic bitmap table scan physical operator
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalDynamicBitmapTableScan : public CPhysicalDynamicScan
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalDynamicBitmapTableScan
+//
+//	@doc:
+//		Dynamic bitmap table scan physical operator
+//
+//---------------------------------------------------------------------------
+class CPhysicalDynamicBitmapTableScan : public CPhysicalDynamicScan
+{
+private:
+	// disable copy ctor
+	CPhysicalDynamicBitmapTableScan(const CPhysicalDynamicBitmapTableScan &);
+
+public:
+	// ctor
+	CPhysicalDynamicBitmapTableScan(IMemoryPool *pmp, BOOL fPartial,
+									CTableDescriptor *ptabdesc,
+									ULONG ulOriginOpId, const CName *pnameAlias,
+									ULONG ulScanId, DrgPcr *pdrgpcrOutput,
+									DrgDrgPcr *pdrgpdrgpcrParts,
+									ULONG ulSecondaryScanId,
+									CPartConstraint *ppartcnstr,
+									CPartConstraint *ppartcnstrRel);
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopPhysicalDynamicBitmapTableScan;
+	}
 
-			// disable copy ctor
-			CPhysicalDynamicBitmapTableScan(const CPhysicalDynamicBitmapTableScan &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalDynamicBitmapTableScan";
+	}
 
-		public:
-			// ctor
-			CPhysicalDynamicBitmapTableScan
-				(
-				IMemoryPool *pmp,
-				BOOL fPartial,
-				CTableDescriptor *ptabdesc,
-				ULONG ulOriginOpId,
-				const CName *pnameAlias,
-				ULONG ulScanId,
-				DrgPcr *pdrgpcrOutput,
-				DrgDrgPcr *pdrgpdrgpcrParts,
-				ULONG ulSecondaryScanId,
-				CPartConstraint *ppartcnstr,
-				CPartConstraint *ppartcnstrRel
-				);
+	// match function
+	virtual BOOL
+	FMatch(COperator *) const;
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalDynamicBitmapTableScan;
-			}
+	// statistics derivation during costing
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 CReqdPropPlan *prpplan, DrgPstat *pdrgpstatCtxt) const;
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalDynamicBitmapTableScan";
-			}
+	// conversion function
+	static CPhysicalDynamicBitmapTableScan *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalDynamicBitmapTableScan == pop->Eopid());
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *) const;
+		return dynamic_cast<CPhysicalDynamicBitmapTableScan *>(pop);
+	}
+};
+}  // namespace gpopt
 
-			// statistics derivation during costing
-			virtual
-			IStatistics *PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl, CReqdPropPlan *prpplan, DrgPstat *pdrgpstatCtxt) const;
-
-			// conversion function
-			static
-			CPhysicalDynamicBitmapTableScan *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalDynamicBitmapTableScan == pop->Eopid());
-
-				return dynamic_cast<CPhysicalDynamicBitmapTableScan *>(pop);
-			}
-	};
-}
-
-#endif // !GPOPT_CPhysicalDynamicBitmapTableScan_H
+#endif  // !GPOPT_CPhysicalDynamicBitmapTableScan_H
 
 // EOF

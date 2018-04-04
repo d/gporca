@@ -13,55 +13,53 @@
 
 namespace gpnaucrates
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDatumTest
-	//
-	//	@doc:
-	//		Static unit tests for datum
-	//
-	//---------------------------------------------------------------------------
-	class CDatumTest
-	{
+//---------------------------------------------------------------------------
+//	@class:
+//		CDatumTest
+//
+//	@doc:
+//		Static unit tests for datum
+//
+//---------------------------------------------------------------------------
+class CDatumTest
+{
+private:
+	// create an oid datum
+	static IDatum *
+	PdatumOid(IMemoryPool *pmp, BOOL fNull);
 
-		private:
-			// create an oid datum
-			static
-			IDatum *PdatumOid(IMemoryPool *pmp, BOOL fNull);
+	// create an int2 datum
+	static IDatum *
+	PdatumInt2(IMemoryPool *pmp, BOOL fNull);
 
-			// create an int2 datum
-			static
-			IDatum *PdatumInt2(IMemoryPool *pmp, BOOL fNull);
+	// create an int4 datum
+	static IDatum *
+	PdatumInt4(IMemoryPool *pmp, BOOL fNull);
 
-			// create an int4 datum
-			static
-			IDatum *PdatumInt4(IMemoryPool *pmp, BOOL fNull);
-		
-			// create an int8 datum
-			static
-			IDatum *PdatumInt8(IMemoryPool *pmp, BOOL fNull);
+	// create an int8 datum
+	static IDatum *
+	PdatumInt8(IMemoryPool *pmp, BOOL fNull);
 
-			// create a bool datum
-			static
-			IDatum *PdatumBool(IMemoryPool *pmp, BOOL fNull);
+	// create a bool datum
+	static IDatum *
+	PdatumBool(IMemoryPool *pmp, BOOL fNull);
 
-			// create a generic datum
-			static
-			IDatum *PdatumGeneric(IMemoryPool *pmp, BOOL fNull);
+	// create a generic datum
+	static IDatum *
+	PdatumGeneric(IMemoryPool *pmp, BOOL fNull);
 
-		public:
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
 
-			// unittests
-			static 
-			GPOS_RESULT EresUnittest();
-			
-			static 
-			GPOS_RESULT EresUnittest_Basics();
+	static GPOS_RESULT
+	EresUnittest_Basics();
 
-	}; // class CDatumTest
-}
+};  // class CDatumTest
+}  // namespace gpnaucrates
 
-#endif // !GPNAUCRATES_CDatumTest_H
+#endif  // !GPNAUCRATES_CDatumTest_H
 
 
 // EOF

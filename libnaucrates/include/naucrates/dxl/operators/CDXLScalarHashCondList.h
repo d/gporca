@@ -18,71 +18,64 @@
 
 namespace gpdxl
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarHashCondList
+//
+//	@doc:
+//		Class for representing the list of hash conditions in DXL Hash join nodes.
+//
+//---------------------------------------------------------------------------
+class CDXLScalarHashCondList : public CDXLScalar
+{
+private:
+	// private copy ctor
+	CDXLScalarHashCondList(CDXLScalarHashCondList &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarHashCondList
-	//
-	//	@doc:
-	//		Class for representing the list of hash conditions in DXL Hash join nodes.
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarHashCondList : public CDXLScalar
+public:
+	// ctor
+	explicit CDXLScalarHashCondList(IMemoryPool *pmp);
+
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
+
+	// name of the operator
+	const CWStringConst *
+	PstrOpName() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// conversion function
+	static CDXLScalarHashCondList *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
-		
-			// private copy ctor
-			CDXLScalarHashCondList(CDXLScalarHashCondList&);
-			
-		public:
-			// ctor
-			explicit
-			CDXLScalarHashCondList(IMemoryPool *pmp);
-			
-			// ident accessors
-			Edxlopid Edxlop() const;
-			
-			// name of the operator
-			const CWStringConst *PstrOpName() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarHashCondList == pdxlop->Edxlop());
 
-			// conversion function
-			static
-			CDXLScalarHashCondList *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarHashCondList == pdxlop->Edxlop());
+		return dynamic_cast<CDXLScalarHashCondList *>(pdxlop);
+	}
 
-				return dynamic_cast<CDXLScalarHashCondList*>(pdxlop);
-			}
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-					(
-					CMDAccessor *//pmda
-					)
-					const
-			{
-				GPOS_ASSERT(!"Invalid function call for a container operator");
-				return false;
-			}
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
+	{
+		GPOS_ASSERT(!"Invalid function call for a container operator");
+		return false;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-			
-	};
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarHashCondList_H
+#endif  // !GPDXL_CDXLScalarHashCondList_H
 
 // EOF

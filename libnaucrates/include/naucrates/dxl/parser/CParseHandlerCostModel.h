@@ -18,65 +18,62 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	class CParseHandlerCostParams;
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerCostModel
-	//
-	//	@doc:
-	//		SAX parse handler class for parsing cost model config options
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerCostModel : public CParseHandlerBase
-	{
-		private:
-			ICostModel::ECostModelType m_ecmt;
-			ULONG m_ulSegments;
-			// cost model
-			ICostModel *m_pcm;
+class CParseHandlerCostParams;
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerCostModel
+//
+//	@doc:
+//		SAX parse handler class for parsing cost model config options
+//
+//---------------------------------------------------------------------------
+class CParseHandlerCostModel : public CParseHandlerBase
+{
+private:
+	ICostModel::ECostModelType m_ecmt;
+	ULONG m_ulSegments;
+	// cost model
+	ICostModel *m_pcm;
 
-			CParseHandlerCostParams *m_pphcp;
+	CParseHandlerCostParams *m_pphcp;
 
-			// private copy ctor
-			CParseHandlerCostModel(const CParseHandlerCostModel&);
+	// private copy ctor
+	CParseHandlerCostModel(const CParseHandlerCostModel &);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-		public:
-			// ctor/dtor
-			CParseHandlerCostModel
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
+public:
+	// ctor/dtor
+	CParseHandlerCostModel(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						   CParseHandlerBase *pphRoot);
 
-			virtual ~CParseHandlerCostModel();
+	virtual ~CParseHandlerCostModel();
 
-			// cost model
-			ICostModel *Pcm() const;
-	};
-}
+	// cost model
+	ICostModel *
+	Pcm() const;
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CParseHandlerCostModel_H
+#endif  // !GPDXL_CParseHandlerCostModel_H
 
 // EOF

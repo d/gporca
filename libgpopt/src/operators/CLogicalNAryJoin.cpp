@@ -27,12 +27,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalNAryJoin::CLogicalNAryJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalJoin(pmp)
+CLogicalNAryJoin::CLogicalNAryJoin(IMemoryPool *pmp) : CLogicalJoin(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -47,14 +42,11 @@ CLogicalNAryJoin::CLogicalNAryJoin
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalNAryJoin::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalNAryJoin::Maxcard(IMemoryPool *,  // pmp
+						  CExpressionHandle &exprhdl) const
 {
-	return CLogical::Maxcard(exprhdl, exprhdl.UlArity() - 1, MaxcardDef(exprhdl));
+	return CLogical::Maxcard(exprhdl, exprhdl.UlArity() - 1,
+							 MaxcardDef(exprhdl));
 }
 
 //---------------------------------------------------------------------------
@@ -66,22 +58,17 @@ CLogicalNAryJoin::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalNAryJoin::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	) 
-	const
+CLogicalNAryJoin::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
-	
+
 	(void) pxfs->FExchangeSet(CXform::ExfSubqNAryJoin2Apply);
 	(void) pxfs->FExchangeSet(CXform::ExfExpandNAryJoin);
 	(void) pxfs->FExchangeSet(CXform::ExfExpandNAryJoinMinCard);
 	(void) pxfs->FExchangeSet(CXform::ExfExpandNAryJoinDP);
-	
+
 	return pxfs;
 }
 
 
 // EOF
-

@@ -26,10 +26,7 @@ using namespace gpmd;
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-IMDIndex::PstrIndexType
-	(
-	EmdindexType emdindt
-	)
+IMDIndex::PstrIndexType(EmdindexType emdindt)
 {
 	switch (emdindt)
 	{

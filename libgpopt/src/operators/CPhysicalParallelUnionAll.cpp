@@ -11,85 +11,73 @@
 
 namespace gpopt
 {
-	CPhysicalParallelUnionAll::CPhysicalParallelUnionAll
-		(
-			IMemoryPool *pmp,
-			DrgPcr *pdrgpcrOutput,
-			DrgDrgPcr *pdrgpdrgpcrInput,
-			ULONG ulScanIdPartialIndex
-		) : CPhysicalUnionAll
-		(
-			pmp,
-			pdrgpcrOutput,
-			pdrgpdrgpcrInput,
-			ulScanIdPartialIndex
-		),
-			m_pdrgpds(GPOS_NEW(pmp) CStrictHashedDistributions(pmp, pdrgpcrOutput, pdrgpdrgpcrInput))
-	{
-		// ParallelUnionAll creates two distribution requests to enforce distribution of its children:
-		// (1) (StrictHashed, StrictHashed, ...): used to force redistribute motions that mirror the
-		//     output columns
-		// (2) (HashedNoOp, HashedNoOp, ...): used to force redistribution motions that mirror the
-		//     underlying distribution of each relational child
+CPhysicalParallelUnionAll::CPhysicalParallelUnionAll(
+	IMemoryPool *pmp, DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrInput,
+	ULONG ulScanIdPartialIndex)
+	: CPhysicalUnionAll(pmp, pdrgpcrOutput, pdrgpdrgpcrInput,
+						ulScanIdPartialIndex),
+	  m_pdrgpds(GPOS_NEW(pmp) CStrictHashedDistributions(pmp, pdrgpcrOutput,
+														 pdrgpdrgpcrInput))
+{
+	// ParallelUnionAll creates two distribution requests to enforce distribution of its children:
+	// (1) (StrictHashed, StrictHashed, ...): used to force redistribute motions that mirror the
+	//     output columns
+	// (2) (HashedNoOp, HashedNoOp, ...): used to force redistribution motions that mirror the
+	//     underlying distribution of each relational child
 
-		SetDistrRequests(2);
+	SetDistrRequests(2);
+}
+
+COperator::EOperatorId
+CPhysicalParallelUnionAll::Eopid() const
+{
+	return EopPhysicalParallelUnionAll;
+}
+
+const CHAR *
+CPhysicalParallelUnionAll::SzId() const
+{
+	return "CPhysicalParallelUnionAll";
+}
+
+CDistributionSpec *
+CPhysicalParallelUnionAll::PdsRequired(IMemoryPool *pmp, CExpressionHandle &,
+									   CDistributionSpec *, ULONG ulChildIndex,
+									   DrgPdp *, ULONG ulOptReq) const
+{
+	if (0 == ulOptReq)
+	{
+		CDistributionSpec *pdsChild = (*m_pdrgpds)[ulChildIndex];
+		pdsChild->AddRef();
+		return pdsChild;
 	}
-
-	COperator::EOperatorId CPhysicalParallelUnionAll::Eopid() const
+	else
 	{
-		return EopPhysicalParallelUnionAll;
-	}
+		DrgPcr *pdrgpcrChildInputColumns = (*PdrgpdrgpcrInput())[ulChildIndex];
+		DrgPexpr *pdrgpexprFakeRequestedColumns = GPOS_NEW(pmp) DrgPexpr(pmp);
 
-	const CHAR *CPhysicalParallelUnionAll::SzId() const
-	{
-		return "CPhysicalParallelUnionAll";
-	}
+		CColRef *pcrFirstColumn = (*pdrgpcrChildInputColumns)[0];
+		CExpression *pexprScalarIdent =
+			CUtils::PexprScalarIdent(pmp, pcrFirstColumn);
+		pdrgpexprFakeRequestedColumns->Append(pexprScalarIdent);
 
-	CDistributionSpec *
-	CPhysicalParallelUnionAll::PdsRequired
-		(
-			IMemoryPool *pmp,
-			CExpressionHandle &,
-			CDistributionSpec *,
-			ULONG ulChildIndex,
-			DrgPdp *,
-			ULONG ulOptReq
-		)
-	const
-	{
-		if (0 == ulOptReq)
-		{
-			CDistributionSpec *pdsChild = (*m_pdrgpds)[ulChildIndex];
-			pdsChild->AddRef();
-			return pdsChild;
-		}
-		else
-		{
-			DrgPcr *pdrgpcrChildInputColumns = (*PdrgpdrgpcrInput())[ulChildIndex];
-			DrgPexpr *pdrgpexprFakeRequestedColumns = GPOS_NEW(pmp) DrgPexpr(pmp);
-
-			CColRef *pcrFirstColumn = (*pdrgpcrChildInputColumns)[0];
-			CExpression *pexprScalarIdent = CUtils::PexprScalarIdent(pmp, pcrFirstColumn);
-			pdrgpexprFakeRequestedColumns->Append(pexprScalarIdent);
-
-			return GPOS_NEW(pmp) CDistributionSpecHashedNoOp(pdrgpexprFakeRequestedColumns);
-		}
-	}
-
-	CEnfdDistribution::EDistributionMatching
-	CPhysicalParallelUnionAll::Edm
-		(
-		CReqdPropPlan *, // prppInput
-		ULONG,  // ulChildIndex
-		DrgPdp *, //pdrgpdpCtxt
-		ULONG // ulOptReq
-		)
-	{
-		return CEnfdDistribution::EdmExact;
-	}
-
-	CPhysicalParallelUnionAll::~CPhysicalParallelUnionAll()
-	{
-		m_pdrgpds->Release();
+		return GPOS_NEW(pmp)
+			CDistributionSpecHashedNoOp(pdrgpexprFakeRequestedColumns);
 	}
 }
+
+CEnfdDistribution::EDistributionMatching
+CPhysicalParallelUnionAll::Edm(CReqdPropPlan *,  // prppInput
+							   ULONG,			 // ulChildIndex
+							   DrgPdp *,		 //pdrgpdpCtxt
+							   ULONG			 // ulOptReq
+)
+{
+	return CEnfdDistribution::EdmExact;
+}
+
+CPhysicalParallelUnionAll::~CPhysicalParallelUnionAll()
+{
+	m_pdrgpds->Release();
+}
+}  // namespace gpopt

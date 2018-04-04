@@ -20,56 +20,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerSubqueryScan
-	//
-	//	@doc:
-	//		Parse handler for parsing a subquery scan operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerSubqueryScan : public CParseHandlerPhysicalOp
-	{
-		private:
-		
-			// the subquery scan operator
-			CDXLPhysicalSubqueryScan *m_pdxlop;
-		
-			// private copy ctor
-			CParseHandlerSubqueryScan(const CParseHandlerSubqueryScan &);
+XERCES_CPP_NAMESPACE_USE
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerSubqueryScan
+//
+//	@doc:
+//		Parse handler for parsing a subquery scan operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerSubqueryScan : public CParseHandlerPhysicalOp
+{
+private:
+	// the subquery scan operator
+	CDXLPhysicalSubqueryScan *m_pdxlop;
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerSubqueryScan
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+	// private copy ctor
+	CParseHandlerSubqueryScan(const CParseHandlerSubqueryScan &);
 
-#endif // !GPDXL_CParseHandlerSubqueryScan_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerSubqueryScan(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerSubqueryScan_H
 
 // EOF

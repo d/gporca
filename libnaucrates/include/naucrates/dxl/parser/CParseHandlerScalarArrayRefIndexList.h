@@ -17,53 +17,50 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarArrayRefIndexList
-	//
-	//	@doc:
-	//		Parse handler class for parsing the list of arrayref indexes
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarArrayRefIndexList : public CParseHandlerScalarOp
-	{
-		private:
-			
-			// private copy ctor
-			CParseHandlerScalarArrayRefIndexList(const CParseHandlerScalarArrayRefIndexList&);
-		
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor
-			CParseHandlerScalarArrayRefIndexList
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerScalarScalarArrayRefIndexList_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarArrayRefIndexList
+//
+//	@doc:
+//		Parse handler class for parsing the list of arrayref indexes
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarArrayRefIndexList : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarArrayRefIndexList(
+		const CParseHandlerScalarArrayRefIndexList &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerScalarArrayRefIndexList(IMemoryPool *pmp,
+										 CParseHandlerManager *pphm,
+										 CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerScalarScalarArrayRefIndexList_H
 
 // EOF

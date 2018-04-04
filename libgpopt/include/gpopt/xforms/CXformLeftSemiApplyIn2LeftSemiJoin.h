@@ -18,70 +18,64 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformLeftSemiApplyIn2LeftSemiJoin
-	//
-	//	@doc:
-	//		Transform Apply into Join by decorrelating the inner side
-	//
-	//---------------------------------------------------------------------------
-	class CXformLeftSemiApplyIn2LeftSemiJoin : public CXformLeftSemiApply2LeftSemiJoin
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformLeftSemiApplyIn2LeftSemiJoin
+//
+//	@doc:
+//		Transform Apply into Join by decorrelating the inner side
+//
+//---------------------------------------------------------------------------
+class CXformLeftSemiApplyIn2LeftSemiJoin
+	: public CXformLeftSemiApply2LeftSemiJoin
+{
+private:
+	// private copy ctor
+	CXformLeftSemiApplyIn2LeftSemiJoin(
+		const CXformLeftSemiApplyIn2LeftSemiJoin &);
+
+public:
+	// ctor
+	explicit CXformLeftSemiApplyIn2LeftSemiJoin(IMemoryPool *pmp)
+		: CXformLeftSemiApply2LeftSemiJoin(
+			  pmp,
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CLogicalLeftSemiApplyIn(pmp),
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternTree(pmp)),  // right child
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
+				  ))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformLeftSemiApplyIn2LeftSemiJoin()
+	{
+	}
 
-			// private copy ctor
-			CXformLeftSemiApplyIn2LeftSemiJoin(const CXformLeftSemiApplyIn2LeftSemiJoin &);
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfLeftSemiApplyIn2LeftSemiJoin;
+	}
 
-		public:
-
-			// ctor
-			explicit
-			CXformLeftSemiApplyIn2LeftSemiJoin
-				(
-				IMemoryPool *pmp
-				)
-				:
-				CXformLeftSemiApply2LeftSemiJoin
-					(
-						pmp,
-						GPOS_NEW(pmp) CExpression
-							(
-							pmp,
-							GPOS_NEW(pmp) CLogicalLeftSemiApplyIn(pmp),
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)), // right child
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)) // predicate
-							)
-					)
-			{}
-
-			// dtor
-			virtual
-			~CXformLeftSemiApplyIn2LeftSemiJoin()
-			{}
-
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfLeftSemiApplyIn2LeftSemiJoin;
-			}
-
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformLeftSemiApplyIn2LeftSemiJoin";
-			}
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformLeftSemiApplyIn2LeftSemiJoin";
+	}
 
 
-	}; // class CXformLeftSemiApplyIn2LeftSemiJoin
+};  // class CXformLeftSemiApplyIn2LeftSemiJoin
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CXformLeftSemiApplyIn2LeftSemiJoin_H
+#endif  // !GPOPT_CXformLeftSemiApplyIn2LeftSemiJoin_H
 
 // EOF

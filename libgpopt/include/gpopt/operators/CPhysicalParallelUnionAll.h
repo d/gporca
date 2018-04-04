@@ -8,38 +8,40 @@
 
 namespace gpopt
 {
-	// Operator that implements logical union all, but creates a slice for each
-	// child relation to maximize concurrency.
-	// See gpopt::CPhysicalSerialUnionAll for its serial sibling.
-	class CPhysicalParallelUnionAll : public CPhysicalUnionAll
-	{
-		private:
-			// array of child hashed distributions -- used locally for distribution derivation
-			DrgPds *const m_pdrgpds;
+// Operator that implements logical union all, but creates a slice for each
+// child relation to maximize concurrency.
+// See gpopt::CPhysicalSerialUnionAll for its serial sibling.
+class CPhysicalParallelUnionAll : public CPhysicalUnionAll
+{
+private:
+	// array of child hashed distributions -- used locally for distribution derivation
+	DrgPds *const m_pdrgpds;
 
-		public:
-			CPhysicalParallelUnionAll(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrInput,
-									  ULONG ulScanIdPartialIndex);
+public:
+	CPhysicalParallelUnionAll(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput,
+							  DrgDrgPcr *pdrgpdrgpcrInput,
+							  ULONG ulScanIdPartialIndex);
 
-			virtual EOperatorId Eopid() const;
+	virtual EOperatorId
+	Eopid() const;
 
-			virtual const CHAR *SzId() const;
+	virtual const CHAR *
+	SzId() const;
 
-			virtual CDistributionSpec *
-			PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl, CDistributionSpec *pdsRequired,
-						ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const;
+	virtual CDistributionSpec *
+	PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				CDistributionSpec *pdsRequired, ULONG ulChildIndex,
+				DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const;
 
-			virtual
-			CEnfdDistribution::EDistributionMatching Edm
-				(
-				CReqdPropPlan *, // prppInput
-				ULONG,  // ulChildIndex
-				DrgPdp *, //pdrgpdpCtxt
-				ULONG // ulOptReq
-				);
+	virtual CEnfdDistribution::EDistributionMatching
+	Edm(CReqdPropPlan *,  // prppInput
+		ULONG,			  // ulChildIndex
+		DrgPdp *,		  //pdrgpdpCtxt
+		ULONG			  // ulOptReq
+	);
 
-			virtual ~CPhysicalParallelUnionAll();
-	};
-}
+	virtual ~CPhysicalParallelUnionAll();
+};
+}  // namespace gpopt
 
-#endif //GPOPT_CPhysicalParallelUnionAll_H
+#endif  //GPOPT_CPhysicalParallelUnionAll_H

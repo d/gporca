@@ -48,9 +48,7 @@ using namespace gpmd;
 GPOS_RESULT
 CExpressionPreprocessorTest::EresUnittest()
 {
-
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(EresUnittest_UnnestSubqueries),
 		GPOS_UNITTEST_FUNC(EresUnittest_PreProcess),
 		GPOS_UNITTEST_FUNC(EresUnittest_PreProcessWindowFunc),
@@ -66,8 +64,8 @@ CExpressionPreprocessorTest::EresUnittest()
 		GPOS_UNITTEST_FUNC(EresUnittest_CollapseInnerJoin),
 		GPOS_UNITTEST_FUNC(EresUnittest_PreProcessConvert2InPredicate),
 		GPOS_UNITTEST_FUNC(EresUnittest_PreProcessConvertArrayWithEquals),
-		GPOS_UNITTEST_FUNC(EresUnittest_PreProcessConvert2InPredicateDeepExpressionTree)
-		};
+		GPOS_UNITTEST_FUNC(
+			EresUnittest_PreProcessConvert2InPredicateDeepExpressionTree)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -82,15 +80,11 @@ CExpressionPreprocessorTest::EresUnittest()
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasSubqueryAll
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasSubqueryAll(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopScalarSubqueryAll,
 	};
 
@@ -107,15 +101,11 @@ CExpressionPreprocessorTest::FHasSubqueryAll
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasSubqueryAny
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasSubqueryAny(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopScalarSubqueryAny,
 	};
 
@@ -132,15 +122,11 @@ CExpressionPreprocessorTest::FHasSubqueryAny
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasSubqueryExists
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasSubqueryExists(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopScalarSubqueryExists,
 	};
 
@@ -156,15 +142,11 @@ CExpressionPreprocessorTest::FHasSubqueryExists
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasSubqueryNotExists
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasSubqueryNotExists(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopScalarSubqueryNotExists,
 	};
 
@@ -182,13 +164,9 @@ CExpressionPreprocessorTest::FHasSubqueryNotExists
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasNoOuterJoin
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasNoOuterJoin(CExpression *pexpr)
 {
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopLogicalLeftOuterJoin,
 	};
 
@@ -205,10 +183,7 @@ CExpressionPreprocessorTest::FHasNoOuterJoin
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasOuterRefs
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasOuterRefs(CExpression *pexpr)
 {
 	COperator *pop = pexpr->Pop();
 	BOOL fHasOuterRefs = (pop->FLogical() && CUtils::FHasOuterRefs(pexpr));
@@ -237,13 +212,9 @@ CExpressionPreprocessorTest::FHasOuterRefs
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasSeqPrj
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasSeqPrj(CExpression *pexpr)
 {
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopLogicalSequenceProject,
 	};
 
@@ -259,20 +230,16 @@ CExpressionPreprocessorTest::FHasSeqPrj
 //
 //---------------------------------------------------------------------------
 BOOL
-CExpressionPreprocessorTest::FHasIDF
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::FHasIDF(CExpression *pexpr)
 {
-	COperator::EOperatorId rgeopid[] =
-	{
+	COperator::EOperatorId rgeopid[] = {
 		COperator::EopScalarIsDistinctFrom,
 	};
 
 	return CUtils::FHasOp(pexpr, rgeopid, GPOS_ARRAY_SIZE(rgeopid));
 }
 
-#endif // GPOD_DEBUG
+#endif  // GPOD_DEBUG
 
 
 //---------------------------------------------------------------------------
@@ -294,9 +261,8 @@ CExpressionPreprocessorTest::EresUnittest_PreProcess()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 
-	typedef CExpression *(*Pfpexpr)(IMemoryPool*);
-	Pfpexpr rgpf[] =
-		{
+	typedef CExpression *(*Pfpexpr)(IMemoryPool *);
+	Pfpexpr rgpf[] = {
 		CTestUtils::PexprLogicalSelectWithConstAnySubquery,
 		CTestUtils::PexprLogicalSelectWithConstAllSubquery,
 		CTestUtils::PexprLogicalSelectWithNestedAnd,
@@ -306,18 +272,13 @@ CExpressionPreprocessorTest::EresUnittest_PreProcess()
 		CTestUtils::PexprLogicalSelectWithNestedAndOrNot,
 		CTestUtils::PexprLogicalSelectOnOuterJoin,
 		CTestUtils::PexprNAryJoinOnLeftOuterJoin,
-		};
+	};
 
 	for (ULONG i = 0; i < GPOS_ARRAY_SIZE(rgpf); i++)
 	{
 		// install opt context in TLS
-		CAutoOptCtxt aoc
-						(
-						pmp,
-						&mda,
-						NULL,  /* pceeval */
-						CTestUtils::Pcm(pmp)
-						);
+		CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+						 CTestUtils::Pcm(pmp));
 
 		// generate expression
 		CExpression *pexpr = rgpf[i](pmp);
@@ -325,12 +286,15 @@ CExpressionPreprocessorTest::EresUnittest_PreProcess()
 		CWStringDynamic str(pmp);
 		COstreamString oss(&str);
 
-		oss	<< std::endl << "EXPR:" << std::endl << *pexpr << std::endl;
+		oss << std::endl << "EXPR:" << std::endl << *pexpr << std::endl;
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 
- 		CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-		oss	<< std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+		CExpression *pexprPreprocessed =
+			CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+		oss << std::endl
+			<< "PREPROCESSED EXPR:" << std::endl
+			<< *pexprPreprocessed << std::endl;
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 
@@ -363,22 +327,20 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFunc()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 
-	CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL,  /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	// generate a Select with a null-filtering predicate on top of Outer Join,
 	// pre-processing should transform Outer Join to Inner Join
-	CExpression *pexprSelectOnOuterJoin = CTestUtils::PexprLogicalSelectOnOuterJoin(pmp);
+	CExpression *pexprSelectOnOuterJoin =
+		CTestUtils::PexprLogicalSelectOnOuterJoin(pmp);
 
-	OID oidRowNumber = COptCtxt::PoctxtFromTLS()->Poconf()->Pwindowoids()->OidRowNumber();
+	OID oidRowNumber =
+		COptCtxt::PoctxtFromTLS()->Poconf()->Pwindowoids()->OidRowNumber();
 
 	// add a window function with a predicate on top of the Outer Join expression
-	CExpression *pexprWindow = CTestUtils::PexprLogicalSequenceProject(pmp, oidRowNumber, pexprSelectOnOuterJoin);
+	CExpression *pexprWindow = CTestUtils::PexprLogicalSequenceProject(
+		pmp, oidRowNumber, pexprSelectOnOuterJoin);
 	CExpression *pexpr = CTestUtils::PexprLogicalSelect(pmp, pexprWindow);
 
 	CWStringDynamic str(pmp);
@@ -388,8 +350,11 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFunc()
 	GPOS_TRACE(str.Wsz());
 	str.Reset();
 
- 	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-	oss << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+	oss << std::endl
+		<< "PREPROCESSED EXPR:" << std::endl
+		<< *pexprPreprocessed << std::endl;
 	GPOS_TRACE(str.Wsz());
 
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) && "unexpected outer join");
@@ -412,13 +377,10 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFunc()
 //
 //---------------------------------------------------------------------------
 CExpression *
-CExpressionPreprocessorTest::PexprJoinHelper
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLOJ,
-	BOOL fCascadedLOJ,
-	BOOL fIntermediateInnerjoin
-	)
+CExpressionPreprocessorTest::PexprJoinHelper(IMemoryPool *pmp,
+											 CExpression *pexprLOJ,
+											 BOOL fCascadedLOJ,
+											 BOOL fIntermediateInnerjoin)
 {
 	CExpression *pexprBottomJoin = pexprLOJ;
 	CExpression *pexprResult = pexprBottomJoin;
@@ -426,11 +388,19 @@ CExpressionPreprocessorTest::PexprJoinHelper
 	if (fIntermediateInnerjoin)
 	{
 		CExpression *pexprGet = CTestUtils::PexprLogicalGet(pmp);
-		CColRef *pcrLeft = CDrvdPropRelational::Pdprel((*pexprBottomJoin)[0]->PdpDerive())->PcrsOutput()->PcrAny();
-		CColRef *pcrRight = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())->PcrsOutput()->PcrAny();
-		CExpression *pexprEquality = CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight);
+		CColRef *pcrLeft =
+			CDrvdPropRelational::Pdprel((*pexprBottomJoin)[0]->PdpDerive())
+				->PcrsOutput()
+				->PcrAny();
+		CColRef *pcrRight = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())
+								->PcrsOutput()
+								->PcrAny();
+		CExpression *pexprEquality =
+			CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight);
 
-		pexprBottomJoin = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp), pexprBottomJoin, pexprGet, pexprEquality);
+		pexprBottomJoin =
+			GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
+									  pexprBottomJoin, pexprGet, pexprEquality);
 		pexprResult = pexprBottomJoin;
 	}
 
@@ -438,11 +408,19 @@ CExpressionPreprocessorTest::PexprJoinHelper
 	{
 		// generate cascaded LOJ expression
 		CExpression *pexprGet = CTestUtils::PexprLogicalGet(pmp);
-		CColRef *pcrLeft = CDrvdPropRelational::Pdprel(pexprBottomJoin->PdpDerive())->PcrsOutput()->PcrAny();
-		CColRef *pcrRight = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())->PcrsOutput()->PcrAny();
-		CExpression *pexprEquality = CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight);
+		CColRef *pcrLeft =
+			CDrvdPropRelational::Pdprel(pexprBottomJoin->PdpDerive())
+				->PcrsOutput()
+				->PcrAny();
+		CColRef *pcrRight = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())
+								->PcrsOutput()
+								->PcrAny();
+		CExpression *pexprEquality =
+			CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight);
 
-		pexprResult = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp), pexprBottomJoin, pexprGet, pexprEquality);
+		pexprResult = GPOS_NEW(pmp)
+			CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp),
+						pexprBottomJoin, pexprGet, pexprEquality);
 	}
 
 	return pexprResult;
@@ -457,33 +435,33 @@ CExpressionPreprocessorTest::PexprJoinHelper
 //
 //---------------------------------------------------------------------------
 CExpression *
-CExpressionPreprocessorTest::PexprWindowFuncWithLOJHelper
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprLOJ,
-	CColRef *pcrPartitionBy,
-	BOOL fAddWindowFunction,
-	BOOL fOuterChildPred,
-	BOOL fCascadedLOJ,
-	BOOL fPredBelowWindow
-	)
+CExpressionPreprocessorTest::PexprWindowFuncWithLOJHelper(
+	IMemoryPool *pmp, CExpression *pexprLOJ, CColRef *pcrPartitionBy,
+	BOOL fAddWindowFunction, BOOL fOuterChildPred, BOOL fCascadedLOJ,
+	BOOL fPredBelowWindow)
 {
 	// add window function on top of join expression
 	DrgPcr *pdrgpcrPartitionBy = GPOS_NEW(pmp) DrgPcr(pmp);
 	pdrgpcrPartitionBy->Append(pcrPartitionBy);
 
 	// add Select node on top of window function
-	CExpression *pexprPred = CUtils::PexprScalarEqCmp(pmp, pcrPartitionBy, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprPred = CUtils::PexprScalarEqCmp(
+		pmp, pcrPartitionBy, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
 	if (!fOuterChildPred && fCascadedLOJ)
 	{
 		// add another predicate on inner child of top LOJ
-		CColRef *pcrInner = CDrvdPropRelational::Pdprel((*pexprLOJ)[1]->PdpDerive())->PcrsOutput()->PcrAny();
+		CColRef *pcrInner =
+			CDrvdPropRelational::Pdprel((*pexprLOJ)[1]->PdpDerive())
+				->PcrsOutput()
+				->PcrAny();
 		if (fAddWindowFunction)
 		{
 			pdrgpcrPartitionBy->Append(pcrInner);
 		}
-		CExpression *pexprPred2 = CUtils::PexprScalarEqCmp(pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-		CExpression *pexprConjunction = CPredicateUtils::PexprConjunction(pmp, pexprPred, pexprPred2);
+		CExpression *pexprPred2 = CUtils::PexprScalarEqCmp(
+			pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+		CExpression *pexprConjunction =
+			CPredicateUtils::PexprConjunction(pmp, pexprPred, pexprPred2);
 		pexprPred->Release();
 		pexprPred2->Release();
 		pexprPred = pexprConjunction;
@@ -497,15 +475,18 @@ CExpressionPreprocessorTest::PexprWindowFuncWithLOJHelper
 			pexprLOJ = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPred);
 		}
 
-		CExpression *pexprPartitionedWinFunc = CXformUtils::PexprWindowWithRowNumber(pmp, pexprLOJ, pdrgpcrPartitionBy);
+		CExpression *pexprPartitionedWinFunc =
+			CXformUtils::PexprWindowWithRowNumber(pmp, pexprLOJ,
+												  pdrgpcrPartitionBy);
 		pexprLOJ->Release();
 		pdrgpcrPartitionBy->Release();
 
-		return CUtils::PexprLogicalSelect(pmp, pexprPartitionedWinFunc, pexprPred);
+		return CUtils::PexprLogicalSelect(pmp, pexprPartitionedWinFunc,
+										  pexprPred);
 	}
 
 	pdrgpcrPartitionBy->Release();
-	return 	CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPred);
+	return CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPred);
 }
 
 
@@ -518,14 +499,12 @@ CExpressionPreprocessorTest::PexprWindowFuncWithLOJHelper
 //
 //---------------------------------------------------------------------------
 void
-CExpressionPreprocessorTest::PreprocessOuterJoin
-	(
-	const CHAR *szFilePath,
-	BOOL
+CExpressionPreprocessorTest::PreprocessOuterJoin(const CHAR *szFilePath,
+												 BOOL
 #ifdef GPOS_DEBUG
-	 fAllowOuterJoin
-#endif // GPOS_DEBUG
-	)
+													 fAllowOuterJoin
+#endif  // GPOS_DEBUG
+)
 {
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
@@ -538,8 +517,9 @@ CExpressionPreprocessorTest::PreprocessOuterJoin
 	GPOS_CHECK_ABORT;
 
 	{
-		CAutoMDAccessor amda(pmp, pmdp,  CTestUtils::m_sysidDefault);
-		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,  /* pceeval */ CTestUtils::Pcm(pmp));
+		CAutoMDAccessor amda(pmp, pmdp, CTestUtils::m_sysidDefault);
+		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,
+						 /* pceeval */ CTestUtils::Pcm(pmp));
 
 		// read query expression
 		CExpression *pexpr = CTestUtils::PexprReadQuery(pmp, szFilePath);
@@ -552,20 +532,25 @@ CExpressionPreprocessorTest::PreprocessOuterJoin
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 
-		CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-		oss << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+		CExpression *pexprPreprocessed =
+			CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+		oss << std::endl
+			<< "PREPROCESSED EXPR:" << std::endl
+			<< *pexprPreprocessed << std::endl;
 		GPOS_TRACE(str.Wsz());
 
 #ifdef GPOS_DEBUG
 		if (fAllowOuterJoin)
 		{
-			GPOS_ASSERT(!FHasNoOuterJoin(pexprPreprocessed) && "expected outer join");
+			GPOS_ASSERT(!FHasNoOuterJoin(pexprPreprocessed) &&
+						"expected outer join");
 		}
 		else
 		{
-			GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) && "unexpected outer join");
+			GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) &&
+						"unexpected outer join");
 		}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 		str.Reset();
 
@@ -587,8 +572,7 @@ GPOS_RESULT
 CExpressionPreprocessorTest::EresUnittest_PreProcessOuterJoinMinidumps()
 {
 	// tests where OuterJoin must be converted to InnerJoin
-	const CHAR *rgszOuterJoinPositiveTests[] =
-	{
+	const CHAR *rgszOuterJoinPositiveTests[] = {
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q1.xml",
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q3.xml",
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q5.xml",
@@ -606,8 +590,7 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOuterJoinMinidumps()
 	}
 
 	// tests where OuterJoin must NOT be converted to InnerJoin
-	const CHAR *rgszOuterJoinNegativeTests[] =
-	{
+	const CHAR *rgszOuterJoinNegativeTests[] = {
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q2.xml",
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q4.xml",
 		"../data/dxl/expressiontests/LOJ-TO-InnerJoin-Q6.xml",
@@ -637,15 +620,12 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOuterJoinMinidumps()
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresCompareExpressions
-	(
-	IMemoryPool *pmp,
-	CWStringDynamic *rgstr[],
-	ULONG ulSize
-	)
+CExpressionPreprocessorTest::EresCompareExpressions(IMemoryPool *pmp,
+													CWStringDynamic *rgstr[],
+													ULONG ulSize)
 {
 	// check equality of processed expressions with/without the duplicate Select below Window
-	for (ULONG ul = 0; ul < ulSize; ul+=2)
+	for (ULONG ul = 0; ul < ulSize; ul += 2)
 	{
 		CWStringDynamic *pstrFst = rgstr[ul];
 		CWStringDynamic *pstrSnd = rgstr[ul + 1];
@@ -655,8 +635,12 @@ CExpressionPreprocessorTest::EresCompareExpressions
 		{
 			CAutoTrace at(pmp);
 			at.Os() << std::endl << "EXPECTED EQUAL EXPRESSIONS:";
-			at.Os() << std::endl << "EXPR1:" << std::endl << pstrFst->Wsz() << std::endl;
-			at.Os() << std::endl << "EXPR2:" << std::endl << pstrSnd->Wsz() << std::endl;
+			at.Os() << std::endl
+					<< "EXPR1:" << std::endl
+					<< pstrFst->Wsz() << std::endl;
+			at.Os() << std::endl
+					<< "EXPR2:" << std::endl
+					<< pstrSnd->Wsz() << std::endl;
 		}
 		GPOS_ASSERT(fEqual && "expected equal expressions");
 
@@ -683,10 +667,10 @@ CExpressionPreprocessorTest::EresCompareExpressions
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresTestLOJ
-	(
-	BOOL fAddWindowFunction // if true, a window function is added on top of outer join test cases
-	)
+CExpressionPreprocessorTest::EresTestLOJ(
+	BOOL
+		fAddWindowFunction  // if true, a window function is added on top of outer join test cases
+)
 {
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
@@ -762,46 +746,73 @@ CExpressionPreprocessorTest::EresTestLOJ
 				fOuterChildPred = !fOuterChildPred;
 
 				BOOL fPredBelowWindow = false;
-				for (ULONG ulPredBelowWindowCases = 0; ulPredBelowWindowCases < 2; ulPredBelowWindowCases++)
+				for (ULONG ulPredBelowWindowCases = 0;
+					 ulPredBelowWindowCases < 2; ulPredBelowWindowCases++)
 				{
-					CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/,  CTestUtils::Pcm(pmp));
+					CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/,
+									 CTestUtils::Pcm(pmp));
 
 					fPredBelowWindow = fAddWindowFunction && !fPredBelowWindow;
 
-					CExpression *pexprLOJ = CTestUtils::PexprLogicalJoin<CLogicalLeftOuterJoin>(pmp);
+					CExpression *pexprLOJ =
+						CTestUtils::PexprLogicalJoin<CLogicalLeftOuterJoin>(
+							pmp);
 					CColRef *pcr = NULL;
 					if (fOuterChildPred)
 					{
-						pcr = CDrvdPropRelational::Pdprel((*pexprLOJ)[0]->PdpDerive())->PcrsOutput()->PcrAny();
+						pcr = CDrvdPropRelational::Pdprel(
+								  (*pexprLOJ)[0]->PdpDerive())
+								  ->PcrsOutput()
+								  ->PcrAny();
 					}
 					else
 					{
-						pcr = CDrvdPropRelational::Pdprel((*pexprLOJ)[1]->PdpDerive())->PcrsOutput()->PcrAny();
+						pcr = CDrvdPropRelational::Pdprel(
+								  (*pexprLOJ)[1]->PdpDerive())
+								  ->PcrsOutput()
+								  ->PcrAny();
 					}
 
-					pexprLOJ = PexprJoinHelper(pmp, pexprLOJ, fCascadedLOJ, fIntermediateInnerjoin);
+					pexprLOJ = PexprJoinHelper(pmp, pexprLOJ, fCascadedLOJ,
+											   fIntermediateInnerjoin);
 
-					CExpression *pexprSelect = PexprWindowFuncWithLOJHelper(pmp, pexprLOJ, pcr, fAddWindowFunction, fOuterChildPred, fCascadedLOJ, fPredBelowWindow);
+					CExpression *pexprSelect = PexprWindowFuncWithLOJHelper(
+						pmp, pexprLOJ, pcr, fAddWindowFunction, fOuterChildPred,
+						fCascadedLOJ, fPredBelowWindow);
 
-					CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
+					CExpression *pexprPreprocessed =
+						CExpressionPreprocessor::PexprPreprocess(pmp,
+																 pexprSelect);
 
 					{
 						CAutoTrace at(pmp);
-						at.Os() << std::endl << "WindowFunction: "<< fAddWindowFunction << ", IntermediateInnerjoin: " << fIntermediateInnerjoin << ", CascadedLOJ: " << fCascadedLOJ << ", OuterChildPred: " << fOuterChildPred << ", PredBelowWindow: " << fPredBelowWindow;
-						at.Os() << std::endl << "EXPR:" << std::endl << *pexprSelect << std::endl;
-						at.Os() << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+						at.Os() << std::endl
+								<< "WindowFunction: " << fAddWindowFunction
+								<< ", IntermediateInnerjoin: "
+								<< fIntermediateInnerjoin
+								<< ", CascadedLOJ: " << fCascadedLOJ
+								<< ", OuterChildPred: " << fOuterChildPred
+								<< ", PredBelowWindow: " << fPredBelowWindow;
+						at.Os() << std::endl
+								<< "EXPR:" << std::endl
+								<< *pexprSelect << std::endl;
+						at.Os() << std::endl
+								<< "PREPROCESSED EXPR:" << std::endl
+								<< *pexprPreprocessed << std::endl;
 					}
 
 #ifdef GPOS_DEBUG
 					if (fOuterChildPred)
 					{
-						GPOS_ASSERT(!FHasNoOuterJoin(pexprPreprocessed) && "expected outer join");
+						GPOS_ASSERT(!FHasNoOuterJoin(pexprPreprocessed) &&
+									"expected outer join");
 					}
 					else
 					{
-						GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) && "unexpected outer join");
+						GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) &&
+									"unexpected outer join");
 					}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 					// store string representation of preprocessed expression
 					CWStringDynamic *pstr = GPOS_NEW(pmp) CWStringDynamic(pmp);
@@ -861,14 +872,12 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithLOJ()
 //
 //---------------------------------------------------------------------------
 void
-CExpressionPreprocessorTest::PreprocessWinFuncWithOuterRefs
-	(
-	const CHAR *szFilePath,
-	BOOL
+CExpressionPreprocessorTest::PreprocessWinFuncWithOuterRefs(
+	const CHAR *szFilePath, BOOL
 #ifdef GPOS_DEBUG
-		fAllowWinFuncOuterRefs
-#endif // GPOS_DEBUG
-	)
+								fAllowWinFuncOuterRefs
+#endif  // GPOS_DEBUG
+)
 {
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
@@ -882,8 +891,9 @@ CExpressionPreprocessorTest::PreprocessWinFuncWithOuterRefs
 	GPOS_CHECK_ABORT;
 
 	{
-		CAutoMDAccessor amda(pmp, pmdp,  CTestUtils::m_sysidDefault);
-		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,  /* pceeval */ CTestUtils::Pcm(pmp));
+		CAutoMDAccessor amda(pmp, pmdp, CTestUtils::m_sysidDefault);
+		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,
+						 /* pceeval */ CTestUtils::Pcm(pmp));
 
 		// read query expression
 		CExpression *pexpr = CTestUtils::PexprReadQuery(pmp, szFilePath);
@@ -896,20 +906,25 @@ CExpressionPreprocessorTest::PreprocessWinFuncWithOuterRefs
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 
-		CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-		oss << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+		CExpression *pexprPreprocessed =
+			CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+		oss << std::endl
+			<< "PREPROCESSED EXPR:" << std::endl
+			<< *pexprPreprocessed << std::endl;
 		GPOS_TRACE(str.Wsz());
 
 #ifdef GPOS_DEBUG
 		if (fAllowWinFuncOuterRefs)
 		{
-			GPOS_ASSERT(FHasOuterRefs(pexprPreprocessed) && "expected outer references");
+			GPOS_ASSERT(FHasOuterRefs(pexprPreprocessed) &&
+						"expected outer references");
 		}
 		else
 		{
-			GPOS_ASSERT(!FHasOuterRefs(pexprPreprocessed) && "unexpected outer references");
+			GPOS_ASSERT(!FHasOuterRefs(pexprPreprocessed) &&
+						"unexpected outer references");
 		}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 		str.Reset();
 
@@ -931,27 +946,29 @@ CExpressionPreprocessorTest::PreprocessWinFuncWithOuterRefs
 GPOS_RESULT
 CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithOuterRefs()
 {
-	const CHAR *rgszTestsNoOuterRefs[] =
-	{
+	const CHAR *rgszTestsNoOuterRefs[] = {
 		"../data/dxl/expressiontests/WinFunc-OuterRef-Partition-Query.xml",
-		"../data/dxl/expressiontests/WinFunc-OuterRef-Partition-Order-Query.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-OuterRef-Partition-Order-Query.xml",
 	};
 
 	for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsNoOuterRefs); ul++)
 	{
 		const CHAR *szFilePath = rgszTestsNoOuterRefs[ul];
-		PreprocessWinFuncWithOuterRefs(szFilePath, false /*fAllowWinFuncOuterRefs*/);
+		PreprocessWinFuncWithOuterRefs(szFilePath,
+									   false /*fAllowWinFuncOuterRefs*/);
 	}
 
-	const CHAR *rgszTestsOuterRefs[] =
-	{
-		"../data/dxl/expressiontests/WinFunc-OuterRef-Partition-Order-Frames-Query.xml",
+	const CHAR *rgszTestsOuterRefs[] = {
+		"../data/dxl/expressiontests/"
+		"WinFunc-OuterRef-Partition-Order-Frames-Query.xml",
 	};
 
 	for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsOuterRefs); ul++)
 	{
 		const CHAR *szFilePath = rgszTestsOuterRefs[ul];
-		PreprocessWinFuncWithOuterRefs(szFilePath, true /*fAllowWinFuncOuterRefs*/);
+		PreprocessWinFuncWithOuterRefs(szFilePath,
+									   true /*fAllowWinFuncOuterRefs*/);
 	}
 
 	return GPOS_OK;
@@ -967,21 +984,19 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithOuterRefs()
 //
 //---------------------------------------------------------------------------
 void
-CExpressionPreprocessorTest::PreprocessWinFuncWithDistinctAggs
-	(
-	IMemoryPool *pmp,
-	const CHAR *szFilePath,
+CExpressionPreprocessorTest::PreprocessWinFuncWithDistinctAggs(
+	IMemoryPool *pmp, const CHAR *szFilePath,
 	BOOL
 #ifdef GPOS_DEBUG
 		fAllowSeqPrj
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 	,
 	BOOL
 #ifdef GPOS_DEBUG
 		fAllowIDF
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
-	)
+)
 {
 	// read query expression
 	CExpression *pexpr = CTestUtils::PexprReadQuery(pmp, szFilePath);
@@ -994,30 +1009,37 @@ CExpressionPreprocessorTest::PreprocessWinFuncWithDistinctAggs
 	GPOS_TRACE(str.Wsz());
 	str.Reset();
 
-	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-	oss << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+	oss << std::endl
+		<< "PREPROCESSED EXPR:" << std::endl
+		<< *pexprPreprocessed << std::endl;
 	GPOS_TRACE(str.Wsz());
 
 #ifdef GPOS_DEBUG
 	if (fAllowSeqPrj)
 	{
-		GPOS_ASSERT(FHasSeqPrj(pexprPreprocessed) && "expected sequence project");
+		GPOS_ASSERT(FHasSeqPrj(pexprPreprocessed) &&
+					"expected sequence project");
 	}
 	else
 	{
-		GPOS_ASSERT(!FHasSeqPrj(pexprPreprocessed) && "unexpected sequence project");
+		GPOS_ASSERT(!FHasSeqPrj(pexprPreprocessed) &&
+					"unexpected sequence project");
 	}
 
 	if (fAllowIDF)
 	{
-		GPOS_ASSERT(FHasIDF(pexprPreprocessed) && "expected (is distinct from)");
+		GPOS_ASSERT(FHasIDF(pexprPreprocessed) &&
+					"expected (is distinct from)");
 	}
 	else
 	{
-		GPOS_ASSERT(!FHasIDF(pexprPreprocessed) && "unexpected (is distinct from)");
+		GPOS_ASSERT(!FHasIDF(pexprPreprocessed) &&
+					"unexpected (is distinct from)");
 	}
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	str.Reset();
 
@@ -1041,8 +1063,7 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithDistinctAggs()
 	IMemoryPool *pmp = amp.Pmp();
 
 	// tests where preprocessing removes SeqPrj nodes
-	const CHAR *rgszTestsDistinctAggsRemoveWindow[] =
-	{
+	const CHAR *rgszTestsDistinctAggsRemoveWindow[] = {
 		"../data/dxl/expressiontests/WinFunc-Single-DQA-Query.xml",
 		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query.xml",
 		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-2.xml",
@@ -1050,66 +1071,94 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithDistinctAggs()
 	};
 
 	// tests where preprocessing removes SeqPrj nodes and adds join with INDF condition
-	const CHAR *rgszTestsDistinctAggsRemoveWindowINDF[] =
-	{
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-PartitionBy-SameColumn.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-PartitionBy-SameColumn-2.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-PartitionBy-DifferentColumn.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-PartitionBy-DifferentColumn-2.xml",
+	const CHAR *rgszTestsDistinctAggsRemoveWindowINDF[] = {
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-PartitionBy-SameColumn.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-PartitionBy-SameColumn-2.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-PartitionBy-DifferentColumn.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-PartitionBy-DifferentColumn-2.xml",
 	};
 
 	// tests where preprocessing does not remove SeqPrj nodes
-	const CHAR *rgszTestsDistinctAggsDoNotRemoveWindow[] =
-	{
+	const CHAR *rgszTestsDistinctAggsDoNotRemoveWindow[] = {
 		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-2.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-2.xml",
 	};
 
 	// tests where preprocessing does not remove SeqPrj nodes and add join with INDF condition
-	const CHAR *rgszTestsDistinctAggsDoNotRemoveWindowINDF[] =
-	{
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-PartitionBy-SameColumn.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-PartitionBy-SameColumn-2.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-OrderBy-PartitionBy-SameColumn.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-OrderBy-PartitionBy-SameColumn-2.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-Distinct-Different-Columns.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-Distinct-ParitionBy-Different-Columns.xml",
-		"../data/dxl/expressiontests/WinFunc-Multiple-DQA-Query-RowNumber-Multiple-ParitionBy-Columns.xml",
+	const CHAR *rgszTestsDistinctAggsDoNotRemoveWindowINDF[] = {
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-PartitionBy-SameColumn.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-PartitionBy-SameColumn-2.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-OrderBy-PartitionBy-SameColumn."
+		"xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-OrderBy-PartitionBy-SameColumn-2."
+		"xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-Distinct-Different-Columns.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-Distinct-ParitionBy-Different-"
+		"Columns.xml",
+		"../data/dxl/expressiontests/"
+		"WinFunc-Multiple-DQA-Query-RowNumber-Multiple-ParitionBy-Columns.xml",
 	};
 
 	// path to metadata file of the previous tests
-	const CHAR *szMDFilePath = "../data/dxl/expressiontests/WinFunc-Tests-MD.xml";
+	const CHAR *szMDFilePath =
+		"../data/dxl/expressiontests/WinFunc-Tests-MD.xml";
 
 	// reset metadata cache
 	CMDCache::Reset();
 
 	// set up MD providers
-	CMDProviderMemory *pmdp = GPOS_NEW(pmp) CMDProviderMemory(pmp, szMDFilePath);
+	CMDProviderMemory *pmdp =
+		GPOS_NEW(pmp) CMDProviderMemory(pmp, szMDFilePath);
 
 	GPOS_CHECK_ABORT;
 
 	{
-		CAutoMDAccessor amda(pmp, pmdp,  CTestUtils::m_sysidDefault);
-		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,  /* pceeval */ CTestUtils::Pcm(pmp));
+		CAutoMDAccessor amda(pmp, pmdp, CTestUtils::m_sysidDefault);
+		CAutoOptCtxt aoc(pmp, amda.Pmda(), NULL,
+						 /* pceeval */ CTestUtils::Pcm(pmp));
 
-		for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsRemoveWindow); ul++)
+		for (ULONG ul = 0;
+			 ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsRemoveWindow); ul++)
 		{
-			PreprocessWinFuncWithDistinctAggs(pmp, rgszTestsDistinctAggsRemoveWindow[ul], false /* fAllowSeqPrj */, false /* fAllowIDF */);
+			PreprocessWinFuncWithDistinctAggs(
+				pmp, rgszTestsDistinctAggsRemoveWindow[ul],
+				false /* fAllowSeqPrj */, false /* fAllowIDF */);
 		}
 
-		for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsRemoveWindowINDF); ul++)
+		for (ULONG ul = 0;
+			 ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsRemoveWindowINDF); ul++)
 		{
-			PreprocessWinFuncWithDistinctAggs(pmp, rgszTestsDistinctAggsRemoveWindowINDF[ul], false /* fAllowSeqPrj */, true /* fAllowIDF */);
+			PreprocessWinFuncWithDistinctAggs(
+				pmp, rgszTestsDistinctAggsRemoveWindowINDF[ul],
+				false /* fAllowSeqPrj */, true /* fAllowIDF */);
 		}
 
-		for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsDoNotRemoveWindow); ul++)
+		for (ULONG ul = 0;
+			 ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsDoNotRemoveWindow); ul++)
 		{
-			PreprocessWinFuncWithDistinctAggs(pmp, rgszTestsDistinctAggsDoNotRemoveWindow[ul], true /* fAllowSeqPrj */, false /* fAllowIDF */);
+			PreprocessWinFuncWithDistinctAggs(
+				pmp, rgszTestsDistinctAggsDoNotRemoveWindow[ul],
+				true /* fAllowSeqPrj */, false /* fAllowIDF */);
 		}
 
-		for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsDoNotRemoveWindowINDF); ul++)
+		for (ULONG ul = 0;
+			 ul < GPOS_ARRAY_SIZE(rgszTestsDistinctAggsDoNotRemoveWindowINDF);
+			 ul++)
 		{
-			PreprocessWinFuncWithDistinctAggs(pmp, rgszTestsDistinctAggsDoNotRemoveWindowINDF[ul], true /* fAllowSeqPrj */, true /* fAllowIDF */);
+			PreprocessWinFuncWithDistinctAggs(
+				pmp, rgszTestsDistinctAggsDoNotRemoveWindowINDF[ul],
+				true /* fAllowSeqPrj */, true /* fAllowIDF */);
 		}
 	}
 
@@ -1126,10 +1175,7 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessWindowFuncWithDistinctAggs()
 //
 //---------------------------------------------------------------------------
 ULONG
-CExpressionPreprocessorTest::UlScalarSubqs
-	(
-	CExpression *pexpr
-	)
+CExpressionPreprocessorTest::UlScalarSubqs(CExpression *pexpr)
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pexpr);
@@ -1175,40 +1221,71 @@ CExpressionPreprocessorTest::EresUnittest_UnnestSubqueries()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 
-	CAutoOptCtxt aoc(pmp, &mda, NULL,  /* pceeval */ CTestUtils::Pcm(pmp));
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */ CTestUtils::Pcm(pmp));
 
-	SUnnestSubqueriesTestCase rgunnesttc[] =
-		{
-			{CTestUtils::PexprScalarCmpIdentToConstant, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopSentinel, false},
-			{CTestUtils::PexprScalarCmpIdentToConstant, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopSentinel, false},
+	SUnnestSubqueriesTestCase rgunnesttc[] = {
+		{CTestUtils::PexprScalarCmpIdentToConstant,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopSentinel, false},
+		{CTestUtils::PexprScalarCmpIdentToConstant,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopSentinel, false},
 
-			{CTestUtils::PexprScalarCmpIdentToConstant, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopSentinel,  true},
-			{CTestUtils::PexprScalarCmpIdentToConstant, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopSentinel, true},
+		{CTestUtils::PexprScalarCmpIdentToConstant,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopSentinel, true},
+		{CTestUtils::PexprScalarCmpIdentToConstant,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopSentinel, true},
 
-			{CTestUtils::PexprExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryNotExists, false},
-			{CTestUtils::PexprExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryNotExists, false},
+		{CTestUtils::PexprExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopScalarSubqueryNotExists, false},
+		{CTestUtils::PexprExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopScalarSubqueryNotExists, false},
 
-			{CTestUtils::PexprNotExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryExists, false},
-			{CTestUtils::PexprNotExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryExists, false},
+		{CTestUtils::PexprNotExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopScalarSubqueryExists, false},
+		{CTestUtils::PexprNotExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopScalarSubqueryExists, false},
 
-			{CTestUtils::PexprExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryExists, true},
-			{CTestUtils::PexprExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryExists, true},
+		{CTestUtils::PexprExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopScalarSubqueryExists, true},
+		{CTestUtils::PexprExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopScalarSubqueryExists, true},
 
-			{CTestUtils::PexprNotExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryNotExists, true},
-			{CTestUtils::PexprNotExistsSubquery, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryNotExists, true},
+		{CTestUtils::PexprNotExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr,
+		 COperator::EopScalarSubqueryNotExists, true},
+		{CTestUtils::PexprNotExistsSubquery,
+		 CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd,
+		 COperator::EopScalarSubqueryNotExists, true},
 
-			{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAny, false},
-			{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAny, false},
+		{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAny, false},
+		{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAny, false},
 
-			{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAll, false},
-			{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAll, false},
+		{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAll, false},
+		{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAll, false},
 
-			{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAny, true},
-			{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAny, true},
+		{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAny, true},
+		{CTestUtils::PexpSubqueryAny, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAny, true},
 
-			{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAll, true},
-			{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant, CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAll, true},
-		};
+		{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopOr, COperator::EopScalarSubqueryAll, true},
+		{CTestUtils::PexpSubqueryAll, CTestUtils::PexprScalarCmpIdentToConstant,
+		 CScalarBoolOp::EboolopAnd, COperator::EopScalarSubqueryAll, true},
+	};
 
 	GPOS_RESULT eres = GPOS_OK;
 
@@ -1236,11 +1313,13 @@ CExpressionPreprocessorTest::EresUnittest_UnnestSubqueries()
 		{
 			DrgPexpr *pdrgpexprFst = GPOS_NEW(pmp) DrgPexpr(pmp);
 			pdrgpexprFst->Append(pexprPredFst);
-			pdrgpexprAndOr->Append(CUtils::PexprScalarBoolOp(pmp, CScalarBoolOp::EboolopNot , pdrgpexprFst));
+			pdrgpexprAndOr->Append(CUtils::PexprScalarBoolOp(
+				pmp, CScalarBoolOp::EboolopNot, pdrgpexprFst));
 
 			DrgPexpr *pdrgpexprSnd = GPOS_NEW(pmp) DrgPexpr(pmp);
 			pdrgpexprSnd->Append(pexprPredSnd);
-			pdrgpexprAndOr->Append(CUtils::PexprScalarBoolOp(pmp, CScalarBoolOp::EboolopNot , pdrgpexprSnd));
+			pdrgpexprAndOr->Append(CUtils::PexprScalarBoolOp(
+				pmp, CScalarBoolOp::EboolopNot, pdrgpexprSnd));
 		}
 		else
 		{
@@ -1249,29 +1328,32 @@ CExpressionPreprocessorTest::EresUnittest_UnnestSubqueries()
 		}
 
 		CScalarBoolOp::EBoolOperator eboolop = elem.m_eboolop;
-		CExpression *pexprAndOr = CUtils::PexprScalarBoolOp(pmp, eboolop , pdrgpexprAndOr);
+		CExpression *pexprAndOr =
+			CUtils::PexprScalarBoolOp(pmp, eboolop, pdrgpexprAndOr);
 
 		DrgPexpr *pdrgpexprNot = GPOS_NEW(pmp) DrgPexpr(pmp);
 		pdrgpexprNot->Append(pexprAndOr);
 
-		CExpression *pexpr = GPOS_NEW(pmp) CExpression
-								(
-								pmp,
-								GPOS_NEW(pmp) CLogicalSelect(pmp),
-								pexprGet,
-								CUtils::PexprScalarBoolOp(pmp, CScalarBoolOp::EboolopNot , pdrgpexprNot)
-								);
+		CExpression *pexpr = GPOS_NEW(pmp)
+			CExpression(pmp, GPOS_NEW(pmp) CLogicalSelect(pmp), pexprGet,
+						CUtils::PexprScalarBoolOp(
+							pmp, CScalarBoolOp::EboolopNot, pdrgpexprNot));
 
 		CExpression *pexprProcessed = CExpressionUtils::PexprUnnest(pmp, pexpr);
 
 		{
 			CAutoTrace at(pmp);
 			at.Os() << std::endl << "EXPR:" << std::endl << *pexpr << std::endl;
-			at.Os() << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprProcessed << std::endl;
+			at.Os() << std::endl
+					<< "PREPROCESSED EXPR:" << std::endl
+					<< *pexprProcessed << std::endl;
 		}
 
-		const CExpression *pexprFirst = CTestUtils::PexprFirst(pexprProcessed, COperator::EopScalarBoolOp);
-		if (NULL == pexprFirst || (eboolop == CScalarBoolOp::PopConvert(pexprFirst->Pop())->Eboolop()))
+		const CExpression *pexprFirst =
+			CTestUtils::PexprFirst(pexprProcessed, COperator::EopScalarBoolOp);
+		if (NULL == pexprFirst ||
+			(eboolop ==
+			 CScalarBoolOp::PopConvert(pexprFirst->Pop())->Eboolop()))
 		{
 			eres = GPOS_FAILED;
 		}
@@ -1297,18 +1379,17 @@ CExpressionPreprocessorTest::EresUnittest_UnnestSubqueries()
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresCheckExistsSubqueryType
-	(
-	CExpression *pexpr,
-	COperator::EOperatorId eopidPresent
-	)
+CExpressionPreprocessorTest::EresCheckExistsSubqueryType(
+	CExpression *pexpr, COperator::EOperatorId eopidPresent)
 {
-	if (COperator::EopScalarSubqueryNotExists == eopidPresent && (FHasSubqueryExists(pexpr) || !FHasSubqueryNotExists(pexpr)))
+	if (COperator::EopScalarSubqueryNotExists == eopidPresent &&
+		(FHasSubqueryExists(pexpr) || !FHasSubqueryNotExists(pexpr)))
 	{
 		return GPOS_FAILED;
 	}
 
-	if (COperator::EopScalarSubqueryExists == eopidPresent && (FHasSubqueryNotExists(pexpr) || !FHasSubqueryExists(pexpr)))
+	if (COperator::EopScalarSubqueryExists == eopidPresent &&
+		(FHasSubqueryNotExists(pexpr) || !FHasSubqueryExists(pexpr)))
 	{
 		return GPOS_FAILED;
 	}
@@ -1326,18 +1407,17 @@ CExpressionPreprocessorTest::EresCheckExistsSubqueryType
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresCheckQuantifiedSubqueryType
-	(
-	CExpression *pexpr,
-	COperator::EOperatorId eopidPresent
-	)
+CExpressionPreprocessorTest::EresCheckQuantifiedSubqueryType(
+	CExpression *pexpr, COperator::EOperatorId eopidPresent)
 {
-	if (COperator::EopScalarSubqueryAny == eopidPresent && !FHasSubqueryAny(pexpr))
+	if (COperator::EopScalarSubqueryAny == eopidPresent &&
+		!FHasSubqueryAny(pexpr))
 	{
 		return GPOS_FAILED;
 	}
 
-	if (COperator::EopScalarSubqueryAll == eopidPresent && !FHasSubqueryAll(pexpr))
+	if (COperator::EopScalarSubqueryAll == eopidPresent &&
+		!FHasSubqueryAll(pexpr))
 	{
 		return GPOS_FAILED;
 	}
@@ -1355,11 +1435,8 @@ CExpressionPreprocessorTest::EresCheckQuantifiedSubqueryType
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresCheckSubqueryType
-	(
-	CExpression *pexpr,
-	COperator::EOperatorId eopidPresent
-	)
+CExpressionPreprocessorTest::EresCheckSubqueryType(
+	CExpression *pexpr, COperator::EOperatorId eopidPresent)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -1406,24 +1483,34 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessNestedScalarSubqueries()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 
-	CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL,  /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	CExpression *pexprGet = CTestUtils::PexprLogicalGet(pmp);
-	const CColRef *pcrInner = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())->PcrsOutput()->PcrAny();
-	CExpression *pexprSubqInner = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarSubquery(pmp, pcrInner, false /*fGeneratedByExist*/, false /*fGeneratedByQuantified*/), pexprGet);
+	const CColRef *pcrInner = CDrvdPropRelational::Pdprel(pexprGet->PdpDerive())
+								  ->PcrsOutput()
+								  ->PcrAny();
+	CExpression *pexprSubqInner = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp)
+			CScalarSubquery(pmp, pcrInner, false /*fGeneratedByExist*/,
+							false /*fGeneratedByQuantified*/),
+		pexprGet);
 	CExpression *pexprCTG1 = CUtils::PexprLogicalCTGDummy(pmp);
-	CExpression *pexprPrj1 = CUtils::PexprAddProjection(pmp, pexprCTG1, pexprSubqInner);
+	CExpression *pexprPrj1 =
+		CUtils::PexprAddProjection(pmp, pexprCTG1, pexprSubqInner);
 
-	const CColRef *pcrComputed = CScalarProjectElement::PopConvert((*(*pexprPrj1)[1])[0]->Pop())->Pcr();
-	CExpression *pexprSubqOuter = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarSubquery(pmp, pcrComputed, false /*fGeneratedByExist*/, false /*fGeneratedByQuantified*/), pexprPrj1);
+	const CColRef *pcrComputed =
+		CScalarProjectElement::PopConvert((*(*pexprPrj1)[1])[0]->Pop())->Pcr();
+	CExpression *pexprSubqOuter = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp)
+			CScalarSubquery(pmp, pcrComputed, false /*fGeneratedByExist*/,
+							false /*fGeneratedByQuantified*/),
+		pexprPrj1);
 	CExpression *pexprCTG2 = CUtils::PexprLogicalCTGDummy(pmp);
-	CExpression *pexprPrj2 = CUtils::PexprAddProjection(pmp, pexprCTG2, pexprSubqOuter);
+	CExpression *pexprPrj2 =
+		CUtils::PexprAddProjection(pmp, pexprCTG2, pexprSubqOuter);
 
 	CWStringDynamic str(pmp);
 	COstreamString oss(&str);
@@ -1432,12 +1519,15 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessNestedScalarSubqueries()
 	GPOS_TRACE(str.Wsz());
 	str.Reset();
 
- 	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexprPrj2);
-	oss << std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprPrj2);
+	oss << std::endl
+		<< "PREPROCESSED EXPR:" << std::endl
+		<< *pexprPreprocessed << std::endl;
 	GPOS_TRACE(str.Wsz());
 
 	GPOS_ASSERT(1 == UlScalarSubqs(pexprPreprocessed) &&
-			"expecting ONE scalar subquery in preprocessed expression");
+				"expecting ONE scalar subquery in preprocessed expression");
 
 	pexprPreprocessed->Release();
 	pexprPrj2->Release();
@@ -1469,126 +1559,161 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOuterJoin()
 
 	CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/, CTestUtils::Pcm(pmp));
 
-	CExpression *pexprLOJ = CTestUtils::PexprLogicalJoin<CLogicalLeftOuterJoin>(pmp);
-	CColRefSet *pcrsInner = CDrvdPropRelational::Pdprel((*pexprLOJ)[1]->PdpDerive())->PcrsOutput();
+	CExpression *pexprLOJ =
+		CTestUtils::PexprLogicalJoin<CLogicalLeftOuterJoin>(pmp);
+	CColRefSet *pcrsInner =
+		CDrvdPropRelational::Pdprel((*pexprLOJ)[1]->PdpDerive())->PcrsOutput();
 
 	// test case 1: generate a single comparison predicate between an inner column and const
 	CColRef *pcrInner = pcrsInner->PcrAny();
-	CExpression *pexprPredicate1 = CUtils::PexprScalarEqCmp(pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-	CExpression *pexprSelect1 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate1);
+	CExpression *pexprPredicate1 = CUtils::PexprScalarEqCmp(
+		pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprSelect1 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate1);
 
- 	CExpression *pexprPreprocessed1 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect1);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect1 << std::endl;
- 		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed1 << std::endl;
- 	}
+	CExpression *pexprPreprocessed1 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect1);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect1 << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed1 << std::endl;
+	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed1) && "unexpected outer join");
 
 
- 	// test case 2: generate a conjunction of predicates involving inner columns
- 	CColRefSet *pcrsOuter = CDrvdPropRelational::Pdprel((*pexprLOJ)[0]->PdpDerive())->PcrsOutput();
+	// test case 2: generate a conjunction of predicates involving inner columns
+	CColRefSet *pcrsOuter =
+		CDrvdPropRelational::Pdprel((*pexprLOJ)[0]->PdpDerive())->PcrsOutput();
 	CColRef *pcrOuter = pcrsOuter->PcrAny();
 	CExpression *pexprCmp1 = CUtils::PexprScalarEqCmp(pmp, pcrInner, pcrOuter);
-	CExpression *pexprCmp2 = CUtils::PexprScalarEqCmp(pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-	CExpression *pexprPredicate2 = CPredicateUtils::PexprConjunction(pmp, pexprCmp1, pexprCmp2);
+	CExpression *pexprCmp2 = CUtils::PexprScalarEqCmp(
+		pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprPredicate2 =
+		CPredicateUtils::PexprConjunction(pmp, pexprCmp1, pexprCmp2);
 	pexprCmp1->Release();
 	pexprCmp2->Release();
 	pexprLOJ->AddRef();
-	CExpression *pexprSelect2 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate2);
-	CExpression *pexprPreprocessed2 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect2);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect2 << std::endl;
- 		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed2 << std::endl;
- 	}
+	CExpression *pexprSelect2 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate2);
+	CExpression *pexprPreprocessed2 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect2);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect2 << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed2 << std::endl;
+	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed2) && "unexpected outer join");
 
 
 	// test case 3: generate a disjunction of predicates involving inner columns
 	pexprCmp1 = CUtils::PexprScalarEqCmp(pmp, pcrInner, pcrOuter);
-	pexprCmp2 = CUtils::PexprScalarEqCmp(pmp, pcrInner,  CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-	CExpression *pexprPredicate3 = CPredicateUtils::PexprDisjunction(pmp, pexprCmp1, pexprCmp2);
+	pexprCmp2 = CUtils::PexprScalarEqCmp(
+		pmp, pcrInner, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprPredicate3 =
+		CPredicateUtils::PexprDisjunction(pmp, pexprCmp1, pexprCmp2);
 	pexprCmp1->Release();
 	pexprCmp2->Release();
 	pexprLOJ->AddRef();
-	CExpression *pexprSelect3 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate3);
+	CExpression *pexprSelect3 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate3);
 
-	CExpression *pexprPreprocessed3 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect3);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect3 << std::endl;
- 		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed3 << std::endl;
- 	}
+	CExpression *pexprPreprocessed3 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect3);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect3 << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed3 << std::endl;
+	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed3) && "unexpected outer join");
 
 	// test case 4: generate a null-rejecting conjunction since it involves one null-rejecting conjunct
 	pexprCmp1 = CUtils::PexprScalarEqCmp(pmp, pcrInner, pcrOuter);
-	pexprCmp2 = CUtils::PexprScalarEqCmp(pmp, pcrOuter, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-	CExpression *pexprPredicate4 = CPredicateUtils::PexprConjunction(pmp, pexprCmp1, pexprCmp2);
+	pexprCmp2 = CUtils::PexprScalarEqCmp(
+		pmp, pcrOuter, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprPredicate4 =
+		CPredicateUtils::PexprConjunction(pmp, pexprCmp1, pexprCmp2);
 	pexprCmp1->Release();
 	pexprCmp2->Release();
 	pexprLOJ->AddRef();
-	CExpression *pexprSelect4 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate4);
+	CExpression *pexprSelect4 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate4);
 
-	CExpression *pexprPreprocessed4 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect4);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect4 << std::endl;
- 		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed4 << std::endl;
- 	}
+	CExpression *pexprPreprocessed4 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect4);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect4 << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed4 << std::endl;
+	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed4) && "unexpected outer join");
 
 
 	// test case 5: generate a null-passing disjunction since it involves a predicate on outer columns
 	pexprCmp1 = CUtils::PexprScalarEqCmp(pmp, pcrInner, pcrOuter);
-	pexprCmp2 = CUtils::PexprScalarEqCmp(pmp, pcrOuter, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
-	CExpression *pexprPredicate5 = CPredicateUtils::PexprDisjunction(pmp, pexprCmp1, pexprCmp2);
+	pexprCmp2 = CUtils::PexprScalarEqCmp(
+		pmp, pcrOuter, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/));
+	CExpression *pexprPredicate5 =
+		CPredicateUtils::PexprDisjunction(pmp, pexprCmp1, pexprCmp2);
 	pexprCmp1->Release();
 	pexprCmp2->Release();
 	pexprLOJ->AddRef();
-	CExpression *pexprSelect5 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate5);
+	CExpression *pexprSelect5 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate5);
 
-	CExpression *pexprPreprocessed5 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect5);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect5 << std::endl;
- 		at.Os() << "Outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed5 << std::endl;
- 	}
+	CExpression *pexprPreprocessed5 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect5);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect5 << std::endl;
+		at.Os() << "Outer joins are expected after preprocessing:" << std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed5 << std::endl;
+	}
 	GPOS_ASSERT(!FHasNoOuterJoin(pexprPreprocessed5) && "expected outer join");
 
 	// test case 6: generate a negated null-passing disjunction
 	pexprPredicate5->AddRef();
 	CExpression *pexprPredicate6 = CUtils::PexprNegate(pmp, pexprPredicate5);
 	pexprLOJ->AddRef();
-	CExpression *pexprSelect6 = CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate6);
+	CExpression *pexprSelect6 =
+		CUtils::PexprLogicalSelect(pmp, pexprLOJ, pexprPredicate6);
 
-	CExpression *pexprPreprocessed6 = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect6);
- 	{
- 		CAutoTrace at(pmp);
- 		at.Os() << "EXPR:" << std::endl << *pexprSelect6 << std::endl;
- 		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
- 		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed6 << std::endl;
- 	}
+	CExpression *pexprPreprocessed6 =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect6);
+	{
+		CAutoTrace at(pmp);
+		at.Os() << "EXPR:" << std::endl << *pexprSelect6 << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed6 << std::endl;
+	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed6) && "unexpected outer join");
 
- 	pexprSelect1->Release();
- 	pexprPreprocessed1->Release();
- 	pexprSelect2->Release();
- 	pexprPreprocessed2->Release();
+	pexprSelect1->Release();
+	pexprPreprocessed1->Release();
+	pexprSelect2->Release();
+	pexprPreprocessed2->Release();
 	pexprSelect3->Release();
- 	pexprPreprocessed3->Release();
+	pexprPreprocessed3->Release();
 	pexprSelect4->Release();
- 	pexprPreprocessed4->Release();
+	pexprPreprocessed4->Release();
 	pexprSelect5->Release();
- 	pexprPreprocessed5->Release();
+	pexprPreprocessed5->Release();
 	pexprSelect6->Release();
- 	pexprPreprocessed6->Release();
+	pexprPreprocessed6->Release();
 
 	return GPOS_OK;
 }
@@ -1603,11 +1728,8 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOuterJoin()
 //
 //---------------------------------------------------------------------------
 CExpression *
-CExpressionPreprocessorTest::PexprCreateConjunction
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr
-	)
+CExpressionPreprocessorTest::PexprCreateConjunction(IMemoryPool *pmp,
+													DrgPcr *pdrgpcr)
 {
 	GPOS_ASSERT(NULL != pdrgpcr);
 
@@ -1615,12 +1737,8 @@ CExpressionPreprocessorTest::PexprCreateConjunction
 	ULONG ulLength = pdrgpcr->UlLength();
 	for (ULONG ul = 0; ul < ulLength; ++ul)
 	{
-		CExpression *pexprComparison= CUtils::PexprScalarEqCmp
-										(
-										pmp,
-										(*pdrgpcr)[ul],
-										CUtils::PexprScalarConstInt4(pmp, ul)
-										);
+		CExpression *pexprComparison = CUtils::PexprScalarEqCmp(
+			pmp, (*pdrgpcr)[ul], CUtils::PexprScalarConstInt4(pmp, ul));
 		pdrgpexpr->Append(pexprComparison);
 	}
 
@@ -1650,14 +1768,17 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefilters()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 	CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/, CTestUtils::Pcm(pmp));
-	CExpression *pexprJoin = CTestUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp);
+	CExpression *pexprJoin =
+		CTestUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp);
 
-	CColRefSet *pcrsInner = CDrvdPropRelational::Pdprel((*pexprJoin)[1]->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsInner =
+		CDrvdPropRelational::Pdprel((*pexprJoin)[1]->PdpDerive())->PcrsOutput();
 	DrgPcr *pdrgpcrInner = pcrsInner->Pdrgpcr(pmp);
 	GPOS_ASSERT(pdrgpcrInner != NULL);
 	GPOS_ASSERT(3 <= pdrgpcrInner->UlLength());
 
-	CColRefSet *pcrsOuter = CDrvdPropRelational::Pdprel((*pexprJoin)[0]->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsOuter =
+		CDrvdPropRelational::Pdprel((*pexprJoin)[0]->PdpDerive())->PcrsOutput();
 	DrgPcr *pdrgpcrOuter = pcrsOuter->Pdrgpcr(pmp);
 	GPOS_ASSERT(pdrgpcrOuter != NULL);
 	GPOS_ASSERT(3 <= pdrgpcrOuter->UlLength());
@@ -1692,46 +1813,53 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefilters()
 	pdrgpcrInner->Release();
 	pdrgpcrOuter->Release();
 
-	CExpression *pexprPredicate = CPredicateUtils::PexprDisjunction(pmp, pdrgpexpr);
-	CExpression *pexprSelect = CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprPredicate);
- 	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
+	CExpression *pexprPredicate =
+		CPredicateUtils::PexprDisjunction(pmp, pdrgpexpr);
+	CExpression *pexprSelect =
+		CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprPredicate);
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
 
- 	CWStringDynamic strSelect(pmp);
- 	COstreamString oss(&strSelect);
- 	pexprSelect->OsPrint(oss);
-	CWStringConst strExpectedDebugPrintForSelect(GPOS_WSZ_LIT(
-			"+--CLogicalSelect\n"
-			"   |--CLogicalInnerJoin\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (3), \"column_0001\" (4), \"column_0002\" (5)] Key sets: {[0]}\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (0), \"column_0001\" (1), \"column_0002\" (2)] Key sets: {[0]}\n"
-			"   |  +--CScalarCmp (=)\n"
-			"   |     |--CScalarIdent \"column_0000\" (3)\n"
-			"   |     +--CScalarIdent \"column_0000\" (0)\n"
-			"   +--CScalarBoolOp (EboolopOr)\n"
-			"      |--CScalarBoolOp (EboolopAnd)\n"
-			"      |  |--CScalarCmp (=)\n"
-			"      |  |  |--CScalarIdent \"column_0000\" (3)\n"
-			"      |  |  +--CScalarConst (0)\n"
-			"      |  +--CScalarCmp (=)\n"
-			"      |     |--CScalarIdent \"column_0000\" (0)\n"
-			"      |     +--CScalarConst (1)\n"
-			"      |--CScalarBoolOp (EboolopAnd)\n"
-			"      |  |--CScalarCmp (=)\n"
-			"      |  |  |--CScalarIdent \"column_0001\" (4)\n"
-			"      |  |  +--CScalarConst (0)\n"
-			"      |  |--CScalarCmp (=)\n"
-			"      |  |  |--CScalarIdent \"column_0002\" (5)\n"
-			"      |  |  +--CScalarConst (1)\n"
-			"      |  +--CScalarCmp (=)\n"
-			"      |     |--CScalarIdent \"column_0000\" (0)\n"
-			"      |     +--CScalarConst (2)\n"
-			"      +--CScalarBoolOp (EboolopAnd)\n"
-			"         |--CScalarCmp (=)\n"
-			"         |  |--CScalarIdent \"column_0002\" (5)\n"
-			"         |  +--CScalarConst (0)\n"
-			"         +--CScalarCmp (=)\n"
-			"            |--CScalarIdent \"column_0000\" (0)\n"
-			"            +--CScalarConst (1)\n"));
+	CWStringDynamic strSelect(pmp);
+	COstreamString oss(&strSelect);
+	pexprSelect->OsPrint(oss);
+	CWStringConst strExpectedDebugPrintForSelect(
+		GPOS_WSZ_LIT("+--CLogicalSelect\n"
+					 "   |--CLogicalInnerJoin\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (3), \"column_0001\" (4), "
+					 "\"column_0002\" (5)] Key sets: {[0]}\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (0), \"column_0001\" (1), "
+					 "\"column_0002\" (2)] Key sets: {[0]}\n"
+					 "   |  +--CScalarCmp (=)\n"
+					 "   |     |--CScalarIdent \"column_0000\" (3)\n"
+					 "   |     +--CScalarIdent \"column_0000\" (0)\n"
+					 "   +--CScalarBoolOp (EboolopOr)\n"
+					 "      |--CScalarBoolOp (EboolopAnd)\n"
+					 "      |  |--CScalarCmp (=)\n"
+					 "      |  |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "      |  |  +--CScalarConst (0)\n"
+					 "      |  +--CScalarCmp (=)\n"
+					 "      |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "      |     +--CScalarConst (1)\n"
+					 "      |--CScalarBoolOp (EboolopAnd)\n"
+					 "      |  |--CScalarCmp (=)\n"
+					 "      |  |  |--CScalarIdent \"column_0001\" (4)\n"
+					 "      |  |  +--CScalarConst (0)\n"
+					 "      |  |--CScalarCmp (=)\n"
+					 "      |  |  |--CScalarIdent \"column_0002\" (5)\n"
+					 "      |  |  +--CScalarConst (1)\n"
+					 "      |  +--CScalarCmp (=)\n"
+					 "      |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "      |     +--CScalarConst (2)\n"
+					 "      +--CScalarBoolOp (EboolopAnd)\n"
+					 "         |--CScalarCmp (=)\n"
+					 "         |  |--CScalarIdent \"column_0002\" (5)\n"
+					 "         |  +--CScalarConst (0)\n"
+					 "         +--CScalarCmp (=)\n"
+					 "            |--CScalarIdent \"column_0000\" (0)\n"
+					 "            +--CScalarConst (1)\n"));
 
 	GPOS_ASSERT(strSelect.FEquals(&strExpectedDebugPrintForSelect));
 
@@ -1739,83 +1867,93 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefilters()
 	if (!fEqual)
 	{
 		CAutoTrace at(pmp);
-		at.Os() << std::endl << "RETURNED EXPRESSION:" << std::endl << strSelect.Wsz();
-		at.Os() << std::endl << "EXPECTED EXPRESSION:" << std::endl << strExpectedDebugPrintForSelect.Wsz();
+		at.Os() << std::endl
+				<< "RETURNED EXPRESSION:" << std::endl
+				<< strSelect.Wsz();
+		at.Os() << std::endl
+				<< "EXPECTED EXPRESSION:" << std::endl
+				<< strExpectedDebugPrintForSelect.Wsz();
 
 		return GPOS_FAILED;
 	}
 
- 	CWStringDynamic strPreprocessed(pmp);
- 	COstreamString ossPreprocessed(&strPreprocessed);
- 	pexprPreprocessed->OsPrint(ossPreprocessed);
-	CWStringConst strExpectedDebugPrintForPreprocessed(GPOS_WSZ_LIT(
-			"+--CLogicalNAryJoin\n"
-			"   |--CLogicalSelect\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (3), \"column_0001\" (4), \"column_0002\" (5)] Key sets: {[0]}\n"
-			"   |  +--CScalarBoolOp (EboolopAnd)\n"
-			"   |     |--CScalarArrayCmp Any (=)\n"
-			"   |     |  |--CScalarIdent \"column_0000\" (3)\n"
-			"   |     |  +--CScalarArray: {eleMDId: (23,1.0), arrayMDId: (1007,1.0)}\n"
-			"   |     |     |--CScalarConst (1)\n"
-			"   |     |     +--CScalarConst (2)\n"
-			"   |     +--CScalarBoolOp (EboolopOr)\n"
-			"   |        |--CScalarCmp (=)\n"
-			"   |        |  |--CScalarIdent \"column_0000\" (3)\n"
-			"   |        |  +--CScalarConst (0)\n"
-			"   |        |--CScalarBoolOp (EboolopAnd)\n"
-			"   |        |  |--CScalarCmp (=)\n"
-			"   |        |  |  |--CScalarIdent \"column_0001\" (4)\n"
-			"   |        |  |  +--CScalarConst (0)\n"
-			"   |        |  +--CScalarCmp (=)\n"
-			"   |        |     |--CScalarIdent \"column_0002\" (5)\n"
-			"   |        |     +--CScalarConst (1)\n"
-			"   |        +--CScalarCmp (=)\n"
-			"   |           |--CScalarIdent \"column_0002\" (5)\n"
-			"   |           +--CScalarConst (0)\n"
-			"   |--CLogicalSelect\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (0), \"column_0001\" (1), \"column_0002\" (2)] Key sets: {[0]}\n"
-			"   |  +--CScalarBoolOp (EboolopAnd)\n"
-			"   |     |--CScalarBoolOp (EboolopOr)\n"
-			"   |     |  |--CScalarCmp (=)\n"
-			"   |     |  |  |--CScalarIdent \"column_0000\" (0)\n"
-			"   |     |  |  +--CScalarConst (1)\n"
-			"   |     |  +--CScalarCmp (=)\n"
-			"   |     |     |--CScalarIdent \"column_0000\" (0)\n"
-			"   |     |     +--CScalarConst (2)\n"
-			"   |     +--CScalarArrayCmp Any (=)\n"
-			"   |        |--CScalarIdent \"column_0000\" (0)\n"
-			"   |        +--CScalarArray: {eleMDId: (23,1.0), arrayMDId: (1007,1.0)}\n"
-			"   |           |--CScalarConst (1)\n"
-			"   |           +--CScalarConst (2)\n"
-			"   +--CScalarBoolOp (EboolopAnd)\n"
-			"      |--CScalarCmp (=)\n"
-			"      |  |--CScalarIdent \"column_0000\" (3)\n"
-			"      |  +--CScalarIdent \"column_0000\" (0)\n"
-			"      +--CScalarBoolOp (EboolopOr)\n"
-			"         |--CScalarBoolOp (EboolopAnd)\n"
-			"         |  |--CScalarCmp (=)\n"
-			"         |  |  |--CScalarIdent \"column_0000\" (3)\n"
-			"         |  |  +--CScalarConst (0)\n"
-			"         |  +--CScalarCmp (=)\n"
-			"         |     |--CScalarIdent \"column_0000\" (0)\n"
-			"         |     +--CScalarConst (1)\n"
-			"         |--CScalarBoolOp (EboolopAnd)\n"
-			"         |  |--CScalarCmp (=)\n"
-			"         |  |  |--CScalarIdent \"column_0001\" (4)\n"
-			"         |  |  +--CScalarConst (0)\n"
-			"         |  |--CScalarCmp (=)\n"
-			"         |  |  |--CScalarIdent \"column_0002\" (5)\n"
-			"         |  |  +--CScalarConst (1)\n"
-			"         |  +--CScalarCmp (=)\n"
-			"         |     |--CScalarIdent \"column_0000\" (0)\n"
-			"         |     +--CScalarConst (2)\n"
-			"         +--CScalarBoolOp (EboolopAnd)\n"
-			"            |--CScalarCmp (=)\n"
-			"            |  |--CScalarIdent \"column_0002\" (5)\n"
-			"            |  +--CScalarConst (0)\n"
-			"            +--CScalarCmp (=)\n"
-			"               |--CScalarIdent \"column_0000\" (0)\n"
-			"               +--CScalarConst (1)\n"));
+	CWStringDynamic strPreprocessed(pmp);
+	COstreamString ossPreprocessed(&strPreprocessed);
+	pexprPreprocessed->OsPrint(ossPreprocessed);
+	CWStringConst strExpectedDebugPrintForPreprocessed(
+		GPOS_WSZ_LIT("+--CLogicalNAryJoin\n"
+					 "   |--CLogicalSelect\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (3), \"column_0001\" (4), "
+					 "\"column_0002\" (5)] Key sets: {[0]}\n"
+					 "   |  +--CScalarBoolOp (EboolopAnd)\n"
+					 "   |     |--CScalarArrayCmp Any (=)\n"
+					 "   |     |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "   |     |  +--CScalarArray: {eleMDId: (23,1.0), "
+					 "arrayMDId: (1007,1.0)}\n"
+					 "   |     |     |--CScalarConst (1)\n"
+					 "   |     |     +--CScalarConst (2)\n"
+					 "   |     +--CScalarBoolOp (EboolopOr)\n"
+					 "   |        |--CScalarCmp (=)\n"
+					 "   |        |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "   |        |  +--CScalarConst (0)\n"
+					 "   |        |--CScalarBoolOp (EboolopAnd)\n"
+					 "   |        |  |--CScalarCmp (=)\n"
+					 "   |        |  |  |--CScalarIdent \"column_0001\" (4)\n"
+					 "   |        |  |  +--CScalarConst (0)\n"
+					 "   |        |  +--CScalarCmp (=)\n"
+					 "   |        |     |--CScalarIdent \"column_0002\" (5)\n"
+					 "   |        |     +--CScalarConst (1)\n"
+					 "   |        +--CScalarCmp (=)\n"
+					 "   |           |--CScalarIdent \"column_0002\" (5)\n"
+					 "   |           +--CScalarConst (0)\n"
+					 "   |--CLogicalSelect\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (0), \"column_0001\" (1), "
+					 "\"column_0002\" (2)] Key sets: {[0]}\n"
+					 "   |  +--CScalarBoolOp (EboolopAnd)\n"
+					 "   |     |--CScalarBoolOp (EboolopOr)\n"
+					 "   |     |  |--CScalarCmp (=)\n"
+					 "   |     |  |  |--CScalarIdent \"column_0000\" (0)\n"
+					 "   |     |  |  +--CScalarConst (1)\n"
+					 "   |     |  +--CScalarCmp (=)\n"
+					 "   |     |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "   |     |     +--CScalarConst (2)\n"
+					 "   |     +--CScalarArrayCmp Any (=)\n"
+					 "   |        |--CScalarIdent \"column_0000\" (0)\n"
+					 "   |        +--CScalarArray: {eleMDId: (23,1.0), "
+					 "arrayMDId: (1007,1.0)}\n"
+					 "   |           |--CScalarConst (1)\n"
+					 "   |           +--CScalarConst (2)\n"
+					 "   +--CScalarBoolOp (EboolopAnd)\n"
+					 "      |--CScalarCmp (=)\n"
+					 "      |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "      |  +--CScalarIdent \"column_0000\" (0)\n"
+					 "      +--CScalarBoolOp (EboolopOr)\n"
+					 "         |--CScalarBoolOp (EboolopAnd)\n"
+					 "         |  |--CScalarCmp (=)\n"
+					 "         |  |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "         |  |  +--CScalarConst (0)\n"
+					 "         |  +--CScalarCmp (=)\n"
+					 "         |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "         |     +--CScalarConst (1)\n"
+					 "         |--CScalarBoolOp (EboolopAnd)\n"
+					 "         |  |--CScalarCmp (=)\n"
+					 "         |  |  |--CScalarIdent \"column_0001\" (4)\n"
+					 "         |  |  +--CScalarConst (0)\n"
+					 "         |  |--CScalarCmp (=)\n"
+					 "         |  |  |--CScalarIdent \"column_0002\" (5)\n"
+					 "         |  |  +--CScalarConst (1)\n"
+					 "         |  +--CScalarCmp (=)\n"
+					 "         |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "         |     +--CScalarConst (2)\n"
+					 "         +--CScalarBoolOp (EboolopAnd)\n"
+					 "            |--CScalarCmp (=)\n"
+					 "            |  |--CScalarIdent \"column_0002\" (5)\n"
+					 "            |  +--CScalarConst (0)\n"
+					 "            +--CScalarCmp (=)\n"
+					 "               |--CScalarIdent \"column_0000\" (0)\n"
+					 "               +--CScalarConst (1)\n"));
 	pexprSelect->Release();
 	pexprPreprocessed->Release();
 
@@ -1823,8 +1961,12 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefilters()
 	if (!fEqual)
 	{
 		CAutoTrace at(pmp);
-		at.Os() << std::endl << "RETURNED EXPRESSION:" << std::endl << strPreprocessed.Wsz();
-		at.Os() << std::endl << "EXPECTED EXPRESSION:" << std::endl << strExpectedDebugPrintForPreprocessed.Wsz();
+		at.Os() << std::endl
+				<< "RETURNED EXPRESSION:" << std::endl
+				<< strPreprocessed.Wsz();
+		at.Os() << std::endl
+				<< "EXPECTED EXPRESSION:" << std::endl
+				<< strExpectedDebugPrintForPreprocessed.Wsz();
 
 		return GPOS_FAILED;
 	}
@@ -1855,14 +1997,17 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefiltersPartialPush()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 	CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/, CTestUtils::Pcm(pmp));
-	CExpression *pexprJoin = CTestUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp);
+	CExpression *pexprJoin =
+		CTestUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp);
 
-	CColRefSet *pcrsInner = CDrvdPropRelational::Pdprel((*pexprJoin)[1]->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsInner =
+		CDrvdPropRelational::Pdprel((*pexprJoin)[1]->PdpDerive())->PcrsOutput();
 	DrgPcr *pdrgpcrInner = pcrsInner->Pdrgpcr(pmp);
 	GPOS_ASSERT(NULL != pdrgpcrInner);
 	GPOS_ASSERT(3 <= pdrgpcrInner->UlLength());
 
-	CColRefSet *pcrsOuter = CDrvdPropRelational::Pdprel((*pexprJoin)[0]->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsOuter =
+		CDrvdPropRelational::Pdprel((*pexprJoin)[0]->PdpDerive())->PcrsOutput();
 	DrgPcr *pdrgpcrOuter = pcrsOuter->Pdrgpcr(pmp);
 	GPOS_ASSERT(NULL != pdrgpcrOuter);
 	GPOS_ASSERT(3 <= pdrgpcrOuter->UlLength());
@@ -1888,75 +2033,91 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefiltersPartialPush()
 	pdrgpcrInner->Release();
 	pdrgpcrOuter->Release();
 
-	CExpression *pexprPredicate = CPredicateUtils::PexprDisjunction(pmp, pdrgpexpr);
-	CExpression *pexprSelect = CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprPredicate);
- 	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
+	CExpression *pexprPredicate =
+		CPredicateUtils::PexprDisjunction(pmp, pdrgpexpr);
+	CExpression *pexprSelect =
+		CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprPredicate);
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
 
- 	CWStringDynamic strSelect(pmp);
- 	COstreamString oss(&strSelect);
- 	pexprSelect->OsPrint(oss);
-	CWStringConst strExpectedDebugPrintForSelect(GPOS_WSZ_LIT(
-			"+--CLogicalSelect\n"
-			"   |--CLogicalInnerJoin\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (3), \"column_0001\" (4), \"column_0002\" (5)] Key sets: {[0]}\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (0), \"column_0001\" (1), \"column_0002\" (2)] Key sets: {[0]}\n"
-			"   |  +--CScalarCmp (=)\n"
-			"   |     |--CScalarIdent \"column_0000\" (3)\n"
-			"   |     +--CScalarIdent \"column_0000\" (0)\n"
-			"   +--CScalarBoolOp (EboolopOr)\n"
-			"      |--CScalarBoolOp (EboolopAnd)\n"
-			"      |  |--CScalarCmp (=)\n"
-			"      |  |  |--CScalarIdent \"column_0000\" (3)\n"
-			"      |  |  +--CScalarConst (0)\n"
-			"      |  +--CScalarCmp (=)\n"
-			"      |     |--CScalarIdent \"column_0000\" (0)\n"
-			"      |     +--CScalarConst (1)\n"
-		    "      +--CScalarCmp (=)\n"
-		    "         |--CScalarIdent \"column_0002\" (2)\n"
-		    "         +--CScalarConst (0)\n"));
+	CWStringDynamic strSelect(pmp);
+	COstreamString oss(&strSelect);
+	pexprSelect->OsPrint(oss);
+	CWStringConst strExpectedDebugPrintForSelect(
+		GPOS_WSZ_LIT("+--CLogicalSelect\n"
+					 "   |--CLogicalInnerJoin\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (3), \"column_0001\" (4), "
+					 "\"column_0002\" (5)] Key sets: {[0]}\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (0), \"column_0001\" (1), "
+					 "\"column_0002\" (2)] Key sets: {[0]}\n"
+					 "   |  +--CScalarCmp (=)\n"
+					 "   |     |--CScalarIdent \"column_0000\" (3)\n"
+					 "   |     +--CScalarIdent \"column_0000\" (0)\n"
+					 "   +--CScalarBoolOp (EboolopOr)\n"
+					 "      |--CScalarBoolOp (EboolopAnd)\n"
+					 "      |  |--CScalarCmp (=)\n"
+					 "      |  |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "      |  |  +--CScalarConst (0)\n"
+					 "      |  +--CScalarCmp (=)\n"
+					 "      |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "      |     +--CScalarConst (1)\n"
+					 "      +--CScalarCmp (=)\n"
+					 "         |--CScalarIdent \"column_0002\" (2)\n"
+					 "         +--CScalarConst (0)\n"));
 
 	GPOS_ASSERT(strSelect.FEquals(&strExpectedDebugPrintForSelect));
 
- 	CWStringDynamic strPreprocessed(pmp);
- 	COstreamString ossPreprocessed(&strPreprocessed);
- 	pexprPreprocessed->OsPrint(ossPreprocessed);
-	CWStringConst strExpectedDebugPrintForPreprocessed(GPOS_WSZ_LIT(
-			"+--CLogicalNAryJoin\n"
-			"   |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (3), \"column_0001\" (4), \"column_0002\" (5)] Key sets: {[0]}\n"
-			"   |--CLogicalSelect\n"
-			"   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), Columns: [\"column_0000\" (0), \"column_0001\" (1), \"column_0002\" (2)] Key sets: {[0]}\n"
-			"   |  +--CScalarBoolOp (EboolopOr)\n"
-			"   |     |--CScalarCmp (=)\n"
-			"   |     |  |--CScalarIdent \"column_0000\" (0)\n"
-			"   |     |  +--CScalarConst (1)\n"
-			"   |     +--CScalarCmp (=)\n"
-			"   |        |--CScalarIdent \"column_0002\" (2)\n"
-			"   |        +--CScalarConst (0)\n"
-			"   +--CScalarBoolOp (EboolopAnd)\n"
-			"      |--CScalarCmp (=)\n"
-			"      |  |--CScalarIdent \"column_0000\" (3)\n"
-			"      |  +--CScalarIdent \"column_0000\" (0)\n"
-			"      +--CScalarBoolOp (EboolopOr)\n"
-			"         |--CScalarBoolOp (EboolopAnd)\n"
-			"         |  |--CScalarCmp (=)\n"
-			"         |  |  |--CScalarIdent \"column_0000\" (3)\n"
-			"         |  |  +--CScalarConst (0)\n"
-			"         |  +--CScalarCmp (=)\n"
-			"         |     |--CScalarIdent \"column_0000\" (0)\n"
-			"         |     +--CScalarConst (1)\n"
-			"         +--CScalarCmp (=)\n"
-			"            |--CScalarIdent \"column_0002\" (2)\n"
-			"            +--CScalarConst (0)\n"));
+	CWStringDynamic strPreprocessed(pmp);
+	COstreamString ossPreprocessed(&strPreprocessed);
+	pexprPreprocessed->OsPrint(ossPreprocessed);
+	CWStringConst strExpectedDebugPrintForPreprocessed(
+		GPOS_WSZ_LIT("+--CLogicalNAryJoin\n"
+					 "   |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (3), \"column_0001\" (4), "
+					 "\"column_0002\" (5)] Key sets: {[0]}\n"
+					 "   |--CLogicalSelect\n"
+					 "   |  |--CLogicalGet \"BaseTableAlias\" (\"BaseTable\"), "
+					 "Columns: [\"column_0000\" (0), \"column_0001\" (1), "
+					 "\"column_0002\" (2)] Key sets: {[0]}\n"
+					 "   |  +--CScalarBoolOp (EboolopOr)\n"
+					 "   |     |--CScalarCmp (=)\n"
+					 "   |     |  |--CScalarIdent \"column_0000\" (0)\n"
+					 "   |     |  +--CScalarConst (1)\n"
+					 "   |     +--CScalarCmp (=)\n"
+					 "   |        |--CScalarIdent \"column_0002\" (2)\n"
+					 "   |        +--CScalarConst (0)\n"
+					 "   +--CScalarBoolOp (EboolopAnd)\n"
+					 "      |--CScalarCmp (=)\n"
+					 "      |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "      |  +--CScalarIdent \"column_0000\" (0)\n"
+					 "      +--CScalarBoolOp (EboolopOr)\n"
+					 "         |--CScalarBoolOp (EboolopAnd)\n"
+					 "         |  |--CScalarCmp (=)\n"
+					 "         |  |  |--CScalarIdent \"column_0000\" (3)\n"
+					 "         |  |  +--CScalarConst (0)\n"
+					 "         |  +--CScalarCmp (=)\n"
+					 "         |     |--CScalarIdent \"column_0000\" (0)\n"
+					 "         |     +--CScalarConst (1)\n"
+					 "         +--CScalarCmp (=)\n"
+					 "            |--CScalarIdent \"column_0002\" (2)\n"
+					 "            +--CScalarConst (0)\n"));
 
 
- 	pexprSelect->Release();
- 	pexprPreprocessed->Release();
-	BOOL fEqual = strExpectedDebugPrintForPreprocessed.FEquals(&strPreprocessed);
+	pexprSelect->Release();
+	pexprPreprocessed->Release();
+	BOOL fEqual =
+		strExpectedDebugPrintForPreprocessed.FEquals(&strPreprocessed);
 	if (!fEqual)
 	{
 		CAutoTrace at(pmp);
-		at.Os() << std::endl << "RETURNED EXPRESSION:" << std::endl << strPreprocessed.Wsz();
-		at.Os() << std::endl << "EXPECTED EXPRESSION:" << std::endl << strExpectedDebugPrintForPreprocessed.Wsz();
+		at.Os() << std::endl
+				<< "RETURNED EXPRESSION:" << std::endl
+				<< strPreprocessed.Wsz();
+		at.Os() << std::endl
+				<< "EXPECTED EXPRESSION:" << std::endl
+				<< strExpectedDebugPrintForPreprocessed.Wsz();
 
 		return GPOS_FAILED;
 	}
@@ -1973,13 +2134,9 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessOrPrefiltersPartialPush()
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoinHelper
-	(
-	IMemoryPool *pmp,
-	COperator *popJoin,
-	CExpression *rgpexpr[],
-	CDrvdPropRelational *rgpdprel[]
-	)
+CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoinHelper(
+	IMemoryPool *pmp, COperator *popJoin, CExpression *rgpexpr[],
+	CDrvdPropRelational *rgpdprel[])
 {
 	GPOS_ASSERT(NULL != popJoin);
 
@@ -1989,53 +2146,71 @@ CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoinHelper
 	pdrgpexpr->Append(rgpexpr[0]);
 	rgpexpr[1]->AddRef();
 	pdrgpexpr->Append(rgpexpr[1]);
-	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(), rgpdprel[1]->PcrsOutput(), pdrgpexpr);
-	CExpression *pexprLOJ1 = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp), pdrgpexpr);
+	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(),
+								  rgpdprel[1]->PcrsOutput(), pdrgpexpr);
+	CExpression *pexprLOJ1 = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp), pdrgpexpr);
 
 	pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	rgpexpr[2]->AddRef();
 	pdrgpexpr->Append(rgpexpr[2]);
 	pdrgpexpr->Append(pexprLOJ1);
-	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(), rgpdprel[2]->PcrsOutput(), pdrgpexpr);
-	CExpression *pexprLOJ2 = GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp), pdrgpexpr);
+	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(),
+								  rgpdprel[2]->PcrsOutput(), pdrgpexpr);
+	CExpression *pexprLOJ2 = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftOuterJoin(pmp), pdrgpexpr);
 
 	// (2) add Inner/NAry Join on top of outer join
 	pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	pdrgpexpr->Append(pexprLOJ2);
 	rgpexpr[3]->AddRef();
 	pdrgpexpr->Append(rgpexpr[3]);
-	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(), rgpdprel[3]->PcrsOutput(), pdrgpexpr);
+	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(),
+								  rgpdprel[3]->PcrsOutput(), pdrgpexpr);
 	popJoin->AddRef();
-	CExpression *pexprJoin1 = GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
+	CExpression *pexprJoin1 =
+		GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
 
 	// (3) add another Inner/NAry Join on top of Inner/NAry Join
 	pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	pdrgpexpr->Append(pexprJoin1);
 	rgpexpr[4]->AddRef();
 	pdrgpexpr->Append(rgpexpr[4]);
-	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(), rgpdprel[4]->PcrsOutput(), pdrgpexpr);
+	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(),
+								  rgpdprel[4]->PcrsOutput(), pdrgpexpr);
 	popJoin->AddRef();
-	CExpression *pexprJoin2 = GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
+	CExpression *pexprJoin2 =
+		GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
 
 	// (4) add another Inner/NAry Join on top of Inner/NAry Join
 	pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	pdrgpexpr->Append(pexprJoin2);
 	rgpexpr[5]->AddRef();
 	pdrgpexpr->Append(rgpexpr[5]);
-	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(), rgpdprel[5]->PcrsOutput(), pdrgpexpr);
+	CTestUtils::EqualityPredicate(pmp, rgpdprel[0]->PcrsOutput(),
+								  rgpdprel[5]->PcrsOutput(), pdrgpexpr);
 	popJoin->AddRef();
-	CExpression *pexprJoin3 = GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
+	CExpression *pexprJoin3 =
+		GPOS_NEW(pmp) CExpression(pmp, popJoin, pdrgpexpr);
 
 	// (5) create Select with predicate that can turn all outer joins into inner joins,
 	// add the Select on top of the top Inner/NAry Join
-	CExpression *pexprCmpLOJInner = CUtils::PexprScalarEqCmp(pmp, rgpdprel[1]->PcrsOutput()->PcrFirst(), CUtils::PexprScalarConstInt4(pmp, 1 /*fVal*/));
-	CExpression *pexprSelect = CUtils::PexprSafeSelect(pmp, pexprJoin3, pexprCmpLOJInner);
-	CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
+	CExpression *pexprCmpLOJInner =
+		CUtils::PexprScalarEqCmp(pmp, rgpdprel[1]->PcrsOutput()->PcrFirst(),
+								 CUtils::PexprScalarConstInt4(pmp, 1 /*fVal*/));
+	CExpression *pexprSelect =
+		CUtils::PexprSafeSelect(pmp, pexprJoin3, pexprCmpLOJInner);
+	CExpression *pexprPreprocessed =
+		CExpressionPreprocessor::PexprPreprocess(pmp, pexprSelect);
 	{
 		CAutoTrace at(pmp);
-		at.Os() <<  std::endl << "EXPR:" << std::endl << *pexprSelect << std::endl;
-		at.Os() << "No outer joins are expected after preprocessing:" << std::endl;
-		at.Os() << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+		at.Os() << std::endl
+				<< "EXPR:" << std::endl
+				<< *pexprSelect << std::endl;
+		at.Os() << "No outer joins are expected after preprocessing:"
+				<< std::endl;
+		at.Os() << "PREPROCESSED EXPR:" << std::endl
+				<< *pexprPreprocessed << std::endl;
 	}
 	GPOS_ASSERT(FHasNoOuterJoin(pexprPreprocessed) && "unexpected outer join");
 
@@ -2043,24 +2218,30 @@ CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoinHelper
 	// root must be NAryJoin operator,
 	// selection predicate must be pushed below the NaryJoin,
 	// no other deep join trees remain below the root NAryJoin
-	GPOS_ASSERT(COperator::EopLogicalNAryJoin == pexprPreprocessed->Pop()->Eopid() &&
-			"root operator is expected to be NAryJoin");
+	GPOS_ASSERT(COperator::EopLogicalNAryJoin ==
+					pexprPreprocessed->Pop()->Eopid() &&
+				"root operator is expected to be NAryJoin");
 
 #ifdef GPOS_DEBUG
 	const ULONG ulArity = pexprPreprocessed->UlArity();
 	for (ULONG ul = 0; ul < ulArity - 1; ul++)
 	{
 		CExpression *pexprChild = (*pexprPreprocessed)[ul];
-		GPOS_ASSERT(1 == CDrvdPropRelational::Pdprel(pexprChild->PdpDerive())->UlJoinDepth() &&
-				"unexpected deep join tree below NAryJoin");
+		GPOS_ASSERT(1 == CDrvdPropRelational::Pdprel(pexprChild->PdpDerive())
+							 ->UlJoinDepth() &&
+					"unexpected deep join tree below NAryJoin");
 
 		COperator::EOperatorId eopid = pexprChild->Pop()->Eopid();
-		GPOS_ASSERT((COperator::EopLogicalGet == eopid || COperator::EopLogicalSelect == eopid) &&
+		GPOS_ASSERT((COperator::EopLogicalGet == eopid ||
+					 COperator::EopLogicalSelect == eopid) &&
 					"child operator is expected to be either Get or Select");
-		GPOS_ASSERT_IMP(COperator::EopLogicalSelect == eopid, COperator::EopLogicalGet == (*pexprChild)[0]->Pop()->Eopid() &&
-				"expected Select operator to be directly on top of Get operator");
+		GPOS_ASSERT_IMP(COperator::EopLogicalSelect == eopid,
+						COperator::EopLogicalGet ==
+								(*pexprChild)[0]->Pop()->Eopid() &&
+							"expected Select operator to be directly on top of "
+							"Get operator");
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// cleanup
 	pexprSelect->Release();
@@ -2084,26 +2265,16 @@ CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoin()
 	IMemoryPool *pmp = amp.Pmp();
 
 	// array of relation names
-	CWStringConst rgscRel[] =
-	{
-		GPOS_WSZ_LIT("Rel1"),
-		GPOS_WSZ_LIT("Rel2"),
-		GPOS_WSZ_LIT("Rel3"),
-		GPOS_WSZ_LIT("Rel4"),
-		GPOS_WSZ_LIT("Rel5"),
-		GPOS_WSZ_LIT("Rel6"),
+	CWStringConst rgscRel[] = {
+		GPOS_WSZ_LIT("Rel1"), GPOS_WSZ_LIT("Rel2"), GPOS_WSZ_LIT("Rel3"),
+		GPOS_WSZ_LIT("Rel4"), GPOS_WSZ_LIT("Rel5"), GPOS_WSZ_LIT("Rel6"),
 
 	};
 
 	// array of relation IDs
-	ULONG rgulRel[] =
-	{
-		GPOPT_TEST_REL_OID1,
-		GPOPT_TEST_REL_OID2,
-		GPOPT_TEST_REL_OID3,
-		GPOPT_TEST_REL_OID4,
-		GPOPT_TEST_REL_OID5,
-		GPOPT_TEST_REL_OID6,
+	ULONG rgulRel[] = {
+		GPOPT_TEST_REL_OID1, GPOPT_TEST_REL_OID2, GPOPT_TEST_REL_OID3,
+		GPOPT_TEST_REL_OID4, GPOPT_TEST_REL_OID5, GPOPT_TEST_REL_OID6,
 	};
 
 	// reset metadata cache
@@ -2119,7 +2290,8 @@ CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoin()
 	CDrvdPropRelational *rgpdprel[GPOS_ARRAY_SIZE(rgscRel)];
 	for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgscRel); ul++)
 	{
-		rgpexpr[ul] = CTestUtils::PexprLogicalGet(pmp, &rgscRel[ul], &rgscRel[ul], rgulRel[ul]);
+		rgpexpr[ul] = CTestUtils::PexprLogicalGet(pmp, &rgscRel[ul],
+												  &rgscRel[ul], rgulRel[ul]);
 		rgpdprel[ul] = CDrvdPropRelational::Pdprel(rgpexpr[ul]->PdpDerive());
 	}
 
@@ -2170,7 +2342,8 @@ CExpressionPreprocessorTest::EresUnittest_CollapseInnerJoin()
 			popJoin = GPOS_NEW(pmp) CLogicalInnerJoin(pmp);
 		}
 
-		eres = EresUnittest_CollapseInnerJoinHelper(pmp, popJoin, rgpexpr, rgpdprel);
+		eres = EresUnittest_CollapseInnerJoinHelper(pmp, popJoin, rgpexpr,
+													rgpdprel);
 		popJoin->Release();
 	}
 
@@ -2232,33 +2405,43 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessConvert2InPredicate()
 
 	CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/, CTestUtils::Pcm(pmp));
 
-	CAutoRef<CExpression> apexprGet(CTestUtils::PexprLogicalGet(pmp)); // useful for colref
+	CAutoRef<CExpression> apexprGet(
+		CTestUtils::PexprLogicalGet(pmp));  // useful for colref
 	COperator *popGet = apexprGet->Pop();
 	popGet->AddRef();
 
 	// Create a disjunct, add as a child
-	CColRef *pcrLeft = CDrvdPropRelational::Pdprel(apexprGet->PdpDerive())->PcrsOutput()->PcrAny();
-	CScalarBoolOp *pscboolop = GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
-	CExpression *pexprDisjunct =
-			GPOS_NEW(pmp) CExpression(
-									pmp,
-									pscboolop,
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/)),
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 2 /*iVal*/)),
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrLeft)
-									);
+	CColRef *pcrLeft = CDrvdPropRelational::Pdprel(apexprGet->PdpDerive())
+						   ->PcrsOutput()
+						   ->PcrAny();
+	CScalarBoolOp *pscboolop =
+		GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
+	CExpression *pexprDisjunct = GPOS_NEW(pmp) CExpression(
+		pmp, pscboolop,
+		CUtils::PexprScalarEqCmp(pmp, pcrLeft,
+								 CUtils::PexprScalarConstInt4(pmp, 1 /*iVal*/)),
+		CUtils::PexprScalarEqCmp(pmp, pcrLeft,
+								 CUtils::PexprScalarConstInt4(pmp, 2 /*iVal*/)),
+		CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrLeft));
 
-	CAutoRef<CExpression> apexprGetWithChildren(GPOS_NEW(pmp) CExpression(pmp, popGet, pexprDisjunct));
+	CAutoRef<CExpression> apexprGetWithChildren(
+		GPOS_NEW(pmp) CExpression(pmp, popGet, pexprDisjunct));
 
-	GPOS_ASSERT(3 == CUtils::UlCountOperator(apexprGetWithChildren.Pt(), COperator::EopScalarCmp));
+	GPOS_ASSERT(3 == CUtils::UlCountOperator(apexprGetWithChildren.Pt(),
+											 COperator::EopScalarCmp));
 
-	CAutoRef<CExpression> apexprConvert(CExpressionPreprocessor::PexprConvert2In(pmp, apexprGetWithChildren.Pt()));
+	CAutoRef<CExpression> apexprConvert(
+		CExpressionPreprocessor::PexprConvert2In(pmp,
+												 apexprGetWithChildren.Pt()));
 
-	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(), COperator::EopScalarArrayCmp));
-	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(), COperator::EopScalarCmp));
+	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(),
+											 COperator::EopScalarArrayCmp));
+	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(),
+											 COperator::EopScalarCmp));
 	// the OR node should not be removed because there should be an array expression and
 	// a scalar identity comparison
-	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(), COperator::EopScalarBoolOp));
+	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(),
+											 COperator::EopScalarBoolOp));
 
 	return GPOS_OK;
 }
@@ -2275,11 +2458,8 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessConvert2InPredicate()
 //
 //---------------------------------------------------------------------------
 CExpression *
-CExpressionPreprocessorTest::PexprCreateConvertableArray
-	(
-	IMemoryPool *pmp,
-	BOOL fCreateInStatement
-	)
+CExpressionPreprocessorTest::PexprCreateConvertableArray(
+	IMemoryPool *pmp, BOOL fCreateInStatement)
 {
 	CScalarArrayCmp::EArrCmpType earrcmp = CScalarArrayCmp::EarrcmpAny;
 	IMDType::ECmpType ecmptype = IMDType::EcmptEq;
@@ -2290,9 +2470,11 @@ CExpressionPreprocessorTest::PexprCreateConvertableArray
 		ecmptype = IMDType::EcmptNEq;
 		eboolop = CScalarBoolOp::EboolopAnd;
 	}
-	CExpression *pexpr(CTestUtils::PexprLogicalSelectArrayCmp(pmp, earrcmp, ecmptype));
+	CExpression *pexpr(
+		CTestUtils::PexprLogicalSelectArrayCmp(pmp, earrcmp, ecmptype));
 	// get a ref to the comparison column
-	CColRef *pcrLeft = CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput()->PcrAny();
+	CColRef *pcrLeft =
+		CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput()->PcrAny();
 
 	// remove the array child and then make an OR node with two equality comparisons
 	CExpression *pexprArrayComp = (*pexpr->PdrgPexpr())[1];
@@ -2300,12 +2482,15 @@ CExpressionPreprocessorTest::PexprCreateConvertableArray
 
 	DrgPexpr *pdrgexprDisjChildren = GPOS_NEW(pmp) DrgPexpr(pmp);
 	pdrgexprDisjChildren->Append(pexprArrayComp);
-	pdrgexprDisjChildren->Append(CUtils::PexprScalarCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 6 /*iVal*/), ecmptype));
-	pdrgexprDisjChildren->Append(CUtils::PexprScalarCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 7 /*iVal*/), ecmptype));
+	pdrgexprDisjChildren->Append(CUtils::PexprScalarCmp(
+		pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 6 /*iVal*/), ecmptype));
+	pdrgexprDisjChildren->Append(CUtils::PexprScalarCmp(
+		pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 7 /*iVal*/), ecmptype));
 
 	CScalarBoolOp *pscboolop = GPOS_NEW(pmp) CScalarBoolOp(pmp, eboolop);
-	CExpression *pexprDisjConj = GPOS_NEW(pmp) CExpression(pmp, pscboolop, pdrgexprDisjChildren);
-	pexprArrayComp->AddRef(); // needed for Replace()
+	CExpression *pexprDisjConj =
+		GPOS_NEW(pmp) CExpression(pmp, pscboolop, pdrgexprDisjChildren);
+	pexprArrayComp->AddRef();  // needed for Replace()
 	pexpr->PdrgPexpr()->Replace(1, pexprDisjConj);
 
 	GPOS_ASSERT(2 == CUtils::UlCountOperator(pexpr, COperator::EopScalarCmp));
@@ -2341,30 +2526,48 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessConvertArrayWithEquals()
 	CAutoOptCtxt aoc(pmp, &mda, NULL /*pceeval*/, CTestUtils::Pcm(pmp));
 
 	// test the IN OR Eq variant
-	CAutoRef<CExpression> apexprInConvertable(PexprCreateConvertableArray(pmp, true));
-	CAutoRef<CExpression> apexprInConverted(CExpressionPreprocessor::PexprConvert2In(pmp, apexprInConvertable.Pt()));
+	CAutoRef<CExpression> apexprInConvertable(
+		PexprCreateConvertableArray(pmp, true));
+	CAutoRef<CExpression> apexprInConverted(
+		CExpressionPreprocessor::PexprConvert2In(pmp,
+												 apexprInConvertable.Pt()));
 
-	GPOS_RTL_ASSERT(0 == CUtils::UlCountOperator(apexprInConverted.Pt(), COperator::EopScalarCmp));
-	GPOS_RTL_ASSERT(7 == CUtils::UlCountOperator(apexprInConverted.Pt(), COperator::EopScalarConst));
-	GPOS_RTL_ASSERT(1 == CUtils::UlCountOperator(apexprInConverted.Pt(), COperator::EopScalarArrayCmp));
+	GPOS_RTL_ASSERT(0 == CUtils::UlCountOperator(apexprInConverted.Pt(),
+												 COperator::EopScalarCmp));
+	GPOS_RTL_ASSERT(7 == CUtils::UlCountOperator(apexprInConverted.Pt(),
+												 COperator::EopScalarConst));
+	GPOS_RTL_ASSERT(1 == CUtils::UlCountOperator(apexprInConverted.Pt(),
+												 COperator::EopScalarArrayCmp));
 
-	CExpression *pexprArrayInCmp = CTestUtils::PexprFindFirstExpressionWithOpId(apexprInConverted.Pt(), COperator::EopScalarArrayCmp);
+	CExpression *pexprArrayInCmp = CTestUtils::PexprFindFirstExpressionWithOpId(
+		apexprInConverted.Pt(), COperator::EopScalarArrayCmp);
 	GPOS_ASSERT(NULL != pexprArrayInCmp);
-	CScalarArrayCmp *popCmpInArray = CScalarArrayCmp::PopConvert(pexprArrayInCmp->Pop());
+	CScalarArrayCmp *popCmpInArray =
+		CScalarArrayCmp::PopConvert(pexprArrayInCmp->Pop());
 	GPOS_RTL_ASSERT(CScalarArrayCmp::EarrcmpAny == popCmpInArray->Earrcmpt());
 
 	// test the NOT IN OR NEq variant
-	CAutoRef<CExpression> apexprNotInConvertable(PexprCreateConvertableArray(pmp, false));
-	CAutoRef<CExpression> apexprNotInConverted(CExpressionPreprocessor::PexprConvert2In(pmp, apexprNotInConvertable.Pt()));
+	CAutoRef<CExpression> apexprNotInConvertable(
+		PexprCreateConvertableArray(pmp, false));
+	CAutoRef<CExpression> apexprNotInConverted(
+		CExpressionPreprocessor::PexprConvert2In(pmp,
+												 apexprNotInConvertable.Pt()));
 
-	GPOS_RTL_ASSERT(0 == CUtils::UlCountOperator(apexprNotInConverted.Pt(), COperator::EopScalarCmp));
-	GPOS_RTL_ASSERT(7 == CUtils::UlCountOperator(apexprNotInConverted.Pt(), COperator::EopScalarConst));
-	GPOS_RTL_ASSERT(1 == CUtils::UlCountOperator(apexprNotInConverted.Pt(), COperator::EopScalarArrayCmp));
+	GPOS_RTL_ASSERT(0 == CUtils::UlCountOperator(apexprNotInConverted.Pt(),
+												 COperator::EopScalarCmp));
+	GPOS_RTL_ASSERT(7 == CUtils::UlCountOperator(apexprNotInConverted.Pt(),
+												 COperator::EopScalarConst));
+	GPOS_RTL_ASSERT(1 == CUtils::UlCountOperator(apexprNotInConverted.Pt(),
+												 COperator::EopScalarArrayCmp));
 
-	CExpression *pexprArrayCmpNotIn = CTestUtils::PexprFindFirstExpressionWithOpId(apexprNotInConverted.Pt(), COperator::EopScalarArrayCmp);
+	CExpression *pexprArrayCmpNotIn =
+		CTestUtils::PexprFindFirstExpressionWithOpId(
+			apexprNotInConverted.Pt(), COperator::EopScalarArrayCmp);
 	GPOS_ASSERT(NULL != pexprArrayCmpNotIn);
-	CScalarArrayCmp *popCmpNotInArray = CScalarArrayCmp::PopConvert(pexprArrayCmpNotIn->Pop());
-	GPOS_RTL_ASSERT(CScalarArrayCmp::EarrcmpAll == popCmpNotInArray->Earrcmpt());
+	CScalarArrayCmp *popCmpNotInArray =
+		CScalarArrayCmp::PopConvert(pexprArrayCmpNotIn->Pop());
+	GPOS_RTL_ASSERT(CScalarArrayCmp::EarrcmpAll ==
+					popCmpNotInArray->Earrcmpt());
 
 	return GPOS_OK;
 }
@@ -2381,7 +2584,8 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessConvertArrayWithEquals()
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CExpressionPreprocessorTest::EresUnittest_PreProcessConvert2InPredicateDeepExpressionTree()
+CExpressionPreprocessorTest::
+	EresUnittest_PreProcessConvert2InPredicateDeepExpressionTree()
 {
 	CAutoTraceFlag atf(EopttraceArrayConstraints, true /*fVal*/);
 
@@ -2403,51 +2607,56 @@ CExpressionPreprocessorTest::EresUnittest_PreProcessConvert2InPredicateDeepExpre
 	popGet->AddRef();
 
 	// get a column ref from the outermost Get expression
-	CAutoRef<DrgPcr> apdrgpcr(CDrvdPropRelational::Pdprel(apexprGet->PdpDerive())->PcrsOutput()->Pdrgpcr(pmp));
+	CAutoRef<DrgPcr> apdrgpcr(
+		CDrvdPropRelational::Pdprel(apexprGet->PdpDerive())
+			->PcrsOutput()
+			->Pdrgpcr(pmp));
 	GPOS_ASSERT(1 < apdrgpcr->UlLength());
 	CColRef *pcrLeft = (*apdrgpcr)[0];
 	CColRef *pcrRight = (*apdrgpcr)[1];
 
 	// inner most OR
-	CScalarBoolOp *pscboolopOrInner = GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
-	CExpression *pexprDisjunctInner =
-			GPOS_NEW(pmp) CExpression(
-									pmp,
-									pscboolopOrInner,
-									CUtils::PexprScalarEqCmp(pmp, pcrRight, CUtils::PexprScalarConstInt4(pmp, 3 /*iVal*/)),
-									CUtils::PexprScalarEqCmp(pmp, pcrRight, CUtils::PexprScalarConstInt4(pmp, 4 /*iVal*/))
-									);
+	CScalarBoolOp *pscboolopOrInner =
+		GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
+	CExpression *pexprDisjunctInner = GPOS_NEW(pmp) CExpression(
+		pmp, pscboolopOrInner,
+		CUtils::PexprScalarEqCmp(pmp, pcrRight,
+								 CUtils::PexprScalarConstInt4(pmp, 3 /*iVal*/)),
+		CUtils::PexprScalarEqCmp(
+			pmp, pcrRight, CUtils::PexprScalarConstInt4(pmp, 4 /*iVal*/)));
 	// middle and expression
-	CScalarBoolOp *pscboolopAnd = GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopAnd);
-	CExpression *pexprConjunct =
-			GPOS_NEW(pmp) CExpression(
-									pmp,
-									pscboolopAnd,
-									pexprDisjunctInner,
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight)
-									);
+	CScalarBoolOp *pscboolopAnd =
+		GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopAnd);
+	CExpression *pexprConjunct = GPOS_NEW(pmp)
+		CExpression(pmp, pscboolopAnd, pexprDisjunctInner,
+					CUtils::PexprScalarEqCmp(pmp, pcrLeft, pcrRight));
 	// outer most OR
-	CScalarBoolOp *pscboolopOr = GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
-	CExpression *pexprDisjunct =
-			GPOS_NEW(pmp) CExpression(
-									pmp,
-									pscboolopOr,
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 1)),
-									CUtils::PexprScalarEqCmp(pmp, pcrLeft, CUtils::PexprScalarConstInt4(pmp, 2)),
-									pexprConjunct
-									);
+	CScalarBoolOp *pscboolopOr =
+		GPOS_NEW(pmp) CScalarBoolOp(pmp, CScalarBoolOp::EboolopOr);
+	CExpression *pexprDisjunct = GPOS_NEW(pmp) CExpression(
+		pmp, pscboolopOr,
+		CUtils::PexprScalarEqCmp(pmp, pcrLeft,
+								 CUtils::PexprScalarConstInt4(pmp, 1)),
+		CUtils::PexprScalarEqCmp(pmp, pcrLeft,
+								 CUtils::PexprScalarConstInt4(pmp, 2)),
+		pexprConjunct);
 
-	CAutoRef<CExpression> apexprGetWithChildren(GPOS_NEW(pmp) CExpression(pmp, popGet, pexprDisjunct));
+	CAutoRef<CExpression> apexprGetWithChildren(
+		GPOS_NEW(pmp) CExpression(pmp, popGet, pexprDisjunct));
 
-	GPOS_ASSERT(5 == CUtils::UlCountOperator(apexprGetWithChildren.Pt(), COperator::EopScalarCmp));
+	GPOS_ASSERT(5 == CUtils::UlCountOperator(apexprGetWithChildren.Pt(),
+											 COperator::EopScalarCmp));
 
-	CAutoRef<CExpression> apexprConvert(CExpressionPreprocessor::PexprConvert2In(pmp, apexprGetWithChildren.Pt()));
+	CAutoRef<CExpression> apexprConvert(
+		CExpressionPreprocessor::PexprConvert2In(pmp,
+												 apexprGetWithChildren.Pt()));
 
-	GPOS_ASSERT(2 == CUtils::UlCountOperator(apexprConvert.Pt(), COperator::EopScalarArrayCmp));
-	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(), COperator::EopScalarCmp));
+	GPOS_ASSERT(2 == CUtils::UlCountOperator(apexprConvert.Pt(),
+											 COperator::EopScalarArrayCmp));
+	GPOS_ASSERT(1 == CUtils::UlCountOperator(apexprConvert.Pt(),
+											 COperator::EopScalarCmp));
 
 	return GPOS_OK;
 }
 
 // EOF
-

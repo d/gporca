@@ -22,14 +22,10 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalProperties::CDXLPhysicalProperties
-	(
-	CDXLOperatorCost *pdxlopcost
-	)
-	:
-	CDXLProperties(),
-	m_pdxlopcost(pdxlopcost)
-{}
+CDXLPhysicalProperties::CDXLPhysicalProperties(CDXLOperatorCost *pdxlopcost)
+	: CDXLProperties(), m_pdxlopcost(pdxlopcost)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -53,18 +49,16 @@ CDXLPhysicalProperties::~CDXLPhysicalProperties()
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalProperties::SerializePropertiesToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLPhysicalProperties::SerializePropertiesToDXL(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenProperties));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenProperties));
 
 	m_pdxlopcost->SerializeToDXL(pxmlser);
 	SerializeStatsToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenProperties));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenProperties));
 }
 
 //---------------------------------------------------------------------------
@@ -79,6 +73,6 @@ CDXLOperatorCost *
 CDXLPhysicalProperties::Pdxlopcost() const
 {
 	return m_pdxlopcost;
-}			
+}
 
 // EOF

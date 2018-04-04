@@ -29,20 +29,15 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CSerializablePlan::CSerializablePlan
-	(
-	IMemoryPool *pmp,
-	const CDXLNode *pdxlnPlan,
-	ULLONG ullPlanId,
-	ULLONG ullPlanSpaceSize
-	)
-	:
-	CSerializable(),
-	m_pmp(pmp),
-	m_pdxlnPlan(pdxlnPlan),
-	m_pstrPlan(NULL),
-	m_ullPlanId(ullPlanId),
-	m_ullPlanSpaceSize(ullPlanSpaceSize)
+CSerializablePlan::CSerializablePlan(IMemoryPool *pmp,
+									 const CDXLNode *pdxlnPlan,
+									 ULLONG ullPlanId, ULLONG ullPlanSpaceSize)
+	: CSerializable(),
+	  m_pmp(pmp),
+	  m_pdxlnPlan(pdxlnPlan),
+	  m_pstrPlan(NULL),
+	  m_ullPlanId(ullPlanId),
+	  m_ullPlanSpaceSize(ullPlanSpaceSize)
 {
 	GPOS_ASSERT(NULL != pdxlnPlan);
 }
@@ -70,22 +65,12 @@ CSerializablePlan::~CSerializablePlan()
 //
 //---------------------------------------------------------------------------
 void
-CSerializablePlan::Serialize
-	(
-	COstream &oos
-	)
+CSerializablePlan::Serialize(COstream &oos)
 {
-	CDXLUtils::SerializePlan
-				(
-				m_pmp,
-				oos,
-				m_pdxlnPlan,
-				m_ullPlanId,
-				m_ullPlanSpaceSize,
-				false /*fSerializeHeaders*/,
-				false /*fIndent*/
-				);
+	CDXLUtils::SerializePlan(m_pmp, oos, m_pdxlnPlan, m_ullPlanId,
+							 m_ullPlanSpaceSize, false /*fSerializeHeaders*/,
+							 false /*fIndent*/
+	);
 }
 
 // EOF
-

@@ -19,59 +19,55 @@
 
 namespace gpdxl
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalSequence
-	//
-	//	@doc:
-	//		Class for representing DXL physical sequence operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalSequence : public CDXLPhysical
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalSequence
+//
+//	@doc:
+//		Class for representing DXL physical sequence operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalSequence : public CDXLPhysical
+{
+private:
+	// private copy ctor
+	CDXLPhysicalSequence(CDXLPhysicalSequence &);
+
+public:
+	// ctor
+	CDXLPhysicalSequence(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CDXLPhysicalSequence();
+
+	// accessors
+	Edxlopid
+	Edxlop() const;
+	const CWStringConst *
+	PstrOpName() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// conversion function
+	static CDXLPhysicalSequence *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopPhysicalSequence == pdxlop->Edxlop());
 
-			// private copy ctor
-			CDXLPhysicalSequence(CDXLPhysicalSequence&);
-
-		public:
-			// ctor
-			CDXLPhysicalSequence(IMemoryPool *pmp);
-			
-			// dtor
-			virtual
-			~CDXLPhysicalSequence();
-			
-			// accessors
-			Edxlopid Edxlop() const;
-			const CWStringConst *PstrOpName() const;
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLPhysicalSequence *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopPhysicalSequence == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLPhysicalSequence*>(pdxlop);
-			}
+		return dynamic_cast<CDXLPhysicalSequence *>(pdxlop);
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-
-	};
-}
-#endif // !GPDXL_CDXLPhysicalSequence_H
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLPhysicalSequence_H
 
 // EOF
-

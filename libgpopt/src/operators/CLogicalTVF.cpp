@@ -29,20 +29,16 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalTVF::CLogicalTVF
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_pmdidFunc(NULL),
-	m_pmdidRetType(NULL),
-	m_pstr(NULL),
-	m_pdrgpcoldesc(NULL),
-	m_pdrgpcrOutput(NULL),
-	m_efs(IMDFunction::EfsImmutable),
-	m_efda(IMDFunction::EfdaNoSQL),
-	m_fReturnsSet(true)
+CLogicalTVF::CLogicalTVF(IMemoryPool *pmp)
+	: CLogical(pmp),
+	  m_pmdidFunc(NULL),
+	  m_pmdidRetType(NULL),
+	  m_pstr(NULL),
+	  m_pdrgpcoldesc(NULL),
+	  m_pdrgpcrOutput(NULL),
+	  m_efs(IMDFunction::EfsImmutable),
+	  m_efda(IMDFunction::EfdaNoSQL),
+	  m_fReturnsSet(true)
 {
 	m_fPattern = true;
 }
@@ -56,21 +52,15 @@ CLogicalTVF::CLogicalTVF
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalTVF::CLogicalTVF
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	CWStringConst *pstr,
-	DrgPcoldesc *pdrgpcoldesc
-	)
-	:
-	CLogical(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_pstr(pstr),
-	m_pdrgpcoldesc(pdrgpcoldesc),
-	m_pdrgpcrOutput(NULL)
+CLogicalTVF::CLogicalTVF(IMemoryPool *pmp, IMDId *pmdidFunc,
+						 IMDId *pmdidRetType, CWStringConst *pstr,
+						 DrgPcoldesc *pdrgpcoldesc)
+	: CLogical(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_pstr(pstr),
+	  m_pdrgpcoldesc(pdrgpcoldesc),
+	  m_pdrgpcrOutput(NULL)
 {
 	GPOS_ASSERT(pmdidFunc->FValid());
 	GPOS_ASSERT(pmdidRetType->FValid());
@@ -96,22 +86,15 @@ CLogicalTVF::CLogicalTVF
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalTVF::CLogicalTVF
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	CWStringConst *pstr,
-	DrgPcoldesc *pdrgpcoldesc,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CLogical(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_pstr(pstr),
-	m_pdrgpcoldesc(pdrgpcoldesc),
-	m_pdrgpcrOutput(pdrgpcrOutput)
+CLogicalTVF::CLogicalTVF(IMemoryPool *pmp, IMDId *pmdidFunc,
+						 IMDId *pmdidRetType, CWStringConst *pstr,
+						 DrgPcoldesc *pdrgpcoldesc, DrgPcr *pdrgpcrOutput)
+	: CLogical(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_pstr(pstr),
+	  m_pdrgpcoldesc(pdrgpcoldesc),
+	  m_pdrgpcrOutput(pdrgpcrOutput)
 {
 	GPOS_ASSERT(pmdidFunc->FValid());
 	GPOS_ASSERT(pmdidRetType->FValid());
@@ -156,13 +139,14 @@ ULONG
 CLogicalTVF::UlHash() const
 {
 	ULONG ulHash = gpos::UlCombineHashes(
-								COperator::UlHash(),
-								gpos::UlCombineHashes(
-										m_pmdidFunc->UlHash(),
-										gpos::UlCombineHashes(
-												m_pmdidRetType->UlHash(),
-												gpos::UlHashPtr<DrgPcoldesc>(m_pdrgpcoldesc))));
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
+		COperator::UlHash(),
+		gpos::UlCombineHashes(
+			m_pmdidFunc->UlHash(),
+			gpos::UlCombineHashes(
+				m_pmdidRetType->UlHash(),
+				gpos::UlHashPtr<DrgPcoldesc>(m_pdrgpcoldesc))));
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
 	return ulHash;
 }
 
@@ -175,11 +159,7 @@ CLogicalTVF::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalTVF::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalTVF::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -187,11 +167,11 @@ CLogicalTVF::FMatch
 	}
 
 	CLogicalTVF *popTVF = CLogicalTVF::PopConvert(pop);
-		
+
 	return m_pmdidFunc->FEquals(popTVF->PmdidFunc()) &&
-			m_pmdidRetType->FEquals(popTVF->PmdidRetType()) &&
-			m_pdrgpcoldesc->FEqual(popTVF->Pdrgpcoldesc()) &&
-			m_pdrgpcrOutput->FEqual(popTVF->PdrgpcrOutput());
+		   m_pmdidRetType->FEquals(popTVF->PmdidRetType()) &&
+		   m_pdrgpcoldesc->FEqual(popTVF->Pdrgpcoldesc()) &&
+		   m_pdrgpcrOutput->FEqual(popTVF->PdrgpcrOutput());
 }
 
 //---------------------------------------------------------------------------
@@ -203,21 +183,19 @@ CLogicalTVF::FMatch
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalTVF::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalTVF::PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+										BOOL fMustExist)
 {
 	DrgPcr *pdrgpcrOutput = NULL;
 	if (fMustExist)
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemapAndCreate(pmp, m_pdrgpcrOutput, phmulcr);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemapAndCreate(pmp, m_pdrgpcrOutput, phmulcr);
 	}
 	else
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
 	}
 
 	CWStringConst *pstr = GPOS_NEW(pmp) CWStringConst(m_pstr->Wsz());
@@ -225,7 +203,8 @@ CLogicalTVF::PopCopyWithRemappedColumns
 	m_pmdidRetType->AddRef();
 	m_pdrgpcoldesc->AddRef();
 
-	return GPOS_NEW(pmp) CLogicalTVF(pmp, m_pmdidFunc, m_pmdidRetType, pstr, m_pdrgpcoldesc, pdrgpcrOutput);
+	return GPOS_NEW(pmp) CLogicalTVF(pmp, m_pmdidFunc, m_pmdidRetType, pstr,
+									 m_pdrgpcoldesc, pdrgpcrOutput);
 }
 
 //---------------------------------------------------------------------------
@@ -237,11 +216,9 @@ CLogicalTVF::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalTVF::PcrsDeriveOutput
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
+CLogicalTVF::PcrsDeriveOutput(IMemoryPool *pmp,
+							  CExpressionHandle &  // exprhdl
+)
 {
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrs->Include(m_pdrgpcrOutput);
@@ -258,15 +235,11 @@ CLogicalTVF::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CFunctionProp *
-CLogicalTVF::PfpDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalTVF::PfpDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl) const
 {
 	BOOL fVolatileScan = (IMDFunction::EfsVolatile == m_efs);
-	return PfpDeriveFromChildren(pmp, exprhdl, m_efs, m_efda, fVolatileScan, true /*fScan*/);
+	return PfpDeriveFromChildren(pmp, exprhdl, m_efs, m_efda, fVolatileScan,
+								 true /*fScan*/);
 }
 
 //---------------------------------------------------------------------------
@@ -292,11 +265,7 @@ CLogicalTVF::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalTVF::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	) 
-	const
+CLogicalTVF::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
@@ -315,12 +284,9 @@ CLogicalTVF::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalTVF::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle & // exprhdl
-	)
-	const
+CLogicalTVF::Maxcard(IMemoryPool *,		  // pmp
+					 CExpressionHandle &  // exprhdl
+					 ) const
 {
 	if (m_fReturnsSet)
 	{
@@ -341,13 +307,9 @@ CLogicalTVF::Maxcard
 //---------------------------------------------------------------------------
 
 IStatistics *
-CLogicalTVF::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat * // pdrgpstatCtxt
-	)
-	const
+CLogicalTVF::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+						  DrgPstat *  // pdrgpstatCtxt
+						  ) const
 {
 	CDouble dRows(1.0);
 	if (m_fReturnsSet)
@@ -367,11 +329,7 @@ CLogicalTVF::PstatsDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalTVF::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalTVF::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
@@ -381,9 +339,8 @@ CLogicalTVF::OsPrint
 	os << "Columns: [";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcrOutput);
 	os << "] ";
-		
+
 	return os;
 }
 
 // EOF
-

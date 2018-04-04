@@ -26,21 +26,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CIndexDescriptor::CIndexDescriptor
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidIndex,
-	const CName &name,
-	DrgPcoldesc *pdrgcoldescKeyCols,
-	DrgPcoldesc *pdrgcoldescIncludedCols,
-	BOOL fClustered
-	)
-	:
-	m_pmdidIndex(pmdidIndex),
-	m_name(pmp, name),
-	m_pdrgpcoldescKeyCols(pdrgcoldescKeyCols),
-	m_pdrgpcoldescIncludedCols(pdrgcoldescIncludedCols),
-	m_fClustered(fClustered)
+CIndexDescriptor::CIndexDescriptor(IMemoryPool *pmp, IMDId *pmdidIndex,
+								   const CName &name,
+								   DrgPcoldesc *pdrgcoldescKeyCols,
+								   DrgPcoldesc *pdrgcoldescIncludedCols,
+								   BOOL fClustered)
+	: m_pmdidIndex(pmdidIndex),
+	  m_name(pmp, name),
+	  m_pdrgpcoldescKeyCols(pdrgcoldescKeyCols),
+	  m_pdrgpcoldescIncludedCols(pdrgcoldescIncludedCols),
+	  m_fClustered(fClustered)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(pmdidIndex->FValid());
@@ -105,12 +100,8 @@ CIndexDescriptor::UlIncludedColumns() const
 //
 //---------------------------------------------------------------------------
 CIndexDescriptor *
-CIndexDescriptor::Pindexdesc
-	(
-	IMemoryPool *pmp,
-	const CTableDescriptor *ptabdesc,
-	const IMDIndex *pmdindex
-	)
+CIndexDescriptor::Pindexdesc(IMemoryPool *pmp, const CTableDescriptor *ptabdesc,
+							 const IMDIndex *pmdindex)
 {
 	CWStringConst strIndexName(pmp, pmdindex->Mdname().Pstr()->Wsz());
 
@@ -139,15 +130,9 @@ CIndexDescriptor::Pindexdesc
 
 
 	// create the index descriptors
-	CIndexDescriptor *pindexdesc = GPOS_NEW(pmp) CIndexDescriptor
-											(
-											pmp,
-											pmdindex->Pmdid(),
-											CName(&strIndexName),
-											pdrgcoldescKey,
-											pdrgcoldescIncluded,
-											pmdindex->FClustered()
-											);
+	CIndexDescriptor *pindexdesc = GPOS_NEW(pmp) CIndexDescriptor(
+		pmp, pmdindex->Pmdid(), CName(&strIndexName), pdrgcoldescKey,
+		pdrgcoldescIncluded, pmdindex->FClustered());
 	return pindexdesc;
 }
 
@@ -161,19 +146,17 @@ CIndexDescriptor::Pindexdesc
 //
 //---------------------------------------------------------------------------
 IOstream &
-CIndexDescriptor::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CIndexDescriptor::OsPrint(IOstream &os) const
 {
 	m_name.OsPrint(os);
 	os << ": (Keys :";
-	CUtils::OsPrintDrgPcoldesc(os, m_pdrgpcoldescKeyCols, m_pdrgpcoldescKeyCols->UlLength());
+	CUtils::OsPrintDrgPcoldesc(os, m_pdrgpcoldescKeyCols,
+							   m_pdrgpcoldescKeyCols->UlLength());
 	os << "); ";
 
 	os << "(Included Columns :";
-	CUtils::OsPrintDrgPcoldesc(os, m_pdrgpcoldescIncludedCols, m_pdrgpcoldescIncludedCols->UlLength());
+	CUtils::OsPrintDrgPcoldesc(os, m_pdrgpcoldescIncludedCols,
+							   m_pdrgpcoldescIncludedCols->UlLength());
 	os << ")";
 
 	os << " [ Clustered :";
@@ -189,7 +172,6 @@ CIndexDescriptor::OsPrint
 	return os;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

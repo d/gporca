@@ -29,7 +29,7 @@ ULONG
 CScalarProjectElement::UlHash() const
 {
 	return gpos::UlCombineHashes(COperator::UlHash(),
-							   gpos::UlHashPtr<CColRef>(m_pcr));
+								 gpos::UlHashPtr<CColRef>(m_pcr));
 }
 
 
@@ -42,15 +42,12 @@ CScalarProjectElement::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarProjectElement::FMatch
-	(
-	COperator *pop
-	)
-const
+CScalarProjectElement::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
-		CScalarProjectElement *popScPrEl = CScalarProjectElement::PopConvert(pop);
+		CScalarProjectElement *popScPrEl =
+			CScalarProjectElement::PopConvert(pop);
 
 		// match if column reference is same
 		return Pcr() == popScPrEl->Pcr();
@@ -82,12 +79,9 @@ CScalarProjectElement::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 COperator *
-CScalarProjectElement::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CScalarProjectElement::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+												  HMUlCr *phmulcr,
+												  BOOL fMustExist)
 {
 	ULONG ulId = m_pcr->UlId();
 	CColRef *pcr = phmulcr->PtLookup(&ulId);
@@ -99,12 +93,13 @@ CScalarProjectElement::PopCopyWithRemappedColumns
 			CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
 
 			CName name(m_pcr->Name());
-			pcr = pcf->PcrCreate(m_pcr->Pmdtype(), m_pcr->ITypeModifier(), name);
+			pcr =
+				pcf->PcrCreate(m_pcr->Pmdtype(), m_pcr->ITypeModifier(), name);
 
 #ifdef GPOS_DEBUG
 			BOOL fResult =
-#endif // GPOS_DEBUG
-			phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcr);
+#endif  // GPOS_DEBUG
+				phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcr);
 			GPOS_ASSERT(fResult);
 		}
 		else
@@ -125,11 +120,7 @@ CScalarProjectElement::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarProjectElement::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarProjectElement::OsPrint(IOstream &os) const
 {
 	os << SzId() << " ";
 	m_pcr->OsPrint(os);

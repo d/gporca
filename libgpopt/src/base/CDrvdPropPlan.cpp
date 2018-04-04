@@ -31,16 +31,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDrvdPropPlan::CDrvdPropPlan
-	()
-	:
-	m_pos(NULL),
-	m_pds(NULL),
-	m_prs(NULL),
-	m_ppim(NULL),
-	m_ppfm(NULL),
-	m_pcm(NULL)
-{}
+CDrvdPropPlan::CDrvdPropPlan()
+	: m_pos(NULL),
+	  m_pds(NULL),
+	  m_prs(NULL),
+	  m_ppim(NULL),
+	  m_ppfm(NULL),
+	  m_pcm(NULL)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -71,15 +70,13 @@ CDrvdPropPlan::~CDrvdPropPlan()
 //
 //---------------------------------------------------------------------------
 CDrvdPropPlan *
-CDrvdPropPlan::Pdpplan
-	(
-	CDrvdProp *pdp
-	)
+CDrvdPropPlan::Pdpplan(CDrvdProp *pdp)
 {
 	GPOS_ASSERT(NULL != pdp);
-	GPOS_ASSERT(EptPlan == pdp->Ept() && "This is not a plan properties container");
+	GPOS_ASSERT(EptPlan == pdp->Ept() &&
+				"This is not a plan properties container");
 
-	return dynamic_cast<CDrvdPropPlan*>(pdp);
+	return dynamic_cast<CDrvdPropPlan *>(pdp);
 }
 
 
@@ -92,15 +89,12 @@ CDrvdPropPlan::Pdpplan
 //
 //---------------------------------------------------------------------------
 void
-CDrvdPropPlan::Derive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDrvdPropCtxt *pdpctxt
-	)
+CDrvdPropPlan::Derive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+					  CDrvdPropCtxt *pdpctxt)
 {
 	CPhysical *popPhysical = CPhysical::PopConvert(exprhdl.Pop());
-	if (NULL != pdpctxt && COperator::EopPhysicalCTEConsumer == popPhysical->Eopid())
+	if (NULL != pdpctxt &&
+		COperator::EopPhysicalCTEConsumer == popPhysical->Eopid())
 	{
 		CopyCTEProducerPlanProps(pmp, pdpctxt, popPhysical);
 	}
@@ -114,7 +108,8 @@ CDrvdPropPlan::Derive
 		m_ppfm = popPhysical->PpfmDerive(pmp, exprhdl);
 
 		GPOS_ASSERT(NULL != m_ppim);
-		GPOS_ASSERT(CDistributionSpec::EdtAny != m_pds->Edt() && "CDistributionAny is a require-only, cannot be derived");
+		GPOS_ASSERT(CDistributionSpec::EdtAny != m_pds->Edt() &&
+					"CDistributionAny is a require-only, cannot be derived");
 	}
 
 	m_pcm = popPhysical->PcmDerive(pmp, exprhdl);
@@ -130,23 +125,23 @@ CDrvdPropPlan::Derive
 //
 //---------------------------------------------------------------------------
 void
-CDrvdPropPlan::CopyCTEProducerPlanProps
-	(
-	IMemoryPool *pmp,
-	CDrvdPropCtxt *pdpctxt,
-	COperator *pop
-	)
+CDrvdPropPlan::CopyCTEProducerPlanProps(IMemoryPool *pmp,
+										CDrvdPropCtxt *pdpctxt, COperator *pop)
 {
-	CDrvdPropCtxtPlan *pdpctxtplan = CDrvdPropCtxtPlan::PdpctxtplanConvert(pdpctxt);
-	CPhysicalCTEConsumer *popCTEConsumer = CPhysicalCTEConsumer::PopConvert(pop);
+	CDrvdPropCtxtPlan *pdpctxtplan =
+		CDrvdPropCtxtPlan::PdpctxtplanConvert(pdpctxt);
+	CPhysicalCTEConsumer *popCTEConsumer =
+		CPhysicalCTEConsumer::PopConvert(pop);
 	ULONG ulCTEId = popCTEConsumer->UlCTEId();
 	HMUlCr *phmulcr = popCTEConsumer->Phmulcr();
 	CDrvdPropPlan *pdpplan = pdpctxtplan->PdpplanCTEProducer(ulCTEId);
 	if (NULL != pdpplan)
 	{
 		// copy producer plan properties after remapping columns
-		m_pos = pdpplan->Pos()->PosCopyWithRemappedColumns(pmp, phmulcr, true /*fMustExist*/);
-		m_pds = pdpplan->Pds()->PdsCopyWithRemappedColumns(pmp, phmulcr, true /*fMustExist*/);
+		m_pos = pdpplan->Pos()->PosCopyWithRemappedColumns(pmp, phmulcr,
+														   true /*fMustExist*/);
+		m_pds = pdpplan->Pds()->PdsCopyWithRemappedColumns(pmp, phmulcr,
+														   true /*fMustExist*/);
 
 		// rewindability and partition filter map do not need column remapping,
 		// we add-ref producer's properties directly
@@ -160,7 +155,8 @@ CDrvdPropPlan::CopyCTEProducerPlanProps
 		// distinguish between a CTE consumer and the inlined expression
 		m_ppim = GPOS_NEW(pmp) CPartIndexMap(pmp);
 
-		GPOS_ASSERT(CDistributionSpec::EdtAny != m_pds->Edt() && "CDistributionAny is a require-only, cannot be derived");
+		GPOS_ASSERT(CDistributionSpec::EdtAny != m_pds->Edt() &&
+					"CDistributionAny is a require-only, cannot be derived");
 	}
 }
 
@@ -174,11 +170,7 @@ CDrvdPropPlan::CopyCTEProducerPlanProps
 //
 //---------------------------------------------------------------------------
 BOOL
-CDrvdPropPlan::FSatisfies
-	(
-	const CReqdPropPlan *prpp
-	)
-	const
+CDrvdPropPlan::FSatisfies(const CReqdPropPlan *prpp) const
 {
 	GPOS_ASSERT(NULL != prpp);
 	GPOS_ASSERT(NULL != prpp->Peo());
@@ -187,12 +179,11 @@ CDrvdPropPlan::FSatisfies
 	GPOS_ASSERT(NULL != prpp->Pepp());
 	GPOS_ASSERT(NULL != prpp->Pcter());
 
-	return
-		m_pos->FSatisfies(prpp->Peo()->PosRequired()) &&
-		m_pds->FSatisfies(prpp->Ped()->PdsRequired()) &&
-		m_prs->FSatisfies(prpp->Per()->PrsRequired()) && 
-		m_ppim->FSatisfies(prpp->Pepp()->PppsRequired()) &&
-		m_pcm->FSatisfies(prpp->Pcter());
+	return m_pos->FSatisfies(prpp->Peo()->PosRequired()) &&
+		   m_pds->FSatisfies(prpp->Ped()->PdsRequired()) &&
+		   m_prs->FSatisfies(prpp->Per()->PrsRequired()) &&
+		   m_ppim->FSatisfies(prpp->Pepp()->PppsRequired()) &&
+		   m_pcm->FSatisfies(prpp->Pcter());
 }
 
 
@@ -224,17 +215,11 @@ CDrvdPropPlan::UlHash() const
 //
 //---------------------------------------------------------------------------
 ULONG
-CDrvdPropPlan::FEqual
-	(
-	const CDrvdPropPlan *pdpplan
-	)
-	const
+CDrvdPropPlan::FEqual(const CDrvdPropPlan *pdpplan) const
 {
-	return m_pos->FMatch(pdpplan->Pos()) &&
-			m_pds->FMatch(pdpplan->Pds()) &&
-			m_prs->FMatch(pdpplan->Prs()) &&
-			m_ppim->FEqual(pdpplan->Ppim()) &&
-			m_pcm->FEqual(pdpplan->Pcm());
+	return m_pos->FMatch(pdpplan->Pos()) && m_pds->FMatch(pdpplan->Pds()) &&
+		   m_prs->FMatch(pdpplan->Prs()) && m_ppim->FEqual(pdpplan->Ppim()) &&
+		   m_pcm->FEqual(pdpplan->Pcm());
 }
 
 //---------------------------------------------------------------------------
@@ -246,22 +231,17 @@ CDrvdPropPlan::FEqual
 //
 //---------------------------------------------------------------------------
 IOstream &
-CDrvdPropPlan::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CDrvdPropPlan::OsPrint(IOstream &os) const
 {
-		os	<< "Drvd Plan Props ("
-			<< "ORD: " << (*m_pos)
-			<< ", DIST: " << (*m_pds)
-			<< ", REWIND: " << (*m_prs) << ")"
-			<< ", Part-Index Map: [" << *m_ppim << "]";
-			os << ", Part Filter Map: ";
-			m_ppfm->OsPrint(os);
-			os << ", CTE Map: [" << *m_pcm << "]";
+	os << "Drvd Plan Props ("
+	   << "ORD: " << (*m_pos) << ", DIST: " << (*m_pds)
+	   << ", REWIND: " << (*m_prs) << ")"
+	   << ", Part-Index Map: [" << *m_ppim << "]";
+	os << ", Part Filter Map: ";
+	m_ppfm->OsPrint(os);
+	os << ", CTE Map: [" << *m_pcm << "]";
 
-		return os;
+	return os;
 }
 
 // EOF

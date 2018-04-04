@@ -26,14 +26,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarArrayRefIndexList::CDXLScalarArrayRefIndexList
-	(
-	IMemoryPool *pmp,
-	EIndexListBound eilb
-	)
-	:
-	CDXLScalar(pmp),
-	m_eilb(eilb)
+CDXLScalarArrayRefIndexList::CDXLScalarArrayRefIndexList(IMemoryPool *pmp,
+														 EIndexListBound eilb)
+	: CDXLScalar(pmp), m_eilb(eilb)
 {
 	GPOS_ASSERT(EilbSentinel > eilb);
 }
@@ -75,21 +70,21 @@ CDXLScalarArrayRefIndexList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArrayRefIndexList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarArrayRefIndexList::SerializeToDXL(CXMLSerializer *pxmlser,
+											const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarArrayRefIndexListBound), PstrIndexListBound(m_eilb));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenScalarArrayRefIndexListBound),
+		PstrIndexListBound(m_eilb));
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -101,10 +96,7 @@ CDXLScalarArrayRefIndexList::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-CDXLScalarArrayRefIndexList::PstrIndexListBound
-	(
-	EIndexListBound eilb
-	)
+CDXLScalarArrayRefIndexList::PstrIndexListBound(EIndexListBound eilb)
 {
 	switch (eilb)
 	{
@@ -130,18 +122,15 @@ CDXLScalarArrayRefIndexList::PstrIndexListBound
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArrayRefIndexList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarArrayRefIndexList::AssertValid(const CDXLNode *pdxln,
+										 BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
@@ -149,6 +138,6 @@ CDXLScalarArrayRefIndexList::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

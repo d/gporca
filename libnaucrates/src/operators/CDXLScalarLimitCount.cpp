@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL Scalar Limit Count
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/operators/CDXLScalarLimitCount.h"
@@ -27,12 +27,7 @@ using namespace gpdxl;
 //		Constructs a scalar Limit Count node
 //
 //---------------------------------------------------------------------------
-CDXLScalarLimitCount::CDXLScalarLimitCount
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarLimitCount::CDXLScalarLimitCount(IMemoryPool *pmp) : CDXLScalar(pmp)
 {
 }
 
@@ -75,18 +70,16 @@ CDXLScalarLimitCount::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarLimitCount::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarLimitCount::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -99,12 +92,8 @@ CDXLScalarLimitCount::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarLimitCount::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarLimitCount::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(1 >= ulArity);
@@ -113,13 +102,13 @@ CDXLScalarLimitCount::AssertValid
 	{
 		CDXLNode *pdxlnArg = (*pdxln)[ul];
 		GPOS_ASSERT(EdxloptypeScalar == pdxlnArg->Pdxlop()->Edxloperatortype());
-		
+
 		if (fValidateChildren)
 		{
 			pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -29,17 +29,14 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerSearchStage::CParseHandlerSearchStage
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pxfs(NULL),
-	m_costThreshold(GPOPT_INVALID_COST)
-{}
+CParseHandlerSearchStage::CParseHandlerSearchStage(IMemoryPool *pmp,
+												   CParseHandlerManager *pphm,
+												   CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_pxfs(NULL),
+	  m_costThreshold(GPOPT_INVALID_COST)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -65,39 +62,42 @@ CParseHandlerSearchStage::~CParseHandlerSearchStage()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSearchStage::StartElement
-	(
-	const XMLCh* const xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const xmlstrQname,
-	const Attributes& attrs
-	)
+CParseHandlerSearchStage::StartElement(const XMLCh *const xmlstrUri,
+									   const XMLCh *const xmlstrLocalname,
+									   const XMLCh *const xmlstrQname,
+									   const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStage), xmlstrLocalname))
+	if (0 ==
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStage),
+								 xmlstrLocalname))
 	{
 		// start search stage section in the DXL document
 		GPOS_ASSERT(NULL == m_pxfs);
 
 		m_pxfs = GPOS_NEW(m_pmp) CXformSet(m_pmp);
 
-		const XMLCh *xmlszCost =
-			CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenCostThreshold, EdxltokenSearchStage);
+		const XMLCh *xmlszCost = CDXLOperatorFactory::XmlstrFromAttrs(
+			attrs, EdxltokenCostThreshold, EdxltokenSearchStage);
 
-		m_costThreshold =
-			CCost(CDXLOperatorFactory::DValueFromXmlstr(m_pphm->Pmm(), xmlszCost, EdxltokenCostThreshold, EdxltokenSearchStage));
+		m_costThreshold = CCost(CDXLOperatorFactory::DValueFromXmlstr(
+			m_pphm->Pmm(), xmlszCost, EdxltokenCostThreshold,
+			EdxltokenSearchStage));
 
-		const XMLCh *xmlszTime =
-			CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenTimeThreshold, EdxltokenSearchStage);
+		const XMLCh *xmlszTime = CDXLOperatorFactory::XmlstrFromAttrs(
+			attrs, EdxltokenTimeThreshold, EdxltokenSearchStage);
 
-		m_ulTimeThreshold =
-			CDXLOperatorFactory::UlValueFromXmlstr(m_pphm->Pmm(), xmlszTime, EdxltokenTimeThreshold, EdxltokenSearchStage);
+		m_ulTimeThreshold = CDXLOperatorFactory::UlValueFromXmlstr(
+			m_pphm->Pmm(), xmlszTime, EdxltokenTimeThreshold,
+			EdxltokenSearchStage);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenXform), xmlstrLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenXform), xmlstrLocalname))
 	{
 		GPOS_ASSERT(NULL != m_pxfs);
 
 		// start new xform
-		CParseHandlerBase *pphXform = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenXform), m_pphm, this);
+		CParseHandlerBase *pphXform = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenXform), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphXform);
 
 		// store parse handler
@@ -107,7 +107,8 @@ CParseHandlerSearchStage::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -122,17 +123,17 @@ CParseHandlerSearchStage::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSearchStage::EndElement
-	(
-	const XMLCh* const, // xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const // xmlstrQname
-	)
+CParseHandlerSearchStage::EndElement(const XMLCh *const,  // xmlstrUri,
+									 const XMLCh *const xmlstrLocalname,
+									 const XMLCh *const  // xmlstrQname
+)
 {
-
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStage), xmlstrLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStage),
+								 xmlstrLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -140,18 +141,17 @@ CParseHandlerSearchStage::EndElement
 	// add constructed children from child parse handlers
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerXform *pphXform = dynamic_cast<CParseHandlerXform*>((*this)[ul]);
+		CParseHandlerXform *pphXform =
+			dynamic_cast<CParseHandlerXform *>((*this)[ul]);
 #ifdef GPOS_DEBUG
 		BOOL fSet =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 			m_pxfs->FExchangeSet(pphXform->Pxform()->Exfid());
 		GPOS_ASSERT(!fSet);
 	}
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();
-
 }
 
 // EOF
-

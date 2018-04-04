@@ -16,52 +16,48 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformPushGbDedupBelowJoin
-	//
-	//	@doc:
-	//		Push dedup group by below join transform
-	//
-	//---------------------------------------------------------------------------
-	class CXformPushGbDedupBelowJoin : public CXformPushGbBelowJoin
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformPushGbDedupBelowJoin
+//
+//	@doc:
+//		Push dedup group by below join transform
+//
+//---------------------------------------------------------------------------
+class CXformPushGbDedupBelowJoin : public CXformPushGbBelowJoin
+{
+private:
+	// private copy ctor
+	CXformPushGbDedupBelowJoin(const CXformPushGbDedupBelowJoin &);
+
+public:
+	// ctor
+	explicit CXformPushGbDedupBelowJoin(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CXformPushGbDedupBelowJoin()
 	{
+	}
 
-		private:
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfPushGbDedupBelowJoin;
+	}
 
-			// private copy ctor
-			CXformPushGbDedupBelowJoin(const CXformPushGbDedupBelowJoin &);
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformPushGbDedupBelowJoin";
+	}
 
-		public:
+};  // class CXformPushGbDedupBelowJoin
 
-			// ctor
-			explicit
-			CXformPushGbDedupBelowJoin(IMemoryPool *pmp);
+}  // namespace gpopt
 
-			// dtor
-			virtual
-			~CXformPushGbDedupBelowJoin()
-			{}
-
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfPushGbDedupBelowJoin;
-			}
-
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformPushGbDedupBelowJoin";
-			}
-
-	}; // class CXformPushGbDedupBelowJoin
-
-}
-
-#endif // !GPOPT_CXformPushGbDedupBelowJoin_H
+#endif  // !GPOPT_CXformPushGbDedupBelowJoin_H
 
 // EOF

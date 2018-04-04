@@ -26,16 +26,9 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPropConstraint::CPropConstraint
-	(
-	IMemoryPool *pmp,
-	DrgPcrs *pdrgpcrs,
-	CConstraint *pcnstr
-	)
-	:
-	m_pdrgpcrs(pdrgpcrs),
-	m_phmcrcrs(NULL),
-	m_pcnstr(pcnstr)
+CPropConstraint::CPropConstraint(IMemoryPool *pmp, DrgPcrs *pdrgpcrs,
+								 CConstraint *pcnstr)
+	: m_pdrgpcrs(pdrgpcrs), m_phmcrcrs(NULL), m_pcnstr(pcnstr)
 {
 	GPOS_ASSERT(NULL != pdrgpcrs);
 	InitHashMap(pmp);
@@ -65,10 +58,7 @@ CPropConstraint::~CPropConstraint()
 //
 //---------------------------------------------------------------------------
 void
-CPropConstraint::InitHashMap
-	(
-	IMemoryPool *pmp
-	)
+CPropConstraint::InitHashMap(IMemoryPool *pmp)
 {
 	GPOS_ASSERT(NULL == m_phmcrcrs);
 	m_phmcrcrs = GPOS_NEW(pmp) HMCrCrs(pmp);
@@ -83,8 +73,8 @@ CPropConstraint::InitHashMap
 			pcrs->AddRef();
 #ifdef GPOS_DEBUG
 			BOOL fres =
-#endif //GPOS_DEBUG
-			m_phmcrcrs->FInsert(crsi.Pcr(), pcrs);
+#endif  //GPOS_DEBUG
+				m_phmcrcrs->FInsert(crsi.Pcr(), pcrs);
 			GPOS_ASSERT(fres);
 		}
 	}
@@ -99,8 +89,7 @@ CPropConstraint::InitHashMap
 //
 //---------------------------------------------------------------------------
 BOOL
-CPropConstraint::FContradiction()
-const
+CPropConstraint::FContradiction() const
 {
 	return (NULL != m_pcnstr && m_pcnstr->FContradiction());
 }
@@ -115,14 +104,10 @@ const
 //
 //---------------------------------------------------------------------------
 CExpression *
-CPropConstraint::PexprScalarMappedFromEquivCols
-	(
-	IMemoryPool *pmp,
-	CColRef *pcr
-	)
-	const
+CPropConstraint::PexprScalarMappedFromEquivCols(IMemoryPool *pmp,
+												CColRef *pcr) const
 {
-	if(NULL == m_pcnstr)
+	if (NULL == m_pcnstr)
 	{
 		return NULL;
 	}
@@ -166,11 +151,7 @@ CPropConstraint::PexprScalarMappedFromEquivCols
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPropConstraint::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPropConstraint::OsPrint(IOstream &os) const
 {
 	const ULONG ulLen = m_pdrgpcrs->UlLength();
 	if (0 < ulLen)
@@ -202,4 +183,3 @@ CPropConstraint::DbgPrint() const
 	(void) this->OsPrint(at.Os());
 }
 // EOF
-

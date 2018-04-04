@@ -17,14 +17,14 @@ using namespace gpos;
 
 
 // shorthand for HT accessor
-typedef	CSyncHashtableAccessByKey
-			<CTaskLocalStorageObject, 
-			CTaskLocalStorage::Etlsidx, 
-			CSpinlockOS> ShtAcc;
+typedef CSyncHashtableAccessByKey<CTaskLocalStorageObject,
+								  CTaskLocalStorage::Etlsidx, CSpinlockOS>
+	ShtAcc;
 
 
 // invalid Etlsidx
-const CTaskLocalStorage::Etlsidx CTaskLocalStorage::m_etlsidxInvalid = EtlsidxInvalid;
+const CTaskLocalStorage::Etlsidx CTaskLocalStorage::m_etlsidxInvalid =
+	EtlsidxInvalid;
 
 
 //---------------------------------------------------------------------------
@@ -35,7 +35,9 @@ const CTaskLocalStorage::Etlsidx CTaskLocalStorage::m_etlsidxInvalid = EtlsidxIn
 //		Dtor
 //
 //---------------------------------------------------------------------------
-CTaskLocalStorage::~CTaskLocalStorage() {}
+CTaskLocalStorage::~CTaskLocalStorage()
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -46,25 +48,18 @@ CTaskLocalStorage::~CTaskLocalStorage() {}
 //
 //---------------------------------------------------------------------------
 void
-CTaskLocalStorage::Reset
-	(
-	IMemoryPool *pmp
-	)
+CTaskLocalStorage::Reset(IMemoryPool *pmp)
 {
-	// destroy old 
+	// destroy old
 	m_sht.Cleanup();
 
 	// realloc
-	m_sht.Init
-		(
-		pmp,
-		128, // number of hashbuckets
-		GPOS_OFFSET(CTaskLocalStorageObject, m_link),
-		GPOS_OFFSET(CTaskLocalStorageObject, m_etlsidx),
-		&(CTaskLocalStorage::m_etlsidxInvalid),
-		CTaskLocalStorage::UlHashIdx,
-		CTaskLocalStorage::FEqual
-		);
+	m_sht.Init(pmp,
+			   128,  // number of hashbuckets
+			   GPOS_OFFSET(CTaskLocalStorageObject, m_link),
+			   GPOS_OFFSET(CTaskLocalStorageObject, m_etlsidx),
+			   &(CTaskLocalStorage::m_etlsidxInvalid),
+			   CTaskLocalStorage::UlHashIdx, CTaskLocalStorage::FEqual);
 }
 
 
@@ -77,10 +72,7 @@ CTaskLocalStorage::Reset
 //
 //---------------------------------------------------------------------------
 void
-CTaskLocalStorage::Store
-	(
-	CTaskLocalStorageObject *ptlsobj
-	)
+CTaskLocalStorage::Store(CTaskLocalStorageObject *ptlsobj)
 {
 	GPOS_ASSERT(NULL != ptlsobj);
 
@@ -89,7 +81,7 @@ CTaskLocalStorage::Store
 		ShtAcc shtacc(m_sht, ptlsobj->Etlsidx());
 		GPOS_ASSERT(NULL == shtacc.PtLookup() && "Duplicate TLS object key");
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	m_sht.Insert(ptlsobj);
 }
@@ -104,10 +96,7 @@ CTaskLocalStorage::Store
 //
 //---------------------------------------------------------------------------
 CTaskLocalStorageObject *
-CTaskLocalStorage::Ptlsobj
-	(
-	CTaskLocalStorage::Etlsidx etlsidx
-	)
+CTaskLocalStorage::Ptlsobj(CTaskLocalStorage::Etlsidx etlsidx)
 {
 	ShtAcc shtacc(m_sht, etlsidx);
 	return shtacc.PtLookup();
@@ -123,19 +112,15 @@ CTaskLocalStorage::Ptlsobj
 //
 //---------------------------------------------------------------------------
 void
-CTaskLocalStorage::Remove
-	(
-	CTaskLocalStorageObject *ptlsobj
-	)
+CTaskLocalStorage::Remove(CTaskLocalStorageObject *ptlsobj)
 {
 	GPOS_ASSERT(NULL != ptlsobj);
-	
+
 	// lookup object
 	ShtAcc shtacc(m_sht, ptlsobj->Etlsidx());
 	GPOS_ASSERT(NULL != shtacc.PtLookup() && "Object not found in TLS");
-	
+
 	shtacc.Remove(ptlsobj);
 }
 
 // EOF
-

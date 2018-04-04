@@ -110,25 +110,20 @@ CMDIdGPDB CMDIdGPDB::m_mdidUnknown(GPDB_UNKNOWN);
 //		of 1.0
 //
 //---------------------------------------------------------------------------
-CMDIdGPDB::CMDIdGPDB
-	(
-	CSystemId sysid,
-	OID oid
-	)
-	:
-	m_sysid(sysid),
-	m_oid(oid),
-	m_ulVersionMajor(1),
-	m_ulVersionMinor(0),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdGPDB::CMDIdGPDB(CSystemId sysid, OID oid)
+	: m_sysid(sysid),
+	  m_oid(oid),
+	  m_ulVersionMajor(1),
+	  m_ulVersionMinor(0),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	if (CMDIdGPDB::m_mdidInvalidKey.OidObjectId() == oid)
 	{
 		// construct an invalid mdid 0.0.0
 		m_ulVersionMajor = 0;
 	}
-		
-	// serialize mdid into static string 
+
+	// serialize mdid into static string
 	Serialize();
 }
 
@@ -141,26 +136,22 @@ CMDIdGPDB::CMDIdGPDB
 //		of 1.0
 //
 //---------------------------------------------------------------------------
-CMDIdGPDB::CMDIdGPDB
-	(
-	OID oid
-	)
-	:
-	m_sysid(IMDId::EmdidGPDB, GPMD_GPDB_SYSID),
-	m_oid(oid),
-	m_ulVersionMajor(1),
-	m_ulVersionMinor(0),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdGPDB::CMDIdGPDB(OID oid)
+	: m_sysid(IMDId::EmdidGPDB, GPMD_GPDB_SYSID),
+	  m_oid(oid),
+	  m_ulVersionMajor(1),
+	  m_ulVersionMinor(0),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	if (CMDIdGPDB::m_mdidInvalidKey.OidObjectId() == oid)
 	{
 		// construct an invalid mdid 0.0.0
 		m_ulVersionMajor = 0;
 	}
-	
+
 	// TODO:  - Jan 31, 2012; supply system id in constructor
-	
-	// serialize mdid into static string 
+
+	// serialize mdid into static string
 	Serialize();
 }
 
@@ -172,18 +163,12 @@ CMDIdGPDB::CMDIdGPDB
 //		Constructs a metadata identifier
 //
 //---------------------------------------------------------------------------
-CMDIdGPDB::CMDIdGPDB
-	(
-	OID oid,
-	ULONG ulVersionMajor,
-	ULONG ulVersionMinor
-	)
-	:
-	m_sysid(IMDId::EmdidGPDB, GPMD_GPDB_SYSID),
-	m_oid(oid),
-	m_ulVersionMajor(ulVersionMajor),
-	m_ulVersionMinor(ulVersionMinor),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdGPDB::CMDIdGPDB(OID oid, ULONG ulVersionMajor, ULONG ulVersionMinor)
+	: m_sysid(IMDId::EmdidGPDB, GPMD_GPDB_SYSID),
+	  m_oid(oid),
+	  m_ulVersionMajor(ulVersionMajor),
+	  m_ulVersionMinor(ulVersionMinor),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	// TODO:  - Jan 31, 2012; supply system id in constructor
 	// serialize mdid into static string
@@ -198,17 +183,13 @@ CMDIdGPDB::CMDIdGPDB
 //		Copy constructor
 //
 //---------------------------------------------------------------------------
-CMDIdGPDB::CMDIdGPDB
-	(
-	const CMDIdGPDB &mdidSource
-	)
-	:
-	IMDId(),
-	m_sysid(mdidSource.Sysid()),
-	m_oid(mdidSource.OidObjectId()),
-	m_ulVersionMajor(mdidSource.UlVersionMajor()),
-	m_ulVersionMinor(mdidSource.UlVersionMinor()),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdGPDB::CMDIdGPDB(const CMDIdGPDB &mdidSource)
+	: IMDId(),
+	  m_sysid(mdidSource.Sysid()),
+	  m_oid(mdidSource.OidObjectId()),
+	  m_ulVersionMajor(mdidSource.UlVersionMajor()),
+	  m_ulVersionMinor(mdidSource.UlVersionMinor()),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	GPOS_ASSERT(mdidSource.FValid());
 	GPOS_ASSERT(IMDId::EmdidGPDB == mdidSource.Emdidt());
@@ -230,7 +211,8 @@ CMDIdGPDB::Serialize()
 {
 	m_str.Reset();
 	// serialize mdid as SystemType.Oid.Major.Minor
-	m_str.AppendFormat(GPOS_WSZ_LIT("%d.%d.%d.%d"), Emdidt(), m_oid, m_ulVersionMajor, m_ulVersionMinor);
+	m_str.AppendFormat(GPOS_WSZ_LIT("%d.%d.%d.%d"), Emdidt(), m_oid,
+					   m_ulVersionMajor, m_ulVersionMinor);
 }
 
 //---------------------------------------------------------------------------
@@ -301,21 +283,19 @@ CMDIdGPDB::UlVersionMinor() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDIdGPDB::FEquals
-	(
-	const IMDId *pmdid
-	) 
-	const
+CMDIdGPDB::FEquals(const IMDId *pmdid) const
 {
 	if (NULL == pmdid || EmdidGPDB != pmdid->Emdidt())
 	{
 		return false;
 	}
-	
-	const CMDIdGPDB *pmdidGPDB = CMDIdGPDB::PmdidConvert(const_cast<IMDId *>(pmdid));
-	
-	return (m_oid == pmdidGPDB->OidObjectId() && m_ulVersionMajor == pmdidGPDB->UlVersionMajor() &&
-			m_ulVersionMinor == pmdidGPDB->UlVersionMinor()); 
+
+	const CMDIdGPDB *pmdidGPDB =
+		CMDIdGPDB::PmdidConvert(const_cast<IMDId *>(pmdid));
+
+	return (m_oid == pmdidGPDB->OidObjectId() &&
+			m_ulVersionMajor == pmdidGPDB->UlVersionMajor() &&
+			m_ulVersionMinor == pmdidGPDB->UlVersionMinor());
 }
 
 //---------------------------------------------------------------------------
@@ -341,12 +321,8 @@ CMDIdGPDB::FValid() const
 //
 //---------------------------------------------------------------------------
 void
-CMDIdGPDB::Serialize
-	(
-	CXMLSerializer * pxmlser,
-	const CWStringConst *pstrAttribute
-	)
-	const
+CMDIdGPDB::Serialize(CXMLSerializer *pxmlser,
+					 const CWStringConst *pstrAttribute) const
 {
 	pxmlser->AddAttribute(pstrAttribute, &m_str);
 }
@@ -360,14 +336,10 @@ CMDIdGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 IOstream &
-CMDIdGPDB::OsPrint
-	(
-	IOstream &os
-	) 
-	const
+CMDIdGPDB::OsPrint(IOstream &os) const
 {
-	os << "(" << OidObjectId() << "," << 
-				UlVersionMajor() << "." << UlVersionMinor() << ")";
+	os << "(" << OidObjectId() << "," << UlVersionMajor() << "."
+	   << UlVersionMinor() << ")";
 	return os;
 }
 

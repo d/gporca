@@ -9,7 +9,7 @@
 //		Class for representing the specification of directly dispatchable plans
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -23,50 +23,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd decl
-	class CXMLSerializer;
+// fwd decl
+class CXMLSerializer;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLDirectDispatchInfo
-	//
-	//	@doc:
-	//		Class for representing the specification of directly dispatchable plans
-	//
-	//---------------------------------------------------------------------------
-	class CDXLDirectDispatchInfo : public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLDirectDispatchInfo
+//
+//	@doc:
+//		Class for representing the specification of directly dispatchable plans
+//
+//---------------------------------------------------------------------------
+class CDXLDirectDispatchInfo : public CRefCount
+{
+private:
+	// constants for determining segments to dispatch to
+	DrgPdrgPdxldatum *m_pdrgpdrgpdxldatum;
+
+	// private copy ctor
+	CDXLDirectDispatchInfo(const CDXLDirectDispatchInfo &);
+
+public:
+	// ctor
+	explicit CDXLDirectDispatchInfo(DrgPdrgPdxldatum *pdrgpdrgpdxldatum);
+
+	// dtor
+	virtual ~CDXLDirectDispatchInfo();
+
+	// accessor to array of datums
+	DrgPdrgPdxldatum *
+	Pdrgpdrgpdxldatum() const
 	{
-		private:
+		return m_pdrgpdrgpdxldatum;
+	}
 
-			// constants for determining segments to dispatch to
-			DrgPdrgPdxldatum *m_pdrgpdrgpdxldatum;
-		
-			// private copy ctor
-			CDXLDirectDispatchInfo(const CDXLDirectDispatchInfo &);
+	// serialize the datum as the given element
+	void
+	Serialize(CXMLSerializer *pxmlser);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			explicit
-			CDXLDirectDispatchInfo(DrgPdrgPdxldatum *pdrgpdrgpdxldatum);
-
-			// dtor
-			virtual
-			~CDXLDirectDispatchInfo();
-
-			// accessor to array of datums
-			DrgPdrgPdxldatum *Pdrgpdrgpdxldatum() const
-			{
-				return m_pdrgpdrgpdxldatum;
-			}
-			
-			// serialize the datum as the given element
-			void Serialize(CXMLSerializer *pxmlser);
-
-	};
-}
-
-#endif // !GPDXL_CDXLDirectDispatchInfo_H
+#endif  // !GPDXL_CDXLDirectDispatchInfo_H
 
 // EOF

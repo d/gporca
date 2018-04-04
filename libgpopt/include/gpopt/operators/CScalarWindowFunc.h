@@ -8,8 +8,8 @@
 //	@doc:
 //		Class for scalar window function
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -26,139 +26,133 @@
 
 namespace gpopt
 {
+using namespace gpos;
+using namespace gpmd;
 
-	using namespace gpos;
-	using namespace gpmd;
-
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarWindowFunc
-	//
-	//	@doc:
-	//		Class for scalar window function
-	//
-	//---------------------------------------------------------------------------
-	class CScalarWindowFunc : public CScalarFunc
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarWindowFunc
+//
+//	@doc:
+//		Class for scalar window function
+//
+//---------------------------------------------------------------------------
+class CScalarWindowFunc : public CScalarFunc
+{
+public:
+	// window stage
+	enum EWinStage
 	{
-		public:
-			// window stage
-			enum EWinStage
-			{
-				EwsImmediate,
-				EwsPreliminary,
-				EwsRowKey,
+		EwsImmediate,
+		EwsPreliminary,
+		EwsRowKey,
 
-				EwsSentinel
-			};
+		EwsSentinel
+	};
 
-		private:
+private:
+	// window stage
+	EWinStage m_ewinstage;
 
-			// window stage
-			EWinStage m_ewinstage;
+	// distinct window computation
+	BOOL m_fDistinct;
 
-			// distinct window computation
-			BOOL m_fDistinct;
+	/* TRUE if argument list was really '*' */
+	BOOL m_fStarArg;
 
-			/* TRUE if argument list was really '*' */
-			BOOL m_fStarArg;
+	/* is function a simple aggregate? */
+	BOOL m_fSimpleAgg;
 
-			/* is function a simple aggregate? */
-			BOOL m_fSimpleAgg;
+	// aggregate window function, e.g. count(*) over()
+	BOOL m_fAgg;
 
-			// aggregate window function, e.g. count(*) over()
-			BOOL m_fAgg;
+	// private copy ctor
+	CScalarWindowFunc(const CScalarWindowFunc &);
 
-			// private copy ctor
-			CScalarWindowFunc(const CScalarWindowFunc &);
+public:
+	// ctor
+	CScalarWindowFunc(IMemoryPool *pmp, IMDId *pmdidFunc, IMDId *pmdidRetType,
+					  const CWStringConst *pstrFunc, EWinStage ewinstage,
+					  BOOL fDistinct, BOOL fStarArg, BOOL fSimpleAgg);
 
-		public:
+	// dtor
+	virtual ~CScalarWindowFunc()
+	{
+	}
 
-			// ctor
-			CScalarWindowFunc
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidFunc,
-				IMDId *pmdidRetType,
-				const CWStringConst *pstrFunc,
-				EWinStage ewinstage,
-				BOOL fDistinct,
-				BOOL fStarArg,
-				BOOL fSimpleAgg
-				);
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopScalarWindowFunc;
+	}
 
-			// dtor
-			virtual
-			~CScalarWindowFunc(){}
+	// return a string for window function
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarWindowFunc";
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarWindowFunc;
-			}
+	EWinStage
+	Ews() const
+	{
+		return m_ewinstage;
+	}
 
-			// return a string for window function
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarWindowFunc";
-			}
+	// operator specific hash function
+	ULONG
+	UlHash() const;
 
-			EWinStage Ews() const
-			{
-				return m_ewinstage;
-			}
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-			// operator specific hash function
-			ULONG UlHash() const;
+	// conversion function
+	static CScalarWindowFunc *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarWindowFunc == pop->Eopid());
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
+		return reinterpret_cast<CScalarWindowFunc *>(pop);
+	}
 
-			// conversion function
-			static
-			CScalarWindowFunc *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarWindowFunc == pop->Eopid());
+	// does window function definition include Distinct?
+	BOOL
+	FDistinct() const
+	{
+		return m_fDistinct;
+	}
 
-				return reinterpret_cast<CScalarWindowFunc*>(pop);
-			}
+	BOOL
+	FStarArg() const
+	{
+		return m_fStarArg;
+	}
 
-			// does window function definition include Distinct?
-			BOOL FDistinct() const
-			{
-				return m_fDistinct;
-			}
-		
-			BOOL FStarArg() const
-			{
-				return m_fStarArg;
-			}
+	BOOL
+	FSimpleAgg() const
+	{
+		return m_fSimpleAgg;
+	}
 
-			BOOL FSimpleAgg() const
-			{
-				return m_fSimpleAgg;
-			}
+	// is window function defined as Aggregate?
+	BOOL
+	FAgg() const
+	{
+		return m_fAgg;
+	}
 
-			// is window function defined as Aggregate?
-			BOOL FAgg() const
-			{
-				return m_fAgg;
-			}
-
-			// print
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
+	// print
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
 
-	}; // class CScalarWindowFunc
+};  // class CScalarWindowFunc
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CScalarWindowFunc_H
+#endif  // !GPOPT_CScalarWindowFunc_H
 
 // EOF

@@ -7,8 +7,8 @@
 //
 //	@doc:
 //		Task-local storage facility; implements TLS to store an instance
-//		of a subclass of CTaskLocalStorageObject by an enum index; 
-//		no restrictions as to where the actual data is allocated, 
+//		of a subclass of CTaskLocalStorageObject by an enum index;
+//		no restrictions as to where the actual data is allocated,
 
 
 //		e.g. Task's memory pool, global memory etc.
@@ -21,89 +21,81 @@
 
 namespace gpos
 {
+// fwd declaration
+class CTaskLocalStorageObject;
 
-	// fwd declaration
-	class CTaskLocalStorageObject;
+//---------------------------------------------------------------------------
+//	@class:
+//		CTaskLocalStorage
+//
+//	@doc:
+//		TLS implementation; single instance of this class per task; initialized
+//		and destroyed during task setup/tear down
+//
+//---------------------------------------------------------------------------
+class CTaskLocalStorage
+{
+public:
+	enum Etlsidx
+	{
+		EtlsidxTest,	 // unittest slot
+		EtlsidxOptCtxt,  // optimizer context
+		EtlsidxInvalid,  // used only for hashtable iteration
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTaskLocalStorage
-	//
-	//	@doc:
-	//		TLS implementation; single instance of this class per task; initialized
-	//		and destroyed during task setup/tear down
-	//
-	//---------------------------------------------------------------------------
-	class CTaskLocalStorage
-	{			
-		public:
+		EtlsidxSentinel
+	};
 
-			enum Etlsidx
-			{
-				EtlsidxTest,		// unittest slot
-				EtlsidxOptCtxt,		// optimizer context
-				EtlsidxInvalid,		// used only for hashtable iteration
-				
-				EtlsidxSentinel
-			};
+	// ctor
+	CTaskLocalStorage()
+	{
+	}
 
-			// ctor
-			CTaskLocalStorage() {}
-			
-			// dtor
-			~CTaskLocalStorage();
+	// dtor
+	~CTaskLocalStorage();
 
-			// reset
-			void Reset(IMemoryPool *pmp);
-			
-			// accessors
-			void Store(CTaskLocalStorageObject *);
-			CTaskLocalStorageObject *Ptlsobj(const Etlsidx);
-			
-			// delete object
-			void Remove(CTaskLocalStorageObject *);			
+	// reset
+	void
+	Reset(IMemoryPool *pmp);
 
-			// equality function -- used for hashtable
-			static
-			BOOL FEqual
-				(
-				const CTaskLocalStorage::Etlsidx &etlsidx,
-				const CTaskLocalStorage::Etlsidx &etlsidxOther
-				)
-			{
-				return etlsidx == etlsidxOther;
-			}
+	// accessors
+	void
+	Store(CTaskLocalStorageObject *);
+	CTaskLocalStorageObject *
+	Ptlsobj(const Etlsidx);
 
-			// hash function
-			static
-			ULONG UlHashIdx
-				(
-				const CTaskLocalStorage::Etlsidx &etlsidx
-				)
-			{
-				// keys are unique
-				return static_cast<ULONG>(etlsidx);
-			}
+	// delete object
+	void
+	Remove(CTaskLocalStorageObject *);
 
-			// invalid Etlsidx
-			static
-			const Etlsidx m_etlsidxInvalid;
+	// equality function -- used for hashtable
+	static BOOL
+	FEqual(const CTaskLocalStorage::Etlsidx &etlsidx,
+		   const CTaskLocalStorage::Etlsidx &etlsidxOther)
+	{
+		return etlsidx == etlsidxOther;
+	}
 
-		private:
-		
-			// hash table
-			CSyncHashtable
-				<CTaskLocalStorageObject, 
-				Etlsidx,
-				CSpinlockOS> m_sht;
+	// hash function
+	static ULONG
+	UlHashIdx(const CTaskLocalStorage::Etlsidx &etlsidx)
+	{
+		// keys are unique
+		return static_cast<ULONG>(etlsidx);
+	}
 
-			// private copy ctor
-			CTaskLocalStorage(const CTaskLocalStorage &);
-			
-	}; // class CTaskLocalStorage
-}
+	// invalid Etlsidx
+	static const Etlsidx m_etlsidxInvalid;
 
-#endif // !GPOS_CTaskLocalStorage_H
+private:
+	// hash table
+	CSyncHashtable<CTaskLocalStorageObject, Etlsidx, CSpinlockOS> m_sht;
+
+	// private copy ctor
+	CTaskLocalStorage(const CTaskLocalStorage &);
+
+};  // class CTaskLocalStorage
+}  // namespace gpos
+
+#endif  // !GPOS_CTaskLocalStorage_H
 
 // EOF
-

@@ -31,16 +31,11 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CScalarProjectList::CScalarProjectList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CScalar(pmp)
+CScalarProjectList::CScalarProjectList(IMemoryPool *pmp) : CScalar(pmp)
 {
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CScalarProjectList::FMatch
@@ -50,11 +45,7 @@ CScalarProjectList::CScalarProjectList
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarProjectList::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarProjectList::FMatch(COperator *pop) const
 {
 	return (pop->Eopid() == Eopid());
 }
@@ -84,15 +75,13 @@ CScalarProjectList::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 ULONG
-CScalarProjectList::UlDistinctAggs
-	(
-	CExpressionHandle &exprhdl
-	)
+CScalarProjectList::UlDistinctAggs(CExpressionHandle &exprhdl)
 {
-	CExpression *pexprPrjList =  exprhdl.PexprScalar();
+	CExpression *pexprPrjList = exprhdl.PexprScalar();
 
 	GPOS_ASSERT(NULL != pexprPrjList);
-	GPOS_ASSERT(COperator::EopScalarProjectList == pexprPrjList->Pop()->Eopid());
+	GPOS_ASSERT(COperator::EopScalarProjectList ==
+				pexprPrjList->Pop()->Eopid());
 
 	ULONG ulDistinctAggs = 0;
 	const ULONG ulArity = pexprPrjList->UlArity();
@@ -104,7 +93,8 @@ CScalarProjectList::UlDistinctAggs
 
 		if (COperator::EopScalarAggFunc == eopidChild)
 		{
-			CScalarAggFunc *popScAggFunc = CScalarAggFunc::PopConvert(pexprChild->Pop());
+			CScalarAggFunc *popScAggFunc =
+				CScalarAggFunc::PopConvert(pexprChild->Pop());
 			if (popScAggFunc->FDistinct())
 			{
 				ulDistinctAggs++;
@@ -112,7 +102,8 @@ CScalarProjectList::UlDistinctAggs
 		}
 		else if (COperator::EopScalarWindowFunc == eopidChild)
 		{
-			CScalarWindowFunc *popScWinFunc = CScalarWindowFunc::PopConvert(pexprChild->Pop());
+			CScalarWindowFunc *popScWinFunc =
+				CScalarWindowFunc::PopConvert(pexprChild->Pop());
 			if (popScWinFunc->FDistinct() && popScWinFunc->FAgg())
 			{
 				ulDistinctAggs++;
@@ -136,15 +127,13 @@ CScalarProjectList::UlDistinctAggs
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarProjectList::FHasMultipleDistinctAggs
-	(
-	CExpressionHandle &exprhdl
-	)
+CScalarProjectList::FHasMultipleDistinctAggs(CExpressionHandle &exprhdl)
 {
 	CExpression *pexprPrjList = exprhdl.PexprScalar();
 
 	GPOS_ASSERT(NULL != pexprPrjList);
-	GPOS_ASSERT(COperator::EopScalarProjectList == pexprPrjList->Pop()->Eopid());
+	GPOS_ASSERT(COperator::EopScalarProjectList ==
+				pexprPrjList->Pop()->Eopid());
 	if (0 == UlDistinctAggs(exprhdl))
 	{
 		return false;
@@ -153,7 +142,8 @@ CScalarProjectList::FHasMultipleDistinctAggs
 	CAutoMemoryPool amp;
 	HMExprDrgPexpr *phmexprdrgpexpr = NULL;
 	ULONG ulDifferentDQAs = 0;
-	CXformUtils::MapPrjElemsWithDistinctAggs(amp.Pmp(), pexprPrjList, &phmexprdrgpexpr, &ulDifferentDQAs);
+	CXformUtils::MapPrjElemsWithDistinctAggs(
+		amp.Pmp(), pexprPrjList, &phmexprdrgpexpr, &ulDifferentDQAs);
 	phmexprdrgpexpr->Release();
 
 	return (1 < ulDifferentDQAs);
@@ -161,4 +151,3 @@ CScalarProjectList::FHasMultipleDistinctAggs
 
 
 // EOF
-

@@ -27,15 +27,8 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalPartitionSelector::CLogicalPartitionSelector
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_pmdid(NULL),
-	m_pdrgpexprFilters(NULL),
-	m_pcrOid(NULL)
+CLogicalPartitionSelector::CLogicalPartitionSelector(IMemoryPool *pmp)
+	: CLogical(pmp), m_pmdid(NULL), m_pdrgpexprFilters(NULL), m_pcrOid(NULL)
 {
 	m_fPattern = true;
 }
@@ -48,18 +41,14 @@ CLogicalPartitionSelector::CLogicalPartitionSelector
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalPartitionSelector::CLogicalPartitionSelector
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	DrgPexpr *pdrgpexprFilters,
-	CColRef *pcrOid
-	)
-	:
-	CLogical(pmp),
-	m_pmdid(pmdid),
-	m_pdrgpexprFilters(pdrgpexprFilters),
-	m_pcrOid(pcrOid)
+CLogicalPartitionSelector::CLogicalPartitionSelector(IMemoryPool *pmp,
+													 IMDId *pmdid,
+													 DrgPexpr *pdrgpexprFilters,
+													 CColRef *pcrOid)
+	: CLogical(pmp),
+	  m_pmdid(pmdid),
+	  m_pdrgpexprFilters(pdrgpexprFilters),
+	  m_pcrOid(pcrOid)
 {
 	GPOS_ASSERT(pmdid->FValid());
 	GPOS_ASSERT(NULL != pdrgpexprFilters);
@@ -90,22 +79,19 @@ CLogicalPartitionSelector::~CLogicalPartitionSelector()
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalPartitionSelector::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalPartitionSelector::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
 		return false;
 	}
 
-	CLogicalPartitionSelector *popPartSelector = CLogicalPartitionSelector::PopConvert(pop);
+	CLogicalPartitionSelector *popPartSelector =
+		CLogicalPartitionSelector::PopConvert(pop);
 
 	return popPartSelector->PcrOid() == m_pcrOid &&
-			popPartSelector->Pmdid()->FEquals(m_pmdid) &&
-			popPartSelector->m_pdrgpexprFilters->FEqual(m_pdrgpexprFilters);
+		   popPartSelector->Pmdid()->FEquals(m_pmdid) &&
+		   popPartSelector->m_pdrgpexprFilters->FEqual(m_pdrgpexprFilters);
 }
 
 //---------------------------------------------------------------------------
@@ -131,19 +117,18 @@ CLogicalPartitionSelector::UlHash() const
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalPartitionSelector::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalPartitionSelector::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+													  HMUlCr *phmulcr,
+													  BOOL fMustExist)
 {
 	CColRef *pcrOid = CUtils::PcrRemap(m_pcrOid, phmulcr, fMustExist);
-	DrgPexpr *pdrgpexpr = CUtils::PdrgpexprRemap(pmp, m_pdrgpexprFilters, phmulcr);
+	DrgPexpr *pdrgpexpr =
+		CUtils::PdrgpexprRemap(pmp, m_pdrgpexprFilters, phmulcr);
 
 	m_pmdid->AddRef();
 
-	return GPOS_NEW(pmp) CLogicalPartitionSelector(pmp, m_pmdid, pdrgpexpr, pcrOid);
+	return GPOS_NEW(pmp)
+		CLogicalPartitionSelector(pmp, m_pmdid, pdrgpexpr, pcrOid);
 }
 
 //---------------------------------------------------------------------------
@@ -155,11 +140,8 @@ CLogicalPartitionSelector::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalPartitionSelector::PcrsDeriveOutput
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
+CLogicalPartitionSelector::PcrsDeriveOutput(IMemoryPool *pmp,
+											CExpressionHandle &exprhdl)
 {
 	CColRefSet *pcrsOutput = GPOS_NEW(pmp) CColRefSet(pmp);
 
@@ -178,12 +160,8 @@ CLogicalPartitionSelector::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalPartitionSelector::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalPartitionSelector::Maxcard(IMemoryPool *,  // pmp
+								   CExpressionHandle &exprhdl) const
 {
 	// pass on max card of first child
 	return exprhdl.Pdprel(0)->Maxcard();
@@ -198,11 +176,7 @@ CLogicalPartitionSelector::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalPartitionSelector::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalPartitionSelector::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfImplementPartitionSelector);
@@ -218,14 +192,9 @@ CLogicalPartitionSelector::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalPartitionSelector::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalPartitionSelector::OsPrint(IOstream &os) const
 {
-	os	<< SzId()
-		<< ", Part Table: ";
+	os << SzId() << ", Part Table: ";
 	m_pmdid->OsPrint(os);
 
 	return os;

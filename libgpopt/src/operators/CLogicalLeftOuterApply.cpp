@@ -24,12 +24,8 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CLogicalLeftOuterApply::CLogicalLeftOuterApply
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalApply(pmp)
+CLogicalLeftOuterApply::CLogicalLeftOuterApply(IMemoryPool *pmp)
+	: CLogicalApply(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 
@@ -45,14 +41,10 @@ CLogicalLeftOuterApply::CLogicalLeftOuterApply
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalLeftOuterApply::CLogicalLeftOuterApply
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcrInner,
-	EOperatorId eopidOriginSubq
-	)
-	:
-	CLogicalApply(pmp, pdrgpcrInner, eopidOriginSubq)
+CLogicalLeftOuterApply::CLogicalLeftOuterApply(IMemoryPool *pmp,
+											   DrgPcr *pdrgpcrInner,
+											   EOperatorId eopidOriginSubq)
+	: CLogicalApply(pmp, pdrgpcrInner, eopidOriginSubq)
 {
 	GPOS_ASSERT(0 < pdrgpcrInner->UlLength());
 }
@@ -67,7 +59,8 @@ CLogicalLeftOuterApply::CLogicalLeftOuterApply
 //
 //---------------------------------------------------------------------------
 CLogicalLeftOuterApply::~CLogicalLeftOuterApply()
-{}
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -78,14 +71,11 @@ CLogicalLeftOuterApply::~CLogicalLeftOuterApply()
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalLeftOuterApply::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalLeftOuterApply::Maxcard(IMemoryPool *,  // pmp
+								CExpressionHandle &exprhdl) const
 {
-	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/, exprhdl.Pdprel(0)->Maxcard());
+	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/,
+							 exprhdl.Pdprel(0)->Maxcard());
 }
 
 //---------------------------------------------------------------------------
@@ -97,16 +87,13 @@ CLogicalLeftOuterApply::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftOuterApply::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalLeftOuterApply::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
 	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterApply2LeftOuterJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterApply2LeftOuterJoinNoCorrelations);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftOuterApply2LeftOuterJoinNoCorrelations);
 
 	return pxfs;
 }
@@ -121,17 +108,15 @@ CLogicalLeftOuterApply::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalLeftOuterApply::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalLeftOuterApply::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+												   HMUlCr *phmulcr,
+												   BOOL fMustExist)
 {
-	DrgPcr *pdrgpcrInner = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
+	DrgPcr *pdrgpcrInner =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
 
-	return GPOS_NEW(pmp) CLogicalLeftOuterApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
+	return GPOS_NEW(pmp)
+		CLogicalLeftOuterApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
 }
 
 // EOF
-

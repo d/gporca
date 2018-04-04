@@ -29,23 +29,17 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformSelect2IndexGet::CXformSelect2IndexGet
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalSelect(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalGet(pmp)), // relational child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// predicate tree
-				)
-		)
-{}
+CXformSelect2IndexGet::CXformSelect2IndexGet(IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSelect(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGet(pmp)),  // relational child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
+		  ))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -57,11 +51,7 @@ CXformSelect2IndexGet::CXformSelect2IndexGet
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformSelect2IndexGet::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformSelect2IndexGet::Exfp(CExpressionHandle &exprhdl) const
 {
 	if (exprhdl.Pdpscalar(1)->FHasSubquery())
 	{
@@ -80,13 +70,8 @@ CXformSelect2IndexGet::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformSelect2IndexGet::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformSelect2IndexGet::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -105,14 +90,16 @@ CXformSelect2IndexGet::Transform
 	{
 		return;
 	}
-	
+
 	// array of expressions in the scalar expression
 	DrgPexpr *pdrgpexpr = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprScalar);
 	GPOS_ASSERT(pdrgpexpr->UlLength() > 0);
 
 	// derive the scalar and relational properties to build set of required columns
-	CColRefSet *pcrsOutput = CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput();
-	CColRefSet *pcrsScalarExpr = CDrvdPropScalar::Pdpscalar(pexprScalar->PdpDerive())->PcrsUsed();
+	CColRefSet *pcrsOutput =
+		CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsScalarExpr =
+		CDrvdPropScalar::Pdpscalar(pexprScalar->PdpDerive())->PcrsUsed();
 
 	CColRefSet *pcrsReqd = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrsReqd->Include(pcrsOutput);
@@ -126,21 +113,11 @@ CXformSelect2IndexGet::Transform
 	{
 		IMDId *pmdidIndex = pmdrel->PmdidIndex(ul);
 		const IMDIndex *pmdindex = pmda->Pmdindex(pmdidIndex);
-		CExpression *pexprIndexGet = CXformUtils::PexprLogicalIndexGet
-						(
-						 pmp,
-						 pmda,
-						 pexprRelational,
-						 pexpr->Pop()->UlOpId(),
-						 pdrgpexpr,
-						 pcrsReqd,
-						 pcrsScalarExpr,
-						 NULL /*pcrsOuterRefs*/,
-						 pmdindex,
-						 pmdrel,
-						 false /*fAllowPartialIndex*/,
-						 NULL /*ppartcnstrIndex*/
-						);
+		CExpression *pexprIndexGet = CXformUtils::PexprLogicalIndexGet(
+			pmp, pmda, pexprRelational, pexpr->Pop()->UlOpId(), pdrgpexpr,
+			pcrsReqd, pcrsScalarExpr, NULL /*pcrsOuterRefs*/, pmdindex, pmdrel,
+			false /*fAllowPartialIndex*/, NULL /*ppartcnstrIndex*/
+		);
 		if (NULL != pexprIndexGet)
 		{
 			pxfres->Add(pexprIndexGet);
@@ -152,4 +129,3 @@ CXformSelect2IndexGet::Transform
 }
 
 // EOF
-

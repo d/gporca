@@ -30,22 +30,13 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementUnionAll::CXformImplementUnionAll
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalUnionAll(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-						)
-		)
-{}
+CXformImplementUnionAll::CXformImplementUnionAll(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalUnionAll(pmp),
+		  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -56,13 +47,8 @@ CXformImplementUnionAll::CXformImplementUnionAll
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementUnionAll::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementUnionAll::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -84,16 +70,12 @@ CXformImplementUnionAll::Transform
 		pdrgpexpr->Append(pexprChild);
 	}
 
-	CPhysicalUnionAll *popPhysicalSerialUnionAll = factory.PopPhysicalUnionAll(pmp, false);
+	CPhysicalUnionAll *popPhysicalSerialUnionAll =
+		factory.PopPhysicalUnionAll(pmp, false);
 
 	// assemble serial union physical operator
 	CExpression *pexprSerialUnionAll =
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					popPhysicalSerialUnionAll,
-					pdrgpexpr
-					);
+		GPOS_NEW(pmp) CExpression(pmp, popPhysicalSerialUnionAll, pdrgpexpr);
 
 	// add serial union alternative to results
 	pxfres->Add(pexprSerialUnionAll);
@@ -101,20 +83,16 @@ CXformImplementUnionAll::Transform
 	// parallel union alternative to the result if the GUC is on
 	BOOL fParallel = GPOS_FTRACE(EopttraceEnableParallelAppend);
 
-	if(fParallel)
+	if (fParallel)
 	{
-		CPhysicalUnionAll *popPhysicalParallelUnionAll = factory.PopPhysicalUnionAll(pmp, true);
+		CPhysicalUnionAll *popPhysicalParallelUnionAll =
+			factory.PopPhysicalUnionAll(pmp, true);
 
 		pdrgpexpr->AddRef();
 
 		// assemble physical parallel operator
-		CExpression *pexprParallelUnionAll =
-		GPOS_NEW(pmp) CExpression
-		(
-		 pmp,
-		 popPhysicalParallelUnionAll,
-		 pdrgpexpr
-		 );
+		CExpression *pexprParallelUnionAll = GPOS_NEW(pmp)
+			CExpression(pmp, popPhysicalParallelUnionAll, pdrgpexpr);
 
 		// add parallel union alternative to results
 		pxfres->Add(pexprParallelUnionAll);
@@ -122,4 +100,3 @@ CXformImplementUnionAll::Transform
 }
 
 // EOF
-

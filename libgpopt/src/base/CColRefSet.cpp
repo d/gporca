@@ -28,14 +28,10 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CColRefSet::CColRefSet
-	(
-	IMemoryPool *pmp,
-	ULONG ulSizeBits
-	)
-	:
-	CBitSet(pmp, ulSizeBits)
-{}
+CColRefSet::CColRefSet(IMemoryPool *pmp, ULONG ulSizeBits)
+	: CBitSet(pmp, ulSizeBits)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -46,14 +42,10 @@ CColRefSet::CColRefSet
 //		copy ctor;
 //
 //---------------------------------------------------------------------------
-CColRefSet::CColRefSet
-	(
-	IMemoryPool *pmp,
-	const CColRefSet &bs
-	)
-	:
-	CBitSet(pmp, bs)
-{}
+CColRefSet::CColRefSet(IMemoryPool *pmp, const CColRefSet &bs)
+	: CBitSet(pmp, bs)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -64,14 +56,8 @@ CColRefSet::CColRefSet
 //		ctor, copy from col refs array
 //
 //---------------------------------------------------------------------------
-CColRefSet::CColRefSet
-	(
-	IMemoryPool *pmp,
-	const DrgPcr *pdrgpcr,
-	ULONG ulSize
-	)
-	:
-	CBitSet(pmp, ulSize)
+CColRefSet::CColRefSet(IMemoryPool *pmp, const DrgPcr *pdrgpcr, ULONG ulSize)
+	: CBitSet(pmp, ulSize)
 {
 	Include(pdrgpcr);
 }
@@ -97,12 +83,8 @@ CColRefSet::~CColRefSet()
 //		Check if given column ref is in the set
 //
 //---------------------------------------------------------------------------
-BOOL 
-CColRefSet::FMember
-	(
-	const CColRef *pcr
-	)
-	const
+BOOL
+CColRefSet::FMember(const CColRef *pcr) const
 {
 	return CBitSet::FBit(pcr->UlId());
 }
@@ -139,7 +121,7 @@ CColRefSet::PcrFirst() const
 	{
 		return crsi.Pcr();
 	}
-	
+
 	GPOS_ASSERT(0 == CElements());
 	return NULL;
 }
@@ -153,10 +135,7 @@ CColRefSet::PcrFirst() const
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Include
-	(
-	const CColRef *pcr
-	)
+CColRefSet::Include(const CColRef *pcr)
 {
 	CBitSet::FExchangeSet(pcr->UlId());
 }
@@ -170,11 +149,8 @@ CColRefSet::Include
 //		Include column refs from an array
 //
 //---------------------------------------------------------------------------
-void 
-CColRefSet::Include
-	(
-	const DrgPcr *pdrgpcr
-	)
+void
+CColRefSet::Include(const DrgPcr *pdrgpcr)
 {
 	ULONG ulLength = pdrgpcr->UlLength();
 	for (ULONG i = 0; i < ulLength; i++)
@@ -193,13 +169,10 @@ CColRefSet::Include
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Include
-	(
-	const CColRefSet *pcrs
-	)
+CColRefSet::Include(const CColRefSet *pcrs)
 {
 	CColRefSetIter crsi(*pcrs);
-	while(crsi.FAdvance())
+	while (crsi.FAdvance())
 	{
 		Include(crsi.Pcr());
 	}
@@ -214,11 +187,8 @@ CColRefSet::Include
 //		Remove column from bitset
 //
 //---------------------------------------------------------------------------
-void 
-CColRefSet::Exclude
-	(
-	const CColRef *pcr
-	)
+void
+CColRefSet::Exclude(const CColRef *pcr)
 {
 	CBitSet::FExchangeClear(pcr->UlId());
 }
@@ -233,13 +203,10 @@ CColRefSet::Exclude
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Exclude
-	(
-	const CColRefSet *pcrs
-	)
+CColRefSet::Exclude(const CColRefSet *pcrs)
 {
 	CColRefSetIter crsi(*pcrs);
-	while(crsi.FAdvance())
+	while (crsi.FAdvance())
 	{
 		Exclude(crsi.Pcr());
 	}
@@ -255,10 +222,7 @@ CColRefSet::Exclude
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Exclude
-	(
-	const DrgPcr *pdrgpcr
-	)
+CColRefSet::Exclude(const DrgPcr *pdrgpcr)
 {
 	for (ULONG i = 0; i < pdrgpcr->UlLength(); i++)
 	{
@@ -276,11 +240,7 @@ CColRefSet::Exclude
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Replace
-	(
-	const CColRef *pcrOut,
-	const CColRef *pcrIn
-	)
+CColRefSet::Replace(const CColRef *pcrOut, const CColRef *pcrIn)
 {
 	if (FMember(pcrOut))
 	{
@@ -299,11 +259,7 @@ CColRefSet::Replace
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::Replace
-	(
-	const DrgPcr *pdrgpcrOut,
-	const DrgPcr *pdrgpcrIn
-	)
+CColRefSet::Replace(const DrgPcr *pdrgpcrOut, const DrgPcr *pdrgpcrIn)
 {
 	const ULONG ulLen = pdrgpcrOut->UlLength();
 	GPOS_ASSERT(ulLen == pdrgpcrIn->UlLength());
@@ -324,20 +280,16 @@ CColRefSet::Replace
 //
 //---------------------------------------------------------------------------
 DrgPcr *
-CColRefSet::Pdrgpcr
-	(
-	IMemoryPool *pmp
-	)
-	const
+CColRefSet::Pdrgpcr(IMemoryPool *pmp) const
 {
 	DrgPcr *pdrgpcr = GPOS_NEW(pmp) DrgPcr(pmp);
-	
+
 	CColRefSetIter crsi(*this);
-	while(crsi.FAdvance())
+	while (crsi.FAdvance())
 	{
 		pdrgpcr->Append(crsi.Pcr());
 	}
-	
+
 	return pdrgpcr;
 }
 
@@ -355,7 +307,7 @@ CColRefSet::UlHash()
 {
 	ULONG ulSize = this->CElements();
 	ULONG ulHash = gpos::UlHash<ULONG>(&ulSize);
-	
+
 	// limit the number of columns used in hash computation
 	ULONG ulLen = std::min(ulSize, (ULONG) 8);
 
@@ -363,7 +315,8 @@ CColRefSet::UlHash()
 	for (ULONG i = 0; i < ulLen; i++)
 	{
 		(void) crsi.FAdvance();
-		ulHash = gpos::UlCombineHashes(ulHash, gpos::UlHashPtr<CColRef>(crsi.Pcr()));
+		ulHash =
+			gpos::UlCombineHashes(ulHash, gpos::UlHashPtr<CColRef>(crsi.Pcr()));
 	}
 
 	return ulHash;
@@ -379,18 +332,13 @@ CColRefSet::UlHash()
 //
 //---------------------------------------------------------------------------
 IOstream &
-CColRefSet::OsPrint
-	(
-	IOstream &os,
-	ULONG ulLenMax
-	)
-	const
+CColRefSet::OsPrint(IOstream &os, ULONG ulLenMax) const
 {
 	ULONG ulLen = CElements();
 	ULONG ul = 0;
-	
+
 	CColRefSetIter crsi(*this);
-	while(crsi.FAdvance() && ul < std::min(ulLen, ulLenMax))
+	while (crsi.FAdvance() && ul < std::min(ulLen, ulLenMax))
 	{
 		CColRef *pcr = crsi.Pcr();
 		pcr->OsPrint(os);
@@ -400,7 +348,7 @@ CColRefSet::OsPrint
 		}
 		ul++;
 	}
-	
+
 	if (ulLenMax < ulLen)
 	{
 		os << "...";
@@ -418,12 +366,7 @@ CColRefSet::OsPrint
 //
 //---------------------------------------------------------------------------
 void
-CColRefSet::ExtractColIds
-	(
-	IMemoryPool *pmp,
-	DrgPul *pdrgpulColIds
-	)
-	const
+CColRefSet::ExtractColIds(IMemoryPool *pmp, DrgPul *pdrgpulColIds) const
 {
 	CColRefSetIter crsi(*this);
 	while (crsi.FAdvance())
@@ -444,10 +387,7 @@ CColRefSet::ExtractColIds
 //
 //---------------------------------------------------------------------------
 BOOL
-CColRefSet::FContained
-	(
-	const DrgPcrs *pdrgpcrs
-	)
+CColRefSet::FContained(const DrgPcrs *pdrgpcrs)
 {
 	GPOS_ASSERT(NULL != pdrgpcrs);
 
@@ -473,11 +413,7 @@ CColRefSet::FContained
 //		column ref sets
 //---------------------------------------------------------------------------
 BOOL
-CColRefSet::FCovered
-	(
-	DrgPcrs *pdrgpcrs,
-	CColRefSet *pcrs
-	)
+CColRefSet::FCovered(DrgPcrs *pdrgpcrs, CColRefSet *pcrs)
 {
 	GPOS_ASSERT(NULL != pdrgpcrs);
 	GPOS_ASSERT(NULL != pcrs);
@@ -493,7 +429,7 @@ CColRefSet::FCovered
 	{
 		CColRef *pcr = crsi.Pcr();
 		BOOL fFound = false;
-		const ULONG ulLen =  pdrgpcrs->UlLength();
+		const ULONG ulLen = pdrgpcrs->UlLength();
 		for (ULONG ul = 0; ul < ulLen && !fFound; ul++)
 		{
 			CColRefSet *pcrs = (*pdrgpcrs)[ul];

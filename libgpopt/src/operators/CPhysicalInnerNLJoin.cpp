@@ -31,12 +31,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalInnerNLJoin::CPhysicalInnerNLJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CPhysicalNLJoin(pmp)
+CPhysicalInnerNLJoin::CPhysicalInnerNLJoin(IMemoryPool *pmp)
+	: CPhysicalNLJoin(pmp)
 {
 	// Inner NLJ creates two distribution requests for children:
 	// (0) Outer child is requested for ANY distribution, and inner child is requested for a Replicated (or a matching) distribution
@@ -55,7 +51,8 @@ CPhysicalInnerNLJoin::CPhysicalInnerNLJoin
 //
 //---------------------------------------------------------------------------
 CPhysicalInnerNLJoin::~CPhysicalInnerNLJoin()
-{}
+{
+}
 
 
 
@@ -76,16 +73,10 @@ CPhysicalInnerNLJoin::~CPhysicalInnerNLJoin()
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalInnerNLJoin::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG  ulOptReq
-	)
-	const
+CPhysicalInnerNLJoin::PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								  CDistributionSpec *pdsRequired,
+								  ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+								  ULONG ulOptReq) const
 {
 	GPOS_ASSERT(2 > ulChildIndex);
 	GPOS_ASSERT(ulOptReq < UlDistrRequests());
@@ -106,9 +97,11 @@ CPhysicalInnerNLJoin::PdsRequired
 		return GPOS_NEW(pmp) CDistributionSpecReplicated();
 	}
 
-	if (GPOS_FTRACE(EopttraceDisableReplicateInnerNLJOuterChild) || 0 == ulOptReq)
+	if (GPOS_FTRACE(EopttraceDisableReplicateInnerNLJOuterChild) ||
+		0 == ulOptReq)
 	{
-		return CPhysicalJoin::PdsRequired(pmp, exprhdl, pdsRequired, ulChildIndex, pdrgpdpCtxt, ulOptReq);
+		return CPhysicalJoin::PdsRequired(pmp, exprhdl, pdsRequired,
+										  ulChildIndex, pdrgpdpCtxt, ulOptReq);
 	}
 	GPOS_ASSERT(1 == ulOptReq);
 
@@ -118,15 +111,16 @@ CPhysicalInnerNLJoin::PdsRequired
 	}
 
 	// compute a matching distribution based on derived distribution of outer child
-	CDistributionSpec *pdsOuter = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
+	CDistributionSpec *pdsOuter =
+		CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
 	if (CDistributionSpec::EdtUniversal == pdsOuter->Edt())
 	{
 		// first child is universal, request second child to execute on the master to avoid duplicates
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	return GPOS_NEW(pmp) CDistributionSpecNonSingleton();
 }
 
 // EOF
-

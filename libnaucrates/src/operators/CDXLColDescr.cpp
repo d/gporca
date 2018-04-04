@@ -27,26 +27,17 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLColDescr::CDXLColDescr
-	(
-	IMemoryPool *pmp,
-	CMDName *pmdname,
-	ULONG ulId,
-	INT iAttno,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	BOOL fDropped,
-	ULONG ulWidth
-	)
-	:
-	m_pmp(pmp),
-	m_pmdname(pmdname),
-	m_ulId(ulId),
-	m_iAttno(iAttno),
-	m_pmdidType(pmdidType),
-	m_iTypeModifier(iTypeModifier),
-	m_fDropped(fDropped),
-	m_ulWidth(ulWidth)
+CDXLColDescr::CDXLColDescr(IMemoryPool *pmp, CMDName *pmdname, ULONG ulId,
+						   INT iAttno, IMDId *pmdidType, INT iTypeModifier,
+						   BOOL fDropped, ULONG ulWidth)
+	: m_pmp(pmp),
+	  m_pmdname(pmdname),
+	  m_ulId(ulId),
+	  m_iAttno(iAttno),
+	  m_pmdidType(pmdidType),
+	  m_iTypeModifier(iTypeModifier),
+	  m_fDropped(fDropped),
+	  m_ulWidth(ulWidth)
 {
 	GPOS_ASSERT_IMP(m_fDropped, 0 == m_pmdname->Pstr()->UlLength());
 }
@@ -164,37 +155,40 @@ CDXLColDescr::UlWidth() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLColDescr::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLColDescr::SerializeToDXL(CXMLSerializer *pxmlser) const
 {
-	const CWStringConst *pstrTokenColDescr = CDXLTokens::PstrToken(EdxltokenColDescr);
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenColDescr);
-	
+	const CWStringConst *pstrTokenColDescr =
+		CDXLTokens::PstrToken(EdxltokenColDescr);
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrTokenColDescr);
+
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulId);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAttno), m_iAttno);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColName), m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColName),
+						  m_pmdname->Pstr());
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 
 	if (IDefaultTypeModifier != ITypeModifier())
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod), ITypeModifier());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod),
+							  ITypeModifier());
 	}
 
 	if (m_fDropped)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColDropped), m_fDropped);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColDropped),
+							  m_fDropped);
 	}
 
 	if (ULONG_MAX != m_ulWidth)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColWidth), m_ulWidth);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColWidth),
+							  m_ulWidth);
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrTokenColDescr);
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrTokenColDescr);
 
 	GPOS_CHECK_ABORT;
 }

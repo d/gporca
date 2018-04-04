@@ -8,7 +8,7 @@
 //	@doc:
 //		Entry point for parsing and serializing DXL documents.
 //
-//	@owner: 
+//	@owner:
 //		n
 //
 //	@test:
@@ -21,39 +21,37 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// serialize a list of integers into a comma-separate string
-	template <typename T, void (*pfnDestroy)(T*)>
-	CWStringDynamic *
-	CDXLUtils::PstrSerialize
-		(
-		IMemoryPool *pmp,
-		const CDynamicPtrArray<T, pfnDestroy> *pdrgpt
-		)
+// serialize a list of integers into a comma-separate string
+template <typename T, void (*pfnDestroy)(T *)>
+CWStringDynamic *
+CDXLUtils::PstrSerialize(IMemoryPool *pmp,
+						 const CDynamicPtrArray<T, pfnDestroy> *pdrgpt)
+{
+	CAutoP<CWStringDynamic> a_pstr(GPOS_NEW(pmp) CWStringDynamic(pmp));
+
+	ULONG ulLength = pdrgpt->UlLength();
+	for (ULONG ul = 0; ul < ulLength; ul++)
 	{
-		CAutoP<CWStringDynamic> a_pstr(GPOS_NEW(pmp) CWStringDynamic(pmp));
-	
-		ULONG ulLength = pdrgpt->UlLength();
-		for (ULONG ul = 0; ul < ulLength; ul++)
+		T tValue = *((*pdrgpt)[ul]);
+		if (ul == ulLength - 1)
 		{
-			T tValue = *((*pdrgpt)[ul]);
-			if (ul == ulLength - 1)
-			{
-				// last element: do not print a comma
-				a_pstr->AppendFormat(GPOS_WSZ_LIT("%d"), tValue);
-			}
-			else
-			{
-				a_pstr->AppendFormat(GPOS_WSZ_LIT("%d%ls"), tValue, CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
-			}
+			// last element: do not print a comma
+			a_pstr->AppendFormat(GPOS_WSZ_LIT("%d"), tValue);
 		}
-	
-		return a_pstr.PtReset();			
+		else
+		{
+			a_pstr->AppendFormat(GPOS_WSZ_LIT("%d%ls"), tValue,
+								 CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
+		}
 	}
 
+	return a_pstr.PtReset();
 }
 
-#endif // GPDXL_CDXLUtils_INL
+}  // namespace gpdxl
+
+#endif  // GPDXL_CDXLUtils_INL
 
 // EOF

@@ -27,16 +27,11 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerSearchStrategy::CParseHandlerSearchStrategy
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdrgpss(NULL)
-{}
+CParseHandlerSearchStrategy::CParseHandlerSearchStrategy(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pdrgpss(NULL)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -62,34 +57,38 @@ CParseHandlerSearchStrategy::~CParseHandlerSearchStrategy()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSearchStrategy::StartElement
-	(
-	const XMLCh* const xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const xmlstrQname,
-	const Attributes& attrs
-	)
+CParseHandlerSearchStrategy::StartElement(const XMLCh *const xmlstrUri,
+										  const XMLCh *const xmlstrLocalname,
+										  const XMLCh *const xmlstrQname,
+										  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStrategy), xmlstrLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenSearchStrategy), xmlstrLocalname))
 	{
 		m_pdrgpss = GPOS_NEW(m_pmp) DrgPss(m_pmp);
 	}
-	else if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStage), xmlstrLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenSearchStage),
+					  xmlstrLocalname))
 	{
 		GPOS_ASSERT(NULL != m_pdrgpss);
 
 		// start new search stage
-		CParseHandlerBase *pphSearchStage = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenSearchStage), m_pphm, this);
+		CParseHandlerBase *pphSearchStage = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenSearchStage), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphSearchStage);
 
 		// store parse handler
 		this->Append(pphSearchStage);
 
-		pphSearchStage->startElement(xmlstrUri, xmlstrLocalname, xmlstrQname, attrs);
+		pphSearchStage->startElement(xmlstrUri, xmlstrLocalname, xmlstrQname,
+									 attrs);
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -104,26 +103,30 @@ CParseHandlerSearchStrategy::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSearchStrategy::EndElement
-	(
-	const XMLCh* const, // xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const // xmlstrQname
-	)
+CParseHandlerSearchStrategy::EndElement(const XMLCh *const,  // xmlstrUri,
+										const XMLCh *const xmlstrLocalname,
+										const XMLCh *const  // xmlstrQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenSearchStrategy), xmlstrLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenSearchStrategy), xmlstrLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerSearchStage *pphSearchStage = dynamic_cast<CParseHandlerSearchStage*>((*this)[ul]);
+		CParseHandlerSearchStage *pphSearchStage =
+			dynamic_cast<CParseHandlerSearchStage *>((*this)[ul]);
 		CXformSet *pxfs = pphSearchStage->Pxfs();
 		pxfs->AddRef();
-		CSearchStage *pss = GPOS_NEW(m_pmp) CSearchStage(pxfs, pphSearchStage->UlTimeThreshold(), pphSearchStage->CostThreshold());
+		CSearchStage *pss = GPOS_NEW(m_pmp)
+			CSearchStage(pxfs, pphSearchStage->UlTimeThreshold(),
+						 pphSearchStage->CostThreshold());
 		m_pdrgpss->Append(pss);
 	}
 
@@ -132,4 +135,3 @@ CParseHandlerSearchStrategy::EndElement
 }
 
 // EOF
-

@@ -18,71 +18,72 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CTaskScheduler
+//
+//	@doc:
+//		Task scheduler abstraction maintains collection of tasks waiting to
+//		execute and decides which task will execute next. The scheduling
+//		algorithm is FIFO, i.e. tasks are queued and scheduled in the order
+//		they arrive to the scheduler.
+//
+//		Queue operations are not thread-safe. The caller (worker pool
+//		manager) is responsible for synchronizing concurrent accesses to
+//		task scheduler.
+//
+//---------------------------------------------------------------------------
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTaskScheduler
-	//
-	//	@doc:
-	//		Task scheduler abstraction maintains collection of tasks waiting to
-	//		execute and decides which task will execute next. The scheduling
-	//		algorithm is FIFO, i.e. tasks are queued and scheduled in the order
-	//		they arrive to the scheduler.
-	//
-	//		Queue operations are not thread-safe. The caller (worker pool
-	//		manager) is responsible for synchronizing concurrent accesses to
-	//		task scheduler.
-	//
-	//---------------------------------------------------------------------------
+class CTaskSchedulerFifo : public ITaskScheduler
+{
+private:
+	// task queue
+	CList<CTask> m_qtsk;
 
-	class CTaskSchedulerFifo : public ITaskScheduler
+	// private copy ctor
+	CTaskSchedulerFifo(const CTaskSchedulerFifo &);
+
+public:
+	// ctor
+	CTaskSchedulerFifo()
 	{
-		private:
+		m_qtsk.Init(GPOS_OFFSET(CTask, m_linkTs));
+	}
 
-			// task queue
-			CList<CTask> m_qtsk;
+	// dtor
+	~CTaskSchedulerFifo()
+	{
+	}
 
-			// private copy ctor
-			CTaskSchedulerFifo(const CTaskSchedulerFifo&);
+	// add task to waiting queue
+	void
+	Enqueue(CTask *ptsk);
 
-		public:
+	// get next task to execute
+	CTask *
+	PtskDequeue();
 
-			// ctor
-			CTaskSchedulerFifo()
-			{
-				m_qtsk.Init(GPOS_OFFSET(CTask, m_linkTs));
-			}
+	// check if task is waiting to be scheduled and remove it
+	GPOS_RESULT
+	EresCancel(CTask *ptsk);
 
-			// dtor
-			~CTaskSchedulerFifo()
-			{}
+	// get number of waiting tasks
+	ULONG
+	UlQueueSize()
+	{
+		return m_qtsk.UlSize();
+	}
 
-			// add task to waiting queue
-			void Enqueue(CTask *ptsk);
+	// check if task queue is empty
+	BOOL
+	FEmpty() const
+	{
+		return m_qtsk.FEmpty();
+	}
 
-			// get next task to execute
-			CTask *PtskDequeue();
-
-			// check if task is waiting to be scheduled and remove it
-			GPOS_RESULT EresCancel(CTask *ptsk);
-
-			// get number of waiting tasks
-			ULONG UlQueueSize()
-			{
-				return m_qtsk.UlSize();
-			}
-
-			// check if task queue is empty
-			BOOL
-			FEmpty() const
-			{
-				return m_qtsk.FEmpty();
-			}
-
-	};	// class CTaskSchedulerFifo
-}
+};  // class CTaskSchedulerFifo
+}  // namespace gpos
 
 #endif /* GPOS_CTaskSchedulerFifo_H */
 
 // EOF
-

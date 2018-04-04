@@ -30,10 +30,9 @@ using namespace gpos;
 GPOS_RESULT
 CHashMapIterTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CHashMapIterTest::EresUnittest_Basic),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -55,16 +54,16 @@ CHashMapIterTest::EresUnittest_Basic()
 	IMemoryPool *pmp = amp.Pmp();
 
 	// test data
-	ULONG rgul[] = {1,2,3,4,5,6,7,8,9};
+	ULONG rgul[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	const ULONG ulCnt = GPOS_ARRAY_SIZE(rgul);
-	
-	typedef CHashMap<ULONG, ULONG, 
-		UlHashPtr<ULONG>, gpos::FEqual<ULONG>,
-		CleanupNULL<ULONG>, CleanupNULL<ULONG> > Map;
 
-	typedef CHashMapIter<ULONG, ULONG, 
-		UlHashPtr<ULONG>, gpos::FEqual<ULONG>,
-		CleanupNULL<ULONG>, CleanupNULL<ULONG> > MapIter;
+	typedef CHashMap<ULONG, ULONG, UlHashPtr<ULONG>, gpos::FEqual<ULONG>,
+					 CleanupNULL<ULONG>, CleanupNULL<ULONG> >
+		Map;
+
+	typedef CHashMapIter<ULONG, ULONG, UlHashPtr<ULONG>, gpos::FEqual<ULONG>,
+						 CleanupNULL<ULONG>, CleanupNULL<ULONG> >
+		MapIter;
 
 
 	// using N - 2 slots guarantees collisions
@@ -75,11 +74,12 @@ CHashMapIterTest::EresUnittest_Basic()
 	// iteration over empty map
 	MapIter miEmpty(pm);
 	GPOS_ASSERT(!miEmpty.FAdvance());
-	
-#endif // GPOS_DEBUG
+
+#endif  // GPOS_DEBUG
 
 	typedef CDynamicPtrArray<const ULONG, CleanupNULL> DrgPul;
-	CAutoRef<DrgPul> pdrgpulKeys(GPOS_NEW(pmp) DrgPul(pmp)), pdrgpulValues(GPOS_NEW(pmp) DrgPul(pmp));
+	CAutoRef<DrgPul> pdrgpulKeys(GPOS_NEW(pmp) DrgPul(pmp)),
+		pdrgpulValues(GPOS_NEW(pmp) DrgPul(pmp));
 	// load map and iterate over it after each step
 	for (ULONG ul = 0; ul < ulCnt; ++ul)
 	{
@@ -87,7 +87,8 @@ CHashMapIterTest::EresUnittest_Basic()
 		pdrgpulKeys->Append(&rgul[ul]);
 		pdrgpulValues->Append(&rgul[ul]);
 
-		CAutoRef<DrgPul> pdrgpulIterKeys(GPOS_NEW(pmp) DrgPul(pmp)), pdrgpulIterValues(GPOS_NEW(pmp) DrgPul(pmp));
+		CAutoRef<DrgPul> pdrgpulIterKeys(GPOS_NEW(pmp) DrgPul(pmp)),
+			pdrgpulIterValues(GPOS_NEW(pmp) DrgPul(pmp));
 
 		// iterate over full map
 		MapIter mi(pm);
@@ -103,7 +104,7 @@ CHashMapIterTest::EresUnittest_Basic()
 		GPOS_ASSERT(pdrgpulKeys->FEqual(pdrgpulIterKeys.Pt()));
 		GPOS_ASSERT(pdrgpulValues->FEqual(pdrgpulIterValues.Pt()));
 	}
-	
+
 	pm->Release();
 
 	return GPOS_OK;
@@ -111,4 +112,3 @@ CHashMapIterTest::EresUnittest_Basic()
 
 
 // EOF
-

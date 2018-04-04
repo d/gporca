@@ -29,15 +29,11 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalExternalScan::CPhysicalExternalScan
-	(
-	IMemoryPool *pmp,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CPhysicalTableScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
+CPhysicalExternalScan::CPhysicalExternalScan(IMemoryPool *pmp,
+											 const CName *pnameAlias,
+											 CTableDescriptor *ptabdesc,
+											 DrgPcr *pdrgpcrOutput)
+	: CPhysicalTableScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
 {
 	// if this table is master only, then keep the original distribution spec.
 	if (IMDRelation::EreldistrMasterOnly == ptabdesc->Ereldistribution())
@@ -63,20 +59,17 @@ CPhysicalExternalScan::CPhysicalExternalScan
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalExternalScan::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalExternalScan::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
 		return false;
 	}
 
-	CPhysicalExternalScan *popExternalScan = CPhysicalExternalScan::PopConvert(pop);
+	CPhysicalExternalScan *popExternalScan =
+		CPhysicalExternalScan::PopConvert(pop);
 	return m_ptabdesc == popExternalScan->Ptabdesc() &&
-			m_pdrgpcrOutput->FEqual(popExternalScan->PdrgpcrOutput());
+		   m_pdrgpcrOutput->FEqual(popExternalScan->PdrgpcrOutput());
 }
 
 //---------------------------------------------------------------------------
@@ -88,12 +81,8 @@ CPhysicalExternalScan::FMatch
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalExternalScan::EpetRewindability
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdRewindability *per
-	)
-	const
+CPhysicalExternalScan::EpetRewindability(CExpressionHandle &exprhdl,
+										 const CEnfdRewindability *per) const
 {
 	CRewindabilitySpec *prs = CDrvdPropPlan::Pdpplan(exprhdl.Pdp())->Prs();
 	if (per->FCompatible(prs))
@@ -101,8 +90,7 @@ CPhysicalExternalScan::EpetRewindability
 		return CEnfdProp::EpetUnnecessary;
 	}
 
-    return CEnfdProp::EpetRequired;
+	return CEnfdProp::EpetRequired;
 }
 
 // EOF
-

@@ -22,79 +22,68 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarCoerceBase
-	//
-	//	@doc:
-	//		Scalar coerce operator base class
-	//
-	//---------------------------------------------------------------------------
-	class CScalarCoerceBase : public CScalar
-	{
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarCoerceBase
+//
+//	@doc:
+//		Scalar coerce operator base class
+//
+//---------------------------------------------------------------------------
+class CScalarCoerceBase : public CScalar
+{
+private:
+	// catalog MDId of the result type
+	IMDId *m_pmdidResultType;
 
-		private:
+	// output type modifier
+	INT m_iTypeModifier;
 
-			// catalog MDId of the result type
-			IMDId *m_pmdidResultType;
+	// coercion form
+	ECoercionForm m_ecf;
 
-			// output type modifier
-			INT m_iTypeModifier;
+	// location of token to be coerced
+	INT m_iLoc;
 
-			// coercion form
-			ECoercionForm m_ecf;
+	// private copy ctor
+	CScalarCoerceBase(const CScalarCoerceBase &);
 
-			// location of token to be coerced
-			INT m_iLoc;
+public:
+	// ctor
+	CScalarCoerceBase(IMemoryPool *pmp, IMDId *pmdidType, INT iTypeModifier,
+					  ECoercionForm edxlcf, INT iLoc);
 
-			// private copy ctor
-			CScalarCoerceBase(const CScalarCoerceBase &);
+	// dtor
+	virtual ~CScalarCoerceBase();
 
-		public:
+	// the type of the scalar expression
+	virtual IMDId *
+	PmdidType() const;
 
-			// ctor
-			CScalarCoerceBase
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidType,
-				INT iTypeModifier,
-				ECoercionForm edxlcf,
-				INT iLoc
-				);
+	// return type modifier
+	INT
+	ITypeModifier() const;
 
-			// dtor
-			virtual
-			~CScalarCoerceBase();
+	// return coercion form
+	ECoercionForm
+	Ecf() const;
 
-			// the type of the scalar expression
-			virtual
-			IMDId *PmdidType() const;
+	// return token location
+	INT
+	ILoc() const;
 
-			// return type modifier
-			INT ITypeModifier() const;
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// return coercion form
-			ECoercionForm Ecf() const;
+};  // class CScalarCoerceBase
 
-			// return token location
-			INT ILoc() const;
-
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-				(
-				IMemoryPool *pmp,
-				HMUlCr *phmulcr,
-				BOOL fMustExist
-				);
-
-	}; // class CScalarCoerceBase
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarCoerceBase_H
+#endif  // !GPOPT_CScalarCoerceBase_H
 
 // EOF

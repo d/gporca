@@ -26,18 +26,13 @@ using namespace gpdxl;
 //		Construct a non-spooling materialize
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalMaterialize::CDXLPhysicalMaterialize
-	(
-	IMemoryPool *pmp,
-	BOOL fEager
-	)
-	:
-	CDXLPhysical(pmp),
-	m_fEager(fEager),
-	m_ulSpoolId(0),
-	m_edxlsptype(EdxlspoolNone),
-	m_iExecutorSlice(-1),
-	m_ulConsumerSlices(0)
+CDXLPhysicalMaterialize::CDXLPhysicalMaterialize(IMemoryPool *pmp, BOOL fEager)
+	: CDXLPhysical(pmp),
+	  m_fEager(fEager),
+	  m_ulSpoolId(0),
+	  m_edxlsptype(EdxlspoolNone),
+	  m_iExecutorSlice(-1),
+	  m_ulConsumerSlices(0)
 {
 }
 
@@ -49,21 +44,16 @@ CDXLPhysicalMaterialize::CDXLPhysicalMaterialize
 //		Construct a spooling materialize
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalMaterialize::CDXLPhysicalMaterialize
-	(
-	IMemoryPool *pmp,
-	BOOL fEager,
-	ULONG ulSpoolId,
-	INT iExecutorSlice,
-	ULONG ulConsumerSlices
-	)
-	:
-	CDXLPhysical(pmp),
-	m_fEager(fEager),
-	m_ulSpoolId(ulSpoolId),
-	m_edxlsptype(EdxlspoolMaterialize),
-	m_iExecutorSlice(iExecutorSlice),
-	m_ulConsumerSlices(ulConsumerSlices)
+CDXLPhysicalMaterialize::CDXLPhysicalMaterialize(IMemoryPool *pmp, BOOL fEager,
+												 ULONG ulSpoolId,
+												 INT iExecutorSlice,
+												 ULONG ulConsumerSlices)
+	: CDXLPhysical(pmp),
+	  m_fEager(fEager),
+	  m_ulSpoolId(ulSpoolId),
+	  m_edxlsptype(EdxlspoolMaterialize),
+	  m_iExecutorSlice(iExecutorSlice),
+	  m_ulConsumerSlices(ulConsumerSlices)
 {
 }
 
@@ -177,35 +167,38 @@ CDXLPhysicalMaterialize::FEager() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalMaterialize::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalMaterialize::SerializeToDXL(CXMLSerializer *pxmlser,
+										const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenMaterializeEager), m_fEager);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenMaterializeEager),
+						  m_fEager);
 
 	if (EdxlspoolMaterialize == m_edxlsptype)
 	{
 		// serialize spool info
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolId), m_ulSpoolId);
-		
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecutorSliceId), m_iExecutorSlice);
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenConsumerSliceCount), m_ulConsumerSlices);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolId),
+							  m_ulSpoolId);
+
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecutorSliceId),
+							  m_iExecutorSlice);
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenConsumerSliceCount),
+			m_ulConsumerSlices);
 	}
-		
+
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -218,14 +211,11 @@ CDXLPhysicalMaterialize::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalMaterialize::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLPhysicalMaterialize::AssertValid(const CDXLNode *pdxln,
+									 BOOL fValidateChildren) const
 {
-	GPOS_ASSERT(EdxlspoolNone == m_edxlsptype || EdxlspoolMaterialize == m_edxlsptype);
+	GPOS_ASSERT(EdxlspoolNone == m_edxlsptype ||
+				EdxlspoolMaterialize == m_edxlsptype);
 	GPOS_ASSERT(EdxlmatIndexSentinel == pdxln->UlArity());
 
 	CDXLNode *pdxlnChild = (*pdxln)[EdxlmatIndexChild];
@@ -236,6 +226,6 @@ CDXLPhysicalMaterialize::AssertValid
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

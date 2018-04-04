@@ -28,17 +28,13 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalCTEConsumer::CLogicalCTEConsumer
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_ulId(0),
-	m_pdrgpcr(NULL),
-	m_pexprInlined(NULL),
-	m_phmulcr(NULL),
-	m_pcrsOutput(NULL)
+CLogicalCTEConsumer::CLogicalCTEConsumer(IMemoryPool *pmp)
+	: CLogical(pmp),
+	  m_ulId(0),
+	  m_pdrgpcr(NULL),
+	  m_pexprInlined(NULL),
+	  m_phmulcr(NULL),
+	  m_pcrsOutput(NULL)
 {
 	m_fPattern = true;
 }
@@ -51,18 +47,13 @@ CLogicalCTEConsumer::CLogicalCTEConsumer
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalCTEConsumer::CLogicalCTEConsumer
-	(
-	IMemoryPool *pmp,
-	ULONG ulId,
-	DrgPcr *pdrgpcr
-	)
-	:
-	CLogical(pmp),
-	m_ulId(ulId),
-	m_pdrgpcr(pdrgpcr),
-	m_pexprInlined(NULL),
-	m_phmulcr(NULL)
+CLogicalCTEConsumer::CLogicalCTEConsumer(IMemoryPool *pmp, ULONG ulId,
+										 DrgPcr *pdrgpcr)
+	: CLogical(pmp),
+	  m_ulId(ulId),
+	  m_pdrgpcr(pdrgpcr),
+	  m_pexprInlined(NULL),
+	  m_phmulcr(NULL)
 {
 	GPOS_ASSERT(NULL != pdrgpcr);
 	m_pcrsOutput = GPOS_NEW(pmp) CColRefSet(pmp, m_pdrgpcr);
@@ -98,20 +89,20 @@ CLogicalCTEConsumer::~CLogicalCTEConsumer()
 //
 //---------------------------------------------------------------------------
 void
-CLogicalCTEConsumer::CreateInlinedExpr
-	(
-	IMemoryPool *pmp
-	)
+CLogicalCTEConsumer::CreateInlinedExpr(IMemoryPool *pmp)
 {
-	CExpression *pexprProducer = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexprProducer =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexprProducer);
 	// the actual definition of the CTE is the first child of the producer
 	CExpression *pexprCTEDef = (*pexprProducer)[0];
 
-	CLogicalCTEProducer *popProducer = CLogicalCTEProducer::PopConvert(pexprProducer->Pop());
+	CLogicalCTEProducer *popProducer =
+		CLogicalCTEProducer::PopConvert(pexprProducer->Pop());
 
 	m_phmulcr = CUtils::PhmulcrMapping(pmp, popProducer->Pdrgpcr(), m_pdrgpcr);
-	m_pexprInlined = pexprCTEDef->PexprCopyWithRemappedColumns(pmp, m_phmulcr, true /*fMustExist*/);
+	m_pexprInlined = pexprCTEDef->PexprCopyWithRemappedColumns(
+		pmp, m_phmulcr, true /*fMustExist*/);
 }
 
 //---------------------------------------------------------------------------
@@ -123,11 +114,9 @@ CLogicalCTEConsumer::CreateInlinedExpr
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalCTEConsumer::PcrsDeriveOutput
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle & //exprhdl
-	)
+CLogicalCTEConsumer::PcrsDeriveOutput(IMemoryPool *,	   //pmp,
+									  CExpressionHandle &  //exprhdl
+)
 {
 	m_pcrsOutput->AddRef();
 	return m_pcrsOutput;
@@ -143,22 +132,23 @@ CLogicalCTEConsumer::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalCTEConsumer::PcrsDeriveNotNull
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CLogicalCTEConsumer::PcrsDeriveNotNull(IMemoryPool *pmp,
+									   CExpressionHandle &  // exprhdl
+									   ) const
 {
-	CExpression *pexprProducer = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexprProducer =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexprProducer);
 
 	// find producer's not null columns
-	CColRefSet *pcrsProducerNotNull = CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->PcrsNotNull();
+	CColRefSet *pcrsProducerNotNull =
+		CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->PcrsNotNull();
 
 	// map producer's not null columns to consumer's output columns
-	CColRefSet *pcrsConsumerNotNull = CUtils::PcrsRemap(pmp, pcrsProducerNotNull, m_phmulcr, true /*fMustExist*/);
-	GPOS_ASSERT(pcrsConsumerNotNull->CElements() == pcrsProducerNotNull->CElements());
+	CColRefSet *pcrsConsumerNotNull = CUtils::PcrsRemap(
+		pmp, pcrsProducerNotNull, m_phmulcr, true /*fMustExist*/);
+	GPOS_ASSERT(pcrsConsumerNotNull->CElements() ==
+				pcrsProducerNotNull->CElements());
 
 	return pcrsConsumerNotNull;
 }
@@ -173,16 +163,15 @@ CLogicalCTEConsumer::PcrsDeriveNotNull
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalCTEConsumer::PkcDeriveKeys
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle & //exprhdl
-	)
-	const
+CLogicalCTEConsumer::PkcDeriveKeys(IMemoryPool *,		//pmp,
+								   CExpressionHandle &  //exprhdl
+								   ) const
 {
-	CExpression *pexpr = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexpr =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexpr);
-	CKeyCollection *pkc = CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->Pkc();
+	CKeyCollection *pkc =
+		CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->Pkc();
 	if (NULL != pkc)
 	{
 		pkc->AddRef();
@@ -200,14 +189,12 @@ CLogicalCTEConsumer::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CLogicalCTEConsumer::PpartinfoDerive
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle & //exprhdl
-	)
-	const
+CLogicalCTEConsumer::PpartinfoDerive(IMemoryPool *,		  //pmp,
+									 CExpressionHandle &  //exprhdl
+									 ) const
 {
-	CPartInfo *ppartInfo = CDrvdPropRelational::Pdprel(m_pexprInlined->PdpDerive())->Ppartinfo();
+	CPartInfo *ppartInfo =
+		CDrvdPropRelational::Pdprel(m_pexprInlined->PdpDerive())->Ppartinfo();
 	ppartInfo->AddRef();
 
 	return ppartInfo;
@@ -222,14 +209,12 @@ CLogicalCTEConsumer::PpartinfoDerive
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalCTEConsumer::Maxcard
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle & //exprhdl
-	)
-	const
+CLogicalCTEConsumer::Maxcard(IMemoryPool *,		  //pmp,
+							 CExpressionHandle &  //exprhdl
+							 ) const
 {
-	CExpression *pexpr = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexpr =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexpr);
 	return CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->Maxcard();
 }
@@ -244,14 +229,12 @@ CLogicalCTEConsumer::Maxcard
 //
 //---------------------------------------------------------------------------
 ULONG
-CLogicalCTEConsumer::UlJoinDepth
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle & //exprhdl
-	)
-	const
+CLogicalCTEConsumer::UlJoinDepth(IMemoryPool *,		  //pmp,
+								 CExpressionHandle &  //exprhdl
+								 ) const
 {
-	CExpression *pexpr = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexpr =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexpr);
 	return CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->UlJoinDepth();
 }
@@ -266,11 +249,7 @@ CLogicalCTEConsumer::UlJoinDepth
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalCTEConsumer::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalCTEConsumer::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -280,7 +259,7 @@ CLogicalCTEConsumer::FMatch
 	CLogicalCTEConsumer *popCTEConsumer = CLogicalCTEConsumer::PopConvert(pop);
 
 	return m_ulId == popCTEConsumer->UlCTEId() &&
-			m_pdrgpcr->FEqual(popCTEConsumer->Pdrgpcr());
+		   m_pdrgpcr->FEqual(popCTEConsumer->Pdrgpcr());
 }
 
 //---------------------------------------------------------------------------
@@ -324,12 +303,9 @@ CLogicalCTEConsumer::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalCTEConsumer::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalCTEConsumer::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+												HMUlCr *phmulcr,
+												BOOL fMustExist)
 {
 	DrgPcr *pdrgpcr = NULL;
 	if (fMustExist)
@@ -352,11 +328,7 @@ CLogicalCTEConsumer::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalCTEConsumer::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalCTEConsumer::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfInlineCTEConsumer);
@@ -373,16 +345,15 @@ CLogicalCTEConsumer::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 CPropConstraint *
-CLogicalCTEConsumer::PpcDeriveConstraint
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & //exprhdl
-	)
-	const
+CLogicalCTEConsumer::PpcDeriveConstraint(IMemoryPool *pmp,
+										 CExpressionHandle &  //exprhdl
+										 ) const
 {
-	CExpression *pexprProducer = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexprProducer =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexprProducer);
-	CPropConstraint *ppc = CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->Ppc();
+	CPropConstraint *ppc =
+		CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->Ppc();
 	DrgPcrs *pdrgpcrs = ppc->PdrgpcrsEquivClasses();
 	CConstraint *pcnstr = ppc->Pcnstr();
 
@@ -392,14 +363,16 @@ CLogicalCTEConsumer::PpcDeriveConstraint
 	for (ULONG ul = 0; ul < ulLen; ul++)
 	{
 		CColRefSet *pcrs = (*pdrgpcrs)[ul];
-		CColRefSet *pcrsMapped = CUtils::PcrsRemap(pmp, pcrs, m_phmulcr, true /*fMustExist*/);
+		CColRefSet *pcrsMapped =
+			CUtils::PcrsRemap(pmp, pcrs, m_phmulcr, true /*fMustExist*/);
 		pdrgpcrsMapped->Append(pcrsMapped);
 	}
 
 	CConstraint *pcnstrMapped = NULL;
 	if (NULL != pcnstr)
 	{
-		pcnstrMapped = pcnstr->PcnstrCopyWithRemappedColumns(pmp, m_phmulcr, true /*fMustExist*/);
+		pcnstrMapped = pcnstr->PcnstrCopyWithRemappedColumns(
+			pmp, m_phmulcr, true /*fMustExist*/);
 	}
 
 	return GPOS_NEW(pmp) CPropConstraint(pmp, pdrgpcrsMapped, pcnstrMapped);
@@ -414,15 +387,13 @@ CLogicalCTEConsumer::PpcDeriveConstraint
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalCTEConsumer::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, //exprhdl,
-	DrgPstat * // pdrgpstat
-	)
-	const
+CLogicalCTEConsumer::PstatsDerive(IMemoryPool *pmp,
+								  CExpressionHandle &,  //exprhdl,
+								  DrgPstat *			// pdrgpstat
+								  ) const
 {
-	CExpression *pexprProducer = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexprProducer =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexprProducer);
 	const IStatistics *pstats = pexprProducer->Pstats();
 	GPOS_ASSERT(NULL != pstats);
@@ -442,17 +413,13 @@ CLogicalCTEConsumer::PstatsDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalCTEConsumer::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalCTEConsumer::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << m_ulId;
 	os << "), Columns: [";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcr);
-	os	<< "]";
+	os << "]";
 
 	return os;
 }

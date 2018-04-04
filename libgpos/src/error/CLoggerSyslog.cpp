@@ -18,16 +18,12 @@
 using namespace gpos;
 
 // initialization of static members
-CLoggerSyslog CLoggerSyslog::m_loggerAlert
-	(
-	NULL /*szName*/,
+CLoggerSyslog CLoggerSyslog::m_loggerAlert(NULL /*szName*/,
 #ifndef GPOS_SunOS
-	LOG_PERROR |
-#endif // GPOS_SunOS
-	LOG_CONS,
-	LOG_ALERT
-	)
-	;
+										   LOG_PERROR |
+#endif  // GPOS_SunOS
+											   LOG_CONS,
+										   LOG_ALERT);
 
 
 //---------------------------------------------------------------------------
@@ -38,17 +34,13 @@ CLoggerSyslog CLoggerSyslog::m_loggerAlert
 //		Ctor - set executable name, initialization flags and message priority
 //
 //---------------------------------------------------------------------------
-CLoggerSyslog::CLoggerSyslog
-	(
-	const CHAR *szProcName,
-	ULONG ulInitMask,
-	ULONG ulMessagePriority
-	)
-	:
-	m_szProcName(szProcName),
-	m_ulInitMask(ulInitMask),
-	m_ulMessagePriority(ulMessagePriority)
-{}
+CLoggerSyslog::CLoggerSyslog(const CHAR *szProcName, ULONG ulInitMask,
+							 ULONG ulMessagePriority)
+	: m_szProcName(szProcName),
+	  m_ulInitMask(ulInitMask),
+	  m_ulMessagePriority(ulMessagePriority)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -60,7 +52,8 @@ CLoggerSyslog::CLoggerSyslog
 //
 //---------------------------------------------------------------------------
 CLoggerSyslog::~CLoggerSyslog()
-{}
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -71,11 +64,9 @@ CLoggerSyslog::~CLoggerSyslog()
 //
 //---------------------------------------------------------------------------
 void
-CLoggerSyslog::Write
-	(
-	const WCHAR *wszLogEntry,
-	ULONG // ulSev
-	)
+CLoggerSyslog::Write(const WCHAR *wszLogEntry,
+					 ULONG  // ulSev
+)
 {
 	CHAR *szBuffer = CLogger::SzMsg();
 
@@ -99,13 +90,9 @@ CLoggerSyslog::Write
 //
 //---------------------------------------------------------------------------
 void
-CLoggerSyslog::Alert
-	(
-	const WCHAR *wszMsg
-	)
+CLoggerSyslog::Alert(const WCHAR *wszMsg)
 {
 	m_loggerAlert.Write(wszMsg, CException::ExsevError);
 }
 
 // EOF
-

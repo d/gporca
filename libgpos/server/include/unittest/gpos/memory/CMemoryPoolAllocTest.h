@@ -19,64 +19,70 @@
 #include "gpos/common/clibwrapper.h"
 #include "gpos/common/CMainArgs.h"
 
-#define GPOS_INIT(pma)  struct gpos_init_params init_params = { \
-    (FUseCustomAllocator(pma) ? CCustomAllocator::fnAlloc : NULL), \
-    (FUseCustomAllocator(pma) ? CCustomAllocator::fnFree : NULL), NULL}; \
-    gpos_init(&init_params);
+#define GPOS_INIT(pma)                                                       \
+	struct gpos_init_params init_params = {                                  \
+		(FUseCustomAllocator(pma) ? CCustomAllocator::fnAlloc : NULL),       \
+		(FUseCustomAllocator(pma) ? CCustomAllocator::fnFree : NULL), NULL}; \
+	gpos_init(&init_params);
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CCustomAllocator
-	//
-	//	@doc:
-  //	  Helper class to perform and track memory allocations
-	//
-	//---------------------------------------------------------------------------
-  class CCustomAllocator
-  {
-    private:
-      static SIZE_T m_ulTotalMemoryAllocation;
-      static SIZE_T m_ulLastMemoryAllocation;
+//---------------------------------------------------------------------------
+//	@class:
+//		CCustomAllocator
+//
+//	@doc:
+//	  Helper class to perform and track memory allocations
+//
+//---------------------------------------------------------------------------
+class CCustomAllocator
+{
+private:
+	static SIZE_T m_ulTotalMemoryAllocation;
+	static SIZE_T m_ulLastMemoryAllocation;
 
-    public:
-      static void* fnAlloc(SIZE_T ulAlloc);
+public:
+	static void *
+	fnAlloc(SIZE_T ulAlloc);
 
-      static void fnFree(void* pMem);
+	static void
+	fnFree(void *pMem);
 
-      static SIZE_T UlGetTotalMemoryAllocation()
-      {
-        return m_ulTotalMemoryAllocation;
-      }
-
-      static SIZE_T UlGetLastMemoryAllocation()
-      {
-        return m_ulLastMemoryAllocation;
-      }
-
-  };
-
-  BOOL FUseCustomAllocator(CMainArgs* pma);
-
-
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMemoryPoolAllocTest
-	//
-	//	@doc:
-	//		Unittest for CMemoryPoolAllocTest
-	//
-	//---------------------------------------------------------------------------
-	class CMemoryPoolAllocTest
+	static SIZE_T
+	UlGetTotalMemoryAllocation()
 	{
-    public:
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_AllocFree();
-	};
-}
+		return m_ulTotalMemoryAllocation;
+	}
 
-#endif // !GPOS_CMemoryPoolAllocTest_H
+	static SIZE_T
+	UlGetLastMemoryAllocation()
+	{
+		return m_ulLastMemoryAllocation;
+	}
+};
+
+BOOL
+FUseCustomAllocator(CMainArgs *pma);
+
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CMemoryPoolAllocTest
+//
+//	@doc:
+//		Unittest for CMemoryPoolAllocTest
+//
+//---------------------------------------------------------------------------
+class CMemoryPoolAllocTest
+{
+public:
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_AllocFree();
+};
+}  // namespace gpos
+
+#endif  // !GPOS_CMemoryPoolAllocTest_H
 
 // EOF
-

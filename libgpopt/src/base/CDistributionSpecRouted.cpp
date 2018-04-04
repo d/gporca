@@ -29,12 +29,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDistributionSpecRouted::CDistributionSpecRouted
-	(
-	CColRef *pcrSegmentId
-	)
-	:
-	m_pcrSegmentId(pcrSegmentId)
+CDistributionSpecRouted::CDistributionSpecRouted(CColRef *pcrSegmentId)
+	: m_pcrSegmentId(pcrSegmentId)
 {
 	GPOS_ASSERT(NULL != pcrSegmentId);
 }
@@ -62,24 +58,20 @@ CDistributionSpecRouted::~CDistributionSpecRouted()
 //
 //---------------------------------------------------------------------------
 BOOL
-CDistributionSpecRouted::FSatisfies
-	(
-	const CDistributionSpec *pds
-	)
-	const
-{	
+CDistributionSpecRouted::FSatisfies(const CDistributionSpec *pds) const
+{
 	if (FMatch(pds))
 	{
 		// exact match implies satisfaction
 		return true;
-	 }
+	}
 
 	if (EdtAny == pds->Edt())
 	{
 		// routed distribution satisfies the "any" distribution requirement
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -92,12 +84,9 @@ CDistributionSpecRouted::FSatisfies
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CDistributionSpecRouted::PdsCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CDistributionSpecRouted::PdsCopyWithRemappedColumns(IMemoryPool *pmp,
+													HMUlCr *phmulcr,
+													BOOL fMustExist)
 {
 	ULONG ulId = m_pcrSegmentId->UlId();
 	CColRef *pcrSegmentId = phmulcr->PtLookup(&ulId);
@@ -111,8 +100,8 @@ CDistributionSpecRouted::PdsCopyWithRemappedColumns
 
 #ifdef GPOS_DEBUG
 			BOOL fResult =
-#endif // GPOS_DEBUG
-			phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcrSegmentId);
+#endif  // GPOS_DEBUG
+				phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcrSegmentId);
 			GPOS_ASSERT(fResult);
 		}
 		else
@@ -133,26 +122,24 @@ CDistributionSpecRouted::PdsCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 void
-CDistributionSpecRouted::AppendEnforcers
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl
-	CReqdPropPlan *
+CDistributionSpecRouted::AppendEnforcers(IMemoryPool *pmp,
+										 CExpressionHandle &,  // exprhdl
+										 CReqdPropPlan *
 #ifdef GPOS_DEBUG
-	prpp
-#endif // GPOS_DEBUG
-	,
-	DrgPexpr *pdrgpexpr,
-	CExpression *pexpr
-	)
+											 prpp
+#endif  // GPOS_DEBUG
+										 ,
+										 DrgPexpr *pdrgpexpr,
+										 CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != prpp);
 	GPOS_ASSERT(NULL != pdrgpexpr);
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(!GPOS_FTRACE(EopttraceDisableMotions));
-	GPOS_ASSERT(this == prpp->Ped()->PdsRequired() &&
-	            "required plan properties don't match enforced distribution spec");
+	GPOS_ASSERT(
+		this == prpp->Ped()->PdsRequired() &&
+		"required plan properties don't match enforced distribution spec");
 
 	if (GPOS_FTRACE(EopttraceDisableMotionRountedDistribute))
 	{
@@ -163,12 +150,8 @@ CDistributionSpecRouted::AppendEnforcers
 	// add a routed distribution enforcer
 	AddRef();
 	pexpr->AddRef();
-	CExpression *pexprMotion = GPOS_NEW(pmp) CExpression
-										(
-										pmp,
-										GPOS_NEW(pmp) CPhysicalMotionRoutedDistribute(pmp, this),
-										pexpr
-										);
+	CExpression *pexprMotion = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CPhysicalMotionRoutedDistribute(pmp, this), pexpr);
 	pdrgpexpr->Append(pexprMotion);
 }
 
@@ -181,10 +164,11 @@ CDistributionSpecRouted::AppendEnforcers
 //		Hash function
 //
 //---------------------------------------------------------------------------
-ULONG 
+ULONG
 CDistributionSpecRouted::UlHash() const
 {
-	return gpos::UlCombineHashes((ULONG) Edt(), gpos::UlHashPtr<CColRef>(m_pcrSegmentId));
+	return gpos::UlCombineHashes((ULONG) Edt(),
+								 gpos::UlHashPtr<CColRef>(m_pcrSegmentId));
 }
 
 
@@ -197,11 +181,7 @@ CDistributionSpecRouted::UlHash() const
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CDistributionSpecRouted::PcrsUsed
-	(
-	IMemoryPool *pmp
-	)
-	const
+CDistributionSpecRouted::PcrsUsed(IMemoryPool *pmp) const
 {
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrs->Include(m_pcrSegmentId);
@@ -218,19 +198,16 @@ CDistributionSpecRouted::PcrsUsed
 //		Match function
 //
 //---------------------------------------------------------------------------
-BOOL 
-CDistributionSpecRouted::FMatch
-	(
-	const CDistributionSpec *pds
-	) 
-	const
+BOOL
+CDistributionSpecRouted::FMatch(const CDistributionSpec *pds) const
 {
 	if (Edt() != pds->Edt())
 	{
 		return false;
 	}
 
-	const CDistributionSpecRouted *pdsRouted = CDistributionSpecRouted::PdsConvert(pds);
+	const CDistributionSpecRouted *pdsRouted =
+		CDistributionSpecRouted::PdsConvert(pds);
 	return m_pcrSegmentId == pdsRouted->Pcr();
 }
 
@@ -244,16 +221,11 @@ CDistributionSpecRouted::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CDistributionSpecRouted::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CDistributionSpecRouted::OsPrint(IOstream &os) const
 {
 	os << "ROUTED: [ ";
 	m_pcrSegmentId->OsPrint(os);
-	return os <<  " ]";
+	return os << " ]";
 }
 
 // EOF
-

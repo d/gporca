@@ -28,37 +28,29 @@ using namespace gpmd;
 //		Constructs a metadata scalar op
 //
 //---------------------------------------------------------------------------
-CMDScalarOpGPDB::CMDScalarOpGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidTypeLeft,
-	IMDId *pmdidTypeRight,
-	IMDId *pmdidTypeResult,
-	IMDId *pmdidFunc,
-	IMDId *pmdidOpCommute,
-	IMDId *pmdidOpInverse,
-	IMDType::ECmpType ecmpt,
-	BOOL fReturnsNullOnNullInput,
-	DrgPmdid *pdrgpmdidOpClasses
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidTypeLeft(pmdidTypeLeft),
-	m_pmdidTypeRight(pmdidTypeRight),
-	m_pmdidTypeResult(pmdidTypeResult),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidOpCommute(pmdidOpCommute),
-	m_pmdidOpInverse(pmdidOpInverse),
-	m_ecmpt(ecmpt),
-	m_fReturnsNullOnNullInput(fReturnsNullOnNullInput),
-	m_pdrgpmdidOpClasses(pdrgpmdidOpClasses)
+CMDScalarOpGPDB::CMDScalarOpGPDB(IMemoryPool *pmp, IMDId *pmdid,
+								 CMDName *pmdname, IMDId *pmdidTypeLeft,
+								 IMDId *pmdidTypeRight, IMDId *pmdidTypeResult,
+								 IMDId *pmdidFunc, IMDId *pmdidOpCommute,
+								 IMDId *pmdidOpInverse, IMDType::ECmpType ecmpt,
+								 BOOL fReturnsNullOnNullInput,
+								 DrgPmdid *pdrgpmdidOpClasses)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidTypeLeft(pmdidTypeLeft),
+	  m_pmdidTypeRight(pmdidTypeRight),
+	  m_pmdidTypeResult(pmdidTypeResult),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidOpCommute(pmdidOpCommute),
+	  m_pmdidOpInverse(pmdidOpInverse),
+	  m_ecmpt(ecmpt),
+	  m_fReturnsNullOnNullInput(fReturnsNullOnNullInput),
+	  m_pdrgpmdidOpClasses(pdrgpmdidOpClasses)
 {
 	GPOS_ASSERT(NULL != pdrgpmdidOpClasses);
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 
@@ -74,13 +66,13 @@ CMDScalarOpGPDB::~CMDScalarOpGPDB()
 {
 	m_pmdid->Release();
 	m_pmdidTypeResult->Release();
-	m_pmdidFunc->Release();	
+	m_pmdidFunc->Release();
 
 	CRefCount::SafeRelease(m_pmdidTypeLeft);
 	CRefCount::SafeRelease(m_pmdidTypeRight);
 	CRefCount::SafeRelease(m_pmdidOpCommute);
 	CRefCount::SafeRelease(m_pmdidOpInverse);
-	
+
 	GPOS_DELETE(m_pmdname);
 	GPOS_DELETE(m_pstr);
 	m_pdrgpmdidOpClasses->Release();
@@ -253,46 +245,46 @@ CMDScalarOpGPDB::Ecmpt() const
 //
 //---------------------------------------------------------------------------
 void
-CMDScalarOpGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CMDScalarOpGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBScalarOp));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenGPDBScalarOp));
+
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBScalarOpCmpType), IMDType::PstrCmpType(m_ecmpt));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenReturnsNullOnNullInput), m_fReturnsNullOnNullInput);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBScalarOpCmpType),
+						  IMDType::PstrCmpType(m_ecmpt));
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenReturnsNullOnNullInput),
+		m_fReturnsNullOnNullInput);
 
 	Edxltoken rgEdxltoken[6] = {
-							EdxltokenGPDBScalarOpLeftTypeId, EdxltokenGPDBScalarOpRightTypeId, 
-							EdxltokenGPDBScalarOpResultTypeId, EdxltokenGPDBScalarOpFuncId, 
-							EdxltokenGPDBScalarOpCommOpId, EdxltokenGPDBScalarOpInverseOpId
-							};
-	
-	IMDId *rgMdid[6] = {m_pmdidTypeLeft, m_pmdidTypeRight, m_pmdidTypeResult, 
-						m_pmdidFunc, m_pmdidOpCommute, m_pmdidOpInverse};
-	
+		EdxltokenGPDBScalarOpLeftTypeId,   EdxltokenGPDBScalarOpRightTypeId,
+		EdxltokenGPDBScalarOpResultTypeId, EdxltokenGPDBScalarOpFuncId,
+		EdxltokenGPDBScalarOpCommOpId,	 EdxltokenGPDBScalarOpInverseOpId};
+
+	IMDId *rgMdid[6] = {m_pmdidTypeLeft, m_pmdidTypeRight, m_pmdidTypeResult,
+						m_pmdidFunc,	 m_pmdidOpCommute, m_pmdidOpInverse};
+
 	for (ULONG ul = 0; ul < GPOS_ARRAY_SIZE(rgEdxltoken); ul++)
 	{
-		SerializeMDIdAsElem(pxmlser, CDXLTokens::PstrToken(rgEdxltoken[ul]), rgMdid[ul]);
+		SerializeMDIdAsElem(pxmlser, CDXLTokens::PstrToken(rgEdxltoken[ul]),
+							rgMdid[ul]);
 
 		GPOS_CHECK_ABORT;
-	}	
-	
+	}
+
 	// serialize operator class information
 	if (0 < m_pdrgpmdidOpClasses->UlLength())
 	{
-		SerializeMDIdList(pxmlser, m_pdrgpmdidOpClasses, 
-						CDXLTokens::PstrToken(EdxltokenOpClasses), 
-						CDXLTokens::PstrToken(EdxltokenOpClass));
+		SerializeMDIdList(pxmlser, m_pdrgpmdidOpClasses,
+						  CDXLTokens::PstrToken(EdxltokenOpClasses),
+						  CDXLTokens::PstrToken(EdxltokenOpClass));
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenGPDBScalarOp));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenGPDBScalarOp));
 }
 
 //---------------------------------------------------------------------------
@@ -318,14 +310,10 @@ CMDScalarOpGPDB::UlOpCLasses() const
 //
 //---------------------------------------------------------------------------
 IMDId *
-CMDScalarOpGPDB::PmdidOpClass
-	(
-	ULONG ulPos
-	) 
-	const
+CMDScalarOpGPDB::PmdidOpClass(ULONG ulPos) const
 {
 	GPOS_ASSERT(ulPos < m_pdrgpmdidOpClasses->UlLength());
-	
+
 	return (*m_pdrgpmdidOpClasses)[ulPos];
 }
 
@@ -340,22 +328,18 @@ CMDScalarOpGPDB::PmdidOpClass
 //
 //---------------------------------------------------------------------------
 void
-CMDScalarOpGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDScalarOpGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Operator id: ";
 	Pmdid()->OsPrint(os);
 	os << std::endl;
-	
+
 	os << "Operator name: " << (Mdname()).Pstr()->Wsz() << std::endl;
-	
+
 	os << "Left operand type id: ";
 	PmdidTypeLeft()->OsPrint(os);
 	os << std::endl;
-		
+
 	os << "Right operand type id: ";
 	PmdidTypeRight()->OsPrint(os);
 	os << std::endl;
@@ -376,10 +360,10 @@ CMDScalarOpGPDB::DebugPrint
 	PmdidOpInverse()->OsPrint(os);
 	os << std::endl;
 
-	os << std::endl;	
+	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

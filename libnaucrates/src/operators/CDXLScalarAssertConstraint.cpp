@@ -26,14 +26,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarAssertConstraint::CDXLScalarAssertConstraint
-	(
-	IMemoryPool *pmp,
-	CWStringBase *pstrErrorMsg
-	)
-	:
-	CDXLScalar(pmp),
-	m_pstrErrorMsg(pstrErrorMsg)
+CDXLScalarAssertConstraint::CDXLScalarAssertConstraint(
+	IMemoryPool *pmp, CWStringBase *pstrErrorMsg)
+	: CDXLScalar(pmp), m_pstrErrorMsg(pstrErrorMsg)
 {
 	GPOS_ASSERT(NULL != pstrErrorMsg);
 }
@@ -102,20 +97,19 @@ CDXLScalarAssertConstraint::PstrErrorMsg() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAssertConstraint::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarAssertConstraint::SerializeToDXL(CXMLSerializer *pxmlser,
+										   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenErrorMessage), m_pstrErrorMsg);
-		
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenErrorMessage),
+						  m_pstrErrorMsg);
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -129,15 +123,11 @@ CDXLScalarAssertConstraint::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAssertConstraint::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarAssertConstraint::AssertValid(const CDXLNode *pdxln,
+										BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnChild = (*pdxln)[0];
 	GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
 
@@ -147,6 +137,6 @@ CDXLScalarAssertConstraint::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

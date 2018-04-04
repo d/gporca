@@ -18,56 +18,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerAssert
-	//
-	//	@doc:
-	//		Parse handler for DXL physical assert 
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerAssert : public CParseHandlerPhysicalOp
-	{
-		private:
-			
-			// physical assert operator
-			CDXLPhysicalAssert *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerAssert(const CParseHandlerAssert&);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor
-			CParseHandlerAssert
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerAssert_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerAssert
+//
+//	@doc:
+//		Parse handler for DXL physical assert
+//
+//---------------------------------------------------------------------------
+class CParseHandlerAssert : public CParseHandlerPhysicalOp
+{
+private:
+	// physical assert operator
+	CDXLPhysicalAssert *m_pdxlop;
+
+	// private copy ctor
+	CParseHandlerAssert(const CParseHandlerAssert &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerAssert(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerAssert_H
 
 // EOF

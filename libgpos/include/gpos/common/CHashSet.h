@@ -28,228 +28,224 @@
 
 namespace gpos
 {
+// fwd declaration
+template <class T, ULONG (*pfnHash)(const T *),
+		  BOOL (*pfnEq)(const T *, const T *), void (*pfnDestroy)(T *)>
+class CHashSetIter;
 
+//---------------------------------------------------------------------------
+//	@class:
+//		CHashSet
+//
+//	@doc:
+//		Hash set
+//
+//---------------------------------------------------------------------------
+template <class T, ULONG (*pfnHash)(const T *),
+		  BOOL (*pfnEq)(const T *, const T *), void (*pfnDestroy)(T *)>
+class CHashSet : public CRefCount
+{
 	// fwd declaration
-	template <class T,
-		ULONG (*pfnHash)(const T*),
-		BOOL (*pfnEq)(const T*, const T*),
-		void (*pfnDestroy)(T*)>
-	class CHashSetIter;
+	friend class CHashSetIter<T, pfnHash, pfnEq, pfnDestroy>;
 
+private:
 	//---------------------------------------------------------------------------
 	//	@class:
-	//		CHashSet
+	//		CHashSetElem
 	//
 	//	@doc:
-	//		Hash set
+	//		Anchor for set element
 	//
 	//---------------------------------------------------------------------------
-	template <class T,
-				ULONG (*pfnHash)(const T*),
-				BOOL (*pfnEq)(const T*, const T*),
-				void (*pfnDestroy)(T*)>
-	class CHashSet : public CRefCount
+	class CHashSetElem
 	{
-		// fwd declaration
-		friend class CHashSetIter<T, pfnHash, pfnEq, pfnDestroy>;
+	private:
+		// pointer to object
+		T *m_pt;
 
-		private:
+		// does hash set element own object?
+		BOOL m_fOwn;
 
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		CHashSetElem
-			//
-			//	@doc:
-			//		Anchor for set element
-			//
-			//---------------------------------------------------------------------------
-			class CHashSetElem
+		// private copy ctor
+		CHashSetElem(const CHashSetElem &);
+
+	public:
+		// ctor
+		CHashSetElem(T *pt, BOOL fOwn) : m_pt(pt), m_fOwn(fOwn)
+		{
+			GPOS_ASSERT(NULL != pt);
+		}
+
+		// dtor
+		~CHashSetElem()
+		{
+			// in case of a temporary HashSet element for lookup we do NOT own the
+			// objects, otherwise call destroy functions
+			if (m_fOwn)
 			{
-				private:
-
-					// pointer to object
-					T *m_pt;
-
-					// does hash set element own object?
-					BOOL m_fOwn;
-
-					// private copy ctor
-					CHashSetElem(const CHashSetElem &);
-
-				public:
-
-					// ctor
-					CHashSetElem(T *pt, BOOL fOwn)
-                    :
-                    m_pt(pt),
-                    m_fOwn(fOwn)
-                    {
-                        GPOS_ASSERT(NULL != pt);
-                    }
-
-					// dtor
-					~CHashSetElem()
-                    {
-                        // in case of a temporary HashSet element for lookup we do NOT own the
-                        // objects, otherwise call destroy functions
-                        if (m_fOwn)
-                        {
-                            pfnDestroy(m_pt);
-                        }
-                    }
-
-					// object accessor
-					T *Pt() const
-					{
-						return m_pt;
-					}
-
-					// equality operator
-					BOOL operator == (const CHashSetElem &hse) const
-					{
-						return pfnEq(m_pt, hse.m_pt);
-					}
-			};	// class CHashSetElem
-
-			// memory pool
-			IMemoryPool *m_pmp;
-
-			// number of hash chains
-			ULONG m_ulSize;
-
-			// total number of entries
-			ULONG m_ulEntries;
-
-			// each hash chain is an array of hashset elements
-			typedef CDynamicPtrArray<CHashSetElem, CleanupDelete> DrgHashChain;
-			DrgHashChain **m_ppdrgchain;
-
-			// array for elements
-			// We use CleanupNULL because the elements are owned by the hash table
-			typedef CDynamicPtrArray<T, CleanupNULL> DrgElements;
-			DrgElements *const m_pdrgElements;
-
-			DrgPi *const m_pdrgPiFilledBuckets;
-
-			// private copy ctor
-			CHashSet(const CHashSet<T, pfnHash, pfnEq, pfnDestroy> &);
-
-			// lookup appropriate hash chain in static table, may be NULL if
-			// no elements have been inserted yet
-			DrgHashChain **PpdrgChain(const T *pt) const
-			{
-				GPOS_ASSERT(NULL != m_ppdrgchain);
-				return &m_ppdrgchain[pfnHash(pt) % m_ulSize];
+				pfnDestroy(m_pt);
 			}
+		}
 
-			// clear elements
-			void Clear()
-            {
-                for (ULONG i = 0; i < m_pdrgPiFilledBuckets->UlLength(); i++)
-                {
-                    // release each hash chain
-                    m_ppdrgchain[*(*m_pdrgPiFilledBuckets)[i]]->Release();
-                }
-                m_ulEntries = 0;
-                m_pdrgPiFilledBuckets->Clear();
-            }
+		// object accessor
+		T *
+		Pt() const
+		{
+			return m_pt;
+		}
 
-			// lookup an element by its key
-			void Lookup(const T *pt, CHashSetElem **pphse) const
-            {
-                GPOS_ASSERT(NULL != pphse);
+		// equality operator
+		BOOL
+		operator==(const CHashSetElem &hse) const
+		{
+			return pfnEq(m_pt, hse.m_pt);
+		}
+	};  // class CHashSetElem
 
-                CHashSetElem hse(const_cast<T*>(pt), false /*fOwn*/);
-                CHashSetElem *phse = NULL;
-                DrgHashChain **ppdrgchain = PpdrgChain(pt);
-                if (NULL != *ppdrgchain)
-                {
-                    phse = (*ppdrgchain)->PtLookup(&hse);
-                    GPOS_ASSERT_IMP(NULL != phse, *phse == hse);
-                }
+	// memory pool
+	IMemoryPool *m_pmp;
 
-                *pphse = phse;
-            }
+	// number of hash chains
+	ULONG m_ulSize;
 
-		public:
+	// total number of entries
+	ULONG m_ulEntries;
 
-			// ctor
-			CHashSet<T, pfnHash, pfnEq, pfnDestroy> (IMemoryPool *pmp, ULONG ulSize = 128)
-            :
-            m_pmp(pmp),
-            m_ulSize(ulSize),
-            m_ulEntries(0),
-            m_ppdrgchain(GPOS_NEW_ARRAY(m_pmp, DrgHashChain*, m_ulSize)),
-            m_pdrgElements(GPOS_NEW(m_pmp) DrgElements(m_pmp)),
-            m_pdrgPiFilledBuckets(GPOS_NEW(pmp) DrgPi(pmp))
-            {
-                GPOS_ASSERT(ulSize > 0);
+	// each hash chain is an array of hashset elements
+	typedef CDynamicPtrArray<CHashSetElem, CleanupDelete> DrgHashChain;
+	DrgHashChain **m_ppdrgchain;
 
-                (void) clib::PvMemSet(m_ppdrgchain, 0, m_ulSize * sizeof(DrgHashChain*));
-            }
+	// array for elements
+	// We use CleanupNULL because the elements are owned by the hash table
+	typedef CDynamicPtrArray<T, CleanupNULL> DrgElements;
+	DrgElements *const m_pdrgElements;
 
-			// dtor
-			~CHashSet<T, pfnHash, pfnEq, pfnDestroy> ()
-            {
-                // release all hash chains
-                Clear();
+	DrgPi *const m_pdrgPiFilledBuckets;
 
-                GPOS_DELETE_ARRAY(m_ppdrgchain);
-                m_pdrgElements->Release();
-                m_pdrgPiFilledBuckets->Release();
-            }
+	// private copy ctor
+	CHashSet(const CHashSet<T, pfnHash, pfnEq, pfnDestroy> &);
 
-			// insert an element if not present
-			BOOL FInsert(T *pt)
-            {
-                if (FExists(pt))
-                {
-                    return false;
-                }
+	// lookup appropriate hash chain in static table, may be NULL if
+	// no elements have been inserted yet
+	DrgHashChain **
+	PpdrgChain(const T *pt) const
+	{
+		GPOS_ASSERT(NULL != m_ppdrgchain);
+		return &m_ppdrgchain[pfnHash(pt) % m_ulSize];
+	}
 
-                DrgHashChain **ppdrgchain = PpdrgChain(pt);
-                if (NULL == *ppdrgchain)
-                {
-                    *ppdrgchain = GPOS_NEW(m_pmp) DrgHashChain(m_pmp);
-                    INT iBucket = pfnHash(pt) % m_ulSize;
-                    m_pdrgPiFilledBuckets->Append(GPOS_NEW(m_pmp) INT(iBucket));
-                }
+	// clear elements
+	void
+	Clear()
+	{
+		for (ULONG i = 0; i < m_pdrgPiFilledBuckets->UlLength(); i++)
+		{
+			// release each hash chain
+			m_ppdrgchain[*(*m_pdrgPiFilledBuckets)[i]]->Release();
+		}
+		m_ulEntries = 0;
+		m_pdrgPiFilledBuckets->Clear();
+	}
 
-                CHashSetElem *phse = GPOS_NEW(m_pmp) CHashSetElem(pt, true /*fOwn*/);
-                (*ppdrgchain)->Append(phse);
+	// lookup an element by its key
+	void
+	Lookup(const T *pt, CHashSetElem **pphse) const
+	{
+		GPOS_ASSERT(NULL != pphse);
 
-                m_ulEntries++;
-                m_pdrgElements->Append(pt);
+		CHashSetElem hse(const_cast<T *>(pt), false /*fOwn*/);
+		CHashSetElem *phse = NULL;
+		DrgHashChain **ppdrgchain = PpdrgChain(pt);
+		if (NULL != *ppdrgchain)
+		{
+			phse = (*ppdrgchain)->PtLookup(&hse);
+			GPOS_ASSERT_IMP(NULL != phse, *phse == hse);
+		}
 
-                return true;
-            }
+		*pphse = phse;
+	}
 
-			// lookup element
-			BOOL FExists(const T *pt) const
-            {
-                CHashSetElem hse(const_cast<T*>(pt), false /*fOwn*/);
-                DrgHashChain **ppdrgchain = PpdrgChain(pt);
-                if (NULL != *ppdrgchain)
-                {
-                    CHashSetElem *phse = (*ppdrgchain)->PtLookup(&hse);
+public:
+	// ctor
+	CHashSet<T, pfnHash, pfnEq, pfnDestroy>(IMemoryPool *pmp,
+											ULONG ulSize = 128)
+		: m_pmp(pmp),
+		  m_ulSize(ulSize),
+		  m_ulEntries(0),
+		  m_ppdrgchain(GPOS_NEW_ARRAY(m_pmp, DrgHashChain *, m_ulSize)),
+		  m_pdrgElements(GPOS_NEW(m_pmp) DrgElements(m_pmp)),
+		  m_pdrgPiFilledBuckets(GPOS_NEW(pmp) DrgPi(pmp))
+	{
+		GPOS_ASSERT(ulSize > 0);
 
-                    return (NULL != phse);
-                }
+		(void) clib::PvMemSet(m_ppdrgchain, 0,
+							  m_ulSize * sizeof(DrgHashChain *));
+	}
 
-                return false;
-            }
+	// dtor
+	~CHashSet<T, pfnHash, pfnEq, pfnDestroy>()
+	{
+		// release all hash chains
+		Clear();
 
-			// return number of map entries
-			ULONG UlEntries() const
-			{
-				return m_ulEntries;
-			}
+		GPOS_DELETE_ARRAY(m_ppdrgchain);
+		m_pdrgElements->Release();
+		m_pdrgPiFilledBuckets->Release();
+	}
 
-	}; // class CHashSet
+	// insert an element if not present
+	BOOL
+	FInsert(T *pt)
+	{
+		if (FExists(pt))
+		{
+			return false;
+		}
 
-}
+		DrgHashChain **ppdrgchain = PpdrgChain(pt);
+		if (NULL == *ppdrgchain)
+		{
+			*ppdrgchain = GPOS_NEW(m_pmp) DrgHashChain(m_pmp);
+			INT iBucket = pfnHash(pt) % m_ulSize;
+			m_pdrgPiFilledBuckets->Append(GPOS_NEW(m_pmp) INT(iBucket));
+		}
 
-#endif // !GPOS_CHashSet_H
+		CHashSetElem *phse = GPOS_NEW(m_pmp) CHashSetElem(pt, true /*fOwn*/);
+		(*ppdrgchain)->Append(phse);
+
+		m_ulEntries++;
+		m_pdrgElements->Append(pt);
+
+		return true;
+	}
+
+	// lookup element
+	BOOL
+	FExists(const T *pt) const
+	{
+		CHashSetElem hse(const_cast<T *>(pt), false /*fOwn*/);
+		DrgHashChain **ppdrgchain = PpdrgChain(pt);
+		if (NULL != *ppdrgchain)
+		{
+			CHashSetElem *phse = (*ppdrgchain)->PtLookup(&hse);
+
+			return (NULL != phse);
+		}
+
+		return false;
+	}
+
+	// return number of map entries
+	ULONG
+	UlEntries() const
+	{
+		return m_ulEntries;
+	}
+
+};  // class CHashSet
+
+}  // namespace gpos
+
+#endif  // !GPOS_CHashSet_H
 
 // EOF
-

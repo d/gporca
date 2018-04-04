@@ -28,14 +28,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerIndexCondList::CParseHandlerIndexCondList
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerIndexCondList::CParseHandlerIndexCondList(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -48,34 +43,31 @@ CParseHandlerIndexCondList::CParseHandlerIndexCondList
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerIndexCondList::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerIndexCondList::StartElement(const XMLCh *const xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const xmlszQname,
+										 const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList),
+				 xmlszLocalname))
 	{
 		// start the index condition list
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarIndexCondList(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarIndexCondList(m_pmp));
 	}
 	else
 	{
 		if (NULL == m_pdxln)
 		{
-			CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+			CWStringDynamic *pstr =
+				CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag,
+					   pstr->Wsz());
 		}
 
-		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph
-															(
-															m_pmp,
-															CDXLTokens::XmlstrToken(EdxltokenScalar),
-															m_pphm,
-															this
-															);
+		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 
 		m_pphm->ActivateParseHandler(pphOp);
 
@@ -95,18 +87,19 @@ CParseHandlerIndexCondList::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerIndexCondList::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerIndexCondList::EndElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const  // xmlszQname
+)
 {
 	GPOS_ASSERT(NULL != m_pdxln);
 
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -114,7 +107,7 @@ CParseHandlerIndexCondList::EndElement
 	for (ULONG ul = 0; ul < this->UlLength(); ul++)
 	{
 		CParseHandlerScalarOp *pphOp =
-				dynamic_cast<CParseHandlerScalarOp*>((*this)[ul]);
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphOp);
 	}
 

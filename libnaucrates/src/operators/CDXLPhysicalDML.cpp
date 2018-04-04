@@ -27,34 +27,23 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalDML::CDXLPhysicalDML
-	(
-	IMemoryPool *pmp,
-	const EdxlDmlType edxldmltype,
-	CDXLTableDescr *pdxltabdesc,
-	DrgPul *pdrgpul,
-	ULONG ulAction,
-	ULONG ulOid,
-	ULONG ulCtid,
-	ULONG ulSegmentId,
-	BOOL fPreserveOids,
-	ULONG ulTupleOid,
-	CDXLDirectDispatchInfo *pdxlddinfo,
-	BOOL fInputSorted
-	)
-	:
-	CDXLPhysical(pmp),
-	m_edxldmltype(edxldmltype),
-	m_pdxltabdesc(pdxltabdesc),
-	m_pdrgpul(pdrgpul),
-	m_ulAction(ulAction),
-	m_ulOid(ulOid),
-	m_ulCtid(ulCtid),
-	m_ulSegmentId(ulSegmentId),
-	m_fPreserveOids(fPreserveOids),
-	m_ulTupleOid(ulTupleOid),
-	m_pdxlddinfo(pdxlddinfo),
-	m_fInputSorted(fInputSorted)
+CDXLPhysicalDML::CDXLPhysicalDML(
+	IMemoryPool *pmp, const EdxlDmlType edxldmltype,
+	CDXLTableDescr *pdxltabdesc, DrgPul *pdrgpul, ULONG ulAction, ULONG ulOid,
+	ULONG ulCtid, ULONG ulSegmentId, BOOL fPreserveOids, ULONG ulTupleOid,
+	CDXLDirectDispatchInfo *pdxlddinfo, BOOL fInputSorted)
+	: CDXLPhysical(pmp),
+	  m_edxldmltype(edxldmltype),
+	  m_pdxltabdesc(pdxltabdesc),
+	  m_pdrgpul(pdrgpul),
+	  m_ulAction(ulAction),
+	  m_ulOid(ulOid),
+	  m_ulCtid(ulCtid),
+	  m_ulSegmentId(ulSegmentId),
+	  m_fPreserveOids(fPreserveOids),
+	  m_ulTupleOid(ulTupleOid),
+	  m_pdxlddinfo(pdxlddinfo),
+	  m_fInputSorted(fInputSorted)
 {
 	GPOS_ASSERT(EdxldmlSentinel > edxldmltype);
 	GPOS_ASSERT(NULL != pdxltabdesc);
@@ -104,11 +93,11 @@ CDXLPhysicalDML::PstrOpName() const
 	switch (m_edxldmltype)
 	{
 		case Edxldmlinsert:
-				return CDXLTokens::PstrToken(EdxltokenPhysicalDMLInsert);
+			return CDXLTokens::PstrToken(EdxltokenPhysicalDMLInsert);
 		case Edxldmldelete:
-				return CDXLTokens::PstrToken(EdxltokenPhysicalDMLDelete);
+			return CDXLTokens::PstrToken(EdxltokenPhysicalDMLDelete);
 		case Edxldmlupdate:
-				return CDXLTokens::PstrToken(EdxltokenPhysicalDMLUpdate);
+			return CDXLTokens::PstrToken(EdxltokenPhysicalDMLUpdate);
 		default:
 			return NULL;
 	}
@@ -123,36 +112,39 @@ CDXLPhysicalDML::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDML::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalDML::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	CWStringDynamic *pstrCols = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpul);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColumns), pstrCols);
 	GPOS_DELETE(pstrCols);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenActionColId), m_ulAction);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenActionColId),
+						  m_ulAction);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOidColId), m_ulOid);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCtidColId), m_ulCtid);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId), m_ulSegmentId);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInputSorted), m_fInputSorted);
-	
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId),
+						  m_ulSegmentId);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInputSorted),
+						  m_fInputSorted);
+
 	if (Edxldmlupdate == m_edxldmltype)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenUpdatePreservesOids), m_fPreserveOids);
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenUpdatePreservesOids),
+			m_fPreserveOids);
 	}
 
 	if (m_fPreserveOids)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTupleOidColId), m_ulTupleOid);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTupleOidColId),
+							  m_ulTupleOid);
 	}
-	
+
 	pdxln->SerializePropertiesToDXL(pxmlser);
 
 	if (NULL != m_pdxlddinfo)
@@ -162,20 +154,25 @@ CDXLPhysicalDML::SerializeToDXL
 	else
 	{
 		// TODO:  - Oct 22, 2014; clean this code once the direct dispatch code for DML and SELECT is unified
-		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
-		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
+		pxmlser->OpenElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
+		pxmlser->CloseElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
 	}
-	
+
 	// serialize project list
 	(*pdxln)[0]->SerializeToDXL(pxmlser);
 
 	// serialize table descriptor
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
-	
+
 	// serialize physical child
 	(*pdxln)[1]->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -188,12 +185,8 @@ CDXLPhysicalDML::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDML::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLPhysicalDML::AssertValid(const CDXLNode *pdxln,
+							 BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(2 == pdxln->UlArity());
 	CDXLNode *pdxlnChild = (*pdxln)[1];
@@ -205,7 +198,7 @@ CDXLPhysicalDML::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

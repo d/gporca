@@ -33,11 +33,10 @@ using namespace gpos;
 GPOS_RESULT
 CTaskLocalStorageTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CTaskLocalStorageTest::EresUnittest_Basics),
 		GPOS_UNITTEST_FUNC(CTaskLocalStorageTest::EresUnittest_TraceFlags),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -60,7 +59,8 @@ CTaskLocalStorageTest::EresUnittest_Basics()
 	ITask::PtskSelf()->Tls().Store(&tobj);
 
 	// assert identiy when looking it up
-	GPOS_ASSERT(&tobj == ITask::PtskSelf()->Tls().Ptlsobj(CTaskLocalStorage::EtlsidxTest));
+	GPOS_ASSERT(&tobj == ITask::PtskSelf()->Tls().Ptlsobj(
+							 CTaskLocalStorage::EtlsidxTest));
 
 	// clean out TLS
 	ITask::PtskSelf()->Tls().Remove(&tobj);
@@ -103,7 +103,7 @@ CTaskLocalStorageTest::EresUnittest_TraceFlags()
 		GPOS_ASSERT_IMP(!fFound, EtraceTest == tfi.UlBit());
 		fFound = true;
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	GPOS_ASSERT(GPOS_FTRACE(EtraceTest));
 	GPOS_UNSET_TRACE(EtraceTest);
@@ -112,4 +112,3 @@ CTaskLocalStorageTest::EresUnittest_TraceFlags()
 	return GPOS_OK;
 }
 // EOF
-

@@ -20,55 +20,53 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarSubqueryExists
-	//
-	//	@doc:
-	//		Parse handler for parsing EXISTS and NOT EXISTS subquery operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarSubqueryExists : public CParseHandlerScalarOp
-	{
-		private:
-			// scalar subquery operator
-			CDXLScalar *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerScalarSubqueryExists(const CParseHandlerScalarSubqueryExists &);
-									
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerScalarSubqueryExists
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerScalarSubqueryExists_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarSubqueryExists
+//
+//	@doc:
+//		Parse handler for parsing EXISTS and NOT EXISTS subquery operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarSubqueryExists : public CParseHandlerScalarOp
+{
+private:
+	// scalar subquery operator
+	CDXLScalar *m_pdxlop;
+
+	// private copy ctor
+	CParseHandlerScalarSubqueryExists(
+		const CParseHandlerScalarSubqueryExists &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerScalarSubqueryExists(IMemoryPool *pmp,
+									  CParseHandlerManager *pphm,
+									  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerScalarSubqueryExists_H
 
 // EOF

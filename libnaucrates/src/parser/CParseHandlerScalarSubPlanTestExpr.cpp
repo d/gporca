@@ -29,16 +29,11 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarSubPlanTestExpr::CParseHandlerScalarSubPlanTestExpr
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_pdxlnTestExpr(NULL)
-{}
+CParseHandlerScalarSubPlanTestExpr::CParseHandlerScalarSubPlanTestExpr(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_pdxlnTestExpr(NULL)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -62,18 +57,17 @@ CParseHandlerScalarSubPlanTestExpr::~CParseHandlerScalarSubPlanTestExpr()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanTestExpr::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarSubPlanTestExpr::StartElement(
+	const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+	const XMLCh *const xmlszQname, const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanTestExpr), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanTestExpr),
+				 xmlszLocalname))
 	{
 		// install a scalar element parser for parsing the test expression
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 
 		m_pphm->ActivateParseHandler(pphChild);
 
@@ -93,22 +87,26 @@ CParseHandlerScalarSubPlanTestExpr::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubPlanTestExpr::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarSubPlanTestExpr::EndElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanTestExpr), xmlszLocalname) && NULL != m_pdxlnTestExpr)
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarSubPlanTestExpr),
+				 xmlszLocalname) &&
+		NULL != m_pdxlnTestExpr)
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	if (0 < this->UlLength())
 	{
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
 		if (NULL != pphChild->Pdxln())
 		{
 			m_pdxlnTestExpr = pphChild->Pdxln();
@@ -121,4 +119,3 @@ CParseHandlerScalarSubPlanTestExpr::EndElement
 }
 
 // EOF
-

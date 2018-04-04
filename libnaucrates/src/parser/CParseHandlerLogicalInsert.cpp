@@ -30,15 +30,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerLogicalInsert::CParseHandlerLogicalInsert
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerLogicalOp(pmp, pphm, pphRoot),
-	m_pdrgpul(NULL)
+CParseHandlerLogicalInsert::CParseHandlerLogicalInsert(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerLogicalOp(pmp, pphm, pphRoot), m_pdrgpul(NULL)
 {
 }
 
@@ -51,31 +45,36 @@ CParseHandlerLogicalInsert::CParseHandlerLogicalInsert
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalInsert::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes &attrs
-	)
+CParseHandlerLogicalInsert::StartElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const,  // xmlszQname
+										 const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalInsert), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalInsert), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
-	const XMLCh *xmlszSourceColIds = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenInsertCols, EdxltokenLogicalInsert);
-	m_pdrgpul = CDXLOperatorFactory::PdrgpulFromXMLCh(m_pphm->Pmm(), xmlszSourceColIds, EdxltokenInsertCols, EdxltokenLogicalInsert);
-	
+
+	const XMLCh *xmlszSourceColIds = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenInsertCols, EdxltokenLogicalInsert);
+	m_pdrgpul = CDXLOperatorFactory::PdrgpulFromXMLCh(
+		m_pphm->Pmm(), xmlszSourceColIds, EdxltokenInsertCols,
+		EdxltokenLogicalInsert);
+
 	// create child node parsers
 
 	// parse handler for logical operator
-	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
+	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphChild);
 
 	//parse handler for the table descriptor
-	CParseHandlerBase *pphTabDesc = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
+	CParseHandlerBase *pphTabDesc = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphTabDesc);
 
 	// store child parse handler in array
@@ -92,41 +91,42 @@ CParseHandlerLogicalInsert::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalInsert::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerLogicalInsert::EndElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalInsert), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalInsert), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(2 == this->UlLength());
 
-	CParseHandlerTableDescr *pphTabDesc = dynamic_cast<CParseHandlerTableDescr*>((*this)[0]);
-	CParseHandlerLogicalOp *pphChild = dynamic_cast<CParseHandlerLogicalOp*>((*this)[1]);
+	CParseHandlerTableDescr *pphTabDesc =
+		dynamic_cast<CParseHandlerTableDescr *>((*this)[0]);
+	CParseHandlerLogicalOp *pphChild =
+		dynamic_cast<CParseHandlerLogicalOp *>((*this)[1]);
 
 	GPOS_ASSERT(NULL != pphTabDesc->Pdxltabdesc());
 	GPOS_ASSERT(NULL != pphChild->Pdxln());
 
 	CDXLTableDescr *pdxltabdesc = pphTabDesc->Pdxltabdesc();
 	pdxltabdesc->AddRef();
-	
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode
-							(
-							m_pmp,
-							GPOS_NEW(m_pmp) CDXLLogicalInsert(m_pmp, pdxltabdesc, m_pdrgpul)
-							);
-	
+
+	m_pdxln = GPOS_NEW(m_pmp)
+		CDXLNode(m_pmp, GPOS_NEW(m_pmp)
+							CDXLLogicalInsert(m_pmp, pdxltabdesc, m_pdrgpul));
+
 	AddChildFromParseHandler(pphChild);
 
 #ifdef GPOS_DEBUG
 	m_pdxln->Pdxlop()->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

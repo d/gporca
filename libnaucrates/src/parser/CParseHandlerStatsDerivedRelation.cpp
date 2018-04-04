@@ -30,17 +30,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerStatsDerivedRelation::CParseHandlerStatsDerivedRelation
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_dRows(CStatistics::DDefaultColumnWidth),
-	m_fEmpty(false),
-	m_pdxlstatsderrel(NULL)
+CParseHandlerStatsDerivedRelation::CParseHandlerStatsDerivedRelation(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_dRows(CStatistics::DDefaultColumnWidth),
+	  m_fEmpty(false),
+	  m_pdxlstatsderrel(NULL)
 {
 }
 
@@ -66,18 +61,18 @@ CParseHandlerStatsDerivedRelation::~CParseHandlerStatsDerivedRelation()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStatsDerivedRelation::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerStatsDerivedRelation::StartElement(
+	const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+	const XMLCh *const xmlszQname, const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenStatsDerivedColumn), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenStatsDerivedColumn),
+				 xmlszLocalname))
 	{
 		// start new derived column element
-		CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenStatsDerivedColumn), m_pphm, this);
+		CParseHandlerBase *pph = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenStatsDerivedColumn), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pph);
 
 		// store parse handler
@@ -90,32 +85,21 @@ CParseHandlerStatsDerivedRelation::StartElement
 		GPOS_ASSERT(0 == this->UlLength());
 
 		// parse rows
-		const XMLCh *xmlszRows = CDXLOperatorFactory::XmlstrFromAttrs
-														(
-														attrs,
-														EdxltokenRows,
-														EdxltokenStatsDerivedRelation
-														);
+		const XMLCh *xmlszRows = CDXLOperatorFactory::XmlstrFromAttrs(
+			attrs, EdxltokenRows, EdxltokenStatsDerivedRelation);
 
-		m_dRows = CDouble(CDXLOperatorFactory::DValueFromXmlstr
-												(
-												m_pphm->Pmm(),
-												xmlszRows,
-												EdxltokenRows,
-												EdxltokenStatsDerivedRelation
-												));
+		m_dRows = CDouble(CDXLOperatorFactory::DValueFromXmlstr(
+			m_pphm->Pmm(), xmlszRows, EdxltokenRows,
+			EdxltokenStatsDerivedRelation));
 
 		m_fEmpty = false;
-		const XMLCh *xmlszEmpty = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenEmptyRelation));
+		const XMLCh *xmlszEmpty =
+			attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenEmptyRelation));
 		if (NULL != xmlszEmpty)
 		{
-			m_fEmpty = CDXLOperatorFactory::FValueFromXmlstr
-											(
-											m_pphm->Pmm(),
-											xmlszEmpty,
-											EdxltokenEmptyRelation,
-											EdxltokenStatsDerivedRelation
-											);
+			m_fEmpty = CDXLOperatorFactory::FValueFromXmlstr(
+				m_pphm->Pmm(), xmlszEmpty, EdxltokenEmptyRelation,
+				EdxltokenStatsDerivedRelation);
 		}
 	}
 }
@@ -129,16 +113,17 @@ CParseHandlerStatsDerivedRelation::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStatsDerivedRelation::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerStatsDerivedRelation::EndElement(const XMLCh *const,  // xmlszUri,
+											  const XMLCh *const xmlszLocalname,
+											  const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -146,18 +131,21 @@ CParseHandlerStatsDerivedRelation::EndElement
 	GPOS_ASSERT(0 < this->UlLength());
 
 	// array of derived column statistics
-	DrgPdxlstatsdercol *pdrgpdxlstatsdercol = GPOS_NEW(m_pmp) DrgPdxlstatsdercol(m_pmp);
+	DrgPdxlstatsdercol *pdrgpdxlstatsdercol =
+		GPOS_NEW(m_pmp) DrgPdxlstatsdercol(m_pmp);
 	const ULONG ulDerCol = this->UlLength();
 	for (ULONG ul = 0; ul < ulDerCol; ul++)
 	{
-		CParseHandlerStatsDerivedColumn *pph = dynamic_cast<CParseHandlerStatsDerivedColumn*>( (*this)[ul]);
+		CParseHandlerStatsDerivedColumn *pph =
+			dynamic_cast<CParseHandlerStatsDerivedColumn *>((*this)[ul]);
 
 		CDXLStatsDerivedColumn *pdxlstatdercol = pph->Pstatsdercol();
 		pdxlstatdercol->AddRef();
 		pdrgpdxlstatsdercol->Append(pdxlstatdercol);
 	}
 
-	m_pdxlstatsderrel = GPOS_NEW(m_pmp) CDXLStatsDerivedRelation(m_dRows, m_fEmpty, pdrgpdxlstatsdercol);
+	m_pdxlstatsderrel = GPOS_NEW(m_pmp)
+		CDXLStatsDerivedRelation(m_dRows, m_fEmpty, pdrgpdxlstatsdercol);
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

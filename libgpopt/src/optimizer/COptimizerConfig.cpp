@@ -28,22 +28,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-COptimizerConfig::COptimizerConfig
-	(
-	CEnumeratorConfig *pec,
-	CStatisticsConfig *pstatsconf,
-	CCTEConfig *pcteconf,
-	ICostModel *pcm,
-	CHint *phint,
-	CWindowOids *pwindowoids
-	)
-	:
-	m_pec(pec),
-	m_pstatsconf(pstatsconf),
-	m_pcteconf(pcteconf),
-	m_pcm(pcm),
-	m_phint(phint),
-	m_pwindowoids(pwindowoids)
+COptimizerConfig::COptimizerConfig(CEnumeratorConfig *pec,
+								   CStatisticsConfig *pstatsconf,
+								   CCTEConfig *pcteconf, ICostModel *pcm,
+								   CHint *phint, CWindowOids *pwindowoids)
+	: m_pec(pec),
+	  m_pstatsconf(pstatsconf),
+	  m_pcteconf(pcteconf),
+	  m_pcm(pcm),
+	  m_phint(phint),
+	  m_pwindowoids(pwindowoids)
 {
 	GPOS_ASSERT(NULL != pec);
 	GPOS_ASSERT(NULL != pstatsconf);
@@ -80,20 +74,13 @@ COptimizerConfig::~COptimizerConfig()
 //
 //---------------------------------------------------------------------------
 COptimizerConfig *
-COptimizerConfig::PoconfDefault
-	(
-	IMemoryPool *pmp
-	)
+COptimizerConfig::PoconfDefault(IMemoryPool *pmp)
 {
-	return GPOS_NEW(pmp) COptimizerConfig
-						(
-						GPOS_NEW(pmp) CEnumeratorConfig(pmp, 0 /*ullPlanId*/, 0 /*ullSamples*/),
-						CStatisticsConfig::PstatsconfDefault(pmp),
-						CCTEConfig::PcteconfDefault(pmp),
-						ICostModel::PcmDefault(pmp),
-						CHint::PhintDefault(pmp),
-						CWindowOids::Pwindowoids(pmp)
-						);
+	return GPOS_NEW(pmp) COptimizerConfig(
+		GPOS_NEW(pmp) CEnumeratorConfig(pmp, 0 /*ullPlanId*/, 0 /*ullSamples*/),
+		CStatisticsConfig::PstatsconfDefault(pmp),
+		CCTEConfig::PcteconfDefault(pmp), ICostModel::PcmDefault(pmp),
+		CHint::PhintDefault(pmp), CWindowOids::Pwindowoids(pmp));
 }
 
 //---------------------------------------------------------------------------
@@ -105,23 +92,15 @@ COptimizerConfig::PoconfDefault
 //
 //---------------------------------------------------------------------------
 COptimizerConfig *
-COptimizerConfig::PoconfDefault
-	(
-	IMemoryPool *pmp,
-	ICostModel *pcm
-	)
+COptimizerConfig::PoconfDefault(IMemoryPool *pmp, ICostModel *pcm)
 {
 	GPOS_ASSERT(NULL != pcm);
-	
-	return GPOS_NEW(pmp) COptimizerConfig
-						(
-						GPOS_NEW(pmp) CEnumeratorConfig(pmp, 0 /*ullPlanId*/, 0 /*ullSamples*/),
-						CStatisticsConfig::PstatsconfDefault(pmp),
-						CCTEConfig::PcteconfDefault(pmp),
-						pcm,
-						CHint::PhintDefault(pmp),
-						CWindowOids::Pwindowoids(pmp)
-						);
+
+	return GPOS_NEW(pmp) COptimizerConfig(
+		GPOS_NEW(pmp) CEnumeratorConfig(pmp, 0 /*ullPlanId*/, 0 /*ullSamples*/),
+		CStatisticsConfig::PstatsconfDefault(pmp),
+		CCTEConfig::PcteconfDefault(pmp), pcm, CHint::PhintDefault(pmp),
+		CWindowOids::Pwindowoids(pmp));
 }
 
 //---------------------------------------------------------------------------
@@ -133,46 +112,76 @@ COptimizerConfig::PoconfDefault
 //
 //---------------------------------------------------------------------------
 void
-COptimizerConfig::Serialize(IMemoryPool *pmp, CXMLSerializer *pxmlser, CBitSet *pbsTrace) const
+COptimizerConfig::Serialize(IMemoryPool *pmp, CXMLSerializer *pxmlser,
+							CBitSet *pbsTrace) const
 {
-
 	GPOS_ASSERT(NULL != pxmlser);
 	GPOS_ASSERT(NULL != pbsTrace);
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenOptimizerConfig));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenOptimizerConfig));
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenEnumeratorConfig));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPlanId), m_pec->UllPlanId());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPlanSamples), m_pec->UllPlanId());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCostThreshold), m_pec->UllPlanId());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenEnumeratorConfig));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenEnumeratorConfig));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPlanId),
+						  m_pec->UllPlanId());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPlanSamples),
+						  m_pec->UllPlanId());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCostThreshold),
+						  m_pec->UllPlanId());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenEnumeratorConfig));
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenStatisticsConfig));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorFilter), m_pstatsconf->DDampingFactorFilter());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorJoin), m_pstatsconf->DDampingFactorJoin());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorGroupBy), m_pstatsconf->DDampingFactorGroupBy());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenStatisticsConfig));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenStatisticsConfig));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorFilter),
+						  m_pstatsconf->DDampingFactorFilter());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorJoin),
+						  m_pstatsconf->DDampingFactorJoin());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDampingFactorGroupBy),
+						  m_pstatsconf->DDampingFactorGroupBy());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenStatisticsConfig));
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTEConfig));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCTEInliningCutoff), m_pcteconf->UlCTEInliningCutoff());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTEConfig));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenCTEConfig));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCTEInliningCutoff),
+						  m_pcteconf->UlCTEInliningCutoff());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenCTEConfig));
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenWindowOids));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOidRowNumber), m_pwindowoids->OidRowNumber());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOidRank), m_pwindowoids->OidRank());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenWindowOids));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenWindowOids));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOidRowNumber),
+						  m_pwindowoids->OidRowNumber());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOidRank),
+						  m_pwindowoids->OidRank());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenWindowOids));
 
 	CCostModelConfigSerializer cmcSerializer(m_pcm);
 	cmcSerializer.Serialize(*pxmlser);
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenHint));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenMinNumOfPartsToRequireSortOnInsert), m_phint->UlMinNumOfPartsToRequireSortOnInsert());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinArityForAssociativityCommutativity), m_phint->UlJoinArityForAssociativityCommutativity());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenArrayExpansionThreshold), m_phint->UlArrayExpansionThreshold());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinOrderDPThreshold), m_phint->UlJoinOrderDPLimit());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenBroadcastThreshold), m_phint->UlBroadcastThreshold());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenEnforceConstraintsOnDML), m_phint->FEnforceConstraintsOnDML());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenHint));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenHint));
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenMinNumOfPartsToRequireSortOnInsert),
+		m_phint->UlMinNumOfPartsToRequireSortOnInsert());
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenJoinArityForAssociativityCommutativity),
+		m_phint->UlJoinArityForAssociativityCommutativity());
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenArrayExpansionThreshold),
+		m_phint->UlArrayExpansionThreshold());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinOrderDPThreshold),
+						  m_phint->UlJoinOrderDPLimit());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenBroadcastThreshold),
+						  m_phint->UlBroadcastThreshold());
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenEnforceConstraintsOnDML),
+		m_phint->FEnforceConstraintsOnDML());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenHint));
 
 	// Serialize traceflags represented in bitset into stream
 	gpos::CBitSetIter bsi(*pbsTrace);
@@ -187,11 +196,14 @@ COptimizerConfig::Serialize(IMemoryPool *pmp, CXMLSerializer *pxmlser, CBitSet *
 		wsTraceFlags.AppendFormat(GPOS_WSZ_LIT("%d"), bsi.UlBit());
 	}
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenTraceFlags));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenTraceFlags));
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), &wsTraceFlags);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenTraceFlags));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenTraceFlags));
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenOptimizerConfig));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenOptimizerConfig));
 }
 
 // EOF

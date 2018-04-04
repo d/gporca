@@ -28,19 +28,16 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCostParam::CParseHandlerCostParam
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_szName(NULL),
-	m_dVal(0),
-	m_dLowerBound(0),
-	m_dUpperBound(0)
-{}
+CParseHandlerCostParam::CParseHandlerCostParam(IMemoryPool *pmp,
+											   CParseHandlerManager *pphm,
+											   CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_szName(NULL),
+	  m_dVal(0),
+	  m_dLowerBound(0),
+	  m_dUpperBound(0)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -66,28 +63,32 @@ CParseHandlerCostParam::~CParseHandlerCostParam()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostParam::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const, // xmlstrQname
-	const Attributes& attrs
-	)
+CParseHandlerCostParam::StartElement(const XMLCh *const,  // xmlszUri,
+									 const XMLCh *const xmlstrLocalname,
+									 const XMLCh *const,  // xmlstrQname
+									 const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	const XMLCh *xmlstrName = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenName, EdxltokenCostParam);
-	CWStringDynamic *pstrName = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrName);
+	const XMLCh *xmlstrName = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenName, EdxltokenCostParam);
+	CWStringDynamic *pstrName =
+		CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrName);
 	m_szName = CDXLUtils::SzFromWsz(m_pmp, pstrName->Wsz());
 	GPOS_DELETE(pstrName);
 
-	m_dVal = CDXLOperatorFactory::DValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenValue, EdxltokenCostParam);
-	m_dLowerBound = CDXLOperatorFactory::DValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCostParamLowerBound, EdxltokenCostParam);
-	m_dUpperBound = CDXLOperatorFactory::DValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCostParamUpperBound, EdxltokenCostParam);
+	m_dVal = CDXLOperatorFactory::DValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenValue, EdxltokenCostParam);
+	m_dLowerBound = CDXLOperatorFactory::DValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenCostParamLowerBound, EdxltokenCostParam);
+	m_dUpperBound = CDXLOperatorFactory::DValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenCostParamUpperBound, EdxltokenCostParam);
 }
 
 
@@ -100,16 +101,16 @@ CParseHandlerCostParam::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostParam::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const // xmlstrQname
-	)
+CParseHandlerCostParam::EndElement(const XMLCh *const,  // xmlszUri,
+								   const XMLCh *const xmlstrLocalname,
+								   const XMLCh *const  // xmlstrQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -119,4 +120,3 @@ CParseHandlerCostParam::EndElement
 
 
 // EOF
-

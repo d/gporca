@@ -32,10 +32,7 @@ using namespace gpos;
 GPOS_RESULT
 CEnumSetTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
-		GPOS_UNITTEST_FUNC(CEnumSetTest::EresUnittest_Basics)
-		};
+	CUnittest rgut[] = {GPOS_UNITTEST_FUNC(CEnumSetTest::EresUnittest_Basics)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -60,25 +57,24 @@ CEnumSetTest::EresUnittest_Basics()
 	typedef CEnumSetIter<eTest, eTestSentinel> CETestIter;
 
 	CETestSet *pes = GPOS_NEW(pmp) CETestSet(pmp);
-	
+
 	(void) pes->FExchangeSet(eTestOne);
 	(void) pes->FExchangeSet(eTestTwo);
-	
+
 	GPOS_ASSERT(pes->FExchangeClear(eTestTwo));
 	GPOS_ASSERT(!pes->FExchangeSet(eTestTwo));
 
 	CETestIter eti(*pes);
-	while(eti.FAdvance())
+	while (eti.FAdvance())
 	{
-		GPOS_ASSERT((BOOL)eti);
+		GPOS_ASSERT((BOOL) eti);
 		GPOS_ASSERT(eTestSentinel > eti.TBit());
 		GPOS_ASSERT(pes->FBit(eti.TBit()));
 	}
-	
+
 	pes->Release();
 
 	return GPOS_OK;
 }
 
 // EOF
-

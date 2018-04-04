@@ -9,7 +9,7 @@
 //		Implementation of the SAX parse handler class for parsing scalar
 //		operator lists
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -38,15 +38,11 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarOpList::CParseHandlerScalarOpList
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_edxloplisttype(CDXLScalarOpList::EdxloplistSentinel)
+CParseHandlerScalarOpList::CParseHandlerScalarOpList(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot),
+	  m_edxloplisttype(CDXLScalarOpList::EdxloplistSentinel)
 {
 }
 
@@ -59,20 +55,20 @@ CParseHandlerScalarOpList::CParseHandlerScalarOpList
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarOpList::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarOpList::StartElement(const XMLCh *const xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const xmlszQname,
+										const Attributes &attrs)
 {
-	CDXLScalarOpList::EdxlOpListType edxloplisttype = Edxloplisttype(xmlszLocalname);
-	if (NULL == m_pdxln && CDXLScalarOpList::EdxloplistSentinel > edxloplisttype)
+	CDXLScalarOpList::EdxlOpListType edxloplisttype =
+		Edxloplisttype(xmlszLocalname);
+	if (NULL == m_pdxln &&
+		CDXLScalarOpList::EdxloplistSentinel > edxloplisttype)
 	{
 		// create the list
 		m_edxloplisttype = edxloplisttype;
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarOpList(m_pmp, m_edxloplisttype));
+		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(
+			m_pmp, GPOS_NEW(m_pmp) CDXLScalarOpList(m_pmp, m_edxloplisttype));
 	}
 	else
 	{
@@ -80,7 +76,8 @@ CParseHandlerScalarOpList::StartElement
 		GPOS_ASSERT(NULL != m_pdxln);
 
 		// parse scalar child
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handler
@@ -99,22 +96,25 @@ CParseHandlerScalarOpList::StartElement
 //
 //---------------------------------------------------------------------------
 CDXLScalarOpList::EdxlOpListType
-CParseHandlerScalarOpList::Edxloplisttype
-	(
-	const XMLCh* const xmlszLocalname
-	)
+CParseHandlerScalarOpList::Edxloplisttype(const XMLCh *const xmlszLocalname)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarOpList), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarOpList),
+								 xmlszLocalname))
 	{
 		return CDXLScalarOpList::EdxloplistGeneral;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPartLevelEqFilterList), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPartLevelEqFilterList),
+				 xmlszLocalname))
 	{
 		return CDXLScalarOpList::EdxloplistEqFilterList;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPartLevelFilterList), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPartLevelFilterList),
+				 xmlszLocalname))
 	{
 		return CDXLScalarOpList::EdxloplistFilterList;
 	}
@@ -131,17 +131,17 @@ CParseHandlerScalarOpList::Edxloplisttype
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarOpList::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarOpList::EndElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
-	CDXLScalarOpList::EdxlOpListType edxloplisttype = Edxloplisttype(xmlszLocalname);
+	CDXLScalarOpList::EdxlOpListType edxloplisttype =
+		Edxloplisttype(xmlszLocalname);
 	if (m_edxloplisttype != edxloplisttype)
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -149,7 +149,8 @@ CParseHandlerScalarOpList::EndElement
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphChild);
 	}
 

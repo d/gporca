@@ -24,20 +24,15 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDIdCast::CMDIdCast
-	(
-	CMDIdGPDB *pmdidSrc,
-	CMDIdGPDB *pmdidDest
-	)
-	:
-	m_pmdidSrc(pmdidSrc),
-	m_pmdidDest(pmdidDest),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdCast::CMDIdCast(CMDIdGPDB *pmdidSrc, CMDIdGPDB *pmdidDest)
+	: m_pmdidSrc(pmdidSrc),
+	  m_pmdidDest(pmdidDest),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	GPOS_ASSERT(pmdidSrc->FValid());
 	GPOS_ASSERT(pmdidDest->FValid());
-	
-	// serialize mdid into static string 
+
+	// serialize mdid into static string
 	Serialize();
 }
 
@@ -67,17 +62,11 @@ void
 CMDIdCast::Serialize()
 {
 	// serialize mdid as SystemType.mdidSrc.mdidDest
-	m_str.AppendFormat
-			(
-			GPOS_WSZ_LIT("%d.%d.%d.%d;%d.%d.%d"), 
-			Emdidt(), 
-			m_pmdidSrc->OidObjectId(),
-			m_pmdidSrc->UlVersionMajor(),
-			m_pmdidSrc->UlVersionMinor(),
-			m_pmdidDest->OidObjectId(),
-			m_pmdidDest->UlVersionMajor(),
-			m_pmdidDest->UlVersionMinor()			
-			);
+	m_str.AppendFormat(GPOS_WSZ_LIT("%d.%d.%d.%d;%d.%d.%d"), Emdidt(),
+					   m_pmdidSrc->OidObjectId(), m_pmdidSrc->UlVersionMajor(),
+					   m_pmdidSrc->UlVersionMinor(), m_pmdidDest->OidObjectId(),
+					   m_pmdidDest->UlVersionMajor(),
+					   m_pmdidDest->UlVersionMinor());
 }
 
 //---------------------------------------------------------------------------
@@ -131,21 +120,17 @@ CMDIdCast::PmdidDest() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDIdCast::FEquals
-	(
-	const IMDId *pmdid
-	) 
-	const
+CMDIdCast::FEquals(const IMDId *pmdid) const
 {
 	if (NULL == pmdid || EmdidCastFunc != pmdid->Emdidt())
 	{
 		return false;
 	}
-	
+
 	const CMDIdCast *pmdidCastFunc = CMDIdCast::PmdidConvert(pmdid);
-	
-	return m_pmdidSrc->FEquals(pmdidCastFunc->PmdidSrc()) && 
-			m_pmdidDest->FEquals(pmdidCastFunc->PmdidDest()); 
+
+	return m_pmdidSrc->FEquals(pmdidCastFunc->PmdidSrc()) &&
+		   m_pmdidDest->FEquals(pmdidCastFunc->PmdidDest());
 }
 
 //---------------------------------------------------------------------------
@@ -157,12 +142,8 @@ CMDIdCast::FEquals
 //
 //---------------------------------------------------------------------------
 void
-CMDIdCast::Serialize
-	(
-	CXMLSerializer * pxmlser,
-	const CWStringConst *pstrAttribute
-	)
-	const
+CMDIdCast::Serialize(CXMLSerializer *pxmlser,
+					 const CWStringConst *pstrAttribute) const
 {
 	pxmlser->AddAttribute(pstrAttribute, &m_str);
 }
@@ -176,11 +157,7 @@ CMDIdCast::Serialize
 //
 //---------------------------------------------------------------------------
 IOstream &
-CMDIdCast::OsPrint
-	(
-	IOstream &os
-	) 
-	const
+CMDIdCast::OsPrint(IOstream &os) const
 {
 	os << "(" << m_str.Wsz() << ")";
 	return os;

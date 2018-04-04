@@ -6,7 +6,7 @@
 //		CParseHandlerScalarConstValue.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing scalar ConstVal.
 //---------------------------------------------------------------------------
 
@@ -29,14 +29,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarConstValue::CParseHandlerScalarConstValue
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarConstValue::CParseHandlerScalarConstValue(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -50,28 +45,29 @@ CParseHandlerScalarConstValue::CParseHandlerScalarConstValue
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarConstValue::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerScalarConstValue::StartElement(const XMLCh *const,  // xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const,  // xmlszQname
+											const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarConstValue), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarConstValue), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse and create scalar const operator
-	CDXLScalarConstValue *pdxlop = (CDXLScalarConstValue*) CDXLOperatorFactory::PdxlopConstValue(m_pphm->Pmm(), attrs);
+	CDXLScalarConstValue *pdxlop =
+		(CDXLScalarConstValue *) CDXLOperatorFactory::PdxlopConstValue(
+			m_pphm->Pmm(), attrs);
 
 	// construct scalar Const node
 	GPOS_ASSERT(NULL != pdxlop);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp);
 	m_pdxln->SetOperator(pdxlop);
-
 }
 
 //---------------------------------------------------------------------------
@@ -83,16 +79,17 @@ CParseHandlerScalarConstValue::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarConstValue::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarConstValue::EndElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarConstValue), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarConstValue), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 

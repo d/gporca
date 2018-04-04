@@ -38,16 +38,12 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-CMDAccessorUtils::PstrWindowFuncName
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidFunc
-	)
+CMDAccessorUtils::PstrWindowFuncName(CMDAccessor *pmda, IMDId *pmdidFunc)
 {
 	if (pmda->FAggWindowFunc(pmdidFunc))
 	{
 		const IMDAggregate *pmdagg = pmda->Pmdagg(pmdidFunc);
-		
+
 		return pmdagg->Mdname().Pstr();
 	}
 
@@ -65,13 +61,8 @@ CMDAccessorUtils::PstrWindowFuncName
 //
 //---------------------------------------------------------------------------
 IMDId *
-CMDAccessorUtils::PmdidWindowReturnType
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidFunc
-	)
+CMDAccessorUtils::PmdidWindowReturnType(CMDAccessor *pmda, IMDId *pmdidFunc)
 {
-
 	if (pmda->FAggWindowFunc(pmdidFunc))
 	{
 		const IMDAggregate *pmdagg = pmda->Pmdagg(pmdidFunc);
@@ -92,13 +83,8 @@ CMDAccessorUtils::PmdidWindowReturnType
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDAccessorUtils::FCmpExists
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidLeft,
-	IMDId *pmdidRight,
-	IMDType::ECmpType ecmpt
-	)
+CMDAccessorUtils::FCmpExists(CMDAccessor *pmda, IMDId *pmdidLeft,
+							 IMDId *pmdidRight, IMDType::ECmpType ecmpt)
 {
 	GPOS_ASSERT(NULL != pmda);
 	GPOS_ASSERT(NULL != pmdidLeft);
@@ -124,7 +110,8 @@ CMDAccessorUtils::FCmpExists
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
 		GPOS_RESET_EX;
 
 		return false;
@@ -141,12 +128,8 @@ CMDAccessorUtils::FCmpExists
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDAccessorUtils::FCastExists
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidSrc,
-	IMDId *pmdidDest
-	)
+CMDAccessorUtils::FCastExists(CMDAccessor *pmda, IMDId *pmdidSrc,
+							  IMDId *pmdidDest)
 {
 	GPOS_ASSERT(NULL != pmda);
 	GPOS_ASSERT(NULL != pmdidSrc);
@@ -165,7 +148,8 @@ CMDAccessorUtils::FCastExists
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
 		GPOS_RESET_EX;
 
 		return false;
@@ -183,11 +167,8 @@ CMDAccessorUtils::FCastExists
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDAccessorUtils::FScalarOpReturnsNullOnNullInput
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidOp
-	)
+CMDAccessorUtils::FScalarOpReturnsNullOnNullInput(CMDAccessor *pmda,
+												  IMDId *pmdidOp)
 {
 	GPOS_ASSERT(NULL != pmda);
 
@@ -210,7 +191,8 @@ CMDAccessorUtils::FScalarOpReturnsNullOnNullInput
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, gpdxl::ExmaMD, gpdxl::ExmiMDCacheEntryNotFound));
 		GPOS_RESET_EX;
 	}
 	GPOS_CATCH_END;
@@ -228,11 +210,7 @@ CMDAccessorUtils::FScalarOpReturnsNullOnNullInput
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDAccessorUtils::FBoolType
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidType
-	)
+CMDAccessorUtils::FBoolType(CMDAccessor *pmda, IMDId *pmdidType)
 {
 	GPOS_ASSERT(NULL != pmda);
 
@@ -253,11 +231,7 @@ CMDAccessorUtils::FBoolType
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDAccessorUtils::FCommutativeScalarOp
-	(
-	CMDAccessor *pmda,
-	IMDId *pmdidOp
-	)
+CMDAccessorUtils::FCommutativeScalarOp(CMDAccessor *pmda, IMDId *pmdidOp)
 {
 	GPOS_ASSERT(NULL != pmda);
 	GPOS_ASSERT(NULL != pmdidOp);

@@ -26,11 +26,9 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CFileWriter::CFileWriter()
-	:
-	CFileDescriptor(),
-	m_ullSize(0)
-{}
+CFileWriter::CFileWriter() : CFileDescriptor(), m_ullSize(0)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -42,11 +40,7 @@ CFileWriter::CFileWriter()
 //
 //---------------------------------------------------------------------------
 void
-CFileWriter::Open
-	(
-	const CHAR *szPath,
-	ULONG ulPerms
-	)
+CFileWriter::Open(const CHAR *szPath, ULONG ulPerms)
 {
 	GPOS_ASSERT(NULL != szPath);
 
@@ -84,13 +78,10 @@ CFileWriter::Close()
 //
 //---------------------------------------------------------------------------
 void
-CFileWriter::Write
-	(
-	const BYTE *pb,
-	const ULONG_PTR ulpWriteSize
-	)
+CFileWriter::Write(const BYTE *pb, const ULONG_PTR ulpWriteSize)
 {
-	GPOS_ASSERT(CFileDescriptor::FOpened() && "Attempt to write to invalid file descriptor");
+	GPOS_ASSERT(CFileDescriptor::FOpened() &&
+				"Attempt to write to invalid file descriptor");
 	GPOS_ASSERT(0 < ulpWriteSize);
 	GPOS_ASSERT(NULL != pb);
 
@@ -101,7 +92,8 @@ CFileWriter::Write
 		INT_PTR iBytes = -1;
 
 		// write to file and check to simulate I/O error
-		GPOS_CHECK_SIM_IO_ERR(&iBytes, ioutils::IWrite(IFileDescr(), pb, ulpBytesLeft));
+		GPOS_CHECK_SIM_IO_ERR(&iBytes,
+							  ioutils::IWrite(IFileDescr(), pb, ulpBytesLeft));
 
 		// check for error
 		if (-1 == iBytes)
@@ -127,4 +119,3 @@ CFileWriter::Write
 }
 
 // EOF
-

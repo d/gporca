@@ -26,22 +26,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformCTEAnchor2TrivialSelect::CXformCTEAnchor2TrivialSelect
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalCTEAnchor(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))
-				)
-		)
-{}
+CXformCTEAnchor2TrivialSelect::CXformCTEAnchor2TrivialSelect(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalCTEAnchor(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -52,11 +44,7 @@ CXformCTEAnchor2TrivialSelect::CXformCTEAnchor2TrivialSelect
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformCTEAnchor2TrivialSelect::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformCTEAnchor2TrivialSelect::Exfp(CExpressionHandle &exprhdl) const
 {
 	ULONG ulId = CLogicalCTEAnchor::PopConvert(exprhdl.Pop())->UlId();
 	CCTEInfo *pcteinfo = COptCtxt::PoctxtFromTLS()->Pcteinfo();
@@ -81,13 +69,9 @@ CXformCTEAnchor2TrivialSelect::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformCTEAnchor2TrivialSelect::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformCTEAnchor2TrivialSelect::Transform(CXformContext *pxfctxt,
+										 CXformResult *pxfres,
+										 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -99,14 +83,9 @@ CXformCTEAnchor2TrivialSelect::Transform
 	CExpression *pexprChild = (*pexpr)[0];
 	pexprChild->AddRef();
 
-	CExpression *pexprSelect =
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CLogicalSelect(pmp),
-			pexprChild,
-			CUtils::PexprScalarConstBool(pmp, true /*fValue*/)
-			);
+	CExpression *pexprSelect = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CLogicalSelect(pmp), pexprChild,
+					CUtils::PexprScalarConstBool(pmp, true /*fValue*/));
 
 	pxfres->Add(pexprSelect);
 }

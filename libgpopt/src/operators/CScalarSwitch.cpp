@@ -27,15 +27,8 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarSwitch::CScalarSwitch
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType
-	)
-	:
-	CScalar(pmp),
-	m_pmdidType(pmdidType),
-	m_fBoolReturnType(false)
+CScalarSwitch::CScalarSwitch(IMemoryPool *pmp, IMDId *pmdidType)
+	: CScalar(pmp), m_pmdidType(pmdidType), m_fBoolReturnType(false)
 {
 	GPOS_ASSERT(pmdidType->FValid());
 
@@ -80,13 +73,9 @@ CScalarSwitch::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarSwitch::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarSwitch::FMatch(COperator *pop) const
 {
-	if(pop->Eopid() == Eopid())
+	if (pop->Eopid() == Eopid())
 	{
 		CScalarSwitch *popScSwitch = CScalarSwitch::PopConvert(pop);
 
@@ -99,4 +88,3 @@ CScalarSwitch::FMatch
 
 
 // EOF
-

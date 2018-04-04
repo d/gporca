@@ -28,16 +28,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarPartBoundOpen::CDXLScalarPartBoundOpen
-	(
-	IMemoryPool *pmp,
-	ULONG ulLevel,
-	BOOL fLower
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulLevel(ulLevel),
-	m_fLower(fLower)
+CDXLScalarPartBoundOpen::CDXLScalarPartBoundOpen(IMemoryPool *pmp,
+												 ULONG ulLevel, BOOL fLower)
+	: CDXLScalar(pmp), m_ulLevel(ulLevel), m_fLower(fLower)
 {
 }
 
@@ -78,19 +71,19 @@ CDXLScalarPartBoundOpen::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBoundOpen::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * // pdxln
-	)
-	const
+CDXLScalarPartBoundOpen::SerializeToDXL(CXMLSerializer *pxmlser,
+										const CDXLNode *  // pdxln
+										) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartLevel), m_ulLevel);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower), m_fLower);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower),
+						  m_fLower);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -103,15 +96,12 @@ CDXLScalarPartBoundOpen::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBoundOpen::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarPartBoundOpen::AssertValid(const CDXLNode *pdxln,
+									 BOOL  // fValidateChildren
+									 ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -25,16 +25,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalWindow::CDXLPhysicalWindow
-	(
-	IMemoryPool *pmp,
-	DrgPul *pdrgpulPartCols,
-	DrgPdxlwk *pdrgpdxlwk
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdrgpulPartCols(pdrgpulPartCols),
-	m_pdrgpdxlwk(pdrgpdxlwk)
+CDXLPhysicalWindow::CDXLPhysicalWindow(IMemoryPool *pmp,
+									   DrgPul *pdrgpulPartCols,
+									   DrgPdxlwk *pdrgpdxlwk)
+	: CDXLPhysical(pmp),
+	  m_pdrgpulPartCols(pdrgpulPartCols),
+	  m_pdrgpdxlwk(pdrgpdxlwk)
 {
 	GPOS_ASSERT(NULL != m_pdrgpulPartCols);
 	GPOS_ASSERT(NULL != m_pdrgpdxlwk);
@@ -119,11 +115,7 @@ CDXLPhysicalWindow::UlWindowKeys() const
 //
 //---------------------------------------------------------------------------
 CDXLWindowKey *
-CDXLPhysicalWindow::PdxlWindowKey
-	(
-	ULONG ulPos
-	)
-	const
+CDXLPhysicalWindow::PdxlWindowKey(ULONG ulPos) const
 {
 	GPOS_ASSERT(ulPos <= m_pdrgpdxlwk->UlLength());
 	return (*m_pdrgpdxlwk)[ulPos];
@@ -138,20 +130,19 @@ CDXLPhysicalWindow::PdxlWindowKey
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalWindow::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalWindow::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize partition keys
-	CWStringDynamic *pstrPartCols = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulPartCols);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartKeys), pstrPartCols);
+	CWStringDynamic *pstrPartCols =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulPartCols);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartKeys),
+						  pstrPartCols);
 	GPOS_DELETE(pstrPartCols);
 
 	// serialize properties
@@ -161,17 +152,21 @@ CDXLPhysicalWindow::SerializeToDXL
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
 	// serialize the list of window keys
-	const CWStringConst *pstrWindowKeyList = CDXLTokens::PstrToken(EdxltokenWindowKeyList);
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrWindowKeyList);
+	const CWStringConst *pstrWindowKeyList =
+		CDXLTokens::PstrToken(EdxltokenWindowKeyList);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrWindowKeyList);
 	const ULONG ulSize = m_pdrgpdxlwk->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
 		CDXLWindowKey *pdxlwk = (*m_pdrgpdxlwk)[ul];
 		pdxlwk->SerializeToDXL(pxmlser);
 	}
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrWindowKeyList);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrWindowKeyList);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -184,12 +179,8 @@ CDXLPhysicalWindow::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalWindow::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalWindow::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
@@ -202,6 +193,6 @@ CDXLPhysicalWindow::AssertValid
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

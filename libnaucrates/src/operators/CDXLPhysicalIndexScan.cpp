@@ -26,18 +26,14 @@ using namespace gpdxl;
 //		index descriptor and filter conditions on the index
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalIndexScan::CDXLPhysicalIndexScan
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc,
-	CDXLIndexDescr *pdxlid,
-	EdxlIndexScanDirection edxlisd
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdxltabdesc(pdxltabdesc),
-	m_pdxlid(pdxlid),
-	m_edxlisd(edxlisd)
+CDXLPhysicalIndexScan::CDXLPhysicalIndexScan(IMemoryPool *pmp,
+											 CDXLTableDescr *pdxltabdesc,
+											 CDXLIndexDescr *pdxlid,
+											 EdxlIndexScanDirection edxlisd)
+	: CDXLPhysical(pmp),
+	  m_pdxltabdesc(pdxltabdesc),
+	  m_pdxlid(pdxlid),
+	  m_edxlisd(edxlisd)
 {
 	GPOS_ASSERT(NULL != m_pdxltabdesc);
 	GPOS_ASSERT(NULL != m_pdxlid);
@@ -136,21 +132,15 @@ CDXLPhysicalIndexScan::Pdxltabdesc() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalIndexScan::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalIndexScan::SerializeToDXL(CXMLSerializer *pxmlser,
+									  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute
-				(
-				CDXLTokens::PstrToken(EdxltokenIndexScanDirection),
-				CDXLOperator::PstrIndexScanDirection(m_edxlisd)
-				);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexScanDirection),
+						  CDXLOperator::PstrIndexScanDirection(m_edxlisd));
 
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
@@ -164,7 +154,8 @@ CDXLPhysicalIndexScan::SerializeToDXL
 	// serialize table descriptor
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -177,12 +168,8 @@ CDXLPhysicalIndexScan::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalIndexScan::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalIndexScan::AssertValid(const CDXLNode *pdxln,
+								   BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
@@ -203,13 +190,15 @@ CDXLPhysicalIndexScan::AssertValid
 	CDXLNode *pdxlnIndexConds = (*pdxln)[EdxlisIndexCondition];
 
 	// assert children are of right type (physical/scalar)
-	GPOS_ASSERT(EdxlopScalarIndexCondList == pdxlnIndexConds->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarIndexCondList ==
+				pdxlnIndexConds->Pdxlop()->Edxlop());
 
 	if (fValidateChildren)
 	{
-		pdxlnIndexConds->Pdxlop()->AssertValid(pdxlnIndexConds, fValidateChildren);
+		pdxlnIndexConds->Pdxlop()->AssertValid(pdxlnIndexConds,
+											   fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

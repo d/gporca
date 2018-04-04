@@ -18,54 +18,49 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerLimit
-	//
-	//	@doc:
-	//		Parse handler for limit operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerLimit : public CParseHandlerPhysicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerLimit
+//
+//	@doc:
+//		Parse handler for limit operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerLimit : public CParseHandlerPhysicalOp
+{
+private:
+	CDXLPhysicalLimit *m_pdxlop;
 
-				CDXLPhysicalLimit *m_pdxlop;
+	// private copy ctor
+	CParseHandlerLimit(const CParseHandlerLimit &);
 
-				// private copy ctor
-				CParseHandlerLimit(const CParseHandlerLimit &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-				// process the start of an element
-				void StartElement
-					(
-						const XMLCh* const xmlszUri, 		// URI of element's namespace
-	 					const XMLCh* const xmlszLocalname,	// local part of element's name
-						const XMLCh* const xmlszQname,		// element's qname
-						const Attributes& attr				// element's attributes
-					);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-				// process the end of an element
-				void EndElement
-					(
-						const XMLCh* const xmlszUri, 		// URI of element's namespace
-						const XMLCh* const xmlszLocalname,	// local part of element's name
-						const XMLCh* const xmlszQname		// element's qname
-					);
-
-			public:
-				// ctor/dtor
-				CParseHandlerLimit
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-	};
-}
-#endif // GPDXL_CParseHandlerLimit_H
+public:
+	// ctor/dtor
+	CParseHandlerLimit(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerLimit_H
 
 // EOF

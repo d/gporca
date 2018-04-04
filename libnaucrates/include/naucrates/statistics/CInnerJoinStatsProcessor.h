@@ -16,22 +16,17 @@
 
 namespace gpnaucrates
 {
-	class CInnerJoinStatsProcessor : public CJoinStatsProcessor
-	{
-		public:
-			// inner join with another stats structure
-			static
-			CStatistics *PstatsInnerJoinStatic
-					(
-					IMemoryPool *pmp,
-					const IStatistics *pistatsOuter,
-					const IStatistics *pistatsInner,
-					DrgPstatspredjoin *pdrgpstatspredjoin
-					);
-	};
-}
+class CInnerJoinStatsProcessor : public CJoinStatsProcessor
+{
+public:
+	// inner join with another stats structure
+	static CStatistics *
+	PstatsInnerJoinStatic(IMemoryPool *pmp, const IStatistics *pistatsOuter,
+						  const IStatistics *pistatsInner,
+						  DrgPstatspredjoin *pdrgpstatspredjoin);
+};
+}  // namespace gpnaucrates
 
-#endif // !GPNAUCRATES_CInnerJoinStatsProcessor_H
+#endif  // !GPNAUCRATES_CInnerJoinStatsProcessor_H
 
 // EOF
-

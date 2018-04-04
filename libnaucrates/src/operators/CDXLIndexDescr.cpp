@@ -25,16 +25,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLIndexDescr::CDXLIndexDescr
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname)
+CDXLIndexDescr::CDXLIndexDescr(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname)
+	: m_pmp(pmp), m_pmdid(pmdid), m_pmdname(pmdname)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 	GPOS_ASSERT(NULL != m_pmdname);
@@ -94,16 +86,15 @@ CDXLIndexDescr::Pmdname() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLIndexDescr::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLIndexDescr::SerializeToDXL(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenIndexDescr));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenIndexDescr));
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexName), m_pmdname->Pstr());
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenIndexDescr));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexName),
+						  m_pmdname->Pstr());
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenIndexDescr));
 }
 
 // EOF

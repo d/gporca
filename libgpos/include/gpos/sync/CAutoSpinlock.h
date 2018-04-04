@@ -18,58 +18,55 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CAutoSpinlock
-	//
-	//	@doc:
-	//		Wrapper around spinlock base class; releases spinlock in destructor
-	//		if acquired previously;
-	//
-	//---------------------------------------------------------------------------
-	class CAutoSpinlock : public CStackObject
+//---------------------------------------------------------------------------
+//	@class:
+//		CAutoSpinlock
+//
+//	@doc:
+//		Wrapper around spinlock base class; releases spinlock in destructor
+//		if acquired previously;
+//
+//---------------------------------------------------------------------------
+class CAutoSpinlock : public CStackObject
+{
+private:
+	// the actual spin lock
+	CSpinlockBase &m_slock;
+
+	// flag to indicate ownership
+	BOOL m_fLocked;
+
+public:
+	// ctor
+	explicit CAutoSpinlock(CSpinlockBase &slock)
+		: m_slock(slock), m_fLocked(false)
 	{
-		private:
-		
-			// the actual spin lock
-			CSpinlockBase &m_slock;
+	}
 
-			// flag to indicate ownership
-			BOOL m_fLocked;
-			
-		public:
+	// dtor
+	~CAutoSpinlock();
 
-			// ctor
-			explicit
-			CAutoSpinlock
-				(
-				CSpinlockBase &slock
-				) 
-				: m_slock(slock), m_fLocked(false) {}
-			
-			// dtor
-			~CAutoSpinlock();
-			
-			// acquire lock
-			void Lock()
-			{
-				m_slock.Lock();
-				m_fLocked = true;
-			}
-			
-			// release lock
-			void Unlock()
-			{
-				GPOS_ASSERT(m_fLocked);
-				
-				m_slock.Unlock();
-				m_fLocked = false;
-			}
+	// acquire lock
+	void
+	Lock()
+	{
+		m_slock.Lock();
+		m_fLocked = true;
+	}
 
-	}; // class CAutoSpinlock
-}
+	// release lock
+	void
+	Unlock()
+	{
+		GPOS_ASSERT(m_fLocked);
 
-#endif // !GPOS_CAutoSpinlock_H
+		m_slock.Unlock();
+		m_fLocked = false;
+	}
+
+};  // class CAutoSpinlock
+}  // namespace gpos
+
+#endif  // !GPOS_CAutoSpinlock_H
 
 // EOF
-

@@ -26,13 +26,10 @@ using namespace gpdxl;
 //		Constructs a scalar distinct comparison node
 //
 //---------------------------------------------------------------------------
-CDXLScalarDistinctComp::CDXLScalarDistinctComp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp
-	)
-	:
-	CDXLScalarComp(pmp, pmdidOp, GPOS_NEW(pmp) CWStringConst(pmp, CDXLTokens::PstrToken(EdxltokenEq)->Wsz()))
+CDXLScalarDistinctComp::CDXLScalarDistinctComp(IMemoryPool *pmp, IMDId *pmdidOp)
+	: CDXLScalarComp(pmp, pmdidOp,
+					 GPOS_NEW(pmp) CWStringConst(
+						 pmp, CDXLTokens::PstrToken(EdxltokenEq)->Wsz()))
 {
 }
 
@@ -63,7 +60,8 @@ CDXLScalarDistinctComp::Edxlop() const
 const CWStringConst *
 CDXLScalarDistinctComp::PstrOpName() const
 {
-	return CDXLTokens::PstrToken(EdxltokenScalarDistinctComp);;
+	return CDXLTokens::PstrToken(EdxltokenScalarDistinctComp);
+	;
 }
 
 //---------------------------------------------------------------------------
@@ -75,21 +73,19 @@ CDXLScalarDistinctComp::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarDistinctComp::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarDistinctComp::SerializeToDXL(CXMLSerializer *pxmlser,
+									   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
-	
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);	
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -100,34 +96,30 @@ CDXLScalarDistinctComp::SerializeToDXL
 //		CDXLScalarDistinctComp::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarDistinctComp::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
-{	
+CDXLScalarDistinctComp::AssertValid(const CDXLNode *pdxln,
+									BOOL fValidateChildren) const
+{
 	GPOS_ASSERT(EdxlscdistcmpSentinel == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnLeft = (*pdxln)[EdxlscdistcmpIndexLeft];
 	CDXLNode *pdxlnRight = (*pdxln)[EdxlscdistcmpIndexRight];
-	
+
 	// assert children are of right type (scalar)
 	GPOS_ASSERT(EdxloptypeScalar == pdxlnLeft->Pdxlop()->Edxloperatortype());
 	GPOS_ASSERT(EdxloptypeScalar == pdxlnRight->Pdxlop()->Edxloperatortype());
-	
+
 	GPOS_ASSERT(PstrCmpOpName()->FEquals(CDXLTokens::PstrToken(EdxltokenEq)));
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnLeft->Pdxlop()->AssertValid(pdxlnLeft, fValidateChildren);
 		pdxlnRight->Pdxlop()->AssertValid(pdxlnRight, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

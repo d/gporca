@@ -17,53 +17,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerStacktrace
-	//
-	//	@doc:
-	//		Pass-through parse handler class for stack traces
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerStacktrace : public CParseHandlerBase
-	{
-		private:
-											
-			// private copy ctor
-			CParseHandlerStacktrace(const CParseHandlerStacktrace&);
-		
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerStacktrace
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerStacktrace_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerStacktrace
+//
+//	@doc:
+//		Pass-through parse handler class for stack traces
+//
+//---------------------------------------------------------------------------
+class CParseHandlerStacktrace : public CParseHandlerBase
+{
+private:
+	// private copy ctor
+	CParseHandlerStacktrace(const CParseHandlerStacktrace &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerStacktrace(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerStacktrace_H
 
 // EOF

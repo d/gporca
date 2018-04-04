@@ -18,81 +18,77 @@
 
 namespace gpdxl
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalAssert
-	//
-	//	@doc:
-	//		Class for representing DXL assert operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalAssert : public CDXLPhysical
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalAssert
+//
+//	@doc:
+//		Class for representing DXL assert operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalAssert : public CDXLPhysical
+{
+public:
+	// indices of assert elements in the children array
+	enum Edxlassert
 	{
-		public:
-			// indices of assert elements in the children array
-			enum Edxlassert
-			{
-				EdxlassertIndexProjList = 0,
-				EdxlassertIndexFilter,
-				EdxlassertIndexChild,
-				EdxlassertIndexSentinel
-			};
-			
-		private:
-			
-			// error code
-			CHAR m_szSQLState[GPOS_SQLSTATE_LENGTH + 1];
-			
-			// private copy ctor
-			CDXLPhysicalAssert(CDXLPhysicalAssert&);
+		EdxlassertIndexProjList = 0,
+		EdxlassertIndexFilter,
+		EdxlassertIndexChild,
+		EdxlassertIndexSentinel
+	};
 
-		public:
-			// ctor
-			CDXLPhysicalAssert(IMemoryPool *pmp, const CHAR *szSQLState);
+private:
+	// error code
+	CHAR m_szSQLState[GPOS_SQLSTATE_LENGTH + 1];
 
-			// dtor
-			virtual
-			~CDXLPhysicalAssert();
-			
-			// operator type
-			virtual
-			Edxlopid Edxlop() const;
-			
-			// operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
+	// private copy ctor
+	CDXLPhysicalAssert(CDXLPhysicalAssert &);
 
-			// error code
-			const CHAR *SzSQLState() const
-			{
-				return m_szSQLState;
-			}
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+public:
+	// ctor
+	CDXLPhysicalAssert(IMemoryPool *pmp, const CHAR *szSQLState);
+
+	// dtor
+	virtual ~CDXLPhysicalAssert();
+
+	// operator type
+	virtual Edxlopid
+	Edxlop() const;
+
+	// operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
+
+	// error code
+	const CHAR *
+	SzSQLState() const
+	{
+		return m_szSQLState;
+	}
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
 
-			// conversion function
-			static
-			CDXLPhysicalAssert *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopPhysicalAssert == pdxlop->Edxlop());
+	// conversion function
+	static CDXLPhysicalAssert *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopPhysicalAssert == pdxlop->Edxlop());
 
-				return dynamic_cast<CDXLPhysicalAssert*>(pdxlop);
-			}
-	};
-}
-#endif // !GPDXL_CDXLPhysicalAssert_H
+		return dynamic_cast<CDXLPhysicalAssert *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLPhysicalAssert_H
 
 // EOF
-

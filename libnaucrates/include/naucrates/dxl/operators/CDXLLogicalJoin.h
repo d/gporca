@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Class for representing DXL logical Join operators
-//		
+//
 //---------------------------------------------------------------------------
 #ifndef GPDXL_CDXLLogicalJoin_H
 #define GPDXL_CDXLLogicalJoin_H
@@ -17,63 +17,62 @@
 
 namespace gpdxl
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalJoin
+//
+//	@doc:
+//		Class for representing DXL logical Join operators
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalJoin : public CDXLLogical
+{
+private:
+	// private copy ctor
+	CDXLLogicalJoin(CDXLLogicalJoin &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalJoin
-	//
-	//	@doc:
-	//		Class for representing DXL logical Join operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalJoin : public CDXLLogical
+	// join type (inner, outer, ...)
+	EdxlJoinType m_edxljt;
+
+public:
+	// ctor/dtor
+	CDXLLogicalJoin(IMemoryPool *, EdxlJoinType);
+
+	// accessors
+	Edxlopid
+	Edxlop() const;
+
+	const CWStringConst *
+	PstrOpName() const;
+
+	// join type
+	EdxlJoinType
+	Edxltype() const;
+
+	const CWStringConst *
+	PstrJoinTypeName() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// conversion function
+	static CDXLLogicalJoin *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
-
-			// private copy ctor
-			CDXLLogicalJoin(CDXLLogicalJoin&);
-
-			// join type (inner, outer, ...)
-			EdxlJoinType m_edxljt;
-
-		public:
-			// ctor/dtor
-			CDXLLogicalJoin(IMemoryPool *, 	EdxlJoinType);
-
-			// accessors
-			Edxlopid Edxlop() const;
-
-			const CWStringConst *PstrOpName() const;
-
-			// join type
-			EdxlJoinType Edxltype() const;
-
-			const CWStringConst *PstrJoinTypeName() const;
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLLogicalJoin *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalJoin == pdxlop->Edxlop());
-				return dynamic_cast<CDXLLogicalJoin*>(pdxlop);
-			}
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalJoin == pdxlop->Edxlop());
+		return dynamic_cast<CDXLLogicalJoin *>(pdxlop);
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-
-	};
-}
-#endif // !GPDXL_CDXLLogicalJoin_H
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLLogicalJoin_H
 
 // EOF

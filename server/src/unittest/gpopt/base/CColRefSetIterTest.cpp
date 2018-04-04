@@ -34,10 +34,8 @@
 GPOS_RESULT
 CColRefSetIterTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
-		GPOS_UNITTEST_FUNC(CColRefSetIterTest::EresUnittest_Basics)
-		};
+	CUnittest rgut[] = {
+		GPOS_UNITTEST_FUNC(CColRefSetIterTest::EresUnittest_Basics)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -64,13 +62,7 @@ CColRefSetIterTest::EresUnittest_Basics()
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
 
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-				(
-				pmp,
-				&mda,
-				NULL /* pceeval */,
-				CTestUtils::Pcm(pmp)
-				);
+	CAutoOptCtxt aoc(pmp, &mda, NULL /* pceeval */, CTestUtils::Pcm(pmp));
 
 	// get column factory from optimizer context object
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
@@ -84,7 +76,7 @@ CColRefSetIterTest::EresUnittest_Basics()
 
 
 	ULONG ulCols = 10;
-	for(ULONG i = 0; i < ulCols; i++)
+	for (ULONG i = 0; i < ulCols; i++)
 	{
 		CColRef *pcr = pcf->PcrCreate(pmdtypeint4, IDefaultTypeModifier, name);
 		pcrs->Include(pcr);
@@ -96,9 +88,9 @@ CColRefSetIterTest::EresUnittest_Basics()
 
 	ULONG ulCount = 0;
 	CColRefSetIter crsi(*pcrs);
-	while(crsi.FAdvance())
+	while (crsi.FAdvance())
 	{
-		GPOS_ASSERT((BOOL)crsi);
+		GPOS_ASSERT((BOOL) crsi);
 
 		CColRef *pcr = crsi.Pcr();
 		GPOS_ASSERT(pcr->Name().FEquals(name));
@@ -110,7 +102,7 @@ CColRefSetIterTest::EresUnittest_Basics()
 	}
 
 	GPOS_ASSERT(ulCols == ulCount);
-	GPOS_ASSERT(!((BOOL)crsi));
+	GPOS_ASSERT(!((BOOL) crsi));
 
 	pcrs->Release();
 

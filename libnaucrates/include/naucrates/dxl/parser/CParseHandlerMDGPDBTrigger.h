@@ -21,71 +21,67 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerMDGPDBTrigger
-	//
-	//	@doc:
-	//		Parse handler for GPDB trigger metadata
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerMDGPDBTrigger : public CParseHandlerMetadataObject
-	{
-		private:
-			// trigger id
-			IMDId *m_pmdid;
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerMDGPDBTrigger
+//
+//	@doc:
+//		Parse handler for GPDB trigger metadata
+//
+//---------------------------------------------------------------------------
+class CParseHandlerMDGPDBTrigger : public CParseHandlerMetadataObject
+{
+private:
+	// trigger id
+	IMDId *m_pmdid;
 
-			// trigger name
-			CMDName *m_pmdname;
+	// trigger name
+	CMDName *m_pmdname;
 
-			// relation id
-			IMDId *m_pmdidRel;
+	// relation id
+	IMDId *m_pmdidRel;
 
-			// function id
-			IMDId *m_pmdidFunc;
+	// function id
+	IMDId *m_pmdidFunc;
 
-			// trigger type
-			INT m_iType;
+	// trigger type
+	INT m_iType;
 
-			// is trigger enabled
-			BOOL m_fEnabled;
+	// is trigger enabled
+	BOOL m_fEnabled;
 
-			// private copy ctor
-			CParseHandlerMDGPDBTrigger(const CParseHandlerMDGPDBTrigger &);
+	// private copy ctor
+	CParseHandlerMDGPDBTrigger(const CParseHandlerMDGPDBTrigger &);
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-		public:
-			// ctor
-			CParseHandlerMDGPDBTrigger
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+public:
+	// ctor
+	CParseHandlerMDGPDBTrigger(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CParseHandlerMDGPDBTrigger_H
+#endif  // !GPDXL_CParseHandlerMDGPDBTrigger_H
 
 // EOF

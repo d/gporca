@@ -27,15 +27,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMetadataObject::CParseHandlerMetadataObject
-	(
-	IMemoryPool *pmp, 
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pimdobj(NULL)
+CParseHandlerMetadataObject::CParseHandlerMetadataObject(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pimdobj(NULL)
 {
 }
 
@@ -68,6 +62,4 @@ CParseHandlerMetadataObject::Pimdobj() const
 
 
 
-
 // EOF
-

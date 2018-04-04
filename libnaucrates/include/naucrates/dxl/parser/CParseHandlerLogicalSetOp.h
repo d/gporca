@@ -8,8 +8,8 @@
 //	@doc:
 //		Parse handler for parsing a logical set operator
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -23,68 +23,64 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerLogicalSetOp
-	//
-	//	@doc:
-	//		Parse handler for parsing a logical set operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerLogicalSetOp : public CParseHandlerLogicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerLogicalSetOp
+//
+//	@doc:
+//		Parse handler for parsing a logical set operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerLogicalSetOp : public CParseHandlerLogicalOp
+{
+private:
+	// set operation type
+	EdxlSetOpType m_edxlsetop;
 
-			// set operation type
-			EdxlSetOpType m_edxlsetop;
+	// array of input column id arrays
+	DrgPdrgPul *m_pdrgpdrgpulInputColIds;
 
-			// array of input column id arrays
-			DrgPdrgPul *m_pdrgpdrgpulInputColIds;
+	// do the columns across inputs need to be casted
+	BOOL m_fCastAcrossInputs;
 
-			// do the columns across inputs need to be casted
-			BOOL m_fCastAcrossInputs;
+	// private copy ctor
+	CParseHandlerLogicalSetOp(const CParseHandlerLogicalSetOp &);
 
-			// private copy ctor
-			CParseHandlerLogicalSetOp(const CParseHandlerLogicalSetOp &);
+	// return the set operation type
+	EdxlSetOpType
+	Edxlsetop(const XMLCh *const xmlszLocalname);
 
-			// return the set operation type
-			EdxlSetOpType Edxlsetop(const XMLCh* const xmlszLocalname);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerLogicalSetOp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
 
-		public:
-			// ctor
-			CParseHandlerLogicalSetOp
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
+	// dtor
+	~CParseHandlerLogicalSetOp();
+};
+}  // namespace gpdxl
 
-			// dtor
-			~CParseHandlerLogicalSetOp();
-	};
-}
-
-#endif // !GPDXL_CParseHandlerLogicalSetOp_H
+#endif  // !GPDXL_CParseHandlerLogicalSetOp_H
 
 // EOF

@@ -29,14 +29,8 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarConst::CScalarConst
-	(
-	IMemoryPool *pmp,
-	IDatum *pdatum
-	)
-	:
-	CScalar(pmp),
-	m_pdatum(pdatum)
+CScalarConst::CScalarConst(IMemoryPool *pmp, IDatum *pdatum)
+	: CScalar(pmp), m_pdatum(pdatum)
 {
 	GPOS_ASSERT(NULL != pdatum);
 }
@@ -68,11 +62,7 @@ CScalarConst::~CScalarConst()
 ULONG
 CScalarConst::UlHash() const
 {
-	return gpos::UlCombineHashes
-			(
-			COperator::UlHash(),
-			m_pdatum->UlHash()
-			);
+	return gpos::UlCombineHashes(COperator::UlHash(), m_pdatum->UlHash());
 }
 
 //---------------------------------------------------------------------------
@@ -84,11 +74,7 @@ CScalarConst::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarConst::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarConst::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
@@ -125,11 +111,7 @@ CScalarConst::PmdidType() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarConst::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarConst::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	m_pdatum->OsPrint(os);
@@ -147,10 +129,7 @@ CScalarConst::OsPrint
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarConst::FCastedConst
-	(
-	CExpression *pexpr
-	)
+CScalarConst::FCastedConst(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -177,10 +156,7 @@ CScalarConst::FCastedConst
 //
 //---------------------------------------------------------------------------
 CScalarConst *
-CScalarConst::PopExtractFromConstOrCastConst
-	(
-	CExpression *pexpr
-	)
+CScalarConst::PopExtractFromConstOrCastConst(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -212,11 +188,8 @@ CScalarConst::PopExtractFromConstOrCastConst
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarConst::Eber
-	(
-	DrgPul * //pdrgpulChildren
-	)
-	const
+CScalarConst::Eber(DrgPul *  //pdrgpulChildren
+				   ) const
 {
 	if (m_pdatum->FNull())
 	{
@@ -245,4 +218,3 @@ CScalarConst::ITypeModifier() const
 
 
 // EOF
-

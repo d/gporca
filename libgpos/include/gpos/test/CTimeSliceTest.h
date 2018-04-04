@@ -17,29 +17,30 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTimeSliceTest
-	//
-	//	@doc:
-	//		Extended unittest for time slice enforcement
-	//
-	//---------------------------------------------------------------------------
-	class CTimeSliceTest
-	{
-		public:
+//---------------------------------------------------------------------------
+//	@class:
+//		CTimeSliceTest
+//
+//	@doc:
+//		Extended unittest for time slice enforcement
+//
+//---------------------------------------------------------------------------
+class CTimeSliceTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_Basic();
+	static GPOS_RESULT
+	EresUnittest_CheckTimeSlice();
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_Basic();
-			static GPOS_RESULT EresUnittest_CheckTimeSlice();
+};  // CTimeSliceTest
+}  // namespace gpos
 
-	}; // CTimeSliceTest
-}
+#endif  // GPOS_DEBUG
 
-#endif // GPOS_DEBUG
-
-#endif // !GPOS_CTimeSliceTest_H
+#endif  // !GPOS_CTimeSliceTest_H
 
 // EOF
-

@@ -44,11 +44,8 @@ const CDouble CScaleFactorUtils::DInvalidScaleFactor(0.0);
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DCumulativeJoinScaleFactor
-	(
-	const CStatisticsConfig *pstatsconf,
-	DrgPdouble *pdrgpd
-	)
+CScaleFactorUtils::DCumulativeJoinScaleFactor(
+	const CStatisticsConfig *pstatsconf, DrgPdouble *pdrgpd)
 {
 	GPOS_ASSERT(NULL != pstatsconf);
 	GPOS_ASSERT(NULL != pdrgpd);
@@ -66,11 +63,11 @@ CScaleFactorUtils::DCumulativeJoinScaleFactor
 	{
 		CDouble dScaleFactorLocal = *(*pdrgpd)[ul];
 
-		dScaleFactor = dScaleFactor * std::max
-										(
-										CStatistics::DMinRows.DVal(),
-										(dScaleFactorLocal * DDampingJoin(pstatsconf, ul + 1)).DVal()
-										);
+		dScaleFactor =
+			dScaleFactor *
+			std::max(
+				CStatistics::DMinRows.DVal(),
+				(dScaleFactorLocal * DDampingJoin(pstatsconf, ul + 1)).DVal());
 	}
 
 	return dScaleFactor;
@@ -86,11 +83,8 @@ CScaleFactorUtils::DCumulativeJoinScaleFactor
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DDampingJoin
-	(
-	const CStatisticsConfig *pstatsconf,
-	ULONG ulNumColumns
-	)
+CScaleFactorUtils::DDampingJoin(const CStatisticsConfig *pstatsconf,
+								ULONG ulNumColumns)
 {
 	if (1 >= ulNumColumns)
 	{
@@ -110,11 +104,8 @@ CScaleFactorUtils::DDampingJoin
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DDampingFilter
-	(
-	const CStatisticsConfig *pstatsconf,
-	ULONG ulNumColumns
-	)
+CScaleFactorUtils::DDampingFilter(const CStatisticsConfig *pstatsconf,
+								  ULONG ulNumColumns)
 {
 	GPOS_ASSERT(NULL != pstatsconf);
 
@@ -136,11 +127,8 @@ CScaleFactorUtils::DDampingFilter
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DDampingGroupBy
-	(
-	const CStatisticsConfig *pstatsconf,
-	ULONG ulNumColumns
-	)
+CScaleFactorUtils::DDampingGroupBy(const CStatisticsConfig *pstatsconf,
+								   ULONG ulNumColumns)
 {
 	GPOS_ASSERT(NULL != pstatsconf);
 
@@ -162,11 +150,8 @@ CScaleFactorUtils::DDampingGroupBy
 //
 //---------------------------------------------------------------------------
 void
-CScaleFactorUtils::SortScalingFactor
-	(
-	DrgPdouble *pdrgpdScaleFactor,
-	BOOL fDescending
-	)
+CScaleFactorUtils::SortScalingFactor(DrgPdouble *pdrgpdScaleFactor,
+									 BOOL fDescending)
 {
 	GPOS_ASSERT(NULL != pdrgpdScaleFactor);
 	const ULONG ulCols = pdrgpdScaleFactor->UlLength();
@@ -195,11 +180,7 @@ CScaleFactorUtils::SortScalingFactor
 //
 //---------------------------------------------------------------------------
 INT
-CScaleFactorUtils::IDoubleDescCmp
-	(
-	const void *pv1,
-	const void *pv2
-	)
+CScaleFactorUtils::IDoubleDescCmp(const void *pv1, const void *pv2)
 {
 	GPOS_ASSERT(NULL != pv1 && NULL != pv2);
 	const CDouble *pd1 = *(const CDouble **) pv1;
@@ -218,11 +199,7 @@ CScaleFactorUtils::IDoubleDescCmp
 //
 //---------------------------------------------------------------------------
 INT
-CScaleFactorUtils::IDoubleAscCmp
-	(
-	const void *pv1,
-	const void *pv2
-	)
+CScaleFactorUtils::IDoubleAscCmp(const void *pv1, const void *pv2)
 {
 	GPOS_ASSERT(NULL != pv1 && NULL != pv2);
 	const CDouble *pd1 = *(const CDouble **) pv1;
@@ -241,12 +218,8 @@ CScaleFactorUtils::IDoubleAscCmp
 //
 //---------------------------------------------------------------------------
 INT
-CScaleFactorUtils::IDoubleCmp
-	(
-	const CDouble *pd1,
-	const CDouble *pd2,
-	BOOL fDesc
-	)
+CScaleFactorUtils::IDoubleCmp(const CDouble *pd1, const CDouble *pd2,
+							  BOOL fDesc)
 {
 	GPOS_ASSERT(NULL != pd1);
 	GPOS_ASSERT(NULL != pd2);
@@ -258,12 +231,12 @@ CScaleFactorUtils::IDoubleCmp
 
 	if (pd1->DVal() < pd2->DVal() && fDesc)
 	{
-	    return 1;
+		return 1;
 	}
 
 	if (pd1->DVal() > pd2->DVal() && !fDesc)
 	{
-	    return 1;
+		return 1;
 	}
 
 	return -1;
@@ -279,11 +252,8 @@ CScaleFactorUtils::IDoubleCmp
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DScaleFactorCumulativeConj
-	(
-	const CStatisticsConfig *pstatsconf,
-	DrgPdouble *pdrgpdScaleFactor
-	)
+CScaleFactorUtils::DScaleFactorCumulativeConj(
+	const CStatisticsConfig *pstatsconf, DrgPdouble *pdrgpdScaleFactor)
 {
 	GPOS_ASSERT(NULL != pstatsconf);
 	GPOS_ASSERT(NULL != pdrgpdScaleFactor);
@@ -300,11 +270,12 @@ CScaleFactorUtils::DScaleFactorCumulativeConj
 	{
 		// apply damping factor
 		CDouble dScaleFactorLocal = *(*pdrgpdScaleFactor)[ul];
-		dScaleFactor = dScaleFactor * std::max
-										(
-										CStatistics::DMinRows.DVal(),
-										(dScaleFactorLocal * CScaleFactorUtils::DDampingFilter(pstatsconf, ul + 1)).DVal()
-										);
+		dScaleFactor =
+			dScaleFactor *
+			std::max(CStatistics::DMinRows.DVal(),
+					 (dScaleFactorLocal *
+					  CScaleFactorUtils::DDampingFilter(pstatsconf, ul + 1))
+						 .DVal());
 	}
 
 	return dScaleFactor;
@@ -321,12 +292,9 @@ CScaleFactorUtils::DScaleFactorCumulativeConj
 //
 //---------------------------------------------------------------------------
 CDouble
-CScaleFactorUtils::DScaleFactorCumulativeDisj
-	(
-	const CStatisticsConfig *pstatsconf,
-	DrgPdouble *pdrgpdScaleFactor,
-	CDouble dRowsTotal
-	)
+CScaleFactorUtils::DScaleFactorCumulativeDisj(
+	const CStatisticsConfig *pstatsconf, DrgPdouble *pdrgpdScaleFactor,
+	CDouble dRowsTotal)
 {
 	GPOS_ASSERT(NULL != pstatsconf);
 	GPOS_ASSERT(NULL != pdrgpdScaleFactor);
@@ -355,11 +323,11 @@ CScaleFactorUtils::DScaleFactorCumulativeDisj
 		CDouble dRowsLocal = dRowsTotal / dScaleFactorLocal;
 
 		// accumulate row estimates after damping
-		dRows = dRows + std::max
-							(
-							CStatistics::DMinRows.DVal(),
-							(dRowsLocal * CScaleFactorUtils::DDampingFilter(pstatsconf, ul + 1)).DVal()
-							);
+		dRows = dRows +
+				std::max(CStatistics::DMinRows.DVal(),
+						 (dRowsLocal *
+						  CScaleFactorUtils::DDampingFilter(pstatsconf, ul + 1))
+							 .DVal());
 
 		// cap accumulated row estimate with total number of rows
 		dRows = std::min(dRows.DVal(), dRowsTotal.DVal());

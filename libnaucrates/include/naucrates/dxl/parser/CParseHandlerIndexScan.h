@@ -19,75 +19,62 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerIndexScan
-	//
-	//	@doc:
-	//		Parse handler for index scan operator nodes
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerIndexScan : public CParseHandlerPhysicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerIndexScan
+//
+//	@doc:
+//		Parse handler for index scan operator nodes
+//
+//---------------------------------------------------------------------------
+class CParseHandlerIndexScan : public CParseHandlerPhysicalOp
+{
+private:
+	// index scan direction
+	EdxlIndexScanDirection m_edxlisd;
 
-			// index scan direction
-			EdxlIndexScanDirection m_edxlisd;
+	// private copy ctor
+	CParseHandlerIndexScan(const CParseHandlerIndexScan &);
 
-			// private copy ctor
-			CParseHandlerIndexScan(const CParseHandlerIndexScan &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+protected:
+	// common StartElement functionality for IndexScan and IndexOnlyScan
+	void
+	StartElementHelper(const XMLCh *const xmlszLocalname,
+					   const Attributes &attrs, Edxltoken edxltoken);
 
-		protected:
+	// common EndElement functionality for IndexScan and IndexOnlyScan
+	void
+	EndElementHelper(const XMLCh *const xmlszLocalname, Edxltoken edxltoken,
+					 ULONG ulPartIndexId = 0, ULONG ulPartIndexIdPrintable = 0);
 
-			// common StartElement functionality for IndexScan and IndexOnlyScan
-			void StartElementHelper
-				(
-				const XMLCh* const xmlszLocalname,
-				const Attributes& attrs,
-				Edxltoken edxltoken
-				);
+public:
+	// ctor
+	CParseHandlerIndexScan(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-			// common EndElement functionality for IndexScan and IndexOnlyScan
-			void EndElementHelper
-				(
-				const XMLCh* const xmlszLocalname,
-				Edxltoken edxltoken,
-				ULONG ulPartIndexId = 0,
-				ULONG ulPartIndexIdPrintable = 0
-				);
-
-		public:
-			// ctor
-			CParseHandlerIndexScan
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerIndexScan_H
+#endif  // !GPDXL_CParseHandlerIndexScan_H
 
 // EOF

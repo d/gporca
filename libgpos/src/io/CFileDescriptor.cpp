@@ -26,10 +26,9 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CFileDescriptor::CFileDescriptor()
-	:
-	m_iFileDescr(GPOS_FILE_DESCR_INVALID)
-{}
+CFileDescriptor::CFileDescriptor() : m_iFileDescr(GPOS_FILE_DESCR_INVALID)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -41,12 +40,7 @@ CFileDescriptor::CFileDescriptor()
 //
 //---------------------------------------------------------------------------
 void
-CFileDescriptor::OpenInternal
-	(
-	const CHAR *szPath,
-	ULONG ulMode,
-	ULONG ulPerms
-	)
+CFileDescriptor::OpenInternal(const CHAR *szPath, ULONG ulMode, ULONG ulPerms)
 {
 	GPOS_ASSERT(!FOpened());
 
@@ -57,7 +51,8 @@ CFileDescriptor::OpenInternal
 		m_iFileDescr = GPOS_FILE_DESCR_INVALID;
 
 		// create file with given mode and permissions and check to simulate I/O error
-		GPOS_CHECK_SIM_IO_ERR(&m_iFileDescr, ioutils::IOpen(szPath, ulMode, ulPerms));
+		GPOS_CHECK_SIM_IO_ERR(&m_iFileDescr,
+							  ioutils::IOpen(szPath, ulMode, ulPerms));
 
 		// check for error
 		if (GPOS_FILE_DESCR_INVALID == m_iFileDescr)
@@ -133,4 +128,3 @@ CFileDescriptor::CloseInternal()
 }
 
 // EOF
-

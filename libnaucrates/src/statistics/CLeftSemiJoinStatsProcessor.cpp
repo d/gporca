@@ -17,13 +17,9 @@ using namespace gpopt;
 
 // return statistics object after performing LSJ operation
 CStatistics *
-CLeftSemiJoinStatsProcessor::PstatsLSJoinStatic
-		(
-		IMemoryPool *pmp,
-		const IStatistics *pistatsOuter,
-		const IStatistics *pistatsInner,
-		DrgPstatspredjoin *pdrgpstatspredjoin
-		)
+CLeftSemiJoinStatsProcessor::PstatsLSJoinStatic(
+	IMemoryPool *pmp, const IStatistics *pistatsOuter,
+	const IStatistics *pistatsInner, DrgPstatspredjoin *pdrgpstatspredjoin)
 {
 	GPOS_ASSERT(NULL != pistatsOuter);
 	GPOS_ASSERT(NULL != pistatsInner);
@@ -41,26 +37,19 @@ CLeftSemiJoinStatsProcessor::PstatsLSJoinStatic
 
 	// dummy agg columns required for group by derivation
 	DrgPul *pdrgpulAgg = GPOS_NEW(pmp) DrgPul(pmp);
-	IStatistics *pstatsInnerNoDups = CGroupByStatsProcessor::PstatsGroupBy
-			(
-			pmp,
-			dynamic_cast<const CStatistics *>(pistatsInner),
-			pdrgpulInnerColumnIds,
-			pdrgpulAgg,
-			NULL // pbsKeys: no keys, use all grouping cols
-			);
+	IStatistics *pstatsInnerNoDups = CGroupByStatsProcessor::PstatsGroupBy(
+		pmp, dynamic_cast<const CStatistics *>(pistatsInner),
+		pdrgpulInnerColumnIds, pdrgpulAgg,
+		NULL  // pbsKeys: no keys, use all grouping cols
+	);
 
-	const CStatistics *pstatsOuter = dynamic_cast<const CStatistics *> (pistatsOuter);
-	CStatistics *pstatsSemiJoin = CJoinStatsProcessor::PstatsJoinDriver
-			(
-			pmp,
-			pstatsOuter->PStatsConf(),
-			pstatsOuter,
-			pstatsInnerNoDups,
-			pdrgpstatspredjoin,
-			IStatistics::EsjtLeftSemiJoin /* esjt */,
-			true /* fIgnoreLasjHistComputation */
-			);
+	const CStatistics *pstatsOuter =
+		dynamic_cast<const CStatistics *>(pistatsOuter);
+	CStatistics *pstatsSemiJoin = CJoinStatsProcessor::PstatsJoinDriver(
+		pmp, pstatsOuter->PStatsConf(), pstatsOuter, pstatsInnerNoDups,
+		pdrgpstatspredjoin, IStatistics::EsjtLeftSemiJoin /* esjt */,
+		true /* fIgnoreLasjHistComputation */
+	);
 
 	// clean up
 	pdrgpulInnerColumnIds->Release();
@@ -68,7 +57,6 @@ CLeftSemiJoinStatsProcessor::PstatsLSJoinStatic
 	pstatsInnerNoDups->Release();
 
 	return pstatsSemiJoin;
-
 }
 
 // EOF

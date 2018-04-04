@@ -6,14 +6,9 @@
 
 using namespace gpopt;
 
-CStrictHashedDistributions::CStrictHashedDistributions
-(
-IMemoryPool *pmp,
-DrgPcr *pdrgpcrOutput,
-DrgDrgPcr *pdrgpdrgpcrInput
-)
-:
-DrgPds(pmp)
+CStrictHashedDistributions::CStrictHashedDistributions(
+	IMemoryPool *pmp, DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrInput)
+	: DrgPds(pmp)
 {
 	const ULONG ulCols = pdrgpcrOutput->UlLength();
 	const ULONG ulArity = pdrgpdrgpcrInput->UlLength();
@@ -37,7 +32,8 @@ DrgPds(pmp)
 		{
 			// create a hashed distribution on input columns of the current child
 			BOOL fNullsColocated = true;
-			pdshashed = GPOS_NEW(pmp) CDistributionSpecStrictHashed(pdrgpexpr, fNullsColocated);
+			pdshashed = GPOS_NEW(pmp)
+				CDistributionSpecStrictHashed(pdrgpexpr, fNullsColocated);
 		}
 		else
 		{

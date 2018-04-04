@@ -26,19 +26,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalStreamAggDeduplicate::CPhysicalStreamAggDeduplicate
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr,
-	DrgPcr *pdrgpcrMinimal,
-	COperator::EGbAggType egbaggtype,
-	DrgPcr *pdrgpcrKeys,
-	BOOL fGeneratesDuplicates,
-	BOOL fMultiStage
-	)
-	:
-	CPhysicalStreamAgg(pmp, pdrgpcr, pdrgpcrMinimal, egbaggtype, fGeneratesDuplicates, NULL /*pdrgpcrGbMinusDistinct*/, fMultiStage),
-	m_pdrgpcrKeys(pdrgpcrKeys)
+CPhysicalStreamAggDeduplicate::CPhysicalStreamAggDeduplicate(
+	IMemoryPool *pmp, DrgPcr *pdrgpcr, DrgPcr *pdrgpcrMinimal,
+	COperator::EGbAggType egbaggtype, DrgPcr *pdrgpcrKeys,
+	BOOL fGeneratesDuplicates, BOOL fMultiStage)
+	: CPhysicalStreamAgg(pmp, pdrgpcr, pdrgpcrMinimal, egbaggtype,
+						 fGeneratesDuplicates, NULL /*pdrgpcrGbMinusDistinct*/,
+						 fMultiStage),
+	  m_pdrgpcrKeys(pdrgpcrKeys)
 {
 	GPOS_ASSERT(NULL != pdrgpcrKeys);
 	InitOrderSpec(pmp, m_pdrgpcrKeys);
@@ -66,33 +61,27 @@ CPhysicalStreamAggDeduplicate::~CPhysicalStreamAggDeduplicate()
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalStreamAggDeduplicate::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalStreamAggDeduplicate::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
 		return COperator::OsPrint(os);
 	}
 
-	os	<< SzId()
-		<< "( ";
+	os << SzId() << "( ";
 	CLogicalGbAgg::OsPrintGbAggType(os, Egbaggtype());
-	os	<< " )"
-		<< " Grp Cols: [";
+	os << " )"
+	   << " Grp Cols: [";
 
 	CUtils::OsPrintDrgPcr(os, PdrgpcrGroupingCols());
-	os	<< "]"
-		<< ", Key Cols:[";
+	os << "]"
+	   << ", Key Cols:[";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcrKeys);
-	os	<< "]";
+	os << "]";
 
-	os	<< ", Generates Duplicates :[ " << FGeneratesDuplicates() << " ] ";
+	os << ", Generates Duplicates :[ " << FGeneratesDuplicates() << " ] ";
 
 	return os;
 }
 
 // EOF
-

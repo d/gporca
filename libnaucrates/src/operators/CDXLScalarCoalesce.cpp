@@ -27,14 +27,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarCoalesce::CDXLScalarCoalesce
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidType(pmdidType)
+CDXLScalarCoalesce::CDXLScalarCoalesce(IMemoryPool *pmp, IMDId *pmdidType)
+	: CDXLScalar(pmp), m_pmdidType(pmdidType)
 {
 	GPOS_ASSERT(m_pmdidType->FValid());
 }
@@ -89,19 +83,17 @@ CDXLScalarCoalesce::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarCoalesce::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarCoalesce::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -113,11 +105,7 @@ CDXLScalarCoalesce::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarCoalesce::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarCoalesce::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -132,12 +120,8 @@ CDXLScalarCoalesce::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarCoalesce::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarCoalesce::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(0 < pdxln->UlArity());
 
@@ -153,6 +137,6 @@ CDXLScalarCoalesce::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

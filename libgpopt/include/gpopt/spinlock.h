@@ -15,35 +15,34 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// OPTIMIZER SPINLOCKS - reserve range 200-400
+// OPTIMIZER SPINLOCKS - reserve range 200-400
 
-	// spinlock used in job queues
-	typedef CSpinlockRanked<210> CSpinlockJobQueue;
+// spinlock used in job queues
+typedef CSpinlockRanked<210> CSpinlockJobQueue;
 
-	// spinlock used in column factory
-	typedef CSpinlockRanked<220> CSpinlockColumnFactory;
+// spinlock used in column factory
+typedef CSpinlockRanked<220> CSpinlockColumnFactory;
 
-	// spinlocks to synchronize memo access
-	typedef CSpinlockRanked<230> CSpinlockGroup;
-	typedef CSpinlockRanked<231> CSpinlockMemo;
+// spinlocks to synchronize memo access
+typedef CSpinlockRanked<230> CSpinlockGroup;
+typedef CSpinlockRanked<231> CSpinlockMemo;
 
-	// spinlock used in metadata accessor cache accessor hashtable
-	typedef CSpinlockRanked<240> CSpinlockMDAcc;
+// spinlock used in metadata accessor cache accessor hashtable
+typedef CSpinlockRanked<240> CSpinlockMDAcc;
 
-	// spinlock used in metadata accessor provider hashtable
-	typedef CSpinlockRanked<241> CSpinlockMDAccMDP;
+// spinlock used in metadata accessor provider hashtable
+typedef CSpinlockRanked<241> CSpinlockMDAccMDP;
 
-	// spinlock used in hashtable for optimization contexts
-	typedef CSpinlockRanked<250> CSpinlockOC;
+// spinlock used in hashtable for optimization contexts
+typedef CSpinlockRanked<250> CSpinlockOC;
 
-	// spinlock used in hashtable for cost contexts
-	typedef CSpinlockRanked<260> CSpinlockCC;
-}
+// spinlock used in hashtable for cost contexts
+typedef CSpinlockRanked<260> CSpinlockCC;
+}  // namespace gpopt
 
-#endif // !GPOPT_spinlock_H
+#endif  // !GPOPT_spinlock_H
 
 
 // EOF
-

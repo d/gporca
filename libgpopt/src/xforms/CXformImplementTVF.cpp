@@ -25,22 +25,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementTVF::CXformImplementTVF
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalTVF(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-				)
-		)
-{}
+CXformImplementTVF::CXformImplementTVF(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CLogicalTVF(pmp),
+						  GPOS_NEW(pmp) CExpression(
+							  pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -50,13 +43,10 @@ CXformImplementTVF::CXformImplementTVF
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementTVF::CXformImplementTVF
-	(
-	CExpression *pexpr
-	)
-	:
-	CXformImplementation(pexpr)
-{}
+CXformImplementTVF::CXformImplementTVF(CExpression *pexpr)
+	: CXformImplementation(pexpr)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -68,11 +58,7 @@ CXformImplementTVF::CXformImplementTVF
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformImplementTVF::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformImplementTVF::Exfp(CExpressionHandle &exprhdl) const
 {
 	const ULONG ulArity = exprhdl.UlArity();
 	for (ULONG ul = 0; ul < ulArity; ul++)
@@ -97,13 +83,8 @@ CXformImplementTVF::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementTVF::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementTVF::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+							  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -130,11 +111,12 @@ CXformImplementTVF::Transform
 
 	DrgPexpr *pdrgpexpr = pexpr->PdrgPexpr();
 
-	CPhysicalTVF *pphTVF = GPOS_NEW(pmp) CPhysicalTVF(pmp, pmdidFunc, pmdidRetType, pstr, pdrgpcoldesc, pcrs);
+	CPhysicalTVF *pphTVF = GPOS_NEW(pmp)
+		CPhysicalTVF(pmp, pmdidFunc, pmdidRetType, pstr, pdrgpcoldesc, pcrs);
 
 	CExpression *pexprAlt = NULL;
 	// create alternative expression
-	if(NULL == pdrgpexpr || 0 == pdrgpexpr->UlLength())
+	if (NULL == pdrgpexpr || 0 == pdrgpexpr->UlLength())
 	{
 		pexprAlt = GPOS_NEW(pmp) CExpression(pmp, pphTVF);
 	}
@@ -150,4 +132,3 @@ CXformImplementTVF::Transform
 
 
 // EOF
-

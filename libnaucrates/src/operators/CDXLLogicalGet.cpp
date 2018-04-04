@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL logical get operator
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/operators/CDXLLogicalGet.h"
@@ -28,13 +28,8 @@ using namespace gpdxl;
 //		Construct a logical get operator node given its table descriptor rtable entry
 //
 //---------------------------------------------------------------------------
-CDXLLogicalGet::CDXLLogicalGet
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc
-	)
-	:CDXLLogical(pmp),
-	 m_pdxltabdesc(pdxltabdesc)
+CDXLLogicalGet::CDXLLogicalGet(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc)
+	: CDXLLogical(pmp), m_pdxltabdesc(pdxltabdesc)
 {
 }
 
@@ -103,21 +98,20 @@ CDXLLogicalGet::Pdxltabdesc() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalGet::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *//pdxln
-	)
-	const
+CDXLLogicalGet::SerializeToDXL(CXMLSerializer *pxmlser,
+							   const CDXLNode *  //pdxln
+							   ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize table descriptor
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -129,11 +123,7 @@ CDXLLogicalGet::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLLogicalGet::FDefinesColumn
-	(
-	ULONG ulColId
-	)
-	const
+CDXLLogicalGet::FDefinesColumn(ULONG ulColId) const
 {
 	const ULONG ulSize = m_pdxltabdesc->UlArity();
 	for (ULONG ulDescr = 0; ulDescr < ulSize; ulDescr++)
@@ -158,17 +148,15 @@ CDXLLogicalGet::FDefinesColumn
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalGet::AssertValid
-	(
-	const CDXLNode *, //pdxln
-	BOOL // fValidateChildren
-	) const
+CDXLLogicalGet::AssertValid(const CDXLNode *,  //pdxln
+							BOOL			   // fValidateChildren
+							) const
 {
 	// assert validity of table descriptor
 	GPOS_ASSERT(NULL != m_pdxltabdesc);
 	GPOS_ASSERT(NULL != m_pdxltabdesc->Pmdname());
 	GPOS_ASSERT(m_pdxltabdesc->Pmdname()->Pstr()->FValid());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

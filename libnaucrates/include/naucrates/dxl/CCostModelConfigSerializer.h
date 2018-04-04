@@ -11,15 +11,17 @@
 
 namespace gpdxl
 {
-	class CXMLSerializer;
-	class CCostModelConfigSerializer
-	{
-		private:
-			const gpopt::ICostModel *m_pcm;
-		public:
-			CCostModelConfigSerializer(const gpopt::ICostModel *pcm);
+class CXMLSerializer;
+class CCostModelConfigSerializer
+{
+private:
+	const gpopt::ICostModel *m_pcm;
 
-			void Serialize(CXMLSerializer &xmlser) const;
-	};
-}
+public:
+	CCostModelConfigSerializer(const gpopt::ICostModel *pcm);
+
+	void
+	Serialize(CXMLSerializer &xmlser) const;
+};
+}  // namespace gpdxl
 #endif

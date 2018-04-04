@@ -27,19 +27,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformGbAggDedup2HashAggDedup::CXformGbAggDedup2HashAggDedup
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformGbAgg2HashAgg
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalGbAggDeduplicate(pmp),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)))
-		)
-{}
+CXformGbAggDedup2HashAggDedup::CXformGbAggDedup2HashAggDedup(IMemoryPool *pmp)
+	: CXformGbAgg2HashAgg(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGbAggDeduplicate(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -50,20 +46,17 @@ CXformGbAggDedup2HashAggDedup::CXformGbAggDedup2HashAggDedup
 //
 //---------------------------------------------------------------------------
 void
-CXformGbAggDedup2HashAggDedup::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformGbAggDedup2HashAggDedup::Transform(CXformContext *pxfctxt,
+										 CXformResult *pxfres,
+										 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
 	IMemoryPool *pmp = pxfctxt->Pmp();
-	CLogicalGbAggDeduplicate *popAggDedup = CLogicalGbAggDeduplicate::PopConvert(pexpr->Pop());
+	CLogicalGbAggDeduplicate *popAggDedup =
+		CLogicalGbAggDeduplicate::PopConvert(pexpr->Pop());
 	DrgPcr *pdrgpcr = popAggDedup->Pdrgpcr();
 	pdrgpcr->AddRef();
 
@@ -80,27 +73,17 @@ CXformGbAggDedup2HashAggDedup::Transform
 	pexprScalar->AddRef();
 
 	// create alternative expression
-	CExpression *pexprAlt =
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalHashAggDeduplicate
-						(
-						pmp,
-						pdrgpcr,
-						popAggDedup->PdrgpcrMinimal(),
-						popAggDedup->Egbaggtype(),
-						pdrgpcrKeys,
+	CExpression *pexprAlt = GPOS_NEW(pmp)
+		CExpression(pmp,
+					GPOS_NEW(pmp) CPhysicalHashAggDeduplicate(
+						pmp, pdrgpcr, popAggDedup->PdrgpcrMinimal(),
+						popAggDedup->Egbaggtype(), pdrgpcrKeys,
 						popAggDedup->FGeneratesDuplicates(),
-						CXformUtils::FMultiStageAgg(pexpr)
-						),
-			pexprRel,
-			pexprScalar
-			);
+						CXformUtils::FMultiStageAgg(pexpr)),
+					pexprRel, pexprScalar);
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
 }
 
 // EOF
-

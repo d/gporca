@@ -24,12 +24,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarHashExprList::CDXLScalarHashExprList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarHashExprList::CDXLScalarHashExprList(IMemoryPool *pmp)
+	: CDXLScalar(pmp)
 {
 }
 
@@ -72,17 +68,15 @@ CDXLScalarHashExprList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarHashExprList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarHashExprList::SerializeToDXL(CXMLSerializer *pxmlser,
+									   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -95,12 +89,8 @@ CDXLScalarHashExprList::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarHashExprList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren 
-	) 
-	const
+CDXLScalarHashExprList::AssertValid(const CDXLNode *pdxln,
+									BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(1 <= ulArity);
@@ -109,7 +99,7 @@ CDXLScalarHashExprList::AssertValid
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
 		GPOS_ASSERT(EdxlopScalarHashExpr == pdxlnChild->Pdxlop()->Edxlop());
-		
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
@@ -117,7 +107,7 @@ CDXLScalarHashExprList::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 

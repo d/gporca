@@ -18,12 +18,12 @@
 
 namespace gpdxl
 {
-	class CDXLNode;
+class CDXLNode;
 }
 
 namespace gpmd
 {
-	class IMDProvider;
+class IMDProvider;
 }
 
 
@@ -32,90 +32,78 @@ using namespace gpdxl;
 
 namespace gpopt
 {
+// forward declarations
+class ICostModel;
+class COptimizerConfig;
 
-	// forward declarations
-	class ICostModel;
-	class COptimizerConfig;
+//---------------------------------------------------------------------------
+//	@class:
+//		COptimizer
+//
+//	@doc:
+//		Optimizer class, entry point for query optimization
+//
+//---------------------------------------------------------------------------
+class COptimizer
+{
+private:
+	// handle exception after finalizing minidump
+	static void
+	HandleExceptionAfterFinalizingMinidump(CException &ex);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		COptimizer
-	//
-	//	@doc:
-	//		Optimizer class, entry point for query optimization
-	//
-	//---------------------------------------------------------------------------
-	class COptimizer
-	{
-		private:
-			
-			// handle exception after finalizing minidump
-			static
-			void HandleExceptionAfterFinalizingMinidump(CException &ex);
+	// optimize query in the given query context
+	static CExpression *
+	PexprOptimize(IMemoryPool *pmp, CQueryContext *pqc, DrgPss *pdrgpss);
 
-			// optimize query in the given query context
-			static
-			CExpression *PexprOptimize
-				(
-				IMemoryPool *pmp,
-				CQueryContext *pqc,
-				DrgPss *pdrgpss
-				);
+	// translate an optimizer expression into a DXL tree
+	static CDXLNode *
+	Pdxln(IMemoryPool *pmp, CMDAccessor *pmda, CExpression *pexpr,
+		  DrgPcr *pdrgpcr, DrgPmdname *pdrgpmdname, ULONG ulHosts);
 
-			// translate an optimizer expression into a DXL tree 
-			static
-			CDXLNode *Pdxln
-						(
-						IMemoryPool *pmp,
-						CMDAccessor *pmda,
-						CExpression *pexpr,
-						DrgPcr *pdrgpcr,
-						DrgPmdname *pdrgpmdname,
-						ULONG ulHosts
-						);
+	// helper function to print query expression
+	static void
+	PrintQuery(IMemoryPool *pmp, CExpression *pexprTranslated,
+			   CQueryContext *pqc);
 
-			// helper function to print query expression
-			static
-			void PrintQuery(IMemoryPool *pmp, CExpression *pexprTranslated, CQueryContext *pqc);
+	// helper function to print query plan
+	static void
+	PrintPlan(IMemoryPool *pmp, CExpression *pexprPlan);
 
-			// helper function to print query plan
-			static
-			void PrintPlan(IMemoryPool *pmp, CExpression *pexprPlan);
+	// helper function to dump plan samples
+	static void
+	DumpSamples(IMemoryPool *pmp, CEnumeratorConfig *pec, ULONG ulSessionId,
+				ULONG ulCmdId);
 
-			// helper function to dump plan samples
-			static
-			void DumpSamples(IMemoryPool *pmp, CEnumeratorConfig *pec, ULONG ulSessionId, ULONG ulCmdId);
+	// print query or plan tree
+	static void
+	PrintQueryOrPlan(IMemoryPool *pmp, CExpression *pexpr,
+					 CQueryContext *pqc = NULL);
 
-			// print query or plan tree
-			static
-			void PrintQueryOrPlan(IMemoryPool *pmp, CExpression *pexpr, CQueryContext *pqc = NULL);
+	// Check for a plan with CTE, if both CTEProducer and CTEConsumer are executed on the same locality.
+	static void
+	CheckCTEConsistency(IMemoryPool *pmp, CExpression *pexpr);
 
-			// Check for a plan with CTE, if both CTEProducer and CTEConsumer are executed on the same locality.
-			static
-			void CheckCTEConsistency(IMemoryPool *pmp, CExpression *pexpr);
-		public:
-			
-			// main optimizer function 
-			static
-			CDXLNode *PdxlnOptimize
-						(
-						IMemoryPool *pmp, 
-						CMDAccessor *pmda,						// MD accessor
-						const CDXLNode *pdxlnQuery,
-						const DrgPdxln *pdrgpdxlnQueryOutput, 	// required output columns
-						const DrgPdxln *pdrgpdxlnCTE,
-						IConstExprEvaluator *pceeval,			// constant expression evaluator
-						ULONG ulHosts,							// number of hosts (data nodes) in the system
-						ULONG ulSessionId,						// session id used for logging and minidumps
-						ULONG ulCmdId,							// command id used for logging and minidumps
-						DrgPss *pdrgpss,						// search strategy
-						COptimizerConfig *poconf,				// optimizer configurations
-						const CHAR *szMinidumpFileName = NULL	// name of minidump file to be created
-						);
-	}; // class COptimizer
-}
+public:
+	// main optimizer function
+	static CDXLNode *
+	PdxlnOptimize(
+		IMemoryPool *pmp,
+		CMDAccessor *pmda,  // MD accessor
+		const CDXLNode *pdxlnQuery,
+		const DrgPdxln *pdrgpdxlnQueryOutput,  // required output columns
+		const DrgPdxln *pdrgpdxlnCTE,
+		IConstExprEvaluator *pceeval,  // constant expression evaluator
+		ULONG ulHosts,			   // number of hosts (data nodes) in the system
+		ULONG ulSessionId,		   // session id used for logging and minidumps
+		ULONG ulCmdId,			   // command id used for logging and minidumps
+		DrgPss *pdrgpss,		   // search strategy
+		COptimizerConfig *poconf,  // optimizer configurations
+		const CHAR *szMinidumpFileName =
+			NULL  // name of minidump file to be created
+	);
+};  // class COptimizer
+}  // namespace gpopt
 
-#endif // !GPOPT_COptimizer_H
+#endif  // !GPOPT_COptimizer_H
 
 // EOF
-

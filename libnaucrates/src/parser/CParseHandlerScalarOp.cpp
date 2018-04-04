@@ -26,14 +26,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarOp::CParseHandlerScalarOp
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerOp(pmp, pphm, pphRoot)
+CParseHandlerScalarOp::CParseHandlerScalarOp(IMemoryPool *pmp,
+											 CParseHandlerManager *pphm,
+											 CParseHandlerBase *pphRoot)
+	: CParseHandlerOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -61,22 +57,20 @@ CParseHandlerScalarOp::~CParseHandlerScalarOp()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarOp::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarOp::StartElement(const XMLCh *const xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const xmlszQname,
+									const Attributes &attrs)
 {
 	// instantiate the parse handler
-	CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
-	
+	CParseHandlerBase *pph =
+		CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+
 	GPOS_ASSERT(NULL != pph);
-	
+
 	// activate the specialized parse handler
 	m_pphm->ReplaceHandler(pph, m_pphRoot);
-	
+
 	// pass the startElement message for the specialized parse handler to process
 	pph->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 }
@@ -92,17 +86,15 @@ CParseHandlerScalarOp::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarOp::EndElement
-	(
-	const XMLCh* const, //= xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname,
-	)
+CParseHandlerScalarOp::EndElement(const XMLCh *const,  //= xmlszUri,
+								  const XMLCh *const xmlszLocalname,
+								  const XMLCh *const  // xmlszQname,
+)
 {
-	CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+	CWStringDynamic *pstr =
+		CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 	GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 }
 
 
 // EOF
-

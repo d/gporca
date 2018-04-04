@@ -30,16 +30,10 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarCoerceViaIO::CScalarCoerceViaIO
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	ECoercionForm ecf,
-	INT iLoc
-	)
-	:
-	CScalarCoerceBase(pmp, pmdidType, iTypeModifier, ecf, iLoc)
+CScalarCoerceViaIO::CScalarCoerceViaIO(IMemoryPool *pmp, IMDId *pmdidType,
+									   INT iTypeModifier, ECoercionForm ecf,
+									   INT iLoc)
+	: CScalarCoerceBase(pmp, pmdidType, iTypeModifier, ecf, iLoc)
 {
 }
 
@@ -53,20 +47,15 @@ CScalarCoerceViaIO::CScalarCoerceViaIO
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarCoerceViaIO::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarCoerceViaIO::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CScalarCoerceViaIO *popCoerce = CScalarCoerceViaIO::PopConvert(pop);
 
 		return popCoerce->PmdidType()->FEquals(PmdidType()) &&
-				popCoerce->ITypeModifier() == ITypeModifier() &&
-				popCoerce->Ecf() == Ecf() &&
-				popCoerce->ILoc() == ILoc();
+			   popCoerce->ITypeModifier() == ITypeModifier() &&
+			   popCoerce->Ecf() == Ecf() && popCoerce->ILoc() == ILoc();
 	}
 
 	return false;
@@ -74,4 +63,3 @@ CScalarCoerceViaIO::FMatch
 
 
 // EOF
-

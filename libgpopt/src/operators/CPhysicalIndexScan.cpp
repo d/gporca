@@ -27,21 +27,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalIndexScan::CPhysicalIndexScan
-	(
-	IMemoryPool *pmp,
-	CIndexDescriptor *pindexdesc,
-	CTableDescriptor *ptabdesc,
-	ULONG ulOriginOpId,
-	const CName *pnameAlias,
-	DrgPcr *pdrgpcrOutput,
-	COrderSpec *pos
-	)
-	:
-	CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput),
-	m_pindexdesc(pindexdesc),
-	m_ulOriginOpId(ulOriginOpId),
-	m_pos(pos)
+CPhysicalIndexScan::CPhysicalIndexScan(IMemoryPool *pmp,
+									   CIndexDescriptor *pindexdesc,
+									   CTableDescriptor *ptabdesc,
+									   ULONG ulOriginOpId,
+									   const CName *pnameAlias,
+									   DrgPcr *pdrgpcrOutput, COrderSpec *pos)
+	: CPhysicalScan(pmp, pnameAlias, ptabdesc, pdrgpcrOutput),
+	  m_pindexdesc(pindexdesc),
+	  m_ulOriginOpId(ulOriginOpId),
+	  m_pos(pos)
 {
 	GPOS_ASSERT(NULL != pindexdesc);
 	GPOS_ASSERT(NULL != pos);
@@ -71,12 +66,8 @@ CPhysicalIndexScan::~CPhysicalIndexScan()
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalIndexScan::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalIndexScan::EpetOrder(CExpressionHandle &,  // exprhdl
+							  const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -101,16 +92,12 @@ CPhysicalIndexScan::EpetOrder
 ULONG
 CPhysicalIndexScan::UlHash() const
 {
-	ULONG ulHash = gpos::UlCombineHashes
-					(
-					COperator::UlHash(),
-					gpos::UlCombineHashes
-							(
-							m_pindexdesc->Pmdid()->UlHash(),
-							gpos::UlHashPtr<CTableDescriptor>(m_ptabdesc)
-							)
-					);
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
+	ULONG ulHash = gpos::UlCombineHashes(
+		COperator::UlHash(),
+		gpos::UlCombineHashes(m_pindexdesc->Pmdid()->UlHash(),
+							  gpos::UlHashPtr<CTableDescriptor>(m_ptabdesc)));
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
 
 	return ulHash;
 }
@@ -125,11 +112,7 @@ CPhysicalIndexScan::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalIndexScan::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalIndexScan::FMatch(COperator *pop) const
 {
 	return CUtils::FMatchIndex(this, pop);
 }
@@ -143,11 +126,7 @@ CPhysicalIndexScan::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalIndexScan::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalIndexScan::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
@@ -159,10 +138,10 @@ CPhysicalIndexScan::OsPrint
 	os << "  Index Name: (";
 	m_pindexdesc->Name().OsPrint(os);
 	// table name
-	os <<")";
+	os << ")";
 	os << ", Table Name: (";
 	m_ptabdesc->Name().OsPrint(os);
-	os <<")";
+	os << ")";
 	os << ", Columns: [";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcrOutput);
 	os << "]";
@@ -171,4 +150,3 @@ CPhysicalIndexScan::OsPrint
 }
 
 // EOF
-

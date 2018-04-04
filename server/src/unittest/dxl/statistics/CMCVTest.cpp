@@ -33,8 +33,8 @@
 using namespace gpopt;
 
 // DXL files
-const CHAR *
-szMCVSortExpectedFileName = "../data/dxl/statistics/MCV-Sort-Output.xml";
+const CHAR *szMCVSortExpectedFileName =
+	"../data/dxl/statistics/MCV-Sort-Output.xml";
 
 
 // unittest for statistics objects
@@ -42,11 +42,10 @@ GPOS_RESULT
 CMCVTest::EresUnittest()
 {
 	// tests that use shared optimization context
-	CUnittest rgutSharedOptCtxt[] =
-		{
+	CUnittest rgutSharedOptCtxt[] = {
 		GPOS_UNITTEST_FUNC(CMCVTest::EresUnittest_SortInt4MCVs),
 		GPOS_UNITTEST_FUNC(CMCVTest::EresUnittest_MergeHistMCV),
-		};
+	};
 
 	CAutoMemoryPool amp;
 	IMemoryPool *pmp = amp.Pmp();
@@ -59,7 +58,8 @@ CMCVTest::EresUnittest()
 	// install opt context in TLS
 	CAutoOptCtxt aoc(pmp, &mda, NULL /* pceeval */, CTestUtils::Pcm(pmp));
 
-	return CUnittest::EresExecute(rgutSharedOptCtxt, GPOS_ARRAY_SIZE(rgutSharedOptCtxt));
+	return CUnittest::EresExecute(rgutSharedOptCtxt,
+								  GPOS_ARRAY_SIZE(rgutSharedOptCtxt));
 }
 
 // test sorting of Int4 MCVs and their associated frequencies
@@ -97,14 +97,8 @@ CMCVTest::EresUnittest_SortInt4MCVs()
 	pdrgpdFreq->Append(GPOS_NEW(pmp) CDouble(0.1));
 
 	// exercise MCV sorting function
-	CHistogram *phistMCV = CStatisticsUtils::PhistTransformMCV
-								(
-								pmp,
-								pmdtype,
-								pdrgpdatumMCV,
-								pdrgpdFreq,
-								pdrgpdatumMCV->UlLength()
-								);
+	CHistogram *phistMCV = CStatisticsUtils::PhistTransformMCV(
+		pmp, pmdtype, pdrgpdatumMCV, pdrgpdFreq, pdrgpdatumMCV->UlLength());
 
 	// create hash map from colid -> histogram
 	HMUlHist *phmulhist = GPOS_NEW(pmp) HMUlHist(pmp);
@@ -114,23 +108,20 @@ CMCVTest::EresUnittest_SortInt4MCVs()
 
 	// column width for int4
 	HMUlDouble *phmuldoubleWidth = GPOS_NEW(pmp) HMUlDouble(pmp);
-	phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(1), GPOS_NEW(pmp) CDouble(4.0));
+	phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(1),
+							  GPOS_NEW(pmp) CDouble(4.0));
 
-	CStatistics *pstats = GPOS_NEW(pmp) CStatistics
-									(
-									pmp,
-									phmulhist,
-									phmuldoubleWidth,
-									1000.0 /* dRows */,
-									false /* fEmpty */
-									);
+	CStatistics *pstats = GPOS_NEW(pmp) CStatistics(
+		pmp, phmulhist, phmuldoubleWidth, 1000.0 /* dRows */, false /* fEmpty */
+	);
 
 	// put stats object in an array in order to serialize
 	DrgPstats *pdrgpstats = GPOS_NEW(pmp) DrgPstats(pmp);
 	pdrgpstats->Append(pstats);
 
 	// serialize stats object
-	CWStringDynamic *pstrOutput = CDXLUtils::PstrSerializeStatistics(pmp, pmda, pdrgpstats, true, true);
+	CWStringDynamic *pstrOutput =
+		CDXLUtils::PstrSerializeStatistics(pmp, pmda, pdrgpstats, true, true);
 	GPOS_TRACE(pstrOutput->Wsz());
 
 	// get expected output
@@ -140,13 +131,10 @@ CMCVTest::EresUnittest_SortInt4MCVs()
 	CWStringDynamic dstrExpected(pmp);
 	dstrExpected.AppendFormat(GPOS_WSZ_LIT("%s"), szDXLExpected);
 
-	GPOS_RESULT eres = CTestUtils::EresCompare
-								(
-								oss,
-								pstrOutput,
-								&dstrExpected,
-								false // mismatch will not be ignored
-								);
+	GPOS_RESULT eres =
+		CTestUtils::EresCompare(oss, pstrOutput, &dstrExpected,
+								false  // mismatch will not be ignored
+		);
 
 	// cleanup
 	GPOS_DELETE(pstrOutput);
@@ -166,26 +154,18 @@ CMCVTest::EresUnittest_SortInt4MCVs()
 GPOS_RESULT
 CMCVTest::EresUnittest_MergeHistMCV()
 {
-	SMergeTestElem rgMergeTestElem[] =
-	{
-		{
-		"../data/dxl/statistics/Merge-Input-MCV-Int.xml",
-		"../data/dxl/statistics/Merge-Input-Histogram-Int.xml",
-		"../data/dxl/statistics/Merge-Output-Int.xml"
-		},
+	SMergeTestElem rgMergeTestElem[] = {
+		{"../data/dxl/statistics/Merge-Input-MCV-Int.xml",
+		 "../data/dxl/statistics/Merge-Input-Histogram-Int.xml",
+		 "../data/dxl/statistics/Merge-Output-Int.xml"},
 
-		{
-		"../data/dxl/statistics/Merge-Input-MCV-Numeric.xml",
-		"../data/dxl/statistics/Merge-Input-Histogram-Numeric.xml",
-		"../data/dxl/statistics/Merge-Output-Numeric.xml"
-		},
+		{"../data/dxl/statistics/Merge-Input-MCV-Numeric.xml",
+		 "../data/dxl/statistics/Merge-Input-Histogram-Numeric.xml",
+		 "../data/dxl/statistics/Merge-Output-Numeric.xml"},
 
-		{
-		"../data/dxl/statistics/Merge-Input-MCV-BPChar.xml",
-		"../data/dxl/statistics/Merge-Input-Histogram-BPChar.xml",
-		"../data/dxl/statistics/Merge-Output-BPChar.xml"
-		}
-	};
+		{"../data/dxl/statistics/Merge-Input-MCV-BPChar.xml",
+		 "../data/dxl/statistics/Merge-Input-Histogram-BPChar.xml",
+		 "../data/dxl/statistics/Merge-Output-BPChar.xml"}};
 
 	// create memory pool
 	CAutoMemoryPool amp;
@@ -195,36 +175,49 @@ CMCVTest::EresUnittest_MergeHistMCV()
 	for (ULONG ul = 0; ul < ulLen; ul++)
 	{
 		// read input MCVs DXL file
-		CHAR *szDXLInputMCV = CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szInputMCVFile);
+		CHAR *szDXLInputMCV =
+			CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szInputMCVFile);
 		// read input histogram DXL file
-		CHAR *szDXLInputHist = CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szInputHistFile);
+		CHAR *szDXLInputHist =
+			CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szInputHistFile);
 
 		GPOS_CHECK_ABORT;
 
 		CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 
 		// parse the stats objects
-		DrgPdxlstatsderrel *pdrgpdxlstatsderrelMCV = CDXLUtils::PdrgpdxlstatsderrelParseDXL(pmp, szDXLInputMCV, NULL);
-		DrgPdxlstatsderrel *pdrgpdxlstatsderrelHist = CDXLUtils::PdrgpdxlstatsderrelParseDXL(pmp, szDXLInputHist, NULL);
+		DrgPdxlstatsderrel *pdrgpdxlstatsderrelMCV =
+			CDXLUtils::PdrgpdxlstatsderrelParseDXL(pmp, szDXLInputMCV, NULL);
+		DrgPdxlstatsderrel *pdrgpdxlstatsderrelHist =
+			CDXLUtils::PdrgpdxlstatsderrelParseDXL(pmp, szDXLInputHist, NULL);
 
 		GPOS_CHECK_ABORT;
 
-		CDXLStatsDerivedRelation *pdxlstatsderrelMCV = (*pdrgpdxlstatsderrelMCV)[0];
-		const DrgPdxlstatsdercol *pdrgpdxlstatsdercolMCV = pdxlstatsderrelMCV->Pdrgpdxlstatsdercol();
-		CDXLStatsDerivedColumn *pdxlstatsdercolMCV = (*pdrgpdxlstatsdercolMCV)[0];
-		DrgPbucket *pdrgppbucketMCV = CDXLUtils::Pdrgpbucket(pmp, pmda, pdxlstatsdercolMCV);
-		CHistogram *phistMCV =  GPOS_NEW(pmp) CHistogram(pdrgppbucketMCV);
+		CDXLStatsDerivedRelation *pdxlstatsderrelMCV =
+			(*pdrgpdxlstatsderrelMCV)[0];
+		const DrgPdxlstatsdercol *pdrgpdxlstatsdercolMCV =
+			pdxlstatsderrelMCV->Pdrgpdxlstatsdercol();
+		CDXLStatsDerivedColumn *pdxlstatsdercolMCV =
+			(*pdrgpdxlstatsdercolMCV)[0];
+		DrgPbucket *pdrgppbucketMCV =
+			CDXLUtils::Pdrgpbucket(pmp, pmda, pdxlstatsdercolMCV);
+		CHistogram *phistMCV = GPOS_NEW(pmp) CHistogram(pdrgppbucketMCV);
 
-		CDXLStatsDerivedRelation *pdxlstatsderrelHist = (*pdrgpdxlstatsderrelHist)[0];
-		const DrgPdxlstatsdercol *pdrgpdxlstatsdercolHist = pdxlstatsderrelHist->Pdrgpdxlstatsdercol();
-		CDXLStatsDerivedColumn *pdxlstatsdercolHist = (*pdrgpdxlstatsdercolHist)[0];
-		DrgPbucket *pdrgppbucketHist = CDXLUtils::Pdrgpbucket(pmp, pmda, pdxlstatsdercolHist);
-		CHistogram *phistHist =  GPOS_NEW(pmp) CHistogram(pdrgppbucketHist);
+		CDXLStatsDerivedRelation *pdxlstatsderrelHist =
+			(*pdrgpdxlstatsderrelHist)[0];
+		const DrgPdxlstatsdercol *pdrgpdxlstatsdercolHist =
+			pdxlstatsderrelHist->Pdrgpdxlstatsdercol();
+		CDXLStatsDerivedColumn *pdxlstatsdercolHist =
+			(*pdrgpdxlstatsdercolHist)[0];
+		DrgPbucket *pdrgppbucketHist =
+			CDXLUtils::Pdrgpbucket(pmp, pmda, pdxlstatsdercolHist);
+		CHistogram *phistHist = GPOS_NEW(pmp) CHistogram(pdrgppbucketHist);
 
 		GPOS_CHECK_ABORT;
 
 		// exercise the merge
-		CHistogram *phistMerged = CStatisticsUtils::PhistMergeMcvHist(pmp, phistMCV, phistHist);
+		CHistogram *phistMerged =
+			CStatisticsUtils::PhistMergeMcvHist(pmp, phistMCV, phistHist);
 
 		// create hash map from colid -> histogram
 		HMUlHist *phmulhist = GPOS_NEW(pmp) HMUlHist(pmp);
@@ -236,39 +229,34 @@ CMCVTest::EresUnittest_MergeHistMCV()
 		// column width for int4
 		HMUlDouble *phmuldoubleWidth = GPOS_NEW(pmp) HMUlDouble(pmp);
 		CDouble dWidth = pdxlstatsdercolMCV->DWidth();
-		phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId), GPOS_NEW(pmp) CDouble(dWidth));
+		phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColId),
+								  GPOS_NEW(pmp) CDouble(dWidth));
 
-		CStatistics *pstats = GPOS_NEW(pmp) CStatistics
-										(
-										pmp,
-										phmulhist,
-										phmuldoubleWidth,
-										pdxlstatsderrelMCV->DRows(),
-										pdxlstatsderrelMCV->FEmpty()
-										);
+		CStatistics *pstats = GPOS_NEW(pmp) CStatistics(
+			pmp, phmulhist, phmuldoubleWidth, pdxlstatsderrelMCV->DRows(),
+			pdxlstatsderrelMCV->FEmpty());
 
 		// put stats object in an array in order to serialize
 		DrgPstats *pdrgpstats = GPOS_NEW(pmp) DrgPstats(pmp);
 		pdrgpstats->Append(pstats);
 
 		// serialize stats object
-		CWStringDynamic *pstrOutput = CDXLUtils::PstrSerializeStatistics(pmp, pmda, pdrgpstats, true, true);
+		CWStringDynamic *pstrOutput = CDXLUtils::PstrSerializeStatistics(
+			pmp, pmda, pdrgpstats, true, true);
 		GPOS_TRACE(pstrOutput->Wsz());
 
 		// get expected output
 		CWStringDynamic str(pmp);
 		COstreamString oss(&str);
-		CHAR *szDXLExpected = CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szMergedFile);
+		CHAR *szDXLExpected =
+			CDXLUtils::SzRead(pmp, rgMergeTestElem[ul].szMergedFile);
 		CWStringDynamic dstrExpected(pmp);
 		dstrExpected.AppendFormat(GPOS_WSZ_LIT("%s"), szDXLExpected);
 
-		GPOS_RESULT eres = CTestUtils::EresCompare
-									(
-									oss,
-									pstrOutput,
-									&dstrExpected,
-									false // mismatch will not be ignored
-									);
+		GPOS_RESULT eres =
+			CTestUtils::EresCompare(oss, pstrOutput, &dstrExpected,
+									false  // mismatch will not be ignored
+			);
 
 		// cleanup
 		GPOS_DELETE_ARRAY(szDXLInputMCV);
@@ -291,4 +279,3 @@ CMCVTest::EresUnittest_MergeHistMCV()
 }
 
 // EOF
-

@@ -33,15 +33,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerPhysicalWindow::CParseHandlerPhysicalWindow
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_pdrgpulPartCols(NULL)
+CParseHandlerPhysicalWindow::CParseHandlerPhysicalWindow(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot), m_pdrgpulPartCols(NULL)
 {
 }
 
@@ -54,42 +48,50 @@ CParseHandlerPhysicalWindow::CParseHandlerPhysicalWindow
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalWindow::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerPhysicalWindow::StartElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const,  // xmlszQname
+										  const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalWindow), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalWindow), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	const XMLCh *xmlszPartCols= CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenPartKeys, EdxltokenPhysicalWindow);
-	m_pdrgpulPartCols = CDXLOperatorFactory::PdrgpulFromXMLCh(m_pphm->Pmm(), xmlszPartCols, EdxltokenPartKeys, EdxltokenPhysicalWindow);
+	const XMLCh *xmlszPartCols = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenPartKeys, EdxltokenPhysicalWindow);
+	m_pdrgpulPartCols = CDXLOperatorFactory::PdrgpulFromXMLCh(
+		m_pphm->Pmm(), xmlszPartCols, EdxltokenPartKeys,
+		EdxltokenPhysicalWindow);
 	GPOS_ASSERT(NULL != m_pdrgpulPartCols);
 
 	// parse handler for window key list
-	CParseHandlerBase *pphWkL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), m_pphm, this);
+	CParseHandlerBase *pphWkL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphWkL);
 
 	// parse handler for child node
-	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
+	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphChild);
 
 	// parse handler for the filter
-	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
+	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphFilter);
 
 	// parse handler for the proj list
-	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphPrL);
 
 	//parse handler for the properties of the operator
-	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphProp);
 
 	// store child parse handlers in array
@@ -109,28 +111,34 @@ CParseHandlerPhysicalWindow::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalWindow::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerPhysicalWindow::EndElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalWindow), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalWindow), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(5 == this->UlLength());
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
 	CParseHandlerFilter *pphF = dynamic_cast<CParseHandlerFilter *>((*this)[2]);
-	CParseHandlerPhysicalOp *pphChild = dynamic_cast<CParseHandlerPhysicalOp *>((*this)[3]);
+	CParseHandlerPhysicalOp *pphChild =
+		dynamic_cast<CParseHandlerPhysicalOp *>((*this)[3]);
 
-	CParseHandlerWindowKeyList *pphWkL = dynamic_cast<CParseHandlerWindowKeyList *>((*this)[4]);
+	CParseHandlerWindowKeyList *pphWkL =
+		dynamic_cast<CParseHandlerWindowKeyList *>((*this)[4]);
 	DrgPdxlwk *pdrgpdxlwk = pphWkL->Pdrgpdxlwk();
-	CDXLPhysicalWindow *pdxlopWindow = GPOS_NEW(m_pmp) CDXLPhysicalWindow(m_pmp, m_pdrgpulPartCols, pdrgpdxlwk);
+	CDXLPhysicalWindow *pdxlopWindow = GPOS_NEW(m_pmp)
+		CDXLPhysicalWindow(m_pmp, m_pdrgpulPartCols, pdrgpdxlwk);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlopWindow);
 
 	// set statistics and physical properties
@@ -146,4 +154,3 @@ CParseHandlerPhysicalWindow::EndElement
 }
 
 // EOF
-

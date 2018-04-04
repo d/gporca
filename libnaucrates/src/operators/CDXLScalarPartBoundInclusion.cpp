@@ -28,16 +28,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarPartBoundInclusion::CDXLScalarPartBoundInclusion
-	(
-	IMemoryPool *pmp,
-	ULONG ulLevel,
-	BOOL fLower
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulLevel(ulLevel),
-	m_fLower(fLower)
+CDXLScalarPartBoundInclusion::CDXLScalarPartBoundInclusion(IMemoryPool *pmp,
+														   ULONG ulLevel,
+														   BOOL fLower)
+	: CDXLScalar(pmp), m_ulLevel(ulLevel), m_fLower(fLower)
 {
 }
 
@@ -78,19 +72,19 @@ CDXLScalarPartBoundInclusion::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBoundInclusion::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * // pdxln
-	)
-	const
+CDXLScalarPartBoundInclusion::SerializeToDXL(CXMLSerializer *pxmlser,
+											 const CDXLNode *  // pdxln
+											 ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartLevel), m_ulLevel);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower), m_fLower);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower),
+						  m_fLower);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -103,15 +97,12 @@ CDXLScalarPartBoundInclusion::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBoundInclusion::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarPartBoundInclusion::AssertValid(const CDXLNode *pdxln,
+										  BOOL  // fValidateChildren
+										  ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -17,98 +17,93 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarProjectList
-	//
-	//	@doc:
-	//		Projection list operator
-	//
-	//---------------------------------------------------------------------------
-	class CScalarProjectList : public CScalar
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarProjectList
+//
+//	@doc:
+//		Projection list operator
+//
+//---------------------------------------------------------------------------
+class CScalarProjectList : public CScalar
+{
+private:
+	// private copy ctor
+	CScalarProjectList(const CScalarProjectList &);
+
+public:
+	// ctor
+	explicit CScalarProjectList(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CScalarProjectList()
 	{
-		private:
-				
-			// private copy ctor
-			CScalarProjectList(const CScalarProjectList &);
+	}
 
-		public:
-		
-			// ctor
-			explicit
-			CScalarProjectList(IMemoryPool *pmp);
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopScalarProjectList;
+	}
 
-			// dtor
-			virtual 
-			~CScalarProjectList() {}
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarProjectList";
+	}
 
-			// ident accessors
-			virtual 
-			EOperatorId Eopid() const
-			{
-				return EopScalarProjectList;
-			}
-			
-			// return a string for operator name
-			virtual 
-			const CHAR *SzId() const
-			{
-				return "CScalarProjectList";
-			}
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
-			
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const;
-			
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const;
 
-			// conversion function
-			static
-			CScalarProjectList *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarProjectList == pop->Eopid());
-				
-				return reinterpret_cast<CScalarProjectList*>(pop);
-			}
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-			virtual
-			IMDId *PmdidType() const
-			{
-				GPOS_ASSERT(!"Invalid function call: CScalarProjectList::PmdidType()");
-				return NULL;
-			}
+	// conversion function
+	static CScalarProjectList *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarProjectList == pop->Eopid());
 
-			// return number of distinct aggs in project list attached to given handle
-			static
-			ULONG UlDistinctAggs(CExpressionHandle &exprhdl);
+		return reinterpret_cast<CScalarProjectList *>(pop);
+	}
 
-			// check if a project list has multiple distinct aggregates
-			static
-			BOOL FHasMultipleDistinctAggs(CExpressionHandle &exprhdl);
+	virtual IMDId *
+	PmdidType() const
+	{
+		GPOS_ASSERT(!"Invalid function call: CScalarProjectList::PmdidType()");
+		return NULL;
+	}
 
-	}; // class CScalarProjectList
+	// return number of distinct aggs in project list attached to given handle
+	static ULONG
+	UlDistinctAggs(CExpressionHandle &exprhdl);
 
-}
+	// check if a project list has multiple distinct aggregates
+	static BOOL
+	FHasMultipleDistinctAggs(CExpressionHandle &exprhdl);
+
+};  // class CScalarProjectList
+
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarProjectList_H
+#endif  // !GPOPT_CScalarProjectList_H
 
 // EOF

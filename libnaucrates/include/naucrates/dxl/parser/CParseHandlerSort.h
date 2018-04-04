@@ -19,56 +19,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerSort
-	//
-	//	@doc:
-	//		Parse handler for sort operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerSort : public CParseHandlerPhysicalOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			// the sort operator
-			CDXLPhysicalSort *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerSort(const CParseHandlerSort &);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerSort
+//
+//	@doc:
+//		Parse handler for sort operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerSort : public CParseHandlerPhysicalOp
+{
+private:
+	// the sort operator
+	CDXLPhysicalSort *m_pdxlop;
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerSort
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);			
-	};
-}
+	// private copy ctor
+	CParseHandlerSort(const CParseHandlerSort &);
 
-#endif // !GPDXL_CParseHandlerSort_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerSort(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerSort_H
 
 // EOF

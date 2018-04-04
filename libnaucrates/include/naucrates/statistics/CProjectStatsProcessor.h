@@ -13,18 +13,16 @@
 
 namespace gpnaucrates
 {
+class CProjectStatsProcessor
+{
+public:
+	// project
+	static CStatistics *
+	PstatsProject(IMemoryPool *pmp, const CStatistics *pstatsInput,
+				  DrgPul *pdrgpulProjColIds, HMUlDatum *phmuldatum);
+};
+}  // namespace gpnaucrates
 
-	class CProjectStatsProcessor
-	{
-		public:
-
-		// project
-		static
-		CStatistics *PstatsProject(IMemoryPool *pmp, const CStatistics *pstatsInput, DrgPul *pdrgpulProjColIds, HMUlDatum *phmuldatum);
-	};
-}
-
-#endif // !GPNAUCRATES_CProjectStatsProcessor_H
+#endif  // !GPNAUCRATES_CProjectStatsProcessor_H
 
 // EOF
-

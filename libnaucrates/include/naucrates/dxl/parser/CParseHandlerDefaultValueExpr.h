@@ -18,56 +18,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerDefaultValueExpr
-	//
-	//	@doc:
-	//		Parse handler for parsing a default value expression in column metadata info
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerDefaultValueExpr : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			// has an opening tag for a default value been seen already
-			BOOL m_fDefaultValueStarted;
-			
-			// private copy ctor
-			CParseHandlerDefaultValueExpr(const CParseHandlerDefaultValueExpr &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerDefaultValueExpr
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerDefaultValueExpr
+//
+//	@doc:
+//		Parse handler for parsing a default value expression in column metadata info
+//
+//---------------------------------------------------------------------------
+class CParseHandlerDefaultValueExpr : public CParseHandlerScalarOp
+{
+private:
+	// has an opening tag for a default value been seen already
+	BOOL m_fDefaultValueStarted;
 
-#endif // !GPDXL_CParseHandlerDefaultValueExpr_H
+	// private copy ctor
+	CParseHandlerDefaultValueExpr(const CParseHandlerDefaultValueExpr &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerDefaultValueExpr(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerDefaultValueExpr_H
 
 // EOF

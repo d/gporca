@@ -50,19 +50,18 @@ using namespace gpos;
 GPOS_RESULT
 CSchedulerTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_SpawnBasic),
 //		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_SpawnLight),
 #ifndef GPOS_DEBUG
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_SpawnHeavy),
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_QueueBasic),
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_QueueLight),
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_QueueHeavy),
 		GPOS_UNITTEST_FUNC(CSchedulerTest::EresUnittest_BuildMemo),
 		GPOS_UNITTEST_FUNC(EresUnittest_BuildMemoLargeJoins),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -79,18 +78,13 @@ CSchedulerTest::EresUnittest()
 GPOS_RESULT
 CSchedulerTest::EresUnittest_SpawnBasic()
 {
-	ScheduleRoot
-		(
-		CJobTest::EttSpawn,
-		1000 /*ulRounds*/,
-		4 /*ulFanout*/,
-		1 /*ulIters*/,
-		2 /*ulWorkers*/
+	ScheduleRoot(CJobTest::EttSpawn, 1000 /*ulRounds*/, 4 /*ulFanout*/,
+				 1 /*ulIters*/, 2 /*ulWorkers*/
 #ifdef GPOS_DEBUG
-		,
-		true /*fTrackingJobs*/
-#endif // GPOS_DEBUG
-		);
+				 ,
+				 true /*fTrackingJobs*/
+#endif				  // GPOS_DEBUG
+	);
 
 	return GPOS_OK;
 }
@@ -109,19 +103,14 @@ CSchedulerTest::EresUnittest_SpawnLight()
 {
 #ifdef GPOS_DEBUG
 	if (IWorker::m_fEnforceTimeSlices)
- 	{
- 		return GPOS_OK;
+	{
+		return GPOS_OK;
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
-	ScheduleRoot
-		(
-		CJobTest::EttSpawn,
-		100000 /*ulRounds*/,
-		10 /*ulFanout*/,
-		1 /*ulIters*/,
-		4 /*ulWorkers*/
-		);
+	ScheduleRoot(CJobTest::EttSpawn, 100000 /*ulRounds*/, 10 /*ulFanout*/,
+				 1 /*ulIters*/, 4 /*ulWorkers*/
+	);
 
 	return GPOS_OK;
 }
@@ -138,14 +127,9 @@ CSchedulerTest::EresUnittest_SpawnLight()
 GPOS_RESULT
 CSchedulerTest::EresUnittest_SpawnHeavy()
 {
-	ScheduleRoot
-		(
-		CJobTest::EttSpawn,
-		10000 /*ulRounds*/,
-		10 /*ulFanout*/,
-		10000 /*ulIters*/,
-		4 /*ulWorkers*/
-		);
+	ScheduleRoot(CJobTest::EttSpawn, 10000 /*ulRounds*/, 10 /*ulFanout*/,
+				 10000 /*ulIters*/, 4 /*ulWorkers*/
+	);
 
 	return GPOS_OK;
 }
@@ -162,19 +146,14 @@ CSchedulerTest::EresUnittest_SpawnHeavy()
 GPOS_RESULT
 CSchedulerTest::EresUnittest_QueueBasic()
 {
-	ScheduleRoot
-		(
-		CJobTest::EttStartQueue,
-		1 /*ulRounds*/,
-		4 /*ulFanout*/,
-		100000 /*ulIters*/,
-		2 /*ulWorkers*/
+	ScheduleRoot(CJobTest::EttStartQueue, 1 /*ulRounds*/, 4 /*ulFanout*/,
+				 100000 /*ulIters*/, 2 /*ulWorkers*/
 #ifdef GPOS_DEBUG
-		,
-		true /*fTrackingJobs*/
-#endif // GPOS_DEBUG
+				 ,
+				 true /*fTrackingJobs*/
+#endif				  // GPOS_DEBUG
 
-		);
+	);
 
 	return GPOS_OK;
 }
@@ -191,14 +170,9 @@ CSchedulerTest::EresUnittest_QueueBasic()
 GPOS_RESULT
 CSchedulerTest::EresUnittest_QueueLight()
 {
-	ScheduleRoot
-		(
-		CJobTest::EttStartQueue,
-		1 /*ulRounds*/,
-		100 /*ulFanout*/,
-		1000 /*ulIters*/,
-		4 /*ulWorkers*/
-		);
+	ScheduleRoot(CJobTest::EttStartQueue, 1 /*ulRounds*/, 100 /*ulFanout*/,
+				 1000 /*ulIters*/, 4 /*ulWorkers*/
+	);
 
 	return GPOS_OK;
 }
@@ -215,14 +189,9 @@ CSchedulerTest::EresUnittest_QueueLight()
 GPOS_RESULT
 CSchedulerTest::EresUnittest_QueueHeavy()
 {
-	ScheduleRoot
-		(
-		CJobTest::EttStartQueue,
-		1 /*ulRounds*/,
-		100 /*ulFanout*/,
-		10000000 /*ulIters*/,
-		4 /*ulWorkers*/
-		);
+	ScheduleRoot(CJobTest::EttStartQueue, 1 /*ulRounds*/, 100 /*ulFanout*/,
+				 10000000 /*ulIters*/, 4 /*ulWorkers*/
+	);
 
 	return GPOS_OK;
 }
@@ -237,18 +206,13 @@ CSchedulerTest::EresUnittest_QueueHeavy()
 //
 //---------------------------------------------------------------------------
 void
-CSchedulerTest::ScheduleRoot
-	(
-	CJobTest::ETestType ett,
-	ULONG ulRounds,
-	ULONG ulFanout,
-	ULONG ulIters,
-	ULONG ulWorkers
+CSchedulerTest::ScheduleRoot(CJobTest::ETestType ett, ULONG ulRounds,
+							 ULONG ulFanout, ULONG ulIters, ULONG ulWorkers
 #ifdef GPOS_DEBUG
-	,
-	BOOL fTrackingJobs
-#endif // GPOS_DEBUG
-	)
+							 ,
+							 BOOL fTrackingJobs
+#endif  // GPOS_DEBUG
+)
 {
 	GPOS_ASSERT(CJobTest::EttSpawn == ett || CJobTest::EttStartQueue == ett);
 
@@ -261,16 +225,12 @@ CSchedulerTest::ScheduleRoot
 	CJobFactory jf(pmp, ulJobs);
 
 	// initialize scheduler
-	CScheduler sched
-				(
-				pmp,
-				ulJobs,
-				ulWorkers
+	CScheduler sched(pmp, ulJobs, ulWorkers
 #ifdef GPOS_DEBUG
-				,
-				fTrackingJobs
-#endif // GPOS_DEBUG
-				);
+					 ,
+					 fTrackingJobs
+#endif  // GPOS_DEBUG
+	);
 
 	// initialize engine
 	CEngine eng(pmp);
@@ -300,18 +260,12 @@ CSchedulerTest::ScheduleRoot
 //
 //---------------------------------------------------------------------------
 void
-CSchedulerTest::RunTasks
-	(
-	IMemoryPool *pmp,
-	CJobFactory *pjf,
-	CScheduler *psched,
-	CEngine *peng,
-	ULONG ulWorkers
-	)
+CSchedulerTest::RunTasks(IMemoryPool *pmp, CJobFactory *pjf, CScheduler *psched,
+						 CEngine *peng, ULONG ulWorkers)
 {
 	// create task array
-	CAutoRg<CTask*> a_rgptsk;
-	a_rgptsk = GPOS_NEW_ARRAY(pmp, CTask*, ulWorkers);
+	CAutoRg<CTask *> a_rgptsk;
+	a_rgptsk = GPOS_NEW_ARRAY(pmp, CTask *, ulWorkers);
 
 	// create scheduling contexts
 	CAutoRg<CSchedulerContext> a_rgsc;
@@ -364,23 +318,15 @@ CSchedulerTest::EresUnittest_BuildMemo()
 	IMemoryPool *pmp = amp.Pmp();
 
 	// array of relation names
-	CWStringConst rgscRel[] =
-	{
-		GPOS_WSZ_LIT("Rel1"),
-		GPOS_WSZ_LIT("Rel2"),
-		GPOS_WSZ_LIT("Rel3"),
-		GPOS_WSZ_LIT("Rel4"),
-		GPOS_WSZ_LIT("Rel5"),
+	CWStringConst rgscRel[] = {
+		GPOS_WSZ_LIT("Rel1"), GPOS_WSZ_LIT("Rel2"), GPOS_WSZ_LIT("Rel3"),
+		GPOS_WSZ_LIT("Rel4"), GPOS_WSZ_LIT("Rel5"),
 	};
 
 	// array of relation IDs
-	ULONG rgulRel[] =
-	{
-		GPOPT_TEST_REL_OID1,
-		GPOPT_TEST_REL_OID2,
-		GPOPT_TEST_REL_OID3,
-		GPOPT_TEST_REL_OID4,
-		GPOPT_TEST_REL_OID5,
+	ULONG rgulRel[] = {
+		GPOPT_TEST_REL_OID1, GPOPT_TEST_REL_OID2, GPOPT_TEST_REL_OID3,
+		GPOPT_TEST_REL_OID4, GPOPT_TEST_REL_OID5,
 	};
 
 	// number of relations
@@ -392,7 +338,8 @@ CSchedulerTest::EresUnittest_BuildMemo()
 		(void) pbs->FExchangeSet(ul);
 	}
 
-	GPOS_RESULT eres = CEngineTest::EresOptimize(BuildMemoMultiThreaded, rgscRel, rgulRel, ulRels, pbs);
+	GPOS_RESULT eres = CEngineTest::EresOptimize(BuildMemoMultiThreaded,
+												 rgscRel, rgulRel, ulRels, pbs);
 	pbs->Release();
 
 	return eres;
@@ -414,32 +361,18 @@ CSchedulerTest::EresUnittest_BuildMemoLargeJoins()
 	IMemoryPool *pmp = amp.Pmp();
 
 	// array of relation names
-	CWStringConst rgscRel[] =
-	{
-		GPOS_WSZ_LIT("Rel1"),
-		GPOS_WSZ_LIT("Rel2"),
-		GPOS_WSZ_LIT("Rel3"),
-		GPOS_WSZ_LIT("Rel4"),
-		GPOS_WSZ_LIT("Rel5"),
-		GPOS_WSZ_LIT("Rel6"),
-		GPOS_WSZ_LIT("Rel7"),
-		GPOS_WSZ_LIT("Rel8"),
-		GPOS_WSZ_LIT("Rel9"),
+	CWStringConst rgscRel[] = {
+		GPOS_WSZ_LIT("Rel1"),  GPOS_WSZ_LIT("Rel2"), GPOS_WSZ_LIT("Rel3"),
+		GPOS_WSZ_LIT("Rel4"),  GPOS_WSZ_LIT("Rel5"), GPOS_WSZ_LIT("Rel6"),
+		GPOS_WSZ_LIT("Rel7"),  GPOS_WSZ_LIT("Rel8"), GPOS_WSZ_LIT("Rel9"),
 		GPOS_WSZ_LIT("Rel10"),
 	};
 
 	// array of relation IDs
-	ULONG rgulRel[] =
-	{
-		GPOPT_TEST_REL_OID1,
-		GPOPT_TEST_REL_OID2,
-		GPOPT_TEST_REL_OID3,
-		GPOPT_TEST_REL_OID4,
-		GPOPT_TEST_REL_OID5,
-		GPOPT_TEST_REL_OID6,
-		GPOPT_TEST_REL_OID7,
-		GPOPT_TEST_REL_OID8,
-		GPOPT_TEST_REL_OID9,
+	ULONG rgulRel[] = {
+		GPOPT_TEST_REL_OID1,  GPOPT_TEST_REL_OID2, GPOPT_TEST_REL_OID3,
+		GPOPT_TEST_REL_OID4,  GPOPT_TEST_REL_OID5, GPOPT_TEST_REL_OID6,
+		GPOPT_TEST_REL_OID7,  GPOPT_TEST_REL_OID8, GPOPT_TEST_REL_OID9,
 		GPOPT_TEST_REL_OID10,
 	};
 
@@ -450,11 +383,12 @@ CSchedulerTest::EresUnittest_BuildMemoLargeJoins()
 		GPOS_ARRAY_SIZE(rgscRel) - 4;
 #else
 		GPOS_ARRAY_SIZE(rgscRel);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	(void) pbs->FExchangeSet(ulRels - 1);
 
-	GPOS_RESULT eres = CEngineTest::EresOptimize(BuildMemoMultiThreaded, rgscRel, rgulRel, ulRels, pbs);
+	GPOS_RESULT eres = CEngineTest::EresOptimize(BuildMemoMultiThreaded,
+												 rgscRel, rgulRel, ulRels, pbs);
 	pbs->Release();
 
 	return eres;
@@ -470,12 +404,8 @@ CSchedulerTest::EresUnittest_BuildMemoLargeJoins()
 //
 //---------------------------------------------------------------------------
 void
-CSchedulerTest::BuildMemoMultiThreaded
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprInput,
-	 DrgPss *pdrgpss
-	)
+CSchedulerTest::BuildMemoMultiThreaded(IMemoryPool *pmp,
+									   CExpression *pexprInput, DrgPss *pdrgpss)
 {
 	CQueryContext *pqc = CTestUtils::PqcGenerate(pmp, pexprInput);
 	GPOS_CHECK_ABORT;
@@ -486,7 +416,7 @@ CSchedulerTest::BuildMemoMultiThreaded
 	CWStringDynamic str(pmp);
 	COstreamString oss(&str);
 	oss << std::endl << std::endl;
-	oss << "INPUT EXPRESSION:" <<std::endl;
+	oss << "INPUT EXPRESSION:" << std::endl;
 	(void) pexprInput->OsPrint(oss);
 
 	CEngine eng(pmp);
@@ -497,7 +427,7 @@ CSchedulerTest::BuildMemoMultiThreaded
 
 	(void) pexprPlan->PrppCompute(pmp, pqc->Prpp());
 
-	oss << std::endl << "OUTPUT PLAN:" <<std::endl;
+	oss << std::endl << "OUTPUT PLAN:" << std::endl;
 	(void) pexprPlan->OsPrint(oss);
 	oss << std::endl << std::endl;
 
@@ -509,4 +439,3 @@ CSchedulerTest::BuildMemoMultiThreaded
 }
 
 // EOF
-

@@ -6,7 +6,7 @@
 //		CParseHandlerScalarWindowRef.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing scalar WindowRef
 //---------------------------------------------------------------------------
 
@@ -28,14 +28,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarWindowRef::CParseHandlerScalarWindowRef
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarWindowRef::CParseHandlerScalarWindowRef(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -48,19 +43,19 @@ CParseHandlerScalarWindowRef::CParseHandlerScalarWindowRef
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarWindowRef::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarWindowRef::StartElement(const XMLCh *const xmlszUri,
+										   const XMLCh *const xmlszLocalname,
+										   const XMLCh *const xmlszQname,
+										   const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowref), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarWindowref), xmlszLocalname))
 	{
 		// parse and create scalar WindowRef (window function)
 		CDXLScalarWindowRef *pdxlop =
-				(CDXLScalarWindowRef*) CDXLOperatorFactory::PdxlopWindowRef(m_pphm->Pmm(), attrs);
+			(CDXLScalarWindowRef *) CDXLOperatorFactory::PdxlopWindowRef(
+				m_pphm->Pmm(), attrs);
 
 		// construct node from the created scalar window ref
 		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
@@ -70,8 +65,8 @@ CParseHandlerScalarWindowRef::StartElement
 		// we must have seen an window ref already and initialized the window ref node
 		GPOS_ASSERT(NULL != m_pdxln);
 
-		CParseHandlerBase *pphOp =
-				CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphOp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphOp);
 
 		// store parse handlers
@@ -90,22 +85,24 @@ CParseHandlerScalarWindowRef::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarWindowRef::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarWindowRef::EndElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowref), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarWindowref), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerScalarOp *pphOp = dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
+		CParseHandlerScalarOp *pphOp =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphOp);
 	}
 

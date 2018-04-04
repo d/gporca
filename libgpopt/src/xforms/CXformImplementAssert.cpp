@@ -25,23 +25,17 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementAssert::CXformImplementAssert
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-						(
-						pmp, 
-						GPOS_NEW(pmp) CLogicalAssert(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // relational child
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))	// predicate
-						)
-		)
-{}
+CXformImplementAssert::CXformImplementAssert(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalAssert(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // predicate
+		  ))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -53,14 +47,10 @@ CXformImplementAssert::CXformImplementAssert
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformImplementAssert::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformImplementAssert::Exfp(CExpressionHandle &exprhdl) const
 {
-	if(exprhdl.Pdpscalar(1)->FHasSubquery())
-	{		
+	if (exprhdl.Pdpscalar(1)->FHasSubquery())
+	{
 		return CXform::ExfpNone;
 	}
 
@@ -77,13 +67,8 @@ CXformImplementAssert::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementAssert::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementAssert::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -96,32 +81,22 @@ CXformImplementAssert::Transform
 	CExpression *pexprRelational = (*pexpr)[0];
 	CExpression *pexprScalar = (*pexpr)[1];
 	CException *pexc = popAssert->Pexc();
-	
+
 	// addref all children
 	pexprRelational->AddRef();
 	pexprScalar->AddRef();
-	
+
 	// assemble physical operator
-	CPhysicalAssert *popPhysicalAssert = 
-			GPOS_NEW(pmp) CPhysicalAssert
-						(
-						pmp, 
-						GPOS_NEW(pmp) CException(pexc->UlMajor(), pexc->UlMinor(), pexc->SzFilename(), pexc->UlLine())
-						);
-	
-	CExpression *pexprAssert = 
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp, 
-					popPhysicalAssert,
-					pexprRelational,
-					pexprScalar
-					);
-	
+	CPhysicalAssert *popPhysicalAssert = GPOS_NEW(pmp) CPhysicalAssert(
+		pmp, GPOS_NEW(pmp) CException(pexc->UlMajor(), pexc->UlMinor(),
+									  pexc->SzFilename(), pexc->UlLine()));
+
+	CExpression *pexprAssert = GPOS_NEW(pmp)
+		CExpression(pmp, popPhysicalAssert, pexprRelational, pexprScalar);
+
 	// add alternative to results
 	pxfres->Add(pexprAssert);
 }
-	
+
 
 // EOF
-

@@ -5,10 +5,11 @@
 
 namespace gpopt
 {
-	class CScalarIsDistinctFromTest
-	{
-		public:
-			static gpos::GPOS_RESULT EresUnittest();
-	};
-}
-#endif // GPOPT_CScalarIsDistinctFromTest_H
+class CScalarIsDistinctFromTest
+{
+public:
+	static gpos::GPOS_RESULT
+	EresUnittest();
+};
+}  // namespace gpopt
+#endif  // GPOPT_CScalarIsDistinctFromTest_H

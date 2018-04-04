@@ -33,20 +33,14 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarCast::CScalarCast
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidReturnType,
-	IMDId *pmdidFunc,
-	BOOL fBinaryCoercible
-	)
-	:
-	CScalar(pmp),
-	m_pmdidReturnType(pmdidReturnType),
-	m_pmdidFunc(pmdidFunc),
-	m_fBinaryCoercible(fBinaryCoercible),
-	m_fReturnsNullOnNullInput(false),
-	m_fBoolReturnType(false)
+CScalarCast::CScalarCast(IMemoryPool *pmp, IMDId *pmdidReturnType,
+						 IMDId *pmdidFunc, BOOL fBinaryCoercible)
+	: CScalar(pmp),
+	  m_pmdidReturnType(pmdidReturnType),
+	  m_pmdidFunc(pmdidFunc),
+	  m_fBinaryCoercible(fBinaryCoercible),
+	  m_fReturnsNullOnNullInput(false),
+	  m_fBoolReturnType(false)
 {
 	if (NULL != m_pmdidFunc && m_pmdidFunc->FValid())
 	{
@@ -54,7 +48,8 @@ CScalarCast::CScalarCast
 		const IMDFunction *pmdfunc = pmda->Pmdfunc(m_pmdidFunc);
 
 		m_fReturnsNullOnNullInput = pmdfunc->FStrict();
-		m_fBoolReturnType = CMDAccessorUtils::FBoolType(pmda, m_pmdidReturnType);
+		m_fBoolReturnType =
+			CMDAccessorUtils::FBoolType(pmda, m_pmdidReturnType);
 	}
 }
 
@@ -68,11 +63,7 @@ CScalarCast::CScalarCast
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarCast::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarCast::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
@@ -80,11 +71,12 @@ CScalarCast::FMatch
 
 		// match if the return type oids are identical
 		return pscop->PmdidType()->FEquals(m_pmdidReturnType) &&
-				((!IMDId::FValid(pscop->PmdidFunc()) && !IMDId::FValid(m_pmdidFunc)) || pscop->PmdidFunc()->FEquals(m_pmdidFunc));
+			   ((!IMDId::FValid(pscop->PmdidFunc()) &&
+				 !IMDId::FValid(m_pmdidFunc)) ||
+				pscop->PmdidFunc()->FEquals(m_pmdidFunc));
 	}
 
 	return false;
 }
 
 // EOF
-

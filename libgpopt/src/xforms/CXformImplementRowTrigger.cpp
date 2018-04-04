@@ -25,22 +25,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementRowTrigger::CXformImplementRowTrigger
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalRowTrigger(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))
-				)
-		)
-{}
+CXformImplementRowTrigger::CXformImplementRowTrigger(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalRowTrigger(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -51,11 +43,8 @@ CXformImplementRowTrigger::CXformImplementRowTrigger
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformImplementRowTrigger::Exfp
-	(
-	CExpressionHandle & // exprhdl
-	)
-	const
+CXformImplementRowTrigger::Exfp(CExpressionHandle &  // exprhdl
+								) const
 {
 	return CXform::ExfpHigh;
 }
@@ -70,19 +59,16 @@ CXformImplementRowTrigger::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementRowTrigger::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementRowTrigger::Transform(CXformContext *pxfctxt,
+									 CXformResult *pxfres,
+									 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CLogicalRowTrigger *popRowTrigger = CLogicalRowTrigger::PopConvert(pexpr->Pop());
+	CLogicalRowTrigger *popRowTrigger =
+		CLogicalRowTrigger::PopConvert(pexpr->Pop());
 	IMemoryPool *pmp = pxfctxt->Pmp();
 
 	// extract components for alternative
@@ -108,13 +94,11 @@ CXformImplementRowTrigger::Transform
 	pexprChild->AddRef();
 
 	// create physical RowTrigger
-	CExpression *pexprAlt =
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalRowTrigger(pmp, pmdidRel, iType, pdrgpcrOld, pdrgpcrNew),
-			pexprChild
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp)
+		CExpression(pmp,
+					GPOS_NEW(pmp) CPhysicalRowTrigger(pmp, pmdidRel, iType,
+													  pdrgpcrOld, pdrgpcrNew),
+					pexprChild);
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
 }

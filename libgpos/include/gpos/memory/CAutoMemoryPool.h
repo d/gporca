@@ -26,67 +26,62 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CAutoMemoryPool
-	//
-	//	@doc:
-	//		Automatic memory pool interface;
-	//		tears down memory pool when going out of scope;
-	//
-	//		For cleanliness, do not provide an automatic cast to IMemoryPool
-	//
-	//---------------------------------------------------------------------------
-	class CAutoMemoryPool : public CStackObject
+//---------------------------------------------------------------------------
+//	@class:
+//		CAutoMemoryPool
+//
+//	@doc:
+//		Automatic memory pool interface;
+//		tears down memory pool when going out of scope;
+//
+//		For cleanliness, do not provide an automatic cast to IMemoryPool
+//
+//---------------------------------------------------------------------------
+class CAutoMemoryPool : public CStackObject
+{
+public:
+	enum ELeakCheck
 	{
-		public:
-		
-			enum ELeakCheck
-			{
-				ElcNone,	// no leak checking -- to be deprecated
-				
-				ElcExc,		// check for leaks unless an exception is pending (default)
-				ElcStrict	// always check for leaks
-			};
-		
-		private:
+		ElcNone,  // no leak checking -- to be deprecated
 
-			// private copy ctor
-			CAutoMemoryPool(const CAutoMemoryPool &);
+		ElcExc,	// check for leaks unless an exception is pending (default)
+		ElcStrict  // always check for leaks
+	};
 
-			// memory pool to protect
-			IMemoryPool *m_pmp;
-			
-			// type of leak check to perform
-			ELeakCheck m_elc;
+private:
+	// private copy ctor
+	CAutoMemoryPool(const CAutoMemoryPool &);
 
-		public:
+	// memory pool to protect
+	IMemoryPool *m_pmp;
 
-			// ctor
-			CAutoMemoryPool
-				(
-				ELeakCheck elc = ElcExc,
-				CMemoryPoolManager::EAllocType ept = CMemoryPoolManager::EatTracker,
-				BOOL fThreadSafe = true,
-				ULLONG ullCapacity = ULLONG_MAX
-				);
+	// type of leak check to perform
+	ELeakCheck m_elc;
 
-			// dtor
-			~CAutoMemoryPool();
+public:
+	// ctor
+	CAutoMemoryPool(
+		ELeakCheck elc = ElcExc,
+		CMemoryPoolManager::EAllocType ept = CMemoryPoolManager::EatTracker,
+		BOOL fThreadSafe = true, ULLONG ullCapacity = ULLONG_MAX);
 
-			// accessor
-			IMemoryPool *Pmp() const
-			{
-				return m_pmp;
-			}
-			
-			// detach from pool
-			IMemoryPool *PmpDetach();
+	// dtor
+	~CAutoMemoryPool();
 
-	}; // CAutoMemoryPool
-}
+	// accessor
+	IMemoryPool *
+	Pmp() const
+	{
+		return m_pmp;
+	}
 
-#endif // GPOS_CAutoMemoryPool_H
+	// detach from pool
+	IMemoryPool *
+	PmpDetach();
+
+};  // CAutoMemoryPool
+}  // namespace gpos
+
+#endif  // GPOS_CAutoMemoryPool_H
 
 // EOF
-

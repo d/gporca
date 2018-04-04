@@ -21,72 +21,69 @@
 // fwd decl
 namespace gpdxl
 {
-	class CXMLSerializer;
+class CXMLSerializer;
 }
 
 namespace gpopt
 {
-	class CExpression;
-	class CMDAccessor;
-}
+class CExpression;
+class CMDAccessor;
+}  // namespace gpopt
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpdxl;
+using namespace gpos;
+using namespace gpdxl;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMDPartConstraintGPDB
-	//
-	//	@doc:
-	//		Class representing a GPDB partition constraint in the MD cache
-	//
-	//---------------------------------------------------------------------------
-	class CMDPartConstraintGPDB : public IMDPartConstraint
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CMDPartConstraintGPDB
+//
+//	@doc:
+//		Class representing a GPDB partition constraint in the MD cache
+//
+//---------------------------------------------------------------------------
+class CMDPartConstraintGPDB : public IMDPartConstraint
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
 
-			// memory pool
-			IMemoryPool *m_pmp;
+	// included default partitions
+	DrgPul *m_pdrgpulDefaultParts;
 
-			// included default partitions
-			DrgPul *m_pdrgpulDefaultParts;
-			
-			// is constraint unbounded
-			BOOL m_fUnbounded;
+	// is constraint unbounded
+	BOOL m_fUnbounded;
 
-			// the DXL representation of the part constraint
-			CDXLNode *m_pdxln;
-		public:
+	// the DXL representation of the part constraint
+	CDXLNode *m_pdxln;
 
-			// ctor
-			CMDPartConstraintGPDB(IMemoryPool *pmp, DrgPul *pdrgpulDefaultParts, BOOL fUnbounded, CDXLNode *pdxln);
+public:
+	// ctor
+	CMDPartConstraintGPDB(IMemoryPool *pmp, DrgPul *pdrgpulDefaultParts,
+						  BOOL fUnbounded, CDXLNode *pdxln);
 
-			// dtor
-			virtual
-			~CMDPartConstraintGPDB();
+	// dtor
+	virtual ~CMDPartConstraintGPDB();
 
-			// serialize constraint in DXL format
-			virtual
-			void Serialize(CXMLSerializer *pxmlser) const;
-			
-			// the scalar expression of the check constraint
-			virtual
-			CExpression *Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const;
-			
-			// included default partitions
-			virtual
-			DrgPul *PdrgpulDefaultParts() const;
+	// serialize constraint in DXL format
+	virtual void
+	Serialize(CXMLSerializer *pxmlser) const;
 
-			// is constraint unbounded
-			virtual
-			BOOL FUnbounded() const;
+	// the scalar expression of the check constraint
+	virtual CExpression *
+	Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const;
 
-	};
-}
+	// included default partitions
+	virtual DrgPul *
+	PdrgpulDefaultParts() const;
 
-#endif // !GPMD_CMDPartConstraintGPDB_H
+	// is constraint unbounded
+	virtual BOOL
+	FUnbounded() const;
+};
+}  // namespace gpmd
+
+#endif  // !GPMD_CMDPartConstraintGPDB_H
 
 // EOF
-

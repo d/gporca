@@ -17,27 +17,29 @@
 #ifdef GPOS_DEBUG
 #include "gpopt/base/COptCtxt.h"
 #include "gpos/error/CAutoTrace.h"
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
-namespace gpopt {
+namespace gpopt
+{
+CDrvdProp::CDrvdProp()
+{
+}
 
-	CDrvdProp::CDrvdProp()
-	{}
-
-	IOstream &operator << (IOstream &os, const CDrvdProp &drvdprop)
-	{
-		return drvdprop.OsPrint(os);
-	}
+IOstream &
+operator<<(IOstream &os, const CDrvdProp &drvdprop)
+{
+	return drvdprop.OsPrint(os);
+}
 
 #ifdef GPOS_DEBUG
-	void
-	CDrvdProp::DbgPrint() const
-	{
-		IMemoryPool *pmp = COptCtxt::PoctxtFromTLS()->Pmp();
-		CAutoTrace at(pmp);
-		at.Os() << *this;
-	}
-#endif // GPOS_DEBUG
+void
+CDrvdProp::DbgPrint() const
+{
+	IMemoryPool *pmp = COptCtxt::PoctxtFromTLS()->Pmp();
+	CAutoTrace at(pmp);
+	at.Os() << *this;
 }
+#endif  // GPOS_DEBUG
+}  // namespace gpopt
 
 // EOF

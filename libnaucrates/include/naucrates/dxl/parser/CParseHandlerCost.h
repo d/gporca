@@ -17,62 +17,57 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerCost
-	//
-	//	@doc:
-	//		Parse handler for parsing the cost for physical operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerCost : public CParseHandlerBase 
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerCost
+//
+//	@doc:
+//		Parse handler for parsing the cost for physical operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerCost : public CParseHandlerBase
+{
+private:
+	// physical operator cost constructed by the parse handler
+	CDXLOperatorCost *m_pdxlopcost;
 
-			// physical operator cost constructed by the parse handler
-			CDXLOperatorCost *m_pdxlopcost;
-					
-			// private copy ctor
-			CParseHandlerCost(const CParseHandlerCost &);
-			
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// private copy ctor
+	CParseHandlerCost(const CParseHandlerCost &);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerCost
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-			~CParseHandlerCost();
-			
-			// returns operator cost constructed by the handler
-			CDXLOperatorCost *Pdxlopcost();
-						
-	};
-}
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-#endif // !GPDXL_CParseHandlerCost_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerCost(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					  CParseHandlerBase *pphRoot);
+
+	~CParseHandlerCost();
+
+	// returns operator cost constructed by the handler
+	CDXLOperatorCost *
+	Pdxlopcost();
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerCost_H
 
 // EOF

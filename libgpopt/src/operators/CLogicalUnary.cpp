@@ -27,11 +27,7 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalUnary::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalUnary::FMatch(COperator *pop) const
 {
 	return (pop->Eopid() == Eopid());
 }
@@ -45,21 +41,15 @@ CLogicalUnary::FMatch
 //
 //---------------------------------------------------------------------------
 CLogical::EStatPromise
-CLogicalUnary::Esp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalUnary::Esp(CExpressionHandle &exprhdl) const
 {
 	// low promise for stat derivation if scalar predicate has subqueries, or logical
 	// expression has outer-refs or is part of an Apply expression
-	if (exprhdl.Pdpscalar(1)->FHasSubquery() ||
-		exprhdl.FHasOuterRefs() ||
-		 (NULL != exprhdl.Pgexpr() &&
-			CXformUtils::FGenerateApply(exprhdl.Pgexpr()->ExfidOrigin()))
-		)
+	if (exprhdl.Pdpscalar(1)->FHasSubquery() || exprhdl.FHasOuterRefs() ||
+		(NULL != exprhdl.Pgexpr() &&
+		 CXformUtils::FGenerateApply(exprhdl.Pgexpr()->ExfidOrigin())))
 	{
-		 return EspLow;
+		return EspLow;
 	}
 
 	return EspHigh;
@@ -74,13 +64,8 @@ CLogicalUnary::Esp
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalUnary::PstatsDeriveProject
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	HMUlDatum *phmuldatum
-	)
-	const
+CLogicalUnary::PstatsDeriveProject(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								   HMUlDatum *phmuldatum) const
 {
 	GPOS_ASSERT(Esp(exprhdl) > EspNone);
 	IStatistics *pstatsChild = exprhdl.Pstats(0);
@@ -89,7 +74,9 @@ CLogicalUnary::PstatsDeriveProject
 	DrgPul *pdrgpulColIds = GPOS_NEW(pmp) DrgPul(pmp);
 	pcrs->ExtractColIds(pmp, pdrgpulColIds);
 
-	IStatistics *pstats = CProjectStatsProcessor::PstatsProject(pmp, dynamic_cast<CStatistics *>(pstatsChild), pdrgpulColIds, phmuldatum);
+	IStatistics *pstats = CProjectStatsProcessor::PstatsProject(
+		pmp, dynamic_cast<CStatistics *>(pstatsChild), pdrgpulColIds,
+		phmuldatum);
 
 	// clean up
 	pdrgpulColIds->Release();

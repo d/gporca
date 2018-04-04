@@ -17,53 +17,50 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarPartBoundInclusion
-	//
-	//	@doc:
-	//		Parse handler class for parsing scalar part bound inclusion
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarPartBoundInclusion : public CParseHandlerScalarOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarPartBoundInclusion
+//
+//	@doc:
+//		Parse handler class for parsing scalar part bound inclusion
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarPartBoundInclusion : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarPartBoundInclusion(
+		const CParseHandlerScalarPartBoundInclusion &);
 
-			// private copy ctor
-			CParseHandlerScalarPartBoundInclusion(const CParseHandlerScalarPartBoundInclusion&);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerScalarPartBoundInclusion(IMemoryPool *pmp,
+										  CParseHandlerManager *pphm,
+										  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerScalarPartBoundInclusion
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerScalarScalarPartBoundInclusion_H
+#endif  // !GPDXL_CParseHandlerScalarScalarPartBoundInclusion_H
 
 // EOF

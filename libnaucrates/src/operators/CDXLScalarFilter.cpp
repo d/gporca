@@ -26,12 +26,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarFilter::CDXLScalarFilter
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarFilter::CDXLScalarFilter(IMemoryPool *pmp) : CDXLScalar(pmp)
 {
 }
 
@@ -63,7 +58,8 @@ CDXLScalarFilter::Edxlop() const
 const CWStringConst *
 CDXLScalarFilter::PstrOpName() const
 {
-	return CDXLTokens::PstrToken(EdxltokenScalarFilter);;
+	return CDXLTokens::PstrToken(EdxltokenScalarFilter);
+	;
 }
 
 //---------------------------------------------------------------------------
@@ -75,21 +71,19 @@ CDXLScalarFilter::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarFilter::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * pdxln
-	)
-	const
+CDXLScalarFilter::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
 	// serilize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);	
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -102,21 +96,18 @@ CDXLScalarFilter::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarFilter::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren 
-	) 
-	const
+CDXLScalarFilter::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 >= pdxln->UlArity());
-	
+
 	if (1 == pdxln->UlArity())
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[0];
-		
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
-	
+
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
@@ -124,7 +115,7 @@ CDXLScalarFilter::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

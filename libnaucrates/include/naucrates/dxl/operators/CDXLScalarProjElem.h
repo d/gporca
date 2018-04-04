@@ -20,101 +20,89 @@
 
 namespace gpdxl
 {
-	using namespace gpmd;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarProjElem
-	//
-	//	@doc:
-	//		Container for projection list elements, storing the expression and the alias
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarProjElem : public CDXLScalar
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarProjElem
+//
+//	@doc:
+//		Container for projection list elements, storing the expression and the alias
+//
+//---------------------------------------------------------------------------
+class CDXLScalarProjElem : public CDXLScalar
+{
+private:
+	// id of column defined by this project element:
+	// for computed columns this is a new id, for colrefs: id of the original column
+	ULONG m_ulId;
+
+	// alias
+	const CMDName *m_pmdname;
+
+	// private copy ctor
+	CDXLScalarProjElem(CDXLScalarProjElem &);
+
+public:
+	// ctor/dtor
+	CDXLScalarProjElem(IMemoryPool *pmp, ULONG ulId, const CMDName *pmdname);
+
+	virtual ~CDXLScalarProjElem();
+
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
+
+	// name of the operator
+	const CWStringConst *
+	PstrOpName() const;
+
+	// id of the proj element
+	ULONG
+	UlId() const;
+
+	// alias of the proj elem
+	const CMDName *
+	PmdnameAlias() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *, const CDXLNode *) const;
+
+	// check if given column is defined by operator
+	virtual BOOL
+	FDefinesColumn(ULONG ulColId) const
 	{
-		private:
-			// id of column defined by this project element:
-			// for computed columns this is a new id, for colrefs: id of the original column
-			ULONG m_ulId;
+		return (UlId() == ulColId);
+	}
 
-			// alias
-			const CMDName *m_pmdname;
-				
-			// private copy ctor
-			CDXLScalarProjElem(CDXLScalarProjElem&);
-			
-		public:
-			// ctor/dtor
-			CDXLScalarProjElem
-				(
-				IMemoryPool *pmp,
-				ULONG ulId,
-				const CMDName *pmdname
-				);
-			
-			virtual
-			~CDXLScalarProjElem();
-			
-			// ident accessors
-			Edxlopid Edxlop() const;
-			
-			// name of the operator
-			const CWStringConst *PstrOpName() const;
-			
-			// id of the proj element
-			ULONG UlId() const;
-			
-			// alias of the proj elem
-			const CMDName *PmdnameAlias() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *, const CDXLNode *) const;
+	// conversion function
+	static CDXLScalarProjElem *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarProjectElem == pdxlop->Edxlop());
 
-			// check if given column is defined by operator
-			virtual
-			BOOL FDefinesColumn
-				(
-				ULONG ulColId
-				)
-				const
-			{
-				return (UlId() == ulColId);
-			}
+		return dynamic_cast<CDXLScalarProjElem *>(pdxlop);
+	}
 
-			// conversion function
-			static
-			CDXLScalarProjElem *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarProjectElem == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLScalarProjElem*>(pdxlop);
-			}
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-					(
-					CMDAccessor *//pmda
-					)
-					const
-			{
-				GPOS_ASSERT(!"Invalid function call on a container operator");
-				return false;
-			}
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
+	{
+		GPOS_ASSERT(!"Invalid function call on a container operator");
+		return false;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-	};
-}
+	// checks whether the operator has valid structure
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarProjElem_H
+#endif  // !GPDXL_CDXLScalarProjElem_H
 
 // EOF
-

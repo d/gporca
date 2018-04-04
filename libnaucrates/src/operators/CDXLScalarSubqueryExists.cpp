@@ -27,12 +27,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSubqueryExists::CDXLScalarSubqueryExists
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarSubqueryExists::CDXLScalarSubqueryExists(IMemoryPool *pmp)
+	: CDXLScalar(pmp)
 {
 }
 
@@ -86,17 +82,15 @@ CDXLScalarSubqueryExists::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubqueryExists::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSubqueryExists::SerializeToDXL(CXMLSerializer *pxmlser,
+										 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -105,24 +99,20 @@ CDXLScalarSubqueryExists::SerializeToDXL
 //		CDXLScalarSubqueryExists::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubqueryExists::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarSubqueryExists::AssertValid(const CDXLNode *pdxln,
+									  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnChild = (*pdxln)[0];
 	GPOS_ASSERT(EdxloptypeLogical == pdxlnChild->Pdxlop()->Edxloperatortype());
 
 	pdxln->AssertValid(fValidateChildren);
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -43,24 +43,22 @@ CDXLPhysicalAbstractBitmapScan::~CDXLPhysicalAbstractBitmapScan()
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAbstractBitmapScan::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalAbstractBitmapScan::AssertValid(const CDXLNode *pdxln,
+											BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(4 == pdxln->UlArity());
 
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
 
-	GPOS_ASSERT(EdxlopScalarRecheckCondFilter == (*pdxln)[2]->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarRecheckCondFilter ==
+				(*pdxln)[2]->Pdxlop()->Edxlop());
 
 	// assert bitmap access path is valid
 	CDXLNode *pdxlnBitmap = (*pdxln)[3];
-	GPOS_ASSERT(EdxlopScalarBitmapIndexProbe == pdxlnBitmap->Pdxlop()->Edxlop() ||
-			EdxlopScalarBitmapBoolOp == pdxlnBitmap->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarBitmapIndexProbe ==
+					pdxlnBitmap->Pdxlop()->Edxlop() ||
+				EdxlopScalarBitmapBoolOp == pdxlnBitmap->Pdxlop()->Edxlop());
 
 	// assert validity of table descriptor
 	GPOS_ASSERT(NULL != m_pdxltabdesc);
@@ -72,6 +70,6 @@ CDXLPhysicalAbstractBitmapScan::AssertValid
 		pdxlnBitmap->Pdxlop()->AssertValid(pdxlnBitmap, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

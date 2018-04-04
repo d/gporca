@@ -27,16 +27,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarMinMax::CDXLScalarMinMax
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	EdxlMinMaxType emmt
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidType(pmdidType),
-	m_emmt(emmt)
+CDXLScalarMinMax::CDXLScalarMinMax(IMemoryPool *pmp, IMDId *pmdidType,
+								   EdxlMinMaxType emmt)
+	: CDXLScalar(pmp), m_pmdidType(pmdidType), m_emmt(emmt)
 {
 	GPOS_ASSERT(m_pmdidType->FValid());
 	GPOS_ASSERT(EmmtSentinel > emmt);
@@ -83,9 +76,9 @@ CDXLScalarMinMax::PstrOpName() const
 	switch (m_emmt)
 	{
 		case EmmtMin:
-				return CDXLTokens::PstrToken(EdxltokenScalarMin);
+			return CDXLTokens::PstrToken(EdxltokenScalarMin);
 		case EmmtMax:
-				return CDXLTokens::PstrToken(EdxltokenScalarMax);
+			return CDXLTokens::PstrToken(EdxltokenScalarMax);
 		default:
 			return NULL;
 	}
@@ -100,19 +93,17 @@ CDXLScalarMinMax::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarMinMax::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarMinMax::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -124,11 +115,7 @@ CDXLScalarMinMax::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarMinMax::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarMinMax::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -143,12 +130,8 @@ CDXLScalarMinMax::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarMinMax::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarMinMax::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(0 < pdxln->UlArity());
 
@@ -164,6 +147,6 @@ CDXLScalarMinMax::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

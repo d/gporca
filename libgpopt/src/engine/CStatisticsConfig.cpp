@@ -29,19 +29,15 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CStatisticsConfig::CStatisticsConfig
-	(
-	IMemoryPool *pmp,
-	CDouble dDampingFactorFilter,
-	CDouble dDampingFactorJoin,
-	CDouble dDampingFactorGroupBy
-	)
-	:
-	m_pmp(pmp),
-	m_dDampingFactorFilter(dDampingFactorFilter),
-	m_dDampingFactorJoin(dDampingFactorJoin),
-	m_dDampingFactorGroupBy(dDampingFactorGroupBy),
-	m_phsmdidcolinfo(NULL)
+CStatisticsConfig::CStatisticsConfig(IMemoryPool *pmp,
+									 CDouble dDampingFactorFilter,
+									 CDouble dDampingFactorJoin,
+									 CDouble dDampingFactorGroupBy)
+	: m_pmp(pmp),
+	  m_dDampingFactorFilter(dDampingFactorFilter),
+	  m_dDampingFactorJoin(dDampingFactorJoin),
+	  m_dDampingFactorGroupBy(dDampingFactorGroupBy),
+	  m_phsmdidcolinfo(NULL)
 {
 	GPOS_ASSERT(CDouble(0.0) < dDampingFactorFilter);
 	GPOS_ASSERT(CDouble(0.0) < dDampingFactorJoin);
@@ -75,10 +71,7 @@ CStatisticsConfig::~CStatisticsConfig()
 //
 //---------------------------------------------------------------------------
 void
-CStatisticsConfig::AddMissingStatsColumn
-	(
-	CMDIdColStats *pmdidCol
-	)
+CStatisticsConfig::AddMissingStatsColumn(CMDIdColStats *pmdidCol)
 {
 	GPOS_ASSERT(NULL != pmdidCol);
 
@@ -103,10 +96,7 @@ CStatisticsConfig::AddMissingStatsColumn
 //
 //---------------------------------------------------------------------------
 void
-CStatisticsConfig::CollectMissingStatsColumns
-	(
-	DrgPmdid *pdrgmdid
-    )
+CStatisticsConfig::CollectMissingStatsColumns(DrgPmdid *pdrgmdid)
 {
 	GPOS_ASSERT(NULL != pdrgmdid);
 
@@ -116,7 +106,8 @@ CStatisticsConfig::CollectMissingStatsColumns
 	HSIterMDId hsiter(m_phsmdidcolinfo);
 	while (hsiter.FAdvance())
 	{
-		CMDIdColStats *pmdidColStats = CMDIdColStats::PmdidConvert(const_cast<IMDId *>(hsiter.Pt()));
+		CMDIdColStats *pmdidColStats =
+			CMDIdColStats::PmdidConvert(const_cast<IMDId *>(hsiter.Pt()));
 		pmdidColStats->AddRef();
 		pdrgmdid->Append(pmdidColStats);
 	}
@@ -124,4 +115,3 @@ CStatisticsConfig::CollectMissingStatsColumns
 
 
 // EOF
-

@@ -20,57 +20,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerDistinctComp
-	//
-	//	@doc:
-	//		Parse handler for parsing a distinct comparison operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerDistinctComp : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			
-			// the distinct comparison operator
-			CDXLScalarDistinctComp *m_pdxlop;
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerDistinctComp
+//
+//	@doc:
+//		Parse handler for parsing a distinct comparison operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerDistinctComp : public CParseHandlerScalarOp
+{
+private:
+	// the distinct comparison operator
+	CDXLScalarDistinctComp *m_pdxlop;
 
-			// private copy ctor
-			CParseHandlerDistinctComp(const CParseHandlerDistinctComp &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// private copy ctor
+	CParseHandlerDistinctComp(const CParseHandlerDistinctComp &);
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerDistinctComp
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-#endif // !GPDXL_CParseHandlerDistinctComp_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerDistinctComp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerDistinctComp_H
 
 // EOF

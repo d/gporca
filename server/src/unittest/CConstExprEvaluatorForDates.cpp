@@ -9,7 +9,7 @@
 //		Implementation of a constant expression evaluator for dates data
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -40,23 +40,26 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CExpression *
-CConstExprEvaluatorForDates::PexprEval
-	(
-	CExpression *pexpr
-	)
+CConstExprEvaluatorForDates::PexprEval(CExpression *pexpr)
 {
 	GPOS_ASSERT(COperator::EopScalarCmp == pexpr->Pop()->Eopid());
 	GPOS_ASSERT(COperator::EopScalarConst == (*pexpr)[0]->Pop()->Eopid());
 	GPOS_ASSERT(COperator::EopScalarConst == (*pexpr)[1]->Pop()->Eopid());
 
-	CScalarConst *popScalarLeft = dynamic_cast<CScalarConst *>((*pexpr)[0]->Pop());
+	CScalarConst *popScalarLeft =
+		dynamic_cast<CScalarConst *>((*pexpr)[0]->Pop());
 
-	GPOS_ASSERT(CMDIdGPDB::m_mdidDate.FEquals(popScalarLeft->Pdatum()->Pmdid()));
-	IDatumStatisticsMappable *pdatumLeft = dynamic_cast<IDatumStatisticsMappable *>(popScalarLeft->Pdatum());
-	CScalarConst *popScalarRight = dynamic_cast<CScalarConst *>((*pexpr)[1]->Pop());
+	GPOS_ASSERT(
+		CMDIdGPDB::m_mdidDate.FEquals(popScalarLeft->Pdatum()->Pmdid()));
+	IDatumStatisticsMappable *pdatumLeft =
+		dynamic_cast<IDatumStatisticsMappable *>(popScalarLeft->Pdatum());
+	CScalarConst *popScalarRight =
+		dynamic_cast<CScalarConst *>((*pexpr)[1]->Pop());
 
-	GPOS_ASSERT(CMDIdGPDB::m_mdidDate.FEquals(popScalarRight->Pdatum()->Pmdid()));
-	IDatumStatisticsMappable *pdatumRight = dynamic_cast<IDatumStatisticsMappable *>(popScalarRight->Pdatum());
+	GPOS_ASSERT(
+		CMDIdGPDB::m_mdidDate.FEquals(popScalarRight->Pdatum()->Pmdid()));
+	IDatumStatisticsMappable *pdatumRight =
+		dynamic_cast<IDatumStatisticsMappable *>(popScalarRight->Pdatum());
 
 	CScalarCmp *popScCmp = dynamic_cast<CScalarCmp *>(pexpr->Pop());
 	CDouble dLeft = pdatumLeft->DStatsMapping();

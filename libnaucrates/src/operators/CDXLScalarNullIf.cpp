@@ -26,16 +26,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarNullIf::CDXLScalarNullIf
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp,
-	IMDId *pmdidType
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidOp(pmdidOp),
-	m_pmdidType(pmdidType)
+CDXLScalarNullIf::CDXLScalarNullIf(IMemoryPool *pmp, IMDId *pmdidOp,
+								   IMDId *pmdidType)
+	: CDXLScalar(pmp), m_pmdidOp(pmdidOp), m_pmdidType(pmdidType)
 {
 	GPOS_ASSERT(pmdidOp->FValid());
 	GPOS_ASSERT(pmdidType->FValid());
@@ -108,7 +101,8 @@ CDXLScalarNullIf::PmdidType() const
 const CWStringConst *
 CDXLScalarNullIf::PstrOpName() const
 {
-	return CDXLTokens::PstrToken(EdxltokenScalarNullIf);;
+	return CDXLTokens::PstrToken(EdxltokenScalarNullIf);
+	;
 }
 
 //---------------------------------------------------------------------------
@@ -120,11 +114,7 @@ CDXLScalarNullIf::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarNullIf::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarNullIf::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -138,22 +128,20 @@ CDXLScalarNullIf::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarNullIf::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarNullIf::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	m_pmdidOp->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -166,12 +154,8 @@ CDXLScalarNullIf::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarNullIf::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarNullIf::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(2 == ulArity);
@@ -179,7 +163,8 @@ CDXLScalarNullIf::AssertValid
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
@@ -187,6 +172,6 @@ CDXLScalarNullIf::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

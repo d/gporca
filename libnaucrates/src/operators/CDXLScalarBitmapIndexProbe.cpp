@@ -27,14 +27,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarBitmapIndexProbe::CDXLScalarBitmapIndexProbe
-	(
-	IMemoryPool *pmp,
-	CDXLIndexDescr *pdxlid
-	)
-	:
-	CDXLScalar(pmp),
-	m_pdxlid(pdxlid)
+CDXLScalarBitmapIndexProbe::CDXLScalarBitmapIndexProbe(IMemoryPool *pmp,
+													   CDXLIndexDescr *pdxlid)
+	: CDXLScalar(pmp), m_pdxlid(pdxlid)
 {
 	GPOS_ASSERT(NULL != m_pdxlid);
 }
@@ -75,15 +70,12 @@ CDXLScalarBitmapIndexProbe::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBitmapIndexProbe::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarBitmapIndexProbe::SerializeToDXL(CXMLSerializer *pxmlser,
+										   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
@@ -91,7 +83,8 @@ CDXLScalarBitmapIndexProbe::SerializeToDXL
 	// serialize index descriptor
 	m_pdxlid->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -104,12 +97,8 @@ CDXLScalarBitmapIndexProbe::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBitmapIndexProbe::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarBitmapIndexProbe::AssertValid(const CDXLNode *pdxln,
+										BOOL fValidateChildren) const
 {
 	// bitmap index probe has 1 child: the index condition list
 	GPOS_ASSERT(1 == pdxln->UlArity());
@@ -117,14 +106,16 @@ CDXLScalarBitmapIndexProbe::AssertValid
 	if (fValidateChildren)
 	{
 		CDXLNode *pdxlnIndexCondList = (*pdxln)[0];
-		GPOS_ASSERT(EdxlopScalarIndexCondList == pdxlnIndexCondList->Pdxlop()->Edxlop());
-		pdxlnIndexCondList->Pdxlop()->AssertValid(pdxlnIndexCondList, fValidateChildren);
+		GPOS_ASSERT(EdxlopScalarIndexCondList ==
+					pdxlnIndexCondList->Pdxlop()->Edxlop());
+		pdxlnIndexCondList->Pdxlop()->AssertValid(pdxlnIndexCondList,
+												  fValidateChildren);
 	}
 
 	// assert validity of index descriptor
 	GPOS_ASSERT(NULL != m_pdxlid->Pmdname());
 	GPOS_ASSERT(m_pdxlid->Pmdname()->Pstr()->FValid());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

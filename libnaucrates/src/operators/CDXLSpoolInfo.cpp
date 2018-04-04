@@ -24,18 +24,12 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLSpoolInfo::CDXLSpoolInfo
-	(
-	ULONG ulSpoolId,
-	Edxlspooltype edxlspstype,
-	BOOL fMultiSlice,
-	INT iExecutorSlice
-	)
-	:
-	m_ulSpoolId(ulSpoolId),
-	m_edxlsptype(edxlspstype),
-	m_fMultiSlice(fMultiSlice),
-	m_iExecutorSlice(iExecutorSlice)
+CDXLSpoolInfo::CDXLSpoolInfo(ULONG ulSpoolId, Edxlspooltype edxlspstype,
+							 BOOL fMultiSlice, INT iExecutorSlice)
+	: m_ulSpoolId(ulSpoolId),
+	  m_edxlsptype(edxlspstype),
+	  m_fMultiSlice(fMultiSlice),
+	  m_iExecutorSlice(iExecutorSlice)
 {
 }
 
@@ -107,8 +101,9 @@ CDXLSpoolInfo::IExecutorSlice() const
 const CWStringConst *
 CDXLSpoolInfo::PstrSpoolType() const
 {
-	GPOS_ASSERT(EdxlspoolMaterialize == m_edxlsptype || EdxlspoolSort == m_edxlsptype);
-	
+	GPOS_ASSERT(EdxlspoolMaterialize == m_edxlsptype ||
+				EdxlspoolSort == m_edxlsptype);
+
 	switch (m_edxlsptype)
 	{
 		case EdxlspoolMaterialize:
@@ -129,24 +124,20 @@ CDXLSpoolInfo::PstrSpoolType() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLSpoolInfo::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLSpoolInfo::SerializeToDXL(CXMLSerializer *pxmlser) const
 {
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolId), m_ulSpoolId);
-	
+
 	const CWStringConst *pstrSpoolType = PstrSpoolType();
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolType), pstrSpoolType);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolType),
+						  pstrSpoolType);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolMultiSlice), m_fMultiSlice);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSpoolMultiSlice),
+						  m_fMultiSlice);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecutorSliceId), m_iExecutorSlice);
-	
-
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenExecutorSliceId),
+						  m_iExecutorSlice);
 }
-
 
 
 

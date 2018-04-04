@@ -17,64 +17,62 @@
 
 namespace gpdxl
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarDMLAction
+//
+//	@doc:
+//		Class for representing DXL DML action expressions
+//
+//---------------------------------------------------------------------------
+class CDXLScalarDMLAction : public CDXLScalar
+{
+private:
+	// private copy ctor
+	CDXLScalarDMLAction(const CDXLScalarDMLAction &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarDMLAction
-	//
-	//	@doc:
-	//		Class for representing DXL DML action expressions
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarDMLAction : public CDXLScalar
+public:
+	// ctor/dtor
+	explicit CDXLScalarDMLAction(IMemoryPool *pmp);
+
+	virtual ~CDXLScalarDMLAction()
 	{
-		private:
+	}
 
-			// private copy ctor
-			CDXLScalarDMLAction(const CDXLScalarDMLAction&);
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
 
-		public:
-			// ctor/dtor
-			explicit
-			CDXLScalarDMLAction(IMemoryPool *pmp);
+	const CWStringConst *
+	PstrOpName() const;
 
-			virtual
-			~CDXLScalarDMLAction(){}
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// ident accessors
-			Edxlopid Edxlop() const;
+	// conversion function
+	static CDXLScalarDMLAction *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarDMLAction == pdxlop->Edxlop());
 
-			const CWStringConst *PstrOpName() const;
+		return dynamic_cast<CDXLScalarDMLAction *>(pdxlop);
+	}
 
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLScalarDMLAction *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarDMLAction == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLScalarDMLAction*>(pdxlop);
-			}
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean(CMDAccessor *pmda) const;
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *pmda) const;
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-	};
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarDMLAction_H
+#endif  // !GPDXL_CDXLScalarDMLAction_H
 
 // EOF

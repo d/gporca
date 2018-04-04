@@ -25,15 +25,11 @@ using namespace gpos;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CTaskContext::CTaskContext
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pbs(NULL),
-	m_plogOut(&CLoggerStream::m_plogStdOut),
-	m_plogErr(&CLoggerStream::m_plogStdErr),
-	m_eloc(ElocEnUS_Utf8)
+CTaskContext::CTaskContext(IMemoryPool *pmp)
+	: m_pbs(NULL),
+	  m_plogOut(&CLoggerStream::m_plogStdOut),
+	  m_plogErr(&CLoggerStream::m_plogStdErr),
+	  m_eloc(ElocEnUS_Utf8)
 {
 	m_pbs = GPOS_NEW(pmp) CBitSet(pmp, EtraceSentinel);
 }
@@ -47,23 +43,18 @@ CTaskContext::CTaskContext
 //		used to inherit parent task's context
 //
 //---------------------------------------------------------------------------
-CTaskContext::CTaskContext
-	(
-	IMemoryPool *pmp,
-	const CTaskContext &tskctxt
-	)
-	:
-	m_pbs(NULL),
-	m_plogOut(tskctxt.PlogOut()),
-	m_plogErr(tskctxt.PlogErr()),
-	m_eloc(tskctxt.Eloc())
+CTaskContext::CTaskContext(IMemoryPool *pmp, const CTaskContext &tskctxt)
+	: m_pbs(NULL),
+	  m_plogOut(tskctxt.PlogOut()),
+	  m_plogErr(tskctxt.PlogErr()),
+	  m_eloc(tskctxt.Eloc())
 {
 	// allocate bitset and union separately to guard against leaks under OOM
 	CAutoRef<CBitSet> a_pbs;
-	
+
 	a_pbs = GPOS_NEW(pmp) CBitSet(pmp);
 	a_pbs->Union(tskctxt.m_pbs);
-	
+
 	m_pbs = a_pbs.PtReset();
 }
 
@@ -78,7 +69,7 @@ CTaskContext::CTaskContext
 //---------------------------------------------------------------------------
 CTaskContext::~CTaskContext()
 {
-    CRefCount::SafeRelease(m_pbs);
+	CRefCount::SafeRelease(m_pbs);
 }
 
 
@@ -91,13 +82,9 @@ CTaskContext::~CTaskContext()
 //
 //---------------------------------------------------------------------------
 BOOL
-CTaskContext::FTrace
-	(
-	ULONG ulTrace,
-	BOOL fVal
-	)
+CTaskContext::FTrace(ULONG ulTrace, BOOL fVal)
 {
-	if(fVal)
+	if (fVal)
 	{
 		return m_pbs->FExchangeSet(ulTrace);
 	}
@@ -108,4 +95,3 @@ CTaskContext::FTrace
 }
 
 // EOF
-

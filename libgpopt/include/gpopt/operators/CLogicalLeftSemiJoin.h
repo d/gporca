@@ -17,157 +17,128 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalLeftSemiJoin
-	//
-	//	@doc:
-	//		Left semi join operator
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalLeftSemiJoin : public CLogicalJoin
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalLeftSemiJoin
+//
+//	@doc:
+//		Left semi join operator
+//
+//---------------------------------------------------------------------------
+class CLogicalLeftSemiJoin : public CLogicalJoin
+{
+private:
+	// private copy ctor
+	CLogicalLeftSemiJoin(const CLogicalLeftSemiJoin &);
+
+public:
+	// ctor
+	explicit CLogicalLeftSemiJoin(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CLogicalLeftSemiJoin()
 	{
-		private:
+	}
 
-			// private copy ctor
-			CLogicalLeftSemiJoin(const CLogicalLeftSemiJoin &);
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopLogicalLeftSemiJoin;
+	}
 
-		public:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalLeftSemiJoin";
+	}
 
-			// ctor
-			explicit
-			CLogicalLeftSemiJoin(IMemoryPool *pmp);
+	// return true if we can pull projections up past this operator from its given child
+	virtual BOOL
+	FCanPullProjectionsUp(ULONG ulChildIndex) const
+	{
+		return (0 == ulChildIndex);
+	}
 
-			// dtor
-			virtual
-			~CLogicalLeftSemiJoin()
-			{}
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalLeftSemiJoin;
-			}
+	// derive output columns
+	virtual CColRefSet *
+	PcrsDeriveOutput(IMemoryPool *pmp, CExpressionHandle &hdl);
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalLeftSemiJoin";
-			}
+	// derive not nullable output columns
+	virtual CColRefSet *
+	PcrsDeriveNotNull(IMemoryPool *,  // pmp
+					  CExpressionHandle &exprhdl) const
+	{
+		return PcrsDeriveNotNullPassThruOuter(exprhdl);
+	}
 
-			// return true if we can pull projections up past this operator from its given child
-			virtual
-			BOOL FCanPullProjectionsUp
-				(
-				ULONG ulChildIndex
-				) const
-			{
-				return (0 == ulChildIndex);
-			}
+	// dervive keys
+	virtual CKeyCollection *
+	PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// derive output columns
-			virtual
-			CColRefSet *PcrsDeriveOutput(IMemoryPool *pmp, CExpressionHandle &hdl);
-			
-			// derive not nullable output columns
-			virtual
-			CColRefSet *PcrsDeriveNotNull
-				(
-				IMemoryPool *,// pmp
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PcrsDeriveNotNullPassThruOuter(exprhdl);
-			}
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *,  //pmp,
+						CExpressionHandle &exprhdl) const
+	{
+		return PpcDeriveConstraintPassThru(exprhdl, 0 /*ulChild*/);
+	}
 
-			// dervive keys
-			virtual 
-			CKeyCollection *PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
-			
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *, //pmp,
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PpcDeriveConstraintPassThru(exprhdl, 0 /*ulChild*/);
-			}
+	// candidate set of xforms
+	CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// candidate set of xforms
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+	// promise level for stat derivation
+	virtual EStatPromise
+	Esp(CExpressionHandle &  // exprhdl
+		) const
+	{
+		// semi join can be converted to inner join, which is used for stat derivation
+		return EspMedium;
+	}
 
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-						(
-						IMemoryPool *pmp,
-						CExpressionHandle &exprhdl,
-						DrgPstat *pdrgpstatCtxt
-						)
-						const;
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// promise level for stat derivation
-			virtual
-			EStatPromise Esp
-				(
-				CExpressionHandle & // exprhdl
-				)
-				const
-			{
-				// semi join can be converted to inner join, which is used for stat derivation
-				return EspMedium;
-			}
+	// conversion function
+	static CLogicalLeftSemiJoin *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalLeftSemiJoin == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
+		return dynamic_cast<CLogicalLeftSemiJoin *>(pop);
+	}
 
-			// conversion function
-			static
-			CLogicalLeftSemiJoin *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalLeftSemiJoin == pop->Eopid());
+	// derive statistics
+	static IStatistics *
+	PstatsDerive(IMemoryPool *pmp, DrgPstatspredjoin *pdrgpstatspredjoin,
+				 IStatistics *pstatsOuter, IStatistics *pstatsInner);
 
-				return dynamic_cast<CLogicalLeftSemiJoin*>(pop);
-			}
+};  // class CLogicalLeftSemiJoin
 
-			// derive statistics
-			static
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *pmp,
-				DrgPstatspredjoin *pdrgpstatspredjoin,
-				IStatistics *pstatsOuter,
-				IStatistics *pstatsInner
-				);
-
-	}; // class CLogicalLeftSemiJoin
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOS_CLogicalLeftSemiJoin_H
+#endif  // !GPOS_CLogicalLeftSemiJoin_H
 
 // EOF

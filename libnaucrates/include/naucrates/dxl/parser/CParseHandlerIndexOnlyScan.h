@@ -18,53 +18,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerIndexOnlyScan
-	//
-	//	@doc:
-	//		Parse handler for index only scan operator nodes
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerIndexOnlyScan : public CParseHandlerIndexScan
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerIndexOnlyScan
+//
+//	@doc:
+//		Parse handler for index only scan operator nodes
+//
+//---------------------------------------------------------------------------
+class CParseHandlerIndexOnlyScan : public CParseHandlerIndexScan
+{
+private:
+	// private copy ctor
+	CParseHandlerIndexOnlyScan(const CParseHandlerIndexOnlyScan &);
 
-			// private copy ctor
-			CParseHandlerIndexOnlyScan(const CParseHandlerIndexOnlyScan &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerIndexOnlyScan(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerIndexOnlyScan
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerIndexOnlyScan_H
+#endif  // !GPDXL_CParseHandlerIndexOnlyScan_H
 
 // EOF

@@ -27,30 +27,24 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformPushGbBelowJoin::CXformPushGbBelowJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CLogicalGbAgg(pmp),
-			GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // join outer child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // join inner child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)) // join predicate
-				),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// scalar project list
-			)
-		)
-{}
+CXformPushGbBelowJoin::CXformPushGbBelowJoin(IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // join outer child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // join inner child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // join predicate
+			  ),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -60,13 +54,10 @@ CXformPushGbBelowJoin::CXformPushGbBelowJoin
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformPushGbBelowJoin::CXformPushGbBelowJoin
-	(
-	CExpression *pexprPattern
-	)
-	:
-	CXformExploration(pexprPattern)
-{}
+CXformPushGbBelowJoin::CXformPushGbBelowJoin(CExpression *pexprPattern)
+	: CXformExploration(pexprPattern)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -78,11 +69,7 @@ CXformPushGbBelowJoin::CXformPushGbBelowJoin
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformPushGbBelowJoin::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformPushGbBelowJoin::Exfp(CExpressionHandle &exprhdl) const
 {
 	CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(exprhdl.Pop());
 	if (!popGbAgg->FGlobal())
@@ -103,13 +90,8 @@ CXformPushGbBelowJoin::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformPushGbBelowJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformPushGbBelowJoin::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -128,4 +110,3 @@ CXformPushGbBelowJoin::Transform
 
 
 // EOF
-

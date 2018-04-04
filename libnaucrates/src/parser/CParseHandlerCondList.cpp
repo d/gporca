@@ -29,14 +29,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCondList::CParseHandlerCondList
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerCondList::CParseHandlerCondList(IMemoryPool *pmp,
+											 CParseHandlerManager *pphm,
+											 CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -50,35 +46,39 @@ CParseHandlerCondList::CParseHandlerCondList
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCondList::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerCondList::StartElement(const XMLCh *const xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const xmlszQname,
+									const Attributes &attrs)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarHashCondList), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarHashCondList),
+				 xmlszLocalname))
 	{
 		// start the hash cond list
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarHashCondList(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarHashCondList(m_pmp));
 	}
-	else if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarMergeCondList), xmlszLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenScalarMergeCondList),
+					  xmlszLocalname))
 	{
 		// start the merge cond list
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarMergeCondList(m_pmp));
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarMergeCondList(m_pmp));
 	}
 	else
 	{
 		// we must have seen a cond list already and initialized the cond list node
 		GPOS_ASSERT(NULL != m_pdxln);
 		// start new hash cond element
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
-		
+
 		// store parse handler
 		this->Append(pphChild);
-		
+
 		pphChild->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 	}
 }
@@ -92,29 +92,33 @@ CParseHandlerCondList::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCondList::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerCondList::EndElement(const XMLCh *const,  // xmlszUri,
+								  const XMLCh *const xmlszLocalname,
+								  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarHashCondList), xmlszLocalname) &&
-			0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarMergeCondList), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarHashCondList),
+				 xmlszLocalname) &&
+		0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarMergeCondList),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	const ULONG ulLen = this->UlLength();
 	// add conditions from child parse handlers
 	for (ULONG ul = 0; ul < ulLen; ul++)
 	{
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
-		
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
+
 		AddChildFromParseHandler(pphChild);
 	}
-		
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }

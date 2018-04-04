@@ -27,22 +27,19 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CXformLeftSemiJoin2NLJoin::CXformLeftSemiJoin2NLJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-					(pmp,
-					 GPOS_NEW(pmp) CLogicalLeftSemiJoin(pmp),
-					 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-					 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-					 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))) // predicate
-		)
-{}
+CXformLeftSemiJoin2NLJoin::CXformLeftSemiJoin2NLJoin(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalLeftSemiJoin(pmp),
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)))  // predicate
+	  )
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -54,11 +51,7 @@ CXformLeftSemiJoin2NLJoin::CXformLeftSemiJoin2NLJoin
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformLeftSemiJoin2NLJoin::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformLeftSemiJoin2NLJoin::Exfp(CExpressionHandle &exprhdl) const
 {
 	return CXformUtils::ExfpLogicalJoin2PhysicalJoin(exprhdl);
 }
@@ -73,21 +66,17 @@ CXformLeftSemiJoin2NLJoin::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformLeftSemiJoin2NLJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformLeftSemiJoin2NLJoin::Transform(CXformContext *pxfctxt,
+									 CXformResult *pxfres,
+									 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CXformUtils::ImplementNLJoin<CPhysicalLeftSemiNLJoin>(pxfctxt, pxfres, pexpr);
+	CXformUtils::ImplementNLJoin<CPhysicalLeftSemiNLJoin>(pxfctxt, pxfres,
+														  pexpr);
 }
 
 
 // EOF
-

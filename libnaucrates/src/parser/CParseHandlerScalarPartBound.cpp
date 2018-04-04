@@ -29,14 +29,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarPartBound::CParseHandlerScalarPartBound
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarPartBound::CParseHandlerScalarPartBound(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -49,25 +44,31 @@ CParseHandlerScalarPartBound::CParseHandlerScalarPartBound
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarPartBound::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarPartBound::StartElement(const XMLCh *const,  // xmlszUri,
+										   const XMLCh *const xmlszLocalname,
+										   const XMLCh *const,  // xmlszQname,
+										   const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarPartBound), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarPartBound), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	ULONG ulLevel = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenPartLevel, EdxltokenScalarPartBound);
-	IMDId *m_pmdidType = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenMDType, EdxltokenScalarPartBound);
-	BOOL fLower = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenScalarPartBoundLower, EdxltokenScalarPartBound);
+	ULONG ulLevel = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenPartLevel, EdxltokenScalarPartBound);
+	IMDId *m_pmdidType = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenMDType, EdxltokenScalarPartBound);
+	BOOL fLower = CDXLOperatorFactory::FValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenScalarPartBoundLower,
+		EdxltokenScalarPartBound);
 
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp, GPOS_NEW(m_pmp) CDXLScalarPartBound(m_pmp, ulLevel, m_pmdidType, fLower));
+	m_pdxln = GPOS_NEW(m_pmp)
+		CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarPartBound(
+							m_pmp, ulLevel, m_pmdidType, fLower));
 }
 
 //---------------------------------------------------------------------------
@@ -79,16 +80,17 @@ CParseHandlerScalarPartBound::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarPartBound::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarPartBound::EndElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarPartBound), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarPartBound), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 

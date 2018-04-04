@@ -28,15 +28,14 @@ using namespace gpmd;
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-IMDType::PstrCmpType
-	(
-	IMDType::ECmpType ecmpt
-	)
+IMDType::PstrCmpType(IMDType::ECmpType ecmpt)
 {
 	GPOS_ASSERT(IMDType::EcmptOther >= ecmpt);
-	
-	Edxltoken rgdxltoken[] = {EdxltokenCmpEq, EdxltokenCmpNeq, EdxltokenCmpLt, EdxltokenCmpLeq, EdxltokenCmpGt, EdxltokenCmpGeq, EdxltokenCmpIDF, EdxltokenCmpOther};
-	
+
+	Edxltoken rgdxltoken[] = {
+		EdxltokenCmpEq, EdxltokenCmpNeq, EdxltokenCmpLt,  EdxltokenCmpLeq,
+		EdxltokenCmpGt, EdxltokenCmpGeq, EdxltokenCmpIDF, EdxltokenCmpOther};
+
 	GPOS_ASSERT(IMDType::EcmptOther + 1 == GPOS_ARRAY_SIZE(rgdxltoken));
 	return CDXLTokens::PstrToken(rgdxltoken[ecmpt]);
 }
@@ -52,11 +51,7 @@ IMDType::PstrCmpType
 //
 //---------------------------------------------------------------------------
 BOOL
-IMDType::FStatsComparable
-	(
-	const IMDType *pmdtypeFst,
-	const IMDType *pmdtypeSnd
-	)
+IMDType::FStatsComparable(const IMDType *pmdtypeFst, const IMDType *pmdtypeSnd)
 {
 	GPOS_ASSERT(NULL != pmdtypeFst);
 	GPOS_ASSERT(NULL != pmdtypeSnd);
@@ -78,11 +73,7 @@ IMDType::FStatsComparable
 //
 //---------------------------------------------------------------------------
 BOOL
-IMDType::FStatsComparable
-	(
-	const IMDType *pmdtypeFst,
-	const IDatum *pdatumSnd
-	)
+IMDType::FStatsComparable(const IMDType *pmdtypeFst, const IDatum *pdatumSnd)
 {
 	GPOS_ASSERT(NULL != pmdtypeFst);
 	GPOS_ASSERT(NULL != pdatumSnd);

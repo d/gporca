@@ -26,16 +26,10 @@ using namespace gpdxl;
 //		Constructs a BooleanTest node
 //
 //---------------------------------------------------------------------------
-CDXLScalarBooleanTest::CDXLScalarBooleanTest
-	(
-	IMemoryPool *pmp,
-	const EdxlBooleanTestType edxlbooleanTestType
-	)
-	:
-	CDXLScalar(pmp),
-	m_edxlbooleantesttype(edxlbooleanTestType)
+CDXLScalarBooleanTest::CDXLScalarBooleanTest(
+	IMemoryPool *pmp, const EdxlBooleanTestType edxlbooleanTestType)
+	: CDXLScalar(pmp), m_edxlbooleantesttype(edxlbooleanTestType)
 {
-
 }
 
 
@@ -82,17 +76,17 @@ CDXLScalarBooleanTest::PstrOpName() const
 	switch (m_edxlbooleantesttype)
 	{
 		case EdxlbooleantestIsTrue:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsTrue);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsTrue);
 		case EdxlbooleantestIsNotTrue:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotTrue);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotTrue);
 		case EdxlbooleantestIsFalse:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsFalse);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsFalse);
 		case EdxlbooleantestIsNotFalse:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotFalse);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotFalse);
 		case EdxlbooleantestIsUnknown:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsUnknown);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsUnknown);
 		case EdxlbooleantestIsNotUnknown:
-				return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotUnknown);
+			return CDXLTokens::PstrToken(EdxltokenScalarBoolTestIsNotUnknown);
 		default:
 			return NULL;
 	}
@@ -107,21 +101,19 @@ CDXLScalarBooleanTest::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBooleanTest::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarBooleanTest::SerializeToDXL(CXMLSerializer *pxmlser,
+									  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
 	GPOS_ASSERT(NULL != pstrElemName);
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -134,18 +126,18 @@ CDXLScalarBooleanTest::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBooleanTest::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarBooleanTest::AssertValid(const CDXLNode *pdxln,
+								   BOOL fValidateChildren) const
 {
+	EdxlBooleanTestType edxlbooltype =
+		((CDXLScalarBooleanTest *) pdxln->Pdxlop())->EdxlBoolType();
 
-	EdxlBooleanTestType edxlbooltype = ((CDXLScalarBooleanTest *) pdxln->Pdxlop())->EdxlBoolType();
-
-	GPOS_ASSERT( (EdxlbooleantestIsTrue == edxlbooltype) || (EdxlbooleantestIsNotTrue == edxlbooltype) || (EdxlbooleantestIsFalse == edxlbooltype)
-			|| (EdxlbooleantestIsNotFalse == edxlbooltype)|| (EdxlbooleantestIsUnknown == edxlbooltype)|| (EdxlbooleantestIsNotUnknown == edxlbooltype));
+	GPOS_ASSERT((EdxlbooleantestIsTrue == edxlbooltype) ||
+				(EdxlbooleantestIsNotTrue == edxlbooltype) ||
+				(EdxlbooleantestIsFalse == edxlbooltype) ||
+				(EdxlbooleantestIsNotFalse == edxlbooltype) ||
+				(EdxlbooleantestIsUnknown == edxlbooltype) ||
+				(EdxlbooleantestIsNotUnknown == edxlbooltype));
 
 	GPOS_ASSERT(1 == pdxln->UlArity());
 	CDXLNode *pdxlnArg = (*pdxln)[0];
@@ -155,9 +147,8 @@ CDXLScalarBooleanTest::AssertValid
 	{
 		pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 	}
-
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

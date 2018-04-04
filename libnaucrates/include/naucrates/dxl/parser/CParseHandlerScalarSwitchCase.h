@@ -19,54 +19,41 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarSwitchCase
-	//
-	//	@doc:
-	//		Parse handler for parsing a SwitchCase operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarSwitchCase : public CParseHandlerScalarOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarSwitchCase
+//
+//	@doc:
+//		Parse handler for parsing a SwitchCase operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarSwitchCase : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarSwitchCase(const CParseHandlerScalarSwitchCase &);
 
-			// private copy ctor
-			CParseHandlerScalarSwitchCase(const CParseHandlerScalarSwitchCase &);
+	// process the start of an element
+	void
+	StartElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+				 const XMLCh *const xmlszQname, const Attributes &attr);
 
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname,
-					const Attributes& attr
-					);
+	// process the end of an element
+	void
+	EndElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+			   const XMLCh *const xmlszQname);
 
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname
-					);
+public:
+	// ctor
+	CParseHandlerScalarSwitchCase(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerScalarSwitchCase
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-
-		};
-}
-
-#endif // !GPDXL_CParseHandlerScalarSwitchCase_H
+#endif  // !GPDXL_CParseHandlerScalarSwitchCase_H
 
 //EOF

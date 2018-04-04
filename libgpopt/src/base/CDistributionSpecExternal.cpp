@@ -36,11 +36,7 @@ CDistributionSpecExternal::CDistributionSpecExternal()
 //
 //---------------------------------------------------------------------------
 BOOL
-CDistributionSpecExternal::FMatch
-	(
-	const CDistributionSpec *pds
-	)
-	const
+CDistributionSpecExternal::FMatch(const CDistributionSpec *pds) const
 {
 	return (Edt() == pds->Edt());
 }
@@ -54,11 +50,7 @@ CDistributionSpecExternal::FMatch
 //
 //---------------------------------------------------------------------------
 BOOL
-CDistributionSpecExternal::FSatisfies
-	(
-	const CDistributionSpec *pds
-	)
-	const
+CDistributionSpecExternal::FSatisfies(const CDistributionSpec *pds) const
 {
 	if (FMatch(pds))
 	{
@@ -69,14 +61,9 @@ CDistributionSpecExternal::FSatisfies
 }
 
 void
-CDistributionSpecExternal::AppendEnforcers
-	(
-	IMemoryPool *,
-	CExpressionHandle &,
-	CReqdPropPlan *,
-	DrgPexpr *,
-	CExpression *
-	)
+CDistributionSpecExternal::AppendEnforcers(IMemoryPool *, CExpressionHandle &,
+										   CReqdPropPlan *, DrgPexpr *,
+										   CExpression *)
 {
 	GPOS_ASSERT(!"EXTERNAL distribution cannot be enforced, it's derive only.");
 }
@@ -96,14 +83,9 @@ CDistributionSpecExternal::Edpt() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CDistributionSpecExternal::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CDistributionSpecExternal::OsPrint(IOstream &os) const
 {
 	return os << this->SzId();
 }
 
 // EOF
-

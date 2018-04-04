@@ -25,7 +25,7 @@
 using namespace gpopt;
 using namespace gpmd;
 
-#define GPOPT_COLFACTORY_HT_BUCKETS	10000
+#define GPOPT_COLFACTORY_HT_BUCKETS 10000
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -35,25 +35,15 @@ using namespace gpmd;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CColumnFactory::CColumnFactory()
-	:
-	m_pmp(NULL),
-	m_phmcrcrs(NULL)
+CColumnFactory::CColumnFactory() : m_pmp(NULL), m_phmcrcrs(NULL)
 {
 	CAutoMemoryPool amp;
 	m_pmp = amp.Pmp();
-	
+
 	// initialize hash table
-	m_sht.Init
-		(
-		m_pmp,
-		GPOPT_COLFACTORY_HT_BUCKETS,
-		GPOS_OFFSET(CColRef, m_link),
-		GPOS_OFFSET(CColRef, m_ulId),
-		&(CColRef::m_ulInvalid),
-		CColRef::UlHash,
-		CColRef::FEqual
-		);
+	m_sht.Init(m_pmp, GPOPT_COLFACTORY_HT_BUCKETS, GPOS_OFFSET(CColRef, m_link),
+			   GPOS_OFFSET(CColRef, m_ulId), &(CColRef::m_ulInvalid),
+			   CColRef::UlHash, CColRef::FEqual);
 
 	// now it's safe to detach the auto pool
 	(void) amp.PmpDetach();
@@ -103,15 +93,11 @@ CColumnFactory::Initialize()
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCreate
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier
-	)
+CColumnFactory::PcrCreate(const IMDType *pmdtype, INT iTypeModifier)
 {
 	// increment atomic counter
 	ULONG ulId = m_aul.TIncr();
-	
+
 	WCHAR wszFmt[] = GPOS_WSZ_LIT("ColRef_%04d");
 	CWStringDynamic *pstrTempName = GPOS_NEW(m_pmp) CWStringDynamic(m_pmp);
 	CAutoP<CWStringDynamic> a_pstrTempName(pstrTempName);
@@ -130,51 +116,13 @@ CColumnFactory::PcrCreate
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCreate
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier,
-	const CName &name
-	)
+CColumnFactory::PcrCreate(const IMDType *pmdtype, INT iTypeModifier,
+						  const CName &name)
 {
 	ULONG ulId = m_aul.TIncr();
 
 	return PcrCreate(pmdtype, iTypeModifier, ulId, name);
 }
-	
-	
-//---------------------------------------------------------------------------
-//	@function:
-//		CColumnFactory::PcrCreate
-//
-//	@doc:
-//		Basic implementation of all factory methods;
-//		Name and id have already determined, we just create the ColRef and
-//		insert it into the hashtable
-//
-//---------------------------------------------------------------------------
-CColRef *
-CColumnFactory::PcrCreate
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier,
-	ULONG ulId,
-	const CName &name
-	)
-{
-	CName *pnameCopy = GPOS_NEW(m_pmp) CName(m_pmp, name); 
-	CAutoP<CName> a_pnameCopy(pnameCopy);
-
-	CColRef *pcr = GPOS_NEW(m_pmp) CColRefComputed(pmdtype, iTypeModifier, ulId, pnameCopy);
-	(void) a_pnameCopy.PtReset();
-	CAutoP<CColRef> a_pcr(pcr);
-	
-	// ensure uniqueness
-	GPOS_ASSERT(NULL == PcrLookup(ulId));
-	m_sht.Insert(pcr);
-	
-	return a_pcr.PtReset();
-}
 
 
 //---------------------------------------------------------------------------
@@ -188,25 +136,21 @@ CColumnFactory::PcrCreate
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCreate
-	(
-	const CColumnDescriptor *pcoldesc,
-	ULONG ulId,
-	const CName &name,
-	ULONG ulOpSource
-	)
+CColumnFactory::PcrCreate(const IMDType *pmdtype, INT iTypeModifier, ULONG ulId,
+						  const CName &name)
 {
 	CName *pnameCopy = GPOS_NEW(m_pmp) CName(m_pmp, name);
 	CAutoP<CName> a_pnameCopy(pnameCopy);
 
-	CColRef *pcr = GPOS_NEW(m_pmp) CColRefTable(pcoldesc, ulId, pnameCopy, ulOpSource);
+	CColRef *pcr = GPOS_NEW(m_pmp)
+		CColRefComputed(pmdtype, iTypeModifier, ulId, pnameCopy);
 	(void) a_pnameCopy.PtReset();
 	CAutoP<CColRef> a_pcr(pcr);
 
 	// ensure uniqueness
 	GPOS_ASSERT(NULL == PcrLookup(ulId));
 	m_sht.Insert(pcr);
-	
+
 	return a_pcr.PtReset();
 }
 
@@ -222,23 +166,46 @@ CColumnFactory::PcrCreate
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCreate
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier,
-	INT iAttno,
-	BOOL fNullable,
-	ULONG ulId,
-	const CName &name,
-	ULONG ulOpSource,
-	ULONG ulWidth
-	)
+CColumnFactory::PcrCreate(const CColumnDescriptor *pcoldesc, ULONG ulId,
+						  const CName &name, ULONG ulOpSource)
 {
 	CName *pnameCopy = GPOS_NEW(m_pmp) CName(m_pmp, name);
 	CAutoP<CName> a_pnameCopy(pnameCopy);
 
 	CColRef *pcr =
-			GPOS_NEW(m_pmp) CColRefTable(pmdtype, iTypeModifier, iAttno, fNullable, ulId, pnameCopy, ulOpSource, ulWidth);
+		GPOS_NEW(m_pmp) CColRefTable(pcoldesc, ulId, pnameCopy, ulOpSource);
+	(void) a_pnameCopy.PtReset();
+	CAutoP<CColRef> a_pcr(pcr);
+
+	// ensure uniqueness
+	GPOS_ASSERT(NULL == PcrLookup(ulId));
+	m_sht.Insert(pcr);
+
+	return a_pcr.PtReset();
+}
+
+
+//---------------------------------------------------------------------------
+//	@function:
+//		CColumnFactory::PcrCreate
+//
+//	@doc:
+//		Basic implementation of all factory methods;
+//		Name and id have already determined, we just create the ColRef and
+//		insert it into the hashtable
+//
+//---------------------------------------------------------------------------
+CColRef *
+CColumnFactory::PcrCreate(const IMDType *pmdtype, INT iTypeModifier, INT iAttno,
+						  BOOL fNullable, ULONG ulId, const CName &name,
+						  ULONG ulOpSource, ULONG ulWidth)
+{
+	CName *pnameCopy = GPOS_NEW(m_pmp) CName(m_pmp, name);
+	CAutoP<CName> a_pnameCopy(pnameCopy);
+
+	CColRef *pcr =
+		GPOS_NEW(m_pmp) CColRefTable(pmdtype, iTypeModifier, iAttno, fNullable,
+									 ulId, pnameCopy, ulOpSource, ulWidth);
 	(void) a_pnameCopy.PtReset();
 	CAutoP<CColRef> a_pcr(pcr);
 
@@ -258,15 +225,11 @@ CColumnFactory::PcrCreate
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCreate
-	(
-	const CColumnDescriptor *pcoldesc,
-	const CName &name,
-	ULONG ulOpSource
-	)
+CColumnFactory::PcrCreate(const CColumnDescriptor *pcoldesc, const CName &name,
+						  ULONG ulOpSource)
 {
 	ULONG ulId = m_aul.TIncr();
-	
+
 	return PcrCreate(pcoldesc, ulId, name, ulOpSource);
 }
 
@@ -279,10 +242,7 @@ CColumnFactory::PcrCreate
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrCopy
-	(
-	const CColRef* pcr
-	)
+CColumnFactory::PcrCopy(const CColRef *pcr)
 {
 	CName name(pcr->Name());
 	if (CColRef::EcrtComputed == pcr->Ecrt())
@@ -292,19 +252,12 @@ CColumnFactory::PcrCopy
 
 	GPOS_ASSERT(CColRef::EcrtTable == pcr->Ecrt());
 	ULONG ulId = m_aul.TIncr();
-	CColRefTable *pcrTable = CColRefTable::PcrConvert(const_cast<CColRef*>(pcr));
+	CColRefTable *pcrTable =
+		CColRefTable::PcrConvert(const_cast<CColRef *>(pcr));
 
-	return PcrCreate
-			(
-			pcr->Pmdtype(),
-			pcr->ITypeModifier(),
-			pcrTable->IAttno(),
-			pcrTable->FNullable(),
-			ulId,
-			name,
-			pcrTable->UlSourceOpId(),
-			pcrTable->UlWidth()
-			);
+	return PcrCreate(pcr->Pmdtype(), pcr->ITypeModifier(), pcrTable->IAttno(),
+					 pcrTable->FNullable(), ulId, name,
+					 pcrTable->UlSourceOpId(), pcrTable->UlWidth());
 }
 
 //---------------------------------------------------------------------------
@@ -316,16 +269,13 @@ CColumnFactory::PcrCopy
 //
 //---------------------------------------------------------------------------
 CColRef *
-CColumnFactory::PcrLookup
-	(
-	ULONG ulId
-	)
+CColumnFactory::PcrLookup(ULONG ulId)
 {
-	CSyncHashtableAccessByKey<CColRef, ULONG,
-		CSpinlockColumnFactory> shtacc(m_sht, ulId);
-	
+	CSyncHashtableAccessByKey<CColRef, ULONG, CSpinlockColumnFactory> shtacc(
+		m_sht, ulId);
+
 	CColRef *pcr = shtacc.PtLookup();
-	
+
 	return pcr;
 }
 
@@ -339,27 +289,24 @@ CColumnFactory::PcrLookup
 //
 //---------------------------------------------------------------------------
 void
-CColumnFactory::Destroy
-	(
-	CColRef *pcr
-	)
+CColumnFactory::Destroy(CColRef *pcr)
 {
 	GPOS_ASSERT(NULL != pcr);
 
 	ULONG ulId = pcr->m_ulId;
-	
+
 	{
 		// scope for the hash table accessor
 		CSyncHashtableAccessByKey<CColRef, ULONG, CSpinlockColumnFactory>
 			shtacc(m_sht, ulId);
-		
+
 		CColRef *pcrFound = shtacc.PtLookup();
 		GPOS_ASSERT(pcr == pcrFound);
-		
+
 		// unlink from hashtable
 		shtacc.Remove(pcrFound);
 	}
-	
+
 	GPOS_DELETE(pcr);
 }
 
@@ -373,10 +320,7 @@ CColumnFactory::Destroy
 //		computed column
 //---------------------------------------------------------------------------
 const CColRefSet *
-CColumnFactory::PcrsUsedInComputedCol
-	(
-	const CColRef *pcr
-	)
+CColumnFactory::PcrsUsedInComputedCol(const CColRef *pcr)
 {
 	GPOS_ASSERT(NULL != pcr);
 	GPOS_ASSERT(NULL != m_phmcrcrs);
@@ -397,15 +341,13 @@ CColumnFactory::PcrsUsedInComputedCol
 //
 //---------------------------------------------------------------------------
 void
-CColumnFactory::AddComputedToUsedColsMap
-	(
-	CExpression *pexpr
-	)
+CColumnFactory::AddComputedToUsedColsMap(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != m_phmcrcrs);
 
-	const CScalarProjectElement *popScPrEl = CScalarProjectElement::PopConvert(pexpr->Pop());
+	const CScalarProjectElement *popScPrEl =
+		CScalarProjectElement::PopConvert(pexpr->Pop());
 	CColRef *pcrComputedCol = popScPrEl->Pcr();
 
 	CDrvdPropScalar *pdpscalar = CDrvdPropScalar::Pdpscalar(pexpr->PdpDerive());
@@ -414,12 +356,12 @@ CColumnFactory::AddComputedToUsedColsMap
 	{
 #ifdef GPOS_DEBUG
 		BOOL fres =
-#endif // GPOS_DEBUG
-			m_phmcrcrs->FInsert(pcrComputedCol, GPOS_NEW(m_pmp) CColRefSet(m_pmp, *pcrsUsed));
+#endif  // GPOS_DEBUG
+			m_phmcrcrs->FInsert(pcrComputedCol,
+								GPOS_NEW(m_pmp) CColRefSet(m_pmp, *pcrsUsed));
 		GPOS_ASSERT(fres);
 	}
 }
 
 
 // EOF
-

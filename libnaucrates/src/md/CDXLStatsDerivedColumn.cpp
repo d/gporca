@@ -26,22 +26,17 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLStatsDerivedColumn::CDXLStatsDerivedColumn
-	(
-	ULONG ulColId,
-	CDouble dWidth,
-	CDouble dNullFreq,
-	CDouble dDistinctRemain,
-	CDouble dFreqRemain,
-	DrgPdxlbucket *pdrgpdxlbucket
-	)
-	:
-	m_ulColId(ulColId),
-	m_dWidth(dWidth),
-	m_dNullFreq(dNullFreq),
-	m_dDistinctRemain(dDistinctRemain),
-	m_dFreqRemain(dFreqRemain),
-	m_pdrgpdxlbucket(pdrgpdxlbucket)
+CDXLStatsDerivedColumn::CDXLStatsDerivedColumn(ULONG ulColId, CDouble dWidth,
+											   CDouble dNullFreq,
+											   CDouble dDistinctRemain,
+											   CDouble dFreqRemain,
+											   DrgPdxlbucket *pdrgpdxlbucket)
+	: m_ulColId(ulColId),
+	  m_dWidth(dWidth),
+	  m_dNullFreq(dNullFreq),
+	  m_dDistinctRemain(dDistinctRemain),
+	  m_dFreqRemain(dFreqRemain),
+	  m_pdrgpdxlbucket(pdrgpdxlbucket)
 {
 	GPOS_ASSERT(0 <= m_dWidth);
 	GPOS_ASSERT(0 <= m_dNullFreq);
@@ -86,20 +81,19 @@ CDXLStatsDerivedColumn::Pdrgpdxlbucket() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLStatsDerivedColumn::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLStatsDerivedColumn::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenStatsDerivedColumn));
+						 CDXLTokens::PstrToken(EdxltokenStatsDerivedColumn));
 
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulColId);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWidth), m_dWidth);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNullFreq), m_dNullFreq);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNdvRemain), m_dDistinctRemain);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColFreqRemain), m_dFreqRemain);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNullFreq),
+						  m_dNullFreq);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColNdvRemain),
+						  m_dDistinctRemain);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColFreqRemain),
+						  m_dFreqRemain);
 
 
 	const ULONG ulBuckets = m_pdrgpdxlbucket->UlLength();
@@ -114,7 +108,7 @@ CDXLStatsDerivedColumn::Serialize
 	}
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenStatsDerivedColumn));
+						  CDXLTokens::PstrToken(EdxltokenStatsDerivedColumn));
 }
 
 #ifdef GPOS_DEBUG
@@ -127,11 +121,7 @@ CDXLStatsDerivedColumn::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CDXLStatsDerivedColumn::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CDXLStatsDerivedColumn::DebugPrint(IOstream &os) const
 {
 	os << "Column id: " << m_ulColId;
 	os << std::endl;
@@ -146,7 +136,6 @@ CDXLStatsDerivedColumn::DebugPrint
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

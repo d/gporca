@@ -26,18 +26,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalTVF::CDXLPhysicalTVF
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	CWStringConst *pstr
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_pstr(pstr)
+CDXLPhysicalTVF::CDXLPhysicalTVF(IMemoryPool *pmp, IMDId *pmdidFunc,
+								 IMDId *pmdidRetType, CWStringConst *pstr)
+	: CDXLPhysical(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_pstr(pstr)
 {
 	GPOS_ASSERT(NULL != m_pmdidFunc);
 	GPOS_ASSERT(m_pmdidFunc->FValid());
@@ -98,15 +92,12 @@ CDXLPhysicalTVF::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalTVF::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalTVF::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenFuncId));
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pstr);
 	m_pmdidRetType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
@@ -117,7 +108,8 @@ CDXLPhysicalTVF::SerializeToDXL
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -130,12 +122,8 @@ CDXLPhysicalTVF::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalTVF::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalTVF::AssertValid(const CDXLNode *pdxln,
+							 BOOL fValidateChildren) const
 {
 	// assert validity of function id and return type
 	GPOS_ASSERT(NULL != m_pmdidFunc);
@@ -154,7 +142,7 @@ CDXLPhysicalTVF::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

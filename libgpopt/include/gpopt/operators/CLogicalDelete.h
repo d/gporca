@@ -16,219 +16,193 @@
 
 namespace gpopt
 {
+// fwd declarations
+class CTableDescriptor;
 
-	// fwd declarations
-	class CTableDescriptor;
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalDelete
+//
+//	@doc:
+//		Logical Delete operator
+//
+//---------------------------------------------------------------------------
+class CLogicalDelete : public CLogical
+{
+private:
+	// table descriptor
+	CTableDescriptor *m_ptabdesc;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalDelete
-	//
-	//	@doc:
-	//		Logical Delete operator
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalDelete : public CLogical
+	// columns to delete
+	DrgPcr *m_pdrgpcr;
+
+	// ctid column
+	CColRef *m_pcrCtid;
+
+	// segmentId column
+	CColRef *m_pcrSegmentId;
+
+	// private copy ctor
+	CLogicalDelete(const CLogicalDelete &);
+
+public:
+	// ctor
+	explicit CLogicalDelete(IMemoryPool *pmp);
+
+	// ctor
+	CLogicalDelete(IMemoryPool *pmp, CTableDescriptor *ptabdesc,
+				   DrgPcr *pdrgpcr, CColRef *pcrCtid, CColRef *pcrSegmentId);
+
+	// dtor
+	virtual ~CLogicalDelete();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopLogicalDelete;
+	}
 
-		private:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalDelete";
+	}
 
-			// table descriptor
-			CTableDescriptor *m_ptabdesc;
+	// columns to delete
+	DrgPcr *
+	Pdrgpcr() const
+	{
+		return m_pdrgpcr;
+	}
 
-			// columns to delete
-			DrgPcr *m_pdrgpcr;
+	// ctid column
+	CColRef *
+	PcrCtid() const
+	{
+		return m_pcrCtid;
+	}
 
-			// ctid column
-			CColRef *m_pcrCtid;
+	// segmentId column
+	CColRef *
+	PcrSegmentId() const
+	{
+		return m_pcrSegmentId;
+	}
 
-			// segmentId column
-			CColRef *m_pcrSegmentId;
+	// return table's descriptor
+	CTableDescriptor *
+	Ptabdesc() const
+	{
+		return m_ptabdesc;
+	}
 
-			// private copy ctor
-			CLogicalDelete(const CLogicalDelete &);
+	// operator specific hash function
+	virtual ULONG
+	UlHash() const;
 
-		public:
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// ctor
-			explicit
-			CLogicalDelete(IMemoryPool *pmp);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return false;
+	}
 
-			// ctor
-			CLogicalDelete
-				(
-				IMemoryPool *pmp,
-				CTableDescriptor *ptabdesc,
-				DrgPcr *pdrgpcr,
-				CColRef *pcrCtid,
-				CColRef *pcrSegmentId
-				);
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// dtor
-			virtual
-			~CLogicalDelete();
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalDelete;
-			}
-
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalDelete";
-			}
-
-			// columns to delete
-			DrgPcr *Pdrgpcr() const
-			{
-				return m_pdrgpcr;
-			}
-
-			// ctid column
-			CColRef *PcrCtid() const
-			{
-				return m_pcrCtid;
-			}
-
-			// segmentId column
-			CColRef *PcrSegmentId() const
-			{
-				return m_pcrSegmentId;
-			}
-
-			// return table's descriptor
-			CTableDescriptor *Ptabdesc() const
-			{
-				return m_ptabdesc;
-			}
-
-			// operator specific hash function
-			virtual
-			ULONG UlHash() const;
-
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
-
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return false;
-			}
-
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
-
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
-
-			// derive output columns
-			virtual
-			CColRefSet *PcrsDeriveOutput(IMemoryPool *pmp, CExpressionHandle &exprhdl);
+	// derive output columns
+	virtual CColRefSet *
+	PcrsDeriveOutput(IMemoryPool *pmp, CExpressionHandle &exprhdl);
 
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *, // pmp
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return CLogical::PpcDeriveConstraintPassThru(exprhdl, 0 /*ulChild*/);
-			}
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *,  // pmp
+						CExpressionHandle &exprhdl) const
+	{
+		return CLogical::PpcDeriveConstraintPassThru(exprhdl, 0 /*ulChild*/);
+	}
 
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// derive partition consumer info
-			virtual
-			CPartInfo *PpartinfoDerive
-				(
-				IMemoryPool *, // pmp,
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PpartinfoPassThruOuter(exprhdl);
-			}
+	// derive partition consumer info
+	virtual CPartInfo *
+	PpartinfoDerive(IMemoryPool *,  // pmp,
+					CExpressionHandle &exprhdl) const
+	{
+		return PpartinfoPassThruOuter(exprhdl);
+	}
 
-			// compute required stats columns of the n-th child
-			virtual
-			CColRefSet *PcrsStat
-				(
-				IMemoryPool *,// pmp
-				CExpressionHandle &,// exprhdl
-				CColRefSet *pcrsInput,
-				ULONG // ulChildIndex
-				)
-				const
-			{
-				return PcrsStatsPassThru(pcrsInput);
-			}
+	// compute required stats columns of the n-th child
+	virtual CColRefSet *
+	PcrsStat(IMemoryPool *,		   // pmp
+			 CExpressionHandle &,  // exprhdl
+			 CColRefSet *pcrsInput,
+			 ULONG  // ulChildIndex
+			 ) const
+	{
+		return PcrsStatsPassThru(pcrsInput);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// candidate set of xforms
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+	// candidate set of xforms
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// derive key collections
-			virtual
-			CKeyCollection *PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	// derive key collections
+	virtual CKeyCollection *
+	PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-						(
-						IMemoryPool *pmp,
-						CExpressionHandle &exprhdl,
-						DrgPstat *pdrgpstatCtxt
-						)
-						const;
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// stat promise
-			virtual
-			EStatPromise Esp(CExpressionHandle &) const
-			{
-				return CLogical::EspHigh;
-			}
+	// stat promise
+	virtual EStatPromise
+	Esp(CExpressionHandle &) const
+	{
+		return CLogical::EspHigh;
+	}
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// conversion function
-			static
-			CLogicalDelete *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalDelete == pop->Eopid());
+	// conversion function
+	static CLogicalDelete *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalDelete == pop->Eopid());
 
-				return dynamic_cast<CLogicalDelete*>(pop);
-			}
+		return dynamic_cast<CLogicalDelete *>(pop);
+	}
 
-			// debug print
-			virtual
-			IOstream &OsPrint(IOstream &) const;
+	// debug print
+	virtual IOstream &
+	OsPrint(IOstream &) const;
 
-	}; // class CLogicalDelete
-}
+};  // class CLogicalDelete
+}  // namespace gpopt
 
-#endif // !GPOPT_CLogicalDelete_H
+#endif  // !GPOPT_CLogicalDelete_H
 
 // EOF

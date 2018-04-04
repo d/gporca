@@ -8,8 +8,8 @@
 //	@doc:
 //		Implementation of the SAX parse handler class for parsing an MD check constraint
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -37,17 +37,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMDGPDBCheckConstraint::CParseHandlerMDGPDBCheckConstraint
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerMetadataObject(pmp, pphm, pphRoot),
-	m_pmdid(NULL),
-	m_pmdname(NULL),
-	m_pmdidRel(NULL)
+CParseHandlerMDGPDBCheckConstraint::CParseHandlerMDGPDBCheckConstraint(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerMetadataObject(pmp, pphm, pphRoot),
+	  m_pmdid(NULL),
+	  m_pmdname(NULL),
+	  m_pmdidRel(NULL)
 {
 }
 
@@ -60,17 +55,18 @@ CParseHandlerMDGPDBCheckConstraint::CParseHandlerMDGPDBCheckConstraint
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDGPDBCheckConstraint::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerMDGPDBCheckConstraint::StartElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const,  // xmlszQname,
+	const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCheckConstraint), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenCheckConstraint), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -78,21 +74,26 @@ CParseHandlerMDGPDBCheckConstraint::StartElement
 	GPOS_ASSERT(NULL == m_pmdid);
 
 	// parse mdid
-	m_pmdid = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenMdid, EdxltokenCheckConstraint);
+	m_pmdid = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenMdid, EdxltokenCheckConstraint);
 
 	// parse check constraint name
-	const XMLCh *xmlszColName = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenName, EdxltokenCheckConstraint);
-	CWStringDynamic *pstrColName = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszColName);
+	const XMLCh *xmlszColName = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenName, EdxltokenCheckConstraint);
+	CWStringDynamic *pstrColName =
+		CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszColName);
 
 	// create a copy of the string in the CMDName constructor
 	m_pmdname = GPOS_NEW(m_pmp) CMDName(m_pmp, pstrColName);
 	GPOS_DELETE(pstrColName);
 
 	// parse mdid of relation
-	m_pmdidRel = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenRelationMdid, EdxltokenCheckConstraint);
+	m_pmdidRel = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenRelationMdid, EdxltokenCheckConstraint);
 
 	// create and activate the parse handler for the child scalar expression node
-	CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pph = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pph);
 
 	// store parse handler
@@ -108,27 +109,31 @@ CParseHandlerMDGPDBCheckConstraint::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDGPDBCheckConstraint::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerMDGPDBCheckConstraint::EndElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCheckConstraint), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenCheckConstraint), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// get node for default value expression from child parse handler
-	CParseHandlerScalarOp *pphOp = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+	CParseHandlerScalarOp *pphOp =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
 
 	CDXLNode *pdxlnScExpr = pphOp->Pdxln();
 	GPOS_ASSERT(NULL != pdxlnScExpr);
 	pdxlnScExpr->AddRef();
 
-	m_pimdobj = GPOS_NEW(m_pmp) CMDCheckConstraintGPDB(m_pmp, m_pmdid, m_pmdname, m_pmdidRel, pdxlnScExpr);
+	m_pimdobj = GPOS_NEW(m_pmp) CMDCheckConstraintGPDB(
+		m_pmp, m_pmdid, m_pmdname, m_pmdidRel, pdxlnScExpr);
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

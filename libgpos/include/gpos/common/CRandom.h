@@ -23,32 +23,30 @@
 
 namespace gpos
 {
+class CRandom
+{
+private:
+	// no copy c'tor
+	CRandom(const CRandom &);
 
-	class CRandom
-	{
-		private:
-			// no copy c'tor
-			CRandom(const CRandom &); 
+	// seed
+	ULONG m_iSeed;
 
-			// seed
-			ULONG m_iSeed;
-			
-		public:
+public:
+	// no seed
+	CRandom();
 
-			// no seed
-			CRandom();
+	// c'tor with seed
+	CRandom(ULONG seed);
 
-			// c'tor with seed
-			CRandom(ULONG seed);
+	// next random number
+	ULONG
+	ULNext();
 
-			// next random number
-			ULONG ULNext();
-			
-			// d'tor
-			~CRandom();
-	}; //class CRandom
-}
+	// d'tor
+	~CRandom();
+};  //class CRandom
+}  // namespace gpos
 #endif /* CRANDOM_H_ */
 
 // EOF
-

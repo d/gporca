@@ -19,56 +19,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerAgg
-	//
-	//	@doc:
-	//		Parse handler for aggregate operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerAgg : public CParseHandlerPhysicalOp
-	{
-		private:
-						
-			// the aggregate operator
-			CDXLPhysicalAgg *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerAgg(const CParseHandlerAgg &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-	
-		public:
-			// ctor/dtor
-			CParseHandlerAgg
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);						
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerGroupBy_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerAgg
+//
+//	@doc:
+//		Parse handler for aggregate operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerAgg : public CParseHandlerPhysicalOp
+{
+private:
+	// the aggregate operator
+	CDXLPhysicalAgg *m_pdxlop;
+
+	// private copy ctor
+	CParseHandlerAgg(const CParseHandlerAgg &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerAgg(IMemoryPool *pmp, CParseHandlerManager *pphm,
+					 CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerGroupBy_H
 
 // EOF

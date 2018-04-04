@@ -33,15 +33,12 @@ using namespace gpos;
 GPOS_RESULT
 CFSimulatorTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CFSimulatorTest::EresUnittest_BasicTracking),
-		GPOS_UNITTEST_FUNC(CFSimulatorTest::EresUnittest_OOM)
-		};
-		
+		GPOS_UNITTEST_FUNC(CFSimulatorTest::EresUnittest_OOM)};
+
 	// ignore this test for FP simulation and time slicing check
-	if (CFSimulator::FSimulation() ||
-	    IWorker::m_fEnforceTimeSlices)
+	if (CFSimulator::FSimulation() || IWorker::m_fEnforceTimeSlices)
 	{
 		return GPOS_OK;
 	}
@@ -68,14 +65,15 @@ CFSimulatorTest::EresUnittest_BasicTracking()
 {
 	BOOL fThrown = false;
 	static ULONG ul = 0;
- 	if (10 == ul)
- 	{
- 		return GPOS_OK;
+	if (10 == ul)
+	{
+		return GPOS_OK;
 	}
 
 	GPOS_TRY
 	{
-		GPOS_SIMULATE_FAILURE(EtraceTest, CException::ExmaSystem, CException::ExmiOOM);
+		GPOS_SIMULATE_FAILURE(EtraceTest, CException::ExmaSystem,
+							  CException::ExmiOOM);
 	}
 	GPOS_CATCH_EX(ex)
 	{
@@ -88,7 +86,7 @@ CFSimulatorTest::EresUnittest_BasicTracking()
 
 			fThrown = true;
 		}
-		
+
 		GPOS_RESET_EX;
 	}
 	GPOS_CATCH_END;
@@ -134,11 +132,11 @@ CFSimulatorTest::EresUnittest_OOM()
 	GPOS_CATCH_EX(ex)
 	{
 		// must throw
-		if(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM))
+		if (GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM))
 		{
 			eres = GPOS_OK;
 		}
-		
+
 		GPOS_RESET_EX;
 	}
 	GPOS_CATCH_END;
@@ -147,7 +145,6 @@ CFSimulatorTest::EresUnittest_OOM()
 }
 
 
-#endif // GPOS_FPSIMULATOR
+#endif  // GPOS_FPSIMULATOR
 
 // EOF
-

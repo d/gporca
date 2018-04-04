@@ -24,17 +24,11 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarCoerceToDomain::CScalarCoerceToDomain
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	ECoercionForm ecf,
-	INT iLoc
-	)
-	:
-	CScalarCoerceBase(pmp, pmdidType, iTypeModifier, ecf, iLoc),
-	m_fReturnsNullOnNullInput(false)
+CScalarCoerceToDomain::CScalarCoerceToDomain(IMemoryPool *pmp, IMDId *pmdidType,
+											 INT iTypeModifier,
+											 ECoercionForm ecf, INT iLoc)
+	: CScalarCoerceBase(pmp, pmdidType, iTypeModifier, ecf, iLoc),
+	  m_fReturnsNullOnNullInput(false)
 {
 }
 
@@ -48,20 +42,16 @@ CScalarCoerceToDomain::CScalarCoerceToDomain
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarCoerceToDomain::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarCoerceToDomain::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
-		CScalarCoerceToDomain *popCoerce = CScalarCoerceToDomain::PopConvert(pop);
+		CScalarCoerceToDomain *popCoerce =
+			CScalarCoerceToDomain::PopConvert(pop);
 
 		return popCoerce->PmdidType()->FEquals(PmdidType()) &&
-				popCoerce->ITypeModifier() == ITypeModifier() &&
-				popCoerce->Ecf() == Ecf() &&
-				popCoerce->ILoc() == ILoc();
+			   popCoerce->ITypeModifier() == ITypeModifier() &&
+			   popCoerce->Ecf() == Ecf() && popCoerce->ILoc() == ILoc();
 	}
 
 	return false;
@@ -77,11 +67,7 @@ CScalarCoerceToDomain::FMatch
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarCoerceToDomain::Eber
-	(
-	DrgPul *pdrgpulChildren
-	)
-	const
+CScalarCoerceToDomain::Eber(DrgPul *pdrgpulChildren) const
 {
 	if (m_fReturnsNullOnNullInput)
 	{
@@ -93,4 +79,3 @@ CScalarCoerceToDomain::Eber
 
 
 // EOF
-

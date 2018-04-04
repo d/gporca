@@ -33,29 +33,25 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMDRelation::CParseHandlerMDRelation
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerMetadataObject(pmp, pphm, pphRoot),
-	m_pmdid(NULL),
-	m_pmdnameSchema(NULL),
-	m_pmdname(NULL),
-	m_fTemporary(false),
-	m_fHasOids(false),
-	m_erelstorage(IMDRelation::ErelstorageSentinel),
-	m_ereldistrpolicy(IMDRelation::EreldistrSentinel),
-	m_pdrgpulDistrColumns(NULL),
-	m_fConvertHashToRandom(false),
-	m_pdrgpulPartColumns(NULL),
-	m_pdrgpszPartTypes(NULL),
-	m_ulPartitions(0),
-	m_pdrgpdrgpulKeys(NULL),
-	m_ppartcnstr(NULL),
-	m_pdrgpulDefaultParts(NULL)
+CParseHandlerMDRelation::CParseHandlerMDRelation(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerMetadataObject(pmp, pphm, pphRoot),
+	  m_pmdid(NULL),
+	  m_pmdnameSchema(NULL),
+	  m_pmdname(NULL),
+	  m_fTemporary(false),
+	  m_fHasOids(false),
+	  m_erelstorage(IMDRelation::ErelstorageSentinel),
+	  m_ereldistrpolicy(IMDRelation::EreldistrSentinel),
+	  m_pdrgpulDistrColumns(NULL),
+	  m_fConvertHashToRandom(false),
+	  m_pdrgpulPartColumns(NULL),
+	  m_pdrgpszPartTypes(NULL),
+	  m_ulPartitions(0),
+	  m_pdrgpdrgpulKeys(NULL),
+	  m_ppartcnstr(NULL),
+	  m_pdrgpulDefaultParts(NULL)
 {
 }
 
@@ -68,36 +64,42 @@ CParseHandlerMDRelation::CParseHandlerMDRelation
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelation::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerMDRelation::StartElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const,  // xmlszQname
+									  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPartConstraint), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPartConstraint), xmlszLocalname))
 	{
 		GPOS_ASSERT(NULL == m_ppartcnstr);
 
-		const XMLCh *xmlszDefParts = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenDefaultPartition));
+		const XMLCh *xmlszDefParts =
+			attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenDefaultPartition));
 		if (NULL != xmlszDefParts)
 		{
-			m_pdrgpulDefaultParts = CDXLOperatorFactory::PdrgpulFromXMLCh(m_pphm->Pmm(), xmlszDefParts, EdxltokenDefaultPartition, EdxltokenRelation);
+			m_pdrgpulDefaultParts = CDXLOperatorFactory::PdrgpulFromXMLCh(
+				m_pphm->Pmm(), xmlszDefParts, EdxltokenDefaultPartition,
+				EdxltokenRelation);
 		}
 		else
 		{
 			// construct an empty keyset
 			m_pdrgpulDefaultParts = GPOS_NEW(m_pmp) DrgPul(m_pmp);
 		}
-		m_fPartConstraintUnbounded = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenPartConstraintUnbounded, EdxltokenRelation);
+		m_fPartConstraintUnbounded = CDXLOperatorFactory::FValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenPartConstraintUnbounded,
+			EdxltokenRelation);
 
-		CParseHandlerMDIndexInfoList *pphMdlIndexInfo = dynamic_cast<CParseHandlerMDIndexInfoList*>((*this)[1]);
+		CParseHandlerMDIndexInfoList *pphMdlIndexInfo =
+			dynamic_cast<CParseHandlerMDIndexInfoList *>((*this)[1]);
 		// relcache translator will send partition constraint expression only when a partitioned relation has indices
 		if (pphMdlIndexInfo->PdrgpmdIndexInfo()->UlLength() > 0)
 		{
 			// parse handler for part constraints
-			CParseHandlerBase *pphPartConstraint= CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+			CParseHandlerBase *pphPartConstraint = CParseHandlerFactory::Pph(
+				m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 			m_pphm->ActivateParseHandler(pphPartConstraint);
 			this->Append(pphPartConstraint);
 		}
@@ -105,9 +107,11 @@ CParseHandlerMDRelation::StartElement
 		return;
 	}
 
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelation), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenRelation), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -115,83 +119,66 @@ CParseHandlerMDRelation::StartElement
 	ParseRelationAttributes(attrs, EdxltokenRelation);
 
 	// parse whether relation is temporary
-	m_fTemporary = CDXLOperatorFactory::FValueFromAttrs
-											(
-											m_pphm->Pmm(),
-											attrs,
-											EdxltokenRelTemporary,
-											EdxltokenRelation
-											);
+	m_fTemporary = CDXLOperatorFactory::FValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenRelTemporary, EdxltokenRelation);
 
 	// parse whether relation has oids
-	const XMLCh *xmlszHasOids = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenRelHasOids));
+	const XMLCh *xmlszHasOids =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenRelHasOids));
 	if (NULL != xmlszHasOids)
 	{
-		m_fHasOids = CDXLOperatorFactory::FValueFromXmlstr(m_pphm->Pmm(), xmlszHasOids, EdxltokenRelHasOids, EdxltokenRelation);
+		m_fHasOids = CDXLOperatorFactory::FValueFromXmlstr(
+			m_pphm->Pmm(), xmlszHasOids, EdxltokenRelHasOids,
+			EdxltokenRelation);
 	}
 
 	// parse storage type
-	const XMLCh *xmlszStorageType = CDXLOperatorFactory::XmlstrFromAttrs
-															(
-															attrs,
-															EdxltokenRelStorageType,
-															EdxltokenRelation
-															);
-	
-	m_erelstorage = CDXLOperatorFactory::ErelstoragetypeFromXmlstr(xmlszStorageType);
+	const XMLCh *xmlszStorageType = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenRelStorageType, EdxltokenRelation);
 
-	const XMLCh *xmlszPartColumns = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenPartKeys));
+	m_erelstorage =
+		CDXLOperatorFactory::ErelstoragetypeFromXmlstr(xmlszStorageType);
+
+	const XMLCh *xmlszPartColumns =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenPartKeys));
 
 	if (NULL != xmlszPartColumns)
 	{
-		m_pdrgpulPartColumns = CDXLOperatorFactory::PdrgpulFromXMLCh
-														(
-														m_pphm->Pmm(),
-														xmlszPartColumns,
-														EdxltokenPartKeys,
-														EdxltokenRelation
-														);
+		m_pdrgpulPartColumns = CDXLOperatorFactory::PdrgpulFromXMLCh(
+			m_pphm->Pmm(), xmlszPartColumns, EdxltokenPartKeys,
+			EdxltokenRelation);
 	}
 
-	const XMLCh *xmlszPartTypes = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenPartTypes));
+	const XMLCh *xmlszPartTypes =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenPartTypes));
 
 	if (NULL != xmlszPartTypes)
 	{
-		m_pdrgpszPartTypes = CDXLOperatorFactory::PdrgpszFromXMLCh
-														(
-														m_pphm->Pmm(),
-														xmlszPartTypes,
-														EdxltokenPartTypes,
-														EdxltokenRelation
-														);
+		m_pdrgpszPartTypes = CDXLOperatorFactory::PdrgpszFromXMLCh(
+			m_pphm->Pmm(), xmlszPartTypes, EdxltokenPartTypes,
+			EdxltokenRelation);
 	}
 
-	const XMLCh *xmlszPartitions = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenNumLeafPartitions));
+	const XMLCh *xmlszPartitions =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenNumLeafPartitions));
 
 	if (NULL != xmlszPartitions)
 	{
-		m_ulPartitions = CDXLOperatorFactory::UlValueFromXmlstr
-														(
-														m_pphm->Pmm(),
-														xmlszPartitions,
-														EdxltokenNumLeafPartitions,
-														EdxltokenRelation
-														);
+		m_ulPartitions = CDXLOperatorFactory::UlValueFromXmlstr(
+			m_pphm->Pmm(), xmlszPartitions, EdxltokenNumLeafPartitions,
+			EdxltokenRelation);
 	}
 
 	// parse whether a hash distributed relation needs to be considered as random distributed
-	const XMLCh *xmlszConvertHashToRandom = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenConvertHashToRandom));
+	const XMLCh *xmlszConvertHashToRandom =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenConvertHashToRandom));
 	if (NULL != xmlszConvertHashToRandom)
 	{
-		m_fConvertHashToRandom = CDXLOperatorFactory::FValueFromXmlstr
-										(
-										m_pphm->Pmm(), 
-										xmlszConvertHashToRandom,
-										EdxltokenConvertHashToRandom,
-										EdxltokenRelation
-										);
+		m_fConvertHashToRandom = CDXLOperatorFactory::FValueFromXmlstr(
+			m_pphm->Pmm(), xmlszConvertHashToRandom,
+			EdxltokenConvertHashToRandom, EdxltokenRelation);
 	}
-	
+
 	// parse children
 	ParseChildNodes();
 }
@@ -205,42 +192,52 @@ CParseHandlerMDRelation::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelation::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerMDRelation::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	CParseHandlerMDIndexInfoList *pphMdlIndexInfo = dynamic_cast<CParseHandlerMDIndexInfoList*>((*this)[1]);
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPartConstraint), xmlszLocalname))
+	CParseHandlerMDIndexInfoList *pphMdlIndexInfo =
+		dynamic_cast<CParseHandlerMDIndexInfoList *>((*this)[1]);
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPartConstraint), xmlszLocalname))
 	{
 		// relcache translator will send partition constraint expression only when a partitioned relation has indices
 		if (pphMdlIndexInfo->PdrgpmdIndexInfo()->UlLength() > 0)
 		{
-			CParseHandlerScalarOp *pphPartCnstr = dynamic_cast<CParseHandlerScalarOp *>((*this)[UlLength() - 1]);
+			CParseHandlerScalarOp *pphPartCnstr =
+				dynamic_cast<CParseHandlerScalarOp *>((*this)[UlLength() - 1]);
 			CDXLNode *pdxlnPartConstraint = pphPartCnstr->Pdxln();
 			pdxlnPartConstraint->AddRef();
-			m_ppartcnstr = GPOS_NEW(m_pmp) CMDPartConstraintGPDB(m_pmp, m_pdrgpulDefaultParts, m_fPartConstraintUnbounded, pdxlnPartConstraint);
+			m_ppartcnstr = GPOS_NEW(m_pmp) CMDPartConstraintGPDB(
+				m_pmp, m_pdrgpulDefaultParts, m_fPartConstraintUnbounded,
+				pdxlnPartConstraint);
 		}
 		else
 		{
 			// no partition constraint expression
-			m_ppartcnstr = GPOS_NEW(m_pmp) CMDPartConstraintGPDB(m_pmp, m_pdrgpulDefaultParts, m_fPartConstraintUnbounded, NULL);
+			m_ppartcnstr = GPOS_NEW(m_pmp) CMDPartConstraintGPDB(
+				m_pmp, m_pdrgpulDefaultParts, m_fPartConstraintUnbounded, NULL);
 		}
 		return;
 	}
 
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelation), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenRelation), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// construct metadata object from the created child elements
-	CParseHandlerMetadataColumns *pphMdCol = dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
-	CParseHandlerMetadataIdList *pphMdidlTriggers = dynamic_cast<CParseHandlerMetadataIdList*>((*this)[2]);
-	CParseHandlerMetadataIdList *pphMdidlCheckConstraints = dynamic_cast<CParseHandlerMetadataIdList*>((*this)[3]);
+	CParseHandlerMetadataColumns *pphMdCol =
+		dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
+	CParseHandlerMetadataIdList *pphMdidlTriggers =
+		dynamic_cast<CParseHandlerMetadataIdList *>((*this)[2]);
+	CParseHandlerMetadataIdList *pphMdidlCheckConstraints =
+		dynamic_cast<CParseHandlerMetadataIdList *>((*this)[3]);
 
 	GPOS_ASSERT(NULL != pphMdCol->Pdrgpmdcol());
 	GPOS_ASSERT(NULL != pphMdlIndexInfo->PdrgpmdIndexInfo());
@@ -251,33 +248,18 @@ CParseHandlerMDRelation::EndElement
 	DrgPmdIndexInfo *pdrgpmdIndexInfos = pphMdlIndexInfo->PdrgpmdIndexInfo();
 	DrgPmdid *pdrgpmdidTriggers = pphMdidlTriggers->Pdrgpmdid();
 	DrgPmdid *pdrgpmdidCheckConstraint = pphMdidlCheckConstraints->Pdrgpmdid();
- 
+
 	pdrgpmdcol->AddRef();
 	pdrgpmdIndexInfos->AddRef();
- 	pdrgpmdidTriggers->AddRef();
- 	pdrgpmdidCheckConstraint->AddRef();
+	pdrgpmdidTriggers->AddRef();
+	pdrgpmdidCheckConstraint->AddRef();
 
-	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationGPDB
-								(
-									m_pmp,
-									m_pmdid,
-									m_pmdname,
-									m_fTemporary,
-									m_erelstorage,
-									m_ereldistrpolicy,
-									pdrgpmdcol,
-									m_pdrgpulDistrColumns,
-									m_pdrgpulPartColumns,
-									m_pdrgpszPartTypes,
-									m_ulPartitions,
-									m_fConvertHashToRandom,
-									m_pdrgpdrgpulKeys,
-									pdrgpmdIndexInfos,
-									pdrgpmdidTriggers,
-									pdrgpmdidCheckConstraint,
-									m_ppartcnstr,
-									m_fHasOids
-								);
+	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationGPDB(
+		m_pmp, m_pmdid, m_pmdname, m_fTemporary, m_erelstorage,
+		m_ereldistrpolicy, pdrgpmdcol, m_pdrgpulDistrColumns,
+		m_pdrgpulPartColumns, m_pdrgpszPartTypes, m_ulPartitions,
+		m_fConvertHashToRandom, m_pdrgpdrgpulKeys, pdrgpmdIndexInfos,
+		pdrgpmdidTriggers, pdrgpmdidCheckConstraint, m_ppartcnstr, m_fHasOids);
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();
@@ -293,37 +275,44 @@ CParseHandlerMDRelation::EndElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelation::ParseRelationAttributes
-	(
-	const Attributes& attrs,
-	Edxltoken edxltokenElement
-	)
+CParseHandlerMDRelation::ParseRelationAttributes(const Attributes &attrs,
+												 Edxltoken edxltokenElement)
 {
 	// parse table name
-	const XMLCh *xmlszTableName = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenName, edxltokenElement);
-	CWStringDynamic *pstrTableName = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszTableName);
+	const XMLCh *xmlszTableName = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenName, edxltokenElement);
+	CWStringDynamic *pstrTableName =
+		CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszTableName);
 	m_pmdname = GPOS_NEW(m_pmp) CMDName(m_pmp, pstrTableName);
 	GPOS_DELETE(pstrTableName);
 
 	// parse metadata id info
-	m_pmdid = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenMdid, edxltokenElement);
+	m_pmdid = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenMdid, edxltokenElement);
 
 	// parse distribution policy
-	const XMLCh *xmlszDistrPolicy = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenRelDistrPolicy, edxltokenElement);
-	m_ereldistrpolicy = CDXLOperatorFactory::EreldistrpolicyFromXmlstr(xmlszDistrPolicy);
+	const XMLCh *xmlszDistrPolicy = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenRelDistrPolicy, edxltokenElement);
+	m_ereldistrpolicy =
+		CDXLOperatorFactory::EreldistrpolicyFromXmlstr(xmlszDistrPolicy);
 
 	if (m_ereldistrpolicy == IMDRelation::EreldistrHash)
 	{
 		// parse distribution columns
-		const XMLCh *xmlszDistrColumns = CDXLOperatorFactory::XmlstrFromAttrs(attrs, EdxltokenDistrColumns, edxltokenElement);
-		m_pdrgpulDistrColumns = CDXLOperatorFactory::PdrgpulFromXMLCh(m_pphm->Pmm(), xmlszDistrColumns, EdxltokenDistrColumns, edxltokenElement);
+		const XMLCh *xmlszDistrColumns = CDXLOperatorFactory::XmlstrFromAttrs(
+			attrs, EdxltokenDistrColumns, edxltokenElement);
+		m_pdrgpulDistrColumns = CDXLOperatorFactory::PdrgpulFromXMLCh(
+			m_pphm->Pmm(), xmlszDistrColumns, EdxltokenDistrColumns,
+			edxltokenElement);
 	}
 
 	// parse keys
-	const XMLCh *xmlszKeys = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenKeys));
+	const XMLCh *xmlszKeys =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenKeys));
 	if (NULL != xmlszKeys)
 	{
-		m_pdrgpdrgpulKeys = CDXLOperatorFactory::PdrgpdrgpulFromXMLCh(m_pphm->Pmm(), xmlszKeys, EdxltokenKeys, edxltokenElement);
+		m_pdrgpdrgpulKeys = CDXLOperatorFactory::PdrgpdrgpulFromXMLCh(
+			m_pphm->Pmm(), xmlszKeys, EdxltokenKeys, edxltokenElement);
 	}
 	else
 	{
@@ -331,8 +320,9 @@ CParseHandlerMDRelation::ParseRelationAttributes
 		m_pdrgpdrgpulKeys = GPOS_NEW(m_pmp) DrgPdrgPul(m_pmp);
 	}
 
-	m_ulPartitions = CDXLOperatorFactory::UlValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenNumLeafPartitions, edxltokenElement,
-															true /* optional */, 0 /* default value */);
+	m_ulPartitions = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenNumLeafPartitions, edxltokenElement,
+		true /* optional */, 0 /* default value */);
 }
 
 //---------------------------------------------------------------------------
@@ -347,26 +337,30 @@ void
 CParseHandlerMDRelation::ParseChildNodes()
 {
 	// parse handler for check constraints
-	CParseHandlerBase *pphCheckConstraintList = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataIdList), m_pphm, this);
+	CParseHandlerBase *pphCheckConstraintList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataIdList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphCheckConstraintList);
 
 	// parse handler for trigger list
-	CParseHandlerBase *pphTriggerList = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataIdList), m_pphm, this);
+	CParseHandlerBase *pphTriggerList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataIdList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphTriggerList);
 
 	// parse handler for index info list
-	CParseHandlerBase *pphIndexInfoList = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenIndexInfoList), m_pphm, this);
+	CParseHandlerBase *pphIndexInfoList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenIndexInfoList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphIndexInfoList);
 
 	// parse handler for the columns
-	CParseHandlerBase *pphColumns = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumns), m_pphm, this);
+	CParseHandlerBase *pphColumns = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenMetadataColumns), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphColumns);
 
 	// store parse handlers
 	this->Append(pphColumns);
 	this->Append(pphIndexInfoList);
- 	this->Append(pphTriggerList);
- 	this->Append(pphCheckConstraintList);
+	this->Append(pphTriggerList);
+	this->Append(pphCheckConstraintList);
 }
 
 

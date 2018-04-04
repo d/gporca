@@ -15,194 +15,134 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDecorrelator
+//
+//	@doc:
+//		Helper class for extracting correlated expressions
+//
+//---------------------------------------------------------------------------
+class CDecorrelator
+{
+private:
+	// definition of operator processor
+	typedef BOOL(FnProcessor)(IMemoryPool *, CExpression *, BOOL,
+							  CExpression **, DrgPexpr *);
 
 	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDecorrelator
+	//	@struct:
+	//		SOperatorProcessor
 	//
 	//	@doc:
-	//		Helper class for extracting correlated expressions
+	//		Mapping of operator to a processor function
 	//
 	//---------------------------------------------------------------------------
-	class CDecorrelator
+	struct SOperatorProcessor
 	{
+		// scalar operator id
+		COperator::EOperatorId m_eopid;
 
-		private:
+		// pointer to handler function
+		FnProcessor *m_pfnp;
 
-			// definition of operator processor
-			typedef BOOL(FnProcessor)(IMemoryPool *, CExpression *, BOOL, CExpression **, DrgPexpr *);
+	};  // struct SOperatorHandler
 
-			//---------------------------------------------------------------------------
-			//	@struct:
-			//		SOperatorProcessor
-			//
-			//	@doc:
-			//		Mapping of operator to a processor function
-			//
-			//---------------------------------------------------------------------------
-			struct SOperatorProcessor
-			{
-				// scalar operator id
-				COperator::EOperatorId m_eopid;
+	// array of mappings
+	static const SOperatorProcessor m_rgopproc[];
 
-				// pointer to handler function
-				FnProcessor *m_pfnp;
+	// private ctor
+	CDecorrelator();
 
-			}; // struct SOperatorHandler
+	// private dtor
+	virtual ~CDecorrelator();
 
-			// array of mappings
-			static
-			const SOperatorProcessor m_rgopproc[];
+	// private copy ctor
+	CDecorrelator(const CDecorrelator &);
 
-			// private ctor
-			CDecorrelator();
+	// helper to check if correlations below join are valid to be pulled-up
+	static BOOL
+	FPullableCorrelations(IMemoryPool *pmp, CExpression *pexpr,
+						  DrgPexpr *pdrgpexpr, DrgPexpr *pdrgpexprCorrelations);
 
-			// private dtor
-			virtual
-			~CDecorrelator();
+	// check if scalar operator can be delayed
+	static BOOL
+	FDelayableScalarOp(CExpression *pexprScalar);
 
-			// private copy ctor
-			CDecorrelator(const CDecorrelator &);
-			
-			// helper to check if correlations below join are valid to be pulled-up
-			static
-			BOOL FPullableCorrelations
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				DrgPexpr *pdrgpexpr,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// check if scalar expression can be lifted
+	static BOOL
+	FDelayable(CExpression *pexprLogical, CExpression *pexprScalar,
+			   BOOL fEqualityOnly);
 
-			// check if scalar operator can be delayed
-			static
-			BOOL FDelayableScalarOp(CExpression *pexprScalar);
+	// switch function for all operators
+	static BOOL
+	FProcessOperator(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+					 CExpression **ppexprDecorrelated,
+					 DrgPexpr *pdrgpexprCorrelations);
 
-			// check if scalar expression can be lifted
-			static 
-			BOOL FDelayable(CExpression *pexprLogical, CExpression *pexprScalar, BOOL fEqualityOnly);
-		
-			// switch function for all operators
-			static
-			BOOL FProcessOperator
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
-				
-			// processor for predicates
-			static
-			BOOL FProcessPredicate
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprLogical,
-				CExpression *pexprScalar,
-				BOOL fEqualityOnly,
-				CColRefSet *pcrsOutput,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
-			
-			// processor for select operators
-			static
-			BOOL FProcessSelect
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// processor for predicates
+	static BOOL
+	FProcessPredicate(IMemoryPool *pmp, CExpression *pexprLogical,
+					  CExpression *pexprScalar, BOOL fEqualityOnly,
+					  CColRefSet *pcrsOutput, CExpression **ppexprDecorrelated,
+					  DrgPexpr *pdrgpexprCorrelations);
 
-		
-			// processor for aggregates
-			static
-			BOOL FProcessGbAgg
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
-
-			// processor for joins (inner/n-ary)
-			static
-			BOOL FProcessJoin
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// processor for select operators
+	static BOOL
+	FProcessSelect(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+				   CExpression **ppexprDecorrelated,
+				   DrgPexpr *pdrgpexprCorrelations);
 
 
-			// processor for projects
-			static
-			BOOL FProcessProject
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
-		
-			// processor for assert
-			static
-			BOOL FProcessAssert
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// processor for aggregates
+	static BOOL
+	FProcessGbAgg(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+				  CExpression **ppexprDecorrelated,
+				  DrgPexpr *pdrgpexprCorrelations);
 
-			// processor for MaxOneRow
-			static
-			BOOL FProcessMaxOneRow
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// processor for joins (inner/n-ary)
+	static BOOL
+	FProcessJoin(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+				 CExpression **ppexprDecorrelated,
+				 DrgPexpr *pdrgpexprCorrelations);
 
-			// processor for limits
-			static
-			BOOL FProcessLimit
-				(
-				IMemoryPool *pmp,
-				CExpression *pexpr,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
 
-		public:
+	// processor for projects
+	static BOOL
+	FProcessProject(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+					CExpression **ppexprDecorrelated,
+					DrgPexpr *pdrgpexprCorrelations);
 
-			// main handler
-			static
-			BOOL FProcess
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprOrig,
-				BOOL fEqualityOnly,
-				CExpression **ppexprDecorrelated,
-				DrgPexpr *pdrgpexprCorrelations
-				);
+	// processor for assert
+	static BOOL
+	FProcessAssert(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+				   CExpression **ppexprDecorrelated,
+				   DrgPexpr *pdrgpexprCorrelations);
 
-	}; // class CDecorrelator
+	// processor for MaxOneRow
+	static BOOL
+	FProcessMaxOneRow(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+					  CExpression **ppexprDecorrelated,
+					  DrgPexpr *pdrgpexprCorrelations);
 
-}
+	// processor for limits
+	static BOOL
+	FProcessLimit(IMemoryPool *pmp, CExpression *pexpr, BOOL fEqualityOnly,
+				  CExpression **ppexprDecorrelated,
+				  DrgPexpr *pdrgpexprCorrelations);
 
-#endif // !GPOPT_CDecorrelator_H
+public:
+	// main handler
+	static BOOL
+	FProcess(IMemoryPool *pmp, CExpression *pexprOrig, BOOL fEqualityOnly,
+			 CExpression **ppexprDecorrelated, DrgPexpr *pdrgpexprCorrelations);
+
+};  // class CDecorrelator
+
+}  // namespace gpopt
+
+#endif  // !GPOPT_CDecorrelator_H
 
 // EOF

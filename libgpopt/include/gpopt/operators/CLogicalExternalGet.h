@@ -16,118 +16,99 @@
 
 namespace gpopt
 {
+// fwd declarations
+class CTableDescriptor;
+class CName;
+class CColRefSet;
 
-	// fwd declarations
-	class CTableDescriptor;
-	class CName;
-	class CColRefSet;
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalExternalGet
+//
+//	@doc:
+//		Logical external get operator
+//
+//---------------------------------------------------------------------------
+class CLogicalExternalGet : public CLogicalGet
+{
+private:
+	// private copy ctor
+	CLogicalExternalGet(const CLogicalExternalGet &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalExternalGet
-	//
-	//	@doc:
-	//		Logical external get operator
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalExternalGet : public CLogicalGet
+public:
+	// ctors
+	explicit CLogicalExternalGet(IMemoryPool *pmp);
+
+	CLogicalExternalGet(IMemoryPool *pmp, const CName *pnameAlias,
+						CTableDescriptor *ptabdesc);
+
+	CLogicalExternalGet(IMemoryPool *pmp, const CName *pnameAlias,
+						CTableDescriptor *ptabdesc, DrgPcr *pdrgpcrOutput);
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopLogicalExternalGet;
+	}
 
-		private:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalExternalGet";
+	}
 
-			// private copy ctor
-			CLogicalExternalGet(const CLogicalExternalGet &);
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-		public:
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// ctors
-			explicit
-			CLogicalExternalGet(IMemoryPool *pmp);
+	//-------------------------------------------------------------------------------------
+	// Required Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			CLogicalExternalGet
-				(
-				IMemoryPool *pmp,
-				const CName *pnameAlias,
-				CTableDescriptor *ptabdesc
-				);
+	// compute required stat columns of the n-th child
+	virtual CColRefSet *
+	PcrsStat(IMemoryPool *,		   // pmp,
+			 CExpressionHandle &,  // exprhdl
+			 CColRefSet *,		   // pcrsInput
+			 ULONG				   // ulChildIndex
+			 ) const
+	{
+		GPOS_ASSERT(!"CLogicalExternalGet has no children");
+		return NULL;
+	}
 
-			CLogicalExternalGet
-				(
-				IMemoryPool *pmp,
-				const CName *pnameAlias,
-				CTableDescriptor *ptabdesc,
-				DrgPcr *pdrgpcrOutput
-				);
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalExternalGet;
-			}
+	// candidate set of xforms
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalExternalGet";
-			}
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
+	// conversion function
+	static CLogicalExternalGet *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalExternalGet == pop->Eopid());
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+		return dynamic_cast<CLogicalExternalGet *>(pop);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Required Relational Properties
-			//-------------------------------------------------------------------------------------
+};  // class CLogicalExternalGet
+}  // namespace gpopt
 
-			// compute required stat columns of the n-th child
-			virtual
-			CColRefSet *PcrsStat
-				(
-				IMemoryPool *, // pmp,
-				CExpressionHandle &, // exprhdl
-				CColRefSet *, // pcrsInput
-				ULONG // ulChildIndex
-				)
-				const
-			{
-				GPOS_ASSERT(!"CLogicalExternalGet has no children");
-				return NULL;
-			}
-
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
-
-			// candidate set of xforms
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
-
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CLogicalExternalGet *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalExternalGet == pop->Eopid());
-
-				return dynamic_cast<CLogicalExternalGet*>(pop);
-			}
-
-	}; // class CLogicalExternalGet
-}
-
-#endif // !GPOPT_CLogicalExternalGet_H
+#endif  // !GPOPT_CLogicalExternalGet_H
 
 // EOF

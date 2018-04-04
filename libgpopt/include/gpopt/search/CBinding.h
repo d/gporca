@@ -17,124 +17,88 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd declaration
-	class CGroupExpression;
-	class CGroup;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CBinding
-	//
-	//	@doc:
-	//		Binding class used to iteratively generate expressions from the
-	//		memo so that they match a given pattern
-	//
-	//
-	//---------------------------------------------------------------------------
-	class CBinding
+// fwd declaration
+class CGroupExpression;
+class CGroup;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CBinding
+//
+//	@doc:
+//		Binding class used to iteratively generate expressions from the
+//		memo so that they match a given pattern
+//
+//
+//---------------------------------------------------------------------------
+class CBinding
+{
+private:
+	// initialize cursors of child expressions
+	BOOL
+	FInitChildCursors(IMemoryPool *pmp, CGroupExpression *pgexpr,
+					  CExpression *pexprPattern, DrgPexpr *pdrgpexpr);
+
+	// advance cursors of child expressions
+	BOOL
+	FAdvanceChildCursors(IMemoryPool *pmp, CGroupExpression *pgexpr,
+						 CExpression *pexprPattern, CExpression *pexprLast,
+						 DrgPexpr *pdrgpexpr);
+
+	// extraction of child expressions
+	BOOL
+	FExtractChildren(IMemoryPool *pmp, CExpression *pexprPattern,
+					 CGroupExpression *pgexprCursor, DrgPexpr *pdrgpexpr);
+
+	// move cursor
+	CGroupExpression *
+	PgexprNext(CGroup *pgroup, CGroupExpression *pgexpr) const;
+
+	// expand n-th child of pattern
+	CExpression *
+	PexprExpandPattern(CExpression *pexpr, ULONG ulPos, ULONG ulArity);
+
+	// get binding for children
+	BOOL
+	FExtractChildren(IMemoryPool *pmp, CGroupExpression *pgexpr,
+					 CExpression *pexprPattern, CExpression *pexprLast,
+					 DrgPexpr *pdrgpexprChildren);
+
+	// extract binding from a group
+	CExpression *
+	PexprExtract(IMemoryPool *pmp, CGroup *pgroup, CExpression *pexprPattern,
+				 CExpression *pexprLast);
+
+	// build expression
+	CExpression *
+	PexprFinalize(IMemoryPool *pmp, CGroupExpression *pgexpr,
+				  DrgPexpr *pdrgpexprChildren);
+
+	// private copy ctor
+	CBinding(const CBinding &);
+
+public:
+	// ctor
+	CBinding()
 	{
-	
-		private:
-					
-			// initialize cursors of child expressions
-			BOOL FInitChildCursors
-				(
-				IMemoryPool *pmp,
-				CGroupExpression *pgexpr,
-				CExpression *pexprPattern,
-				DrgPexpr *pdrgpexpr
-				);
+	}
 
-			// advance cursors of child expressions
-			BOOL FAdvanceChildCursors
-				(
-				IMemoryPool *pmp,
-				CGroupExpression *pgexpr,
-				CExpression *pexprPattern,
-				CExpression *pexprLast,
-				DrgPexpr *pdrgpexpr
-				);
+	// dtor
+	~CBinding()
+	{
+	}
 
-			// extraction of child expressions
-			BOOL FExtractChildren
-				(
-				IMemoryPool *pmp,
-				CExpression *pexprPattern,
-				CGroupExpression *pgexprCursor,
-				DrgPexpr *pdrgpexpr
-				);
-			
-			// move cursor
-			CGroupExpression *PgexprNext
-				(
-				CGroup *pgroup,
-				CGroupExpression *pgexpr
-				)
-				const;
-			
-			// expand n-th child of pattern
-			CExpression *PexprExpandPattern
-				(
-				CExpression *pexpr,
-				ULONG ulPos,
-				ULONG ulArity
-				);
-			
-			// get binding for children
-			BOOL FExtractChildren
-				(
-				IMemoryPool *pmp,
-				CGroupExpression *pgexpr,
-				CExpression *pexprPattern,
-				CExpression *pexprLast,
-				DrgPexpr *pdrgpexprChildren
-				);
-			
-			// extract binding from a group
-			CExpression *PexprExtract
-				(
-				IMemoryPool *pmp,
-				CGroup *pgroup,
-				CExpression *pexprPattern,
-				CExpression *pexprLast
-				);
-			
-			// build expression
-			CExpression *PexprFinalize
-				(
-				IMemoryPool *pmp,
-				CGroupExpression *pgexpr,
-				DrgPexpr *pdrgpexprChildren
-				);
-			
-			// private copy ctor
-			CBinding(const CBinding &);
-						
-		public:
-		
-			// ctor
-			CBinding()
-			{}
-			
-			// dtor
-			~CBinding()
-			{}
-			
-			// extract binding from group expression
-			CExpression *PexprExtract
-				(
-				IMemoryPool *pmp,
-				CGroupExpression *pgexpr,
-				CExpression *pexprPatetrn,
-				CExpression *pexprLast
-				);
+	// extract binding from group expression
+	CExpression *
+	PexprExtract(IMemoryPool *pmp, CGroupExpression *pgexpr,
+				 CExpression *pexprPatetrn, CExpression *pexprLast);
 
-	}; // class CBinding
-	
-}
+};  // class CBinding
 
-#endif // !GPOPT_CBinding_H
+}  // namespace gpopt
+
+#endif  // !GPOPT_CBinding_H
 
 // EOF

@@ -22,15 +22,10 @@ using namespace gpopt;
 
 XERCES_CPP_NAMESPACE_USE
 
-CParseHandlerWindowOids::CParseHandlerWindowOids
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pwindowoids(NULL)
+CParseHandlerWindowOids::CParseHandlerWindowOids(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pwindowoids(NULL)
 {
 }
 
@@ -40,40 +35,41 @@ CParseHandlerWindowOids::~CParseHandlerWindowOids()
 }
 
 void
-CParseHandlerWindowOids::StartElement
-	(
-	const XMLCh* const , //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , //xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerWindowOids::StartElement(const XMLCh *const,  //xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const,  //xmlszQname,
+									  const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenWindowOids), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenWindowOids), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse window function oids
-	OID oidRowNumber = CDXLOperatorFactory::OidValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenOidRowNumber, EdxltokenWindowOids);
-	OID oidRank = CDXLOperatorFactory::OidValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenOidRank, EdxltokenWindowOids);
+	OID oidRowNumber = CDXLOperatorFactory::OidValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenOidRowNumber, EdxltokenWindowOids);
+	OID oidRank = CDXLOperatorFactory::OidValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenOidRank, EdxltokenWindowOids);
 
 	m_pwindowoids = GPOS_NEW(m_pmp) CWindowOids(oidRowNumber, oidRank);
 }
 
 // invoked by Xerces to process a closing tag
 void
-CParseHandlerWindowOids::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerWindowOids::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenWindowOids), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenWindowOids), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(NULL != m_pwindowoids);

@@ -28,20 +28,14 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalDelete::CDXLLogicalDelete
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc,
-	ULONG ulCtid,
-	ULONG ulSegmentId,
-	DrgPul *pdrgpulDelete
-	)
-	:
-	CDXLLogical(pmp),
-	m_pdxltabdesc(pdxltabdesc),
-	m_ulCtid(ulCtid),
-	m_ulSegmentId(ulSegmentId),
-	m_pdrgpulDelete(pdrgpulDelete)
+CDXLLogicalDelete::CDXLLogicalDelete(IMemoryPool *pmp,
+									 CDXLTableDescr *pdxltabdesc, ULONG ulCtid,
+									 ULONG ulSegmentId, DrgPul *pdrgpulDelete)
+	: CDXLLogical(pmp),
+	  m_pdxltabdesc(pdxltabdesc),
+	  m_ulCtid(ulCtid),
+	  m_ulSegmentId(ulSegmentId),
+	  m_pdrgpulDelete(pdrgpulDelete)
 {
 	GPOS_ASSERT(NULL != pdxltabdesc);
 	GPOS_ASSERT(NULL != pdrgpulDelete);
@@ -98,27 +92,28 @@ CDXLLogicalDelete::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalDelete::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalDelete::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
-	CWStringDynamic *pstrColsDel = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDelete);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDeleteCols), pstrColsDel);
+	CWStringDynamic *pstrColsDel =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulDelete);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDeleteCols),
+						  pstrColsDel);
 	GPOS_DELETE(pstrColsDel);
 
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCtidColId), m_ulCtid);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId), m_ulSegmentId);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGpSegmentIdColId),
+						  m_ulSegmentId);
 
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -131,12 +126,8 @@ CDXLLogicalDelete::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalDelete::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLLogicalDelete::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 
@@ -149,7 +140,7 @@ CDXLLogicalDelete::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

@@ -23,18 +23,9 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CCTEReq::CCTEReqEntry::CCTEReqEntry
-	(
-	ULONG ulId,
-	CCTEMap::ECteType ect,
-	BOOL fRequired,
-	CDrvdPropPlan *pdpplan
-	)
-	:
-	m_ulId(ulId),
-	m_ect(ect),
-	m_fRequired(fRequired),
-	m_pdpplan(pdpplan)
+CCTEReq::CCTEReqEntry::CCTEReqEntry(ULONG ulId, CCTEMap::ECteType ect,
+									BOOL fRequired, CDrvdPropPlan *pdpplan)
+	: m_ulId(ulId), m_ect(ect), m_fRequired(fRequired), m_pdpplan(pdpplan)
 {
 	GPOS_ASSERT(CCTEMap::EctSentinel > ect);
 	GPOS_ASSERT_IMP(NULL == pdpplan, CCTEMap::EctProducer == ect);
@@ -64,7 +55,8 @@ CCTEReq::CCTEReqEntry::~CCTEReqEntry()
 ULONG
 CCTEReq::CCTEReqEntry::UlHash() const
 {
-	ULONG ulHash = gpos::UlCombineHashes(gpos::UlHash<ULONG>(&m_ulId), gpos::UlHash<CCTEMap::ECteType>(&m_ect));
+	ULONG ulHash = gpos::UlCombineHashes(
+		gpos::UlHash<ULONG>(&m_ulId), gpos::UlHash<CCTEMap::ECteType>(&m_ect));
 	ulHash = gpos::UlCombineHashes(ulHash, gpos::UlHash<BOOL>(&m_fRequired));
 
 	if (NULL != m_pdpplan)
@@ -84,15 +76,10 @@ CCTEReq::CCTEReqEntry::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CCTEReq::CCTEReqEntry::FEqual
-	(
-	CCTEReqEntry *pcre
-	)
-	const
+CCTEReq::CCTEReqEntry::FEqual(CCTEReqEntry *pcre) const
 {
 	GPOS_ASSERT(NULL != pcre);
-	if (m_ulId != pcre->UlId() ||
-		m_ect != pcre->Ect() ||
+	if (m_ulId != pcre->UlId() || m_ect != pcre->Ect() ||
 		m_fRequired != pcre->FRequired())
 	{
 		return false;
@@ -121,15 +108,10 @@ CCTEReq::CCTEReqEntry::FEqual
 //
 //---------------------------------------------------------------------------
 IOstream &
-CCTEReq::CCTEReqEntry::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CCTEReq::CCTEReqEntry::OsPrint(IOstream &os) const
 {
-	os << m_ulId
-		<< (CCTEMap::EctProducer == m_ect ? "p" : "c")
-		<< (m_fRequired ? "" : "(opt)");
+	os << m_ulId << (CCTEMap::EctProducer == m_ect ? "p" : "c")
+	   << (m_fRequired ? "" : "(opt)");
 
 	if (NULL != m_pdpplan)
 	{
@@ -146,14 +128,8 @@ CCTEReq::CCTEReqEntry::OsPrint
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CCTEReq::CCTEReq
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp),
-	m_phmcter(NULL),
-	m_pdrgpulRequired(NULL)
+CCTEReq::CCTEReq(IMemoryPool *pmp)
+	: m_pmp(pmp), m_phmcter(NULL), m_pdrgpulRequired(NULL)
 {
 	GPOS_ASSERT(NULL != pmp);
 
@@ -184,20 +160,16 @@ CCTEReq::~CCTEReq()
 //
 //---------------------------------------------------------------------------
 void
-CCTEReq::Insert
-	(
-	ULONG ulCteId,
-	CCTEMap::ECteType ect,
-	BOOL fRequired,
-	CDrvdPropPlan *pdpplan
-	)
+CCTEReq::Insert(ULONG ulCteId, CCTEMap::ECteType ect, BOOL fRequired,
+				CDrvdPropPlan *pdpplan)
 {
 	GPOS_ASSERT(CCTEMap::EctSentinel > ect);
-	CCTEReqEntry *pcre = GPOS_NEW(m_pmp) CCTEReqEntry(ulCteId, ect, fRequired, pdpplan);
+	CCTEReqEntry *pcre =
+		GPOS_NEW(m_pmp) CCTEReqEntry(ulCteId, ect, fRequired, pdpplan);
 #ifdef GPOS_DEBUG
 	BOOL fSuccess =
-#endif // GPOS_DEBUG
-	m_phmcter->FInsert(GPOS_NEW(m_pmp) ULONG(ulCteId), pcre);
+#endif  // GPOS_DEBUG
+		m_phmcter->FInsert(GPOS_NEW(m_pmp) ULONG(ulCteId), pcre);
 	GPOS_ASSERT(fSuccess);
 	if (fRequired)
 	{
@@ -215,16 +187,15 @@ CCTEReq::Insert
 //
 //---------------------------------------------------------------------------
 void
-CCTEReq::InsertConsumer
-	(
-	ULONG ulId,
-	DrgPdp *pdrgpdpCtxt
-	)
+CCTEReq::InsertConsumer(ULONG ulId, DrgPdp *pdrgpdpCtxt)
 {
 	ULONG ulProducerId = ULONG_MAX;
-	CDrvdPropPlan *pdpplan = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pcm()->PdpplanProducer(&ulProducerId);
+	CDrvdPropPlan *pdpplan = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])
+								 ->Pcm()
+								 ->PdpplanProducer(&ulProducerId);
 	GPOS_ASSERT(NULL != pdpplan);
-	GPOS_ASSERT(ulProducerId == ulId && "unexpected CTE producer plan properties");
+	GPOS_ASSERT(ulProducerId == ulId &&
+				"unexpected CTE producer plan properties");
 
 	pdpplan->AddRef();
 	Insert(ulId, CCTEMap::EctConsumer, true /*fRequired*/, pdpplan);
@@ -239,11 +210,7 @@ CCTEReq::InsertConsumer
 //
 //---------------------------------------------------------------------------
 CCTEReq::CCTEReqEntry *
-CCTEReq::PcreLookup
-	(
-	ULONG ulCteId
-	)
-	const
+CCTEReq::PcreLookup(ULONG ulCteId) const
 {
 	return m_phmcter->PtLookup(&ulCteId);
 }
@@ -257,11 +224,7 @@ CCTEReq::PcreLookup
 //
 //---------------------------------------------------------------------------
 BOOL
-CCTEReq::FSubset
-	(
-	const CCTEReq *pcter
-	)
-	const
+CCTEReq::FSubset(const CCTEReq *pcter) const
 {
 	GPOS_ASSERT(NULL != pcter);
 
@@ -301,12 +264,8 @@ CCTEReq::FSubset
 //
 //---------------------------------------------------------------------------
 BOOL
-CCTEReq::FContainsRequirement
-	(
-	const ULONG ulId,
-	const CCTEMap::ECteType ect
-	)
-	const
+CCTEReq::FContainsRequirement(const ULONG ulId,
+							  const CCTEMap::ECteType ect) const
 {
 	CCTEReqEntry *pcre = PcreLookup(ulId);
 	return (NULL != pcre && pcre->Ect() == ect);
@@ -321,11 +280,7 @@ CCTEReq::FContainsRequirement
 //
 //---------------------------------------------------------------------------
 CCTEMap::ECteType
-CCTEReq::Ect
-	(
-	const ULONG ulId
-	)
-	const
+CCTEReq::Ect(const ULONG ulId) const
 {
 	CCTEReqEntry *pcre = PcreLookup(ulId);
 	GPOS_ASSERT(NULL != pcre);
@@ -369,11 +324,7 @@ CCTEReq::UlHash() const
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CCTEReq::PcterUnresolved
-	(
-	IMemoryPool *pmp,
-	CCTEMap *pcm
-	)
+CCTEReq::PcterUnresolved(IMemoryPool *pmp, CCTEMap *pcm)
 {
 	GPOS_ASSERT(NULL != pcm);
 	CCTEReq *pcterUnresolved = GPOS_NEW(pmp) CCTEReq(pmp);
@@ -385,7 +336,8 @@ CCTEReq::PcterUnresolved
 		// then keep it as required, else make it optional
 		const CCTEReqEntry *pcre = hmcri.Pt();
 		ULONG ulId = pcre->UlId();
-		BOOL fRequired = pcre->FRequired() && CCTEMap::EctSentinel == pcm->Ect(ulId);
+		BOOL fRequired =
+			pcre->FRequired() && CCTEMap::EctSentinel == pcm->Ect(ulId);
 		CDrvdPropPlan *pdpplan = pcre->PdpplanProducer();
 		if (NULL != pdpplan)
 		{
@@ -408,12 +360,11 @@ CCTEReq::PcterUnresolved
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CCTEReq::PcterUnresolvedSequence
-	(
-	IMemoryPool *pmp,
-	CCTEMap *pcm,
-	DrgPdp *pdrgpdpCtxt // context contains derived plan properties of producer tree
-	)
+CCTEReq::PcterUnresolvedSequence(
+	IMemoryPool *pmp, CCTEMap *pcm,
+	DrgPdp *
+		pdrgpdpCtxt  // context contains derived plan properties of producer tree
+)
 {
 	GPOS_ASSERT(NULL != pcm);
 	CCTEReq *pcterUnresolved = GPOS_NEW(pmp) CCTEReq(pmp);
@@ -438,7 +389,8 @@ CCTEReq::PcterUnresolvedSequence
 			pdpplan->AddRef();
 			pcterUnresolved->Insert(ulId, ect, false /*fReqiored*/, pdpplan);
 		}
-		else if (!fRequired && CCTEMap::EctProducer == ect && CCTEMap::EctSentinel != ectDrvd)
+		else if (!fRequired && CCTEMap::EctProducer == ect &&
+				 CCTEMap::EctSentinel != ectDrvd)
 		{
 			GPOS_ASSERT(CCTEMap::EctProducer == ectDrvd);
 
@@ -483,10 +435,7 @@ CCTEReq::PcterUnresolvedSequence
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CCTEReq::PcterAllOptional
-	(
-	IMemoryPool *pmp
-	)
+CCTEReq::PcterAllOptional(IMemoryPool *pmp)
 {
 	CCTEReq *pcter = GPOS_NEW(pmp) CCTEReq(pmp);
 
@@ -515,11 +464,7 @@ CCTEReq::PcterAllOptional
 //
 //---------------------------------------------------------------------------
 CDrvdPropPlan *
-CCTEReq::Pdpplan
-	(
-	ULONG ulCteId
-	)
-	const
+CCTEReq::Pdpplan(ULONG ulCteId) const
 {
 	const CCTEReqEntry *pcre = PcreLookup(ulCteId);
 	if (NULL != pcre)
@@ -540,11 +485,7 @@ CCTEReq::Pdpplan
 //
 //---------------------------------------------------------------------------
 IOstream &
-CCTEReq::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CCTEReq::OsPrint(IOstream &os) const
 {
 	HMCteReqIter hmcri(m_phmcter);
 	while (hmcri.FAdvance())
@@ -557,13 +498,14 @@ CCTEReq::OsPrint
 	return os;
 }
 
-namespace gpopt {
-
-  IOstream &operator << (IOstream &os, CCTEReq &cter)
-  {
-    return cter.OsPrint(os);
-  }
-
+namespace gpopt
+{
+IOstream &
+operator<<(IOstream &os, CCTEReq &cter)
+{
+	return cter.OsPrint(os);
 }
+
+}  // namespace gpopt
 
 // EOF

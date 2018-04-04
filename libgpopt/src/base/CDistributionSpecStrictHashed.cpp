@@ -5,12 +5,16 @@
 
 namespace gpopt
 {
-	CDistributionSpecStrictHashed::CDistributionSpecStrictHashed(DrgPexpr *pdrgpexpr, BOOL fNullsColocated)
-		: CDistributionSpecHashed(pdrgpexpr, fNullsColocated) {}
-
-	CDistributionSpec::EDistributionType CDistributionSpecStrictHashed::Edt() const
-	{
-		return CDistributionSpec::EdtStrictHashed;
-	}
-
+CDistributionSpecStrictHashed::CDistributionSpecStrictHashed(
+	DrgPexpr *pdrgpexpr, BOOL fNullsColocated)
+	: CDistributionSpecHashed(pdrgpexpr, fNullsColocated)
+{
 }
+
+CDistributionSpec::EDistributionType
+CDistributionSpecStrictHashed::Edt() const
+{
+	return CDistributionSpec::EdtStrictHashed;
+}
+
+}  // namespace gpopt

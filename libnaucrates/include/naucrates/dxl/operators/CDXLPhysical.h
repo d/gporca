@@ -19,46 +19,43 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd decl
-	class CXMLSerializer;
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysical
-	//
-	//	@doc:
-	//		Base class the DXL physical operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysical : public CDXLOperator
-	{
-		private:
-		
-			// private copy ctor
-			CDXLPhysical(const CDXLPhysical&);
+// fwd decl
+class CXMLSerializer;
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysical
+//
+//	@doc:
+//		Base class the DXL physical operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysical : public CDXLOperator
+{
+private:
+	// private copy ctor
+	CDXLPhysical(const CDXLPhysical &);
 
-		public:
-			// ctor/dtor
-			explicit
-			CDXLPhysical(IMemoryPool *pmp);
-			
-			virtual
-			~CDXLPhysical();
-			
-			// Get operator type
-			Edxloptype Edxloperatortype() const;
-			
+public:
+	// ctor/dtor
+	explicit CDXLPhysical(IMemoryPool *pmp);
+
+	virtual ~CDXLPhysical();
+
+	// Get operator type
+	Edxloptype
+	Edxloperatortype() const;
+
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			virtual void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-					
-	};
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	virtual void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLPhysical_H
+#endif  // !GPDXL_CDXLPhysical_H
 
 // EOF
-

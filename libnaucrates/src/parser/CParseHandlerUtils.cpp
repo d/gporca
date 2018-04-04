@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of the helper methods for parse handler
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/parser/CParseHandlerUtils.h"
@@ -27,11 +27,8 @@ using namespace gpnaucrates;
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerUtils::SetProperties
-	(
-	CDXLNode *pdxln,
-	CParseHandlerProperties *pphProp
-	)
+CParseHandlerUtils::SetProperties(CDXLNode *pdxln,
+								  CParseHandlerProperties *pphProp)
 {
 	GPOS_ASSERT(NULL != pphProp->Pdxlprop());
 	// set physical properties

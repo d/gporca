@@ -29,11 +29,7 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 void
-CIOUtils::Dump
-	(
-	CHAR *szFileName,
-	CHAR *sz
-	)
+CIOUtils::Dump(CHAR *szFileName, CHAR *sz)
 {
 	CAutoSuspendAbort asa;
 
@@ -43,7 +39,7 @@ CIOUtils::Dump
 	{
 		CFileWriter fw;
 		fw.Open(szFileName, ulWrPerms);
-		const BYTE *pb = reinterpret_cast<const BYTE*>(sz);
+		const BYTE *pb = reinterpret_cast<const BYTE *>(sz);
 		ULONG_PTR ulpLength = (ULONG_PTR) clib::UlStrLen(sz);
 		fw.Write(pb, ulpLength);
 		fw.Close();
@@ -57,10 +53,9 @@ CIOUtils::Dump
 
 	// reset time slice
 #ifdef GPOS_DEBUG
-    CWorker::PwrkrSelf()->ResetTimeSlice();
-#endif // GPOS_DEBUG
+	CWorker::PwrkrSelf()->ResetTimeSlice();
+#endif  // GPOS_DEBUG
 }
 
 
 // EOF
-

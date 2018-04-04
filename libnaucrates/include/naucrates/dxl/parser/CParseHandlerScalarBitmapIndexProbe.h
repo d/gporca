@@ -18,54 +18,50 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarBitmapIndexProbe
-	//
-	//	@doc:
-	//		Parse handler for bitmap index probe operator nodes
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarBitmapIndexProbe : public CParseHandlerScalarOp
-	{
-		private:
-			// private copy ctor
-			CParseHandlerScalarBitmapIndexProbe(const CParseHandlerScalarBitmapIndexProbe &);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarBitmapIndexProbe
+//
+//	@doc:
+//		Parse handler for bitmap index probe operator nodes
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarBitmapIndexProbe : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarBitmapIndexProbe(
+		const CParseHandlerScalarBitmapIndexProbe &);
 
-			// process the start of an element
-			virtual
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the end of an element
-			virtual
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-		public:
-			// ctor
-			CParseHandlerScalarBitmapIndexProbe
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};  // class CParseHandlerScalarBitmapIndexProbe
-}
+public:
+	// ctor
+	CParseHandlerScalarBitmapIndexProbe(IMemoryPool *pmp,
+										CParseHandlerManager *pphm,
+										CParseHandlerBase *pphRoot);
+};  // class CParseHandlerScalarBitmapIndexProbe
+}  // namespace gpdxl
 
-#endif // !GPDXL_CParseHandlerScalarBitmapIndexProbe_H
+#endif  // !GPDXL_CParseHandlerScalarBitmapIndexProbe_H
 
 // EOF

@@ -7,10 +7,7 @@
 using namespace gpopt;
 
 DrgPcnstr *
-CColConstraintsHashMapper::PdrgPcnstrLookup
-	(
-		CColRef *pcr
-	)
+CColConstraintsHashMapper::PdrgPcnstrLookup(CColRef *pcr)
 {
 	DrgPcnstr *pdrgpcnstrCol = m_phmColConstr->PtLookup(pcr);
 	pdrgpcnstrCol->AddRef();
@@ -18,13 +15,8 @@ CColConstraintsHashMapper::PdrgPcnstrLookup
 }
 
 // mapping between columns and single column constraints in array of constraints
-static
-HMColConstr *
-PhmcolconstrSingleColConstr
-	(
-		IMemoryPool *pmp,
-		DrgPcnstr *drgPcnstr
-	)
+static HMColConstr *
+PhmcolconstrSingleColConstr(IMemoryPool *pmp, DrgPcnstr *drgPcnstr)
 {
 	CAutoRef<DrgPcnstr> arpdrgpcnstr(drgPcnstr);
 	HMColConstr *phmcolconstr = GPOS_NEW(pmp) HMColConstr(pmp);
@@ -53,12 +45,9 @@ PhmcolconstrSingleColConstr
 	return phmcolconstr;
 }
 
-CColConstraintsHashMapper::CColConstraintsHashMapper
-	(
-		IMemoryPool *pmp,
-		DrgPcnstr *pdrgpcnstr
-	) :
-	m_phmColConstr(PhmcolconstrSingleColConstr(pmp, pdrgpcnstr))
+CColConstraintsHashMapper::CColConstraintsHashMapper(IMemoryPool *pmp,
+													 DrgPcnstr *pdrgpcnstr)
+	: m_phmColConstr(PhmcolconstrSingleColConstr(pmp, pdrgpcnstr))
 {
 }
 

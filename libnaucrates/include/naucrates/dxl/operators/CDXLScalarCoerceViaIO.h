@@ -26,66 +26,55 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarCoerceViaIO
-	//
-	//	@doc:
-	//		Class for representing DXL casting operator
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarCoerceViaIO : public CDXLScalarCoerceBase
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarCoerceViaIO
+//
+//	@doc:
+//		Class for representing DXL casting operator
+//
+//---------------------------------------------------------------------------
+class CDXLScalarCoerceViaIO : public CDXLScalarCoerceBase
+{
+private:
+	// private copy ctor
+	CDXLScalarCoerceViaIO(const CDXLScalarCoerceViaIO &);
+
+public:
+	// ctor/dtor
+	CDXLScalarCoerceViaIO(IMemoryPool *pmp, IMDId *pmdidType, INT iTypeModifier,
+						  EdxlCoercionForm edxlcf, INT iLoc);
+
+	virtual ~CDXLScalarCoerceViaIO()
 	{
+	}
 
-		private:
-			// private copy ctor
-			CDXLScalarCoerceViaIO(const CDXLScalarCoerceViaIO&);
+	// ident accessor
+	virtual Edxlopid
+	Edxlop() const
+	{
+		return EdxlopScalarCoerceViaIO;
+	}
 
-		public:
-			// ctor/dtor
-			CDXLScalarCoerceViaIO
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidType,
-				INT iTypeModifier,
-				EdxlCoercionForm edxlcf,
-				INT iLoc
-				);
+	// name of the DXL operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
 
-			virtual
-			~CDXLScalarCoerceViaIO()
-			{
-			}
+	// conversion function
+	static CDXLScalarCoerceViaIO *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarCoerceViaIO == pdxlop->Edxlop());
 
-			// ident accessor
-			virtual
-			Edxlopid Edxlop() const
-			{
-				return EdxlopScalarCoerceViaIO;
-			}
+		return dynamic_cast<CDXLScalarCoerceViaIO *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
 
-			// name of the DXL operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
-
-			// conversion function
-			static
-			CDXLScalarCoerceViaIO *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarCoerceViaIO == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLScalarCoerceViaIO*>(pdxlop);
-			}
-	};
-}
-
-#endif // !GPDXL_CDXLScalarCoerceViaIO_H
+#endif  // !GPDXL_CDXLScalarCoerceViaIO_H
 
 // EOF

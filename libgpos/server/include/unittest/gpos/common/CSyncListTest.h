@@ -18,92 +18,86 @@
 
 namespace gpos
 {
-
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CSyncListTest
-	//
-	//	@doc:
-	//		Wrapper class for CSyncList template to avoid compiler confusion
-	//		regarding instantiation with sample parameters;
-	//
-	//---------------------------------------------------------------------------
-	class CSyncListTest
+//---------------------------------------------------------------------------
+//	@class:
+//		CSyncListTest
+//
+//	@doc:
+//		Wrapper class for CSyncList template to avoid compiler confusion
+//		regarding instantiation with sample parameters;
+//
+//---------------------------------------------------------------------------
+class CSyncListTest
+{
+private:
+	// list element;
+	struct SElem
 	{
-		private:
+		// object id
+		ULONG m_ulId;
 
-			// list element;
-			struct SElem
-			{
-				// object id
-				ULONG m_ulId;
+		// generic link for list
+		SLink m_link;
 
-				// generic link for list
-				SLink m_link;
+		// ctor
+		SElem() : m_ulId(0)
+		{
+		}
+	};
 
-				// ctor
-				SElem()
-					:
-					m_ulId(0)
-				{}
-			};
+	// collection of parameters for parallel tasks
+	struct SArg
+	{
+		// pointer to list
+		CSyncList<SElem> *m_plist;
 
-			// collection of parameters for parallel tasks
-			struct SArg
-			{
-				// pointer to list
-				CSyncList<SElem> *m_plist;
+		// pool of elements to insert
+		CSyncPool<SElem> *m_psp;
 
-				// pool of elements to insert
-				CSyncPool<SElem> *m_psp;
+		// number of tasks
+		ULONG m_ulCount;
 
-				// number of tasks
-				ULONG m_ulCount;
+		// ctor
+		SArg(CSyncList<SElem> *pstack, CSyncPool<SElem> *psp, ULONG ulCount)
+			: m_plist(pstack), m_psp(psp), m_ulCount(ulCount)
+		{
+		}
 
-				// ctor
-				SArg
-					(
-					CSyncList<SElem> *pstack,
-					CSyncPool<SElem> *psp,
-					ULONG ulCount
-					)
-					:
-					m_plist(pstack),
-					m_psp(psp),
-					m_ulCount(ulCount)
-				{}
+		// ctor
+		SArg() : m_plist(NULL), m_psp(NULL), m_ulCount(0)
+		{
+		}
+	};
 
-				// ctor
-				SArg()
-					:
-					m_plist(NULL),
-					m_psp(NULL),
-					m_ulCount(0)
-				{}
-			};
+	// stress functions
+	static void *
+	RunPush(void *pv);
+	static void *
+	RunPop(void *pv);
 
-			// stress functions
-			static void *RunPush(void *pv);
-			static void *RunPop(void *pv);
+	// task management functions
+	static void
+	ConcurrentPush(IMemoryPool *pmp, SArg *parg);
+	static void
+	ConcurrentPushPop(IMemoryPool *pmp, SArg *parg);
+	static void
+	ConcurrentPop(IMemoryPool *pmp, SArg *parg);
+	static void
+	RunTasks(CAutoTaskProxy *patp, CTask **rgptsk, ULONG ulTasks);
 
-			// task management functions
-			static void ConcurrentPush(IMemoryPool *pmp, SArg *parg);
-			static void ConcurrentPushPop(IMemoryPool *pmp, SArg *parg);
-			static void ConcurrentPop(IMemoryPool *pmp, SArg *parg);
-			static void RunTasks(CAutoTaskProxy *patp, CTask **rgptsk, ULONG ulTasks);
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_Basics();
+	static GPOS_RESULT
+	EresUnittest_Concurrency();
 
-		public:
-
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_Basics();
-			static GPOS_RESULT EresUnittest_Concurrency();
-
-	}; // class CSyncListTest
-}
+};  // class CSyncListTest
+}  // namespace gpos
 
 
-#endif // !GPOS_CSyncListTest_H
+#endif  // !GPOS_CSyncListTest_H
 
 // EOF
-

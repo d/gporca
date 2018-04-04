@@ -26,10 +26,8 @@ const WCHAR CWStringBase::m_wcEmpty = GPOS_WSZ_LIT('\0');
 //		Creates a deep copy of the string
 //
 //---------------------------------------------------------------------------
-CWStringConst *CWStringBase::PStrCopy
-	(
-	IMemoryPool *pmp
-	) const
+CWStringConst *
+CWStringBase::PStrCopy(IMemoryPool *pmp) const
 {
 	return GPOS_NEW(pmp) CWStringConst(pmp, Wsz());
 }
@@ -50,18 +48,14 @@ CWStringBase::FValid() const
 
 //---------------------------------------------------------------------------
 //	@function:
-//		CWStringBase::operator == 
+//		CWStringBase::operator ==
 //
 //	@doc:
 //		Equality operator on strings
 //
 //---------------------------------------------------------------------------
 BOOL
-CWStringBase::operator ==
-	(
-	const CWStringBase &str
-	)
-	const
+CWStringBase::operator==(const CWStringBase &str) const
 {
 	return FEquals(&str);
 }
@@ -91,11 +85,7 @@ CWStringBase::UlLength() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CWStringBase::FEquals
-	(
-	const CWStringBase *pStr
-	)
-	const
+CWStringBase::FEquals(const CWStringBase *pStr) const
 {
 	GPOS_ASSERT(NULL != pStr);
 	return FEquals(pStr->Wsz());
@@ -110,16 +100,11 @@ CWStringBase::FEquals
 //
 //---------------------------------------------------------------------------
 BOOL
-CWStringBase::FEquals
-	(
-	const WCHAR *wszBuf
-	)
-	const
+CWStringBase::FEquals(const WCHAR *wszBuf) const
 {
 	GPOS_ASSERT(NULL != wszBuf);
 	ULONG ulLength = GPOS_WSZ_LENGTH(wszBuf);
-	if (UlLength() == ulLength &&
-		0 == clib::IWcsNCmp(Wsz(), wszBuf, ulLength))
+	if (UlLength() == ulLength && 0 == clib::IWcsNCmp(Wsz(), wszBuf, ulLength))
 	{
 		return true;
 	}
@@ -149,11 +134,7 @@ CWStringBase::FEmpty() const
 //
 //---------------------------------------------------------------------------
 INT
-CWStringBase::IFind
-	(
-	WCHAR wc
-	)
-	const
+CWStringBase::IFind(WCHAR wc) const
 {
 	const WCHAR *wsz = Wsz();
 	const ULONG ulLength = UlLength();
@@ -179,11 +160,7 @@ CWStringBase::IFind
 //
 //---------------------------------------------------------------------------
 BOOL
-CWStringBase::FEscaped
-	(
-	ULONG ulOfst
-	)
-	const
+CWStringBase::FEscaped(ULONG ulOfst) const
 {
 	GPOS_ASSERT(!FEmpty());
 	GPOS_ASSERT(UlLength() > ulOfst);
@@ -226,10 +203,7 @@ CWStringBase::FEscaped
 //
 //---------------------------------------------------------------------------
 ULONG
-CWStringBase::UlOccurences
-	(
-	const WCHAR wc
-	) const
+CWStringBase::UlOccurences(const WCHAR wc) const
 {
 	ULONG ulOccurences = 0;
 	ULONG ulLength = UlLength();
@@ -245,4 +219,3 @@ CWStringBase::UlOccurences
 	return ulOccurences;
 }
 // EOF
-

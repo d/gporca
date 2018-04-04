@@ -26,22 +26,16 @@ using namespace gpdxl;
 //		index descriptor and filter conditions on the index
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalDynamicIndexScan::CDXLPhysicalDynamicIndexScan
-	(
-	IMemoryPool *pmp,
-	CDXLTableDescr *pdxltabdesc,
-	ULONG ulPartIndexId,
-	ULONG ulPartIndexIdPrintable,
-	CDXLIndexDescr *pdxlid,
-	EdxlIndexScanDirection edxlisd
-	)
-	:
-	CDXLPhysical(pmp),
-	m_pdxltabdesc(pdxltabdesc),
-	m_ulPartIndexId(ulPartIndexId),
-	m_ulPartIndexIdPrintable(ulPartIndexIdPrintable),
-	m_pdxlid(pdxlid),
-	m_edxlisd(edxlisd)
+CDXLPhysicalDynamicIndexScan::CDXLPhysicalDynamicIndexScan(
+	IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc, ULONG ulPartIndexId,
+	ULONG ulPartIndexIdPrintable, CDXLIndexDescr *pdxlid,
+	EdxlIndexScanDirection edxlisd)
+	: CDXLPhysical(pmp),
+	  m_pdxltabdesc(pdxltabdesc),
+	  m_ulPartIndexId(ulPartIndexId),
+	  m_ulPartIndexIdPrintable(ulPartIndexIdPrintable),
+	  m_pdxlid(pdxlid),
+	  m_edxlisd(edxlisd)
 {
 	GPOS_ASSERT(NULL != m_pdxltabdesc);
 	GPOS_ASSERT(NULL != m_pdxlid);
@@ -168,26 +162,23 @@ CDXLPhysicalDynamicIndexScan::UlPartIndexIdPrintable() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDynamicIndexScan::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalDynamicIndexScan::SerializeToDXL(CXMLSerializer *pxmlser,
+											 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute
-				(
-				CDXLTokens::PstrToken(EdxltokenIndexScanDirection),
-				CDXLOperator::PstrIndexScanDirection(m_edxlisd)
-				);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexId), m_ulPartIndexId);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIndexScanDirection),
+						  CDXLOperator::PstrIndexScanDirection(m_edxlisd));
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexId),
+						  m_ulPartIndexId);
 	if (m_ulPartIndexIdPrintable != m_ulPartIndexId)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartIndexIdPrintable), m_ulPartIndexIdPrintable);
+		pxmlser->AddAttribute(
+			CDXLTokens::PstrToken(EdxltokenPartIndexIdPrintable),
+			m_ulPartIndexIdPrintable);
 	}
 
 	// serialize properties
@@ -202,7 +193,8 @@ CDXLPhysicalDynamicIndexScan::SerializeToDXL
 	// serialize table descriptor
 	m_pdxltabdesc->SerializeToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -215,12 +207,8 @@ CDXLPhysicalDynamicIndexScan::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalDynamicIndexScan::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLPhysicalDynamicIndexScan::AssertValid(const CDXLNode *pdxln,
+										  BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
@@ -242,14 +230,16 @@ CDXLPhysicalDynamicIndexScan::AssertValid
 	CDXLNode *pdxlnIndexConds = (*pdxln)[EdxldisIndexCondition];
 
 	// assert children are of right type (physical/scalar)
-	GPOS_ASSERT(EdxlopScalarIndexCondList == pdxlnIndexConds->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarIndexCondList ==
+				pdxlnIndexConds->Pdxlop()->Edxlop());
 	GPOS_ASSERT(EdxlopScalarFilter == pdxlnIndexFilter->Pdxlop()->Edxlop());
 
 	if (fValidateChildren)
 	{
-		pdxlnIndexConds->Pdxlop()->AssertValid(pdxlnIndexConds, fValidateChildren);
+		pdxlnIndexConds->Pdxlop()->AssertValid(pdxlnIndexConds,
+											   fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

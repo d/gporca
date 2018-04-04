@@ -26,51 +26,45 @@
 
 namespace gpos
 {
-	class CMemoryPoolInjectFault : public CMemoryPool
-	{
-		private:
-
+class CMemoryPoolInjectFault : public CMemoryPool
+{
+private:
 #ifdef GPOS_FPSIMULATOR
-			// check for OOM simulation
-			BOOL FSimulateAllocFailure();
-#endif // GPOS_FPSIMULATOR
+	// check for OOM simulation
+	BOOL
+	FSimulateAllocFailure();
+#endif  // GPOS_FPSIMULATOR
 
-			// private copy ctor
-			CMemoryPoolInjectFault(CMemoryPoolInjectFault &);
+	// private copy ctor
+	CMemoryPoolInjectFault(CMemoryPoolInjectFault &);
 
-		public:
+public:
+	// ctor
+	CMemoryPoolInjectFault(IMemoryPool *pmp, BOOL fOwnsUnderlying);
 
-			// ctor
-			CMemoryPoolInjectFault(IMemoryPool *pmp, BOOL fOwnsUnderlying);
+	//dtor
+	virtual ~CMemoryPoolInjectFault()
+	{
+	}
 
-			//dtor
-			virtual
-			~CMemoryPoolInjectFault()
-			{}
+	// allocate memory
+	virtual void *
+	PvAllocate(const ULONG ulNumBytes, const CHAR *szFilename,
+			   const ULONG ulLine);
 
-			// allocate memory
-			virtual
-			void *PvAllocate
-				(
-				const ULONG ulNumBytes,
-				const CHAR *szFilename,
-				const ULONG ulLine
-				);
+	// free memory
+	virtual void
+	Free(void *pv);
 
-			// free memory
-			virtual
-			void Free(void *pv);
+	// return total allocated size
+	virtual ULLONG
+	UllTotalAllocatedSize() const
+	{
+		return PmpUnderlying()->UllTotalAllocatedSize();
+	}
+};
+}  // namespace gpos
 
-			// return total allocated size
-			virtual
-			ULLONG UllTotalAllocatedSize() const
-			{
-				return PmpUnderlying()->UllTotalAllocatedSize();
-			}
-	};
-}
-
-#endif // !GPOS_CMemoryPoolInjectFault_H
+#endif  // !GPOS_CMemoryPoolInjectFault_H
 
 // EOF
-

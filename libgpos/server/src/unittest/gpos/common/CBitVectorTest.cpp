@@ -35,17 +35,16 @@ using namespace gpos;
 GPOS_RESULT
 CBitVectorTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CBitVectorTest::EresUnittest_Basics),
 		GPOS_UNITTEST_FUNC(CBitVectorTest::EresUnittest_SetOps),
 		GPOS_UNITTEST_FUNC(CBitVectorTest::EresUnittest_Cursor),
 		GPOS_UNITTEST_FUNC(CBitVectorTest::EresUnittest_Random)
 #ifdef GPOS_DEBUG
-		,
+			,
 		GPOS_UNITTEST_FUNC_ASSERT(CBitVectorTest::EresUnittest_OutOfBounds)
-#endif // GPOS_DEBUG
-		};
+#endif  // GPOS_DEBUG
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -71,17 +70,17 @@ CBitVectorTest::EresUnittest_Basics()
 	CBitVector bv(pmp, cSize);
 	GPOS_ASSERT(bv.FEmpty());
 
-	for(ULONG i = 0; i < cSize; i++)
+	for (ULONG i = 0; i < cSize; i++)
 	{
 		BOOL fSet = bv.FExchangeSet(i);
-		if(fSet)
+		if (fSet)
 		{
 			return GPOS_FAILED;
 		}
 		GPOS_ASSERT(bv.FBit(i));
 
 		CBitVector bvCopy(pmp, bv);
-		for(ULONG j = 0; j <= i; j++)
+		for (ULONG j = 0; j <= i; j++)
 		{
 			BOOL fSetAlt = bvCopy.FBit(j);
 			GPOS_ASSERT(fSetAlt);
@@ -126,14 +125,14 @@ CBitVectorTest::EresUnittest_SetOps()
 	CBitVector bvEmpty(pmp, cSize);
 
 	CBitVector bvEven(pmp, cSize);
-	for(ULONG i = 0; i < cSize; i += 2)
+	for (ULONG i = 0; i < cSize; i += 2)
 	{
 		bvEven.FExchangeSet(i);
 	}
 	GPOS_ASSERT(bvEven.FSubset(&bvEmpty));
 
 	CBitVector bvOdd(pmp, cSize);
-	for(ULONG i = 1; i < cSize; i += 2)
+	for (ULONG i = 1; i < cSize; i += 2)
 	{
 		bvOdd.FExchangeSet(i);
 	}
@@ -173,14 +172,14 @@ CBitVectorTest::EresUnittest_Cursor()
 	IMemoryPool *pmp = amp.Pmp();
 
 	CBitVector bv(pmp, 129);
-	for(ULONG i = 1; i < 20; i ++)
+	for (ULONG i = 1; i < 20; i++)
 	{
 		bv.FExchangeSet(i * 3);
 	}
 
 	ULONG ulCursor = 0;
 	bv.FNextBit(0, ulCursor);
-	while(bv.FNextBit(ulCursor + 1, ulCursor))
+	while (bv.FNextBit(ulCursor + 1, ulCursor))
 	{
 		GPOS_ASSERT(ulCursor == ((ulCursor / 3) * 3));
 	}
@@ -207,10 +206,10 @@ CBitVectorTest::EresUnittest_Random()
 	// set up control vector
 	ULONG cTotal = 10000;
 	CHAR *rg = GPOS_NEW_ARRAY(pmp, CHAR, cTotal);
-	
+
 	CRandom rand;
-	
-	clib::PvMemSet(rg, 0 , cTotal);
+
+	clib::PvMemSet(rg, 0, cTotal);
 
 	// set random chars in the control vector
 	for (ULONG i = 0; i < cTotal * 0.2; i++)
@@ -234,7 +233,7 @@ CBitVectorTest::EresUnittest_Random()
 	GPOS_ASSERT(cElements == bv.CElements());
 
 	ULONG ulCursor = 0;
-	while(bv.FNextBit(ulCursor + 1, ulCursor))
+	while (bv.FNextBit(ulCursor + 1, ulCursor))
 	{
 		GPOS_ASSERT(1 == rg[ulCursor]);
 		cElements--;
@@ -272,7 +271,6 @@ CBitVectorTest::EresUnittest_OutOfBounds()
 	return GPOS_FAILED;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

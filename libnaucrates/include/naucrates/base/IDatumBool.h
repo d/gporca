@@ -16,158 +16,145 @@
 
 namespace gpnaucrates
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IDatumBool
-	//
-	//	@doc:
-	//		Base abstract class for bool representation
-	//
-	//---------------------------------------------------------------------------
-	class IDatumBool : public IDatumStatisticsMappable
+//---------------------------------------------------------------------------
+//	@class:
+//		IDatumBool
+//
+//	@doc:
+//		Base abstract class for bool representation
+//
+//---------------------------------------------------------------------------
+class IDatumBool : public IDatumStatisticsMappable
+{
+private:
+	// private copy ctor
+	IDatumBool(const IDatumBool &);
+
+public:
+	// ctor
+	IDatumBool(){};
+
+	// dtor
+	virtual ~IDatumBool(){};
+
+	// accessor for datum type
+	virtual IMDType::ETypeInfo
+	Eti()
 	{
+		return IMDType::EtiBool;
+	}
 
-		private:
+	// accessor of boolean value
+	virtual BOOL
+	FValue() const = 0;
 
-			// private copy ctor
-			IDatumBool(const IDatumBool &);
+	// can datum be mapped to a double
+	BOOL
+	FHasStatsDoubleMapping() const
+	{
+		return true;
+	}
 
-		public:
+	// map to double for stats computation
+	CDouble
+	DStatsMapping() const
+	{
+		if (FValue())
+		{
+			return CDouble(1.0);
+		}
 
-			// ctor
-			IDatumBool()
-			{};
+		return CDouble(0.0);
+	}
 
-			// dtor
-			virtual
-			~IDatumBool()
-			{};
+	// can datum be mapped to LINT
+	BOOL
+	FHasStatsLINTMapping() const
+	{
+		return true;
+	}
 
-			// accessor for datum type
-			virtual IMDType::ETypeInfo Eti()
-			{
-				return IMDType::EtiBool;
-			}
+	// map to LINT for statistics computation
+	LINT
+	LStatsMapping() const
+	{
+		if (FValue())
+		{
+			return LINT(1);
+		}
+		return LINT(0);
+	}
 
-			// accessor of boolean value
-			virtual
-			BOOL FValue() const = 0;
+	//  supports statistical comparisons based on the byte array representation of datum
+	virtual BOOL
+	FSupportsBinaryComp(const IDatum *  //pdatum
+						) const
+	{
+		return false;
+	}
 
-			// can datum be mapped to a double
-			BOOL FHasStatsDoubleMapping() const
-			{
-				return true;
-			}
+	// byte array representation of datum
+	virtual const BYTE *
+	PbaVal() const
+	{
+		GPOS_ASSERT(!"Invalid invocation of PbaVal");
+		return NULL;
+	}
 
-			// map to double for stats computation
-			CDouble DStatsMapping() const
-			{
-				if (FValue())
-				{
-					return CDouble(1.0);
-				}
-				
-				return CDouble(0.0);
-			}
+	// does the datum need to be padded before statistical derivation
+	virtual BOOL
+	FNeedsPadding() const
+	{
+		return false;
+	}
 
-			// can datum be mapped to LINT
-			BOOL FHasStatsLINTMapping() const
-			{
-				return true;
-			}
+	// return the padded datum
+	virtual IDatum *
+	PdatumPadded(IMemoryPool *,  // pmp,
+				 ULONG			 // ulColLen
+				 ) const
+	{
+		GPOS_ASSERT(!"Invalid invocation of PdatumPadded");
+		return NULL;
+	}
 
-			// map to LINT for statistics computation
-			LINT LStatsMapping() const
-			{
-				if (FValue())
-				{
-					return LINT(1);
-				}
-				return LINT(0);
-			}
+	// statistics equality based on byte array representation of datums
+	virtual BOOL
+	FStatsEqualBinary(const IDatum *  // pdatum
+					  ) const
+	{
+		GPOS_ASSERT(!"Invalid invocation of FStatsEqualBinary");
+		return false;
+	}
 
-			//  supports statistical comparisons based on the byte array representation of datum
-			virtual
-			BOOL FSupportsBinaryComp
-				(
-				const IDatum * //pdatum
-				) 
-				const
-			{
-				return false;
-			}
+	// statistics less than based on byte array representation of datums
+	virtual BOOL
+	FStatsLessThanBinary(const IDatum *  //pdatum
+						 ) const
+	{
+		GPOS_ASSERT(!"Invalid invocation of FStatsLessThanBinary");
+		return false;
+	}
 
-			// byte array representation of datum
-			virtual
-			const BYTE *PbaVal() const
-			{
-				GPOS_ASSERT(!"Invalid invocation of PbaVal");
-				return NULL;
-			}
+	// does datum support like predicate
+	virtual BOOL
+	FSupportLikePredicate() const
+	{
+		return false;
+	}
 
-			// does the datum need to be padded before statistical derivation
-			virtual
-			BOOL FNeedsPadding() const
-			{
-				return false;
-			}
+	// return the default scale factor of like predicate
+	virtual CDouble
+	DLikePredicateScaleFactor() const
+	{
+		GPOS_ASSERT(!"Invalid invocation of DLikeSelectivity");
+		return false;
+	}
+};  // class IDatumBool
 
-			// return the padded datum
-			virtual
-			IDatum *PdatumPadded
-				(
-				IMemoryPool *, // pmp,
-				ULONG    // ulColLen
-				)
-				const
-			{
-				GPOS_ASSERT(!"Invalid invocation of PdatumPadded");
-				return NULL;
-			}
-
-			// statistics equality based on byte array representation of datums
-			virtual
-			BOOL FStatsEqualBinary
-				(
-				const IDatum * // pdatum
-				)
-				const
-			{
-				GPOS_ASSERT(!"Invalid invocation of FStatsEqualBinary");
-				return false;
-			}
-
-			// statistics less than based on byte array representation of datums
-			virtual
-			BOOL FStatsLessThanBinary
-				(
-				const IDatum * //pdatum
-				)
-				const
-			{
-				GPOS_ASSERT(!"Invalid invocation of FStatsLessThanBinary");
-				return false;
-			}
-
-			// does datum support like predicate
-			virtual
-			BOOL FSupportLikePredicate() const
-			{
-				return false;
-			}
-
-			// return the default scale factor of like predicate
-			virtual
-			CDouble DLikePredicateScaleFactor() const
-			{
-				GPOS_ASSERT(!"Invalid invocation of DLikeSelectivity");
-				return false;
-			}
-	}; // class IDatumBool
-
-}
+}  // namespace gpnaucrates
 
 
-#endif // !GPNAUCRATES_IDatumBool_H
+#endif  // !GPNAUCRATES_IDatumBool_H
 
 // EOF

@@ -25,17 +25,11 @@ using namespace gpos;
 //		does not own the memory
 //
 //---------------------------------------------------------------------------
-CWStringConst::CWStringConst
-	(
-	const WCHAR *wszBuf
-	)
-	:
-	CWStringBase
-		(
-		GPOS_WSZ_LENGTH(wszBuf),
-		false // fOwnsMemory
-		),
-	m_wszBuf(wszBuf)
+CWStringConst::CWStringConst(const WCHAR *wszBuf)
+	: CWStringBase(GPOS_WSZ_LENGTH(wszBuf),
+				   false  // fOwnsMemory
+				   ),
+	  m_wszBuf(wszBuf)
 {
 	GPOS_ASSERT(NULL != wszBuf);
 	GPOS_ASSERT(FValid());
@@ -50,18 +44,11 @@ CWStringConst::CWStringConst
 //		The string owns the memory.
 //
 //---------------------------------------------------------------------------
-CWStringConst::CWStringConst
-	(
-	IMemoryPool *pmp,
-	const WCHAR *wszBuf
-	)
-	:
-	CWStringBase
-		(
-		GPOS_WSZ_LENGTH(wszBuf),
-		true // fOwnsMemory
-		),
-	m_wszBuf(NULL)
+CWStringConst::CWStringConst(IMemoryPool *pmp, const WCHAR *wszBuf)
+	: CWStringBase(GPOS_WSZ_LENGTH(wszBuf),
+				   true  // fOwnsMemory
+				   ),
+	  m_wszBuf(NULL)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != wszBuf);
@@ -90,17 +77,11 @@ CWStringConst::CWStringConst
 //		Shallow copy constructor.
 //
 //---------------------------------------------------------------------------
-CWStringConst::CWStringConst
-	(
-	const CWStringConst& str
-	)
-	:
-	CWStringBase
-		(
-		str.UlLength(),
-		false // fOwnsMemory
-		),
-	m_wszBuf(str.Wsz())
+CWStringConst::CWStringConst(const CWStringConst &str)
+	: CWStringBase(str.UlLength(),
+				   false  // fOwnsMemory
+				   ),
+	  m_wszBuf(str.Wsz())
 {
 	GPOS_ASSERT(NULL != m_wszBuf);
 	GPOS_ASSERT(FValid());
@@ -130,11 +111,10 @@ CWStringConst::~CWStringConst()
 //		Returns the wide character buffer
 //
 //---------------------------------------------------------------------------
-const WCHAR*
+const WCHAR *
 CWStringConst::Wsz() const
 {
 	return m_wszBuf;
 }
 
 // EOF
-

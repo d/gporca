@@ -29,12 +29,8 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalLeftAntiSemiApply::PkcDeriveKeys
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalLeftAntiSemiApply::PkcDeriveKeys(IMemoryPool *,  // pmp
+										 CExpressionHandle &exprhdl) const
 {
 	return PkcDeriveKeysPassThru(exprhdl, 0 /* ulChild */);
 }
@@ -49,12 +45,8 @@ CLogicalLeftAntiSemiApply::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalLeftAntiSemiApply::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalLeftAntiSemiApply::Maxcard(IMemoryPool *,  // pmp
+								   CExpressionHandle &exprhdl) const
 {
 	// pass on max card of first child
 	return exprhdl.Pdprel(0)->Maxcard();
@@ -70,16 +62,13 @@ CLogicalLeftAntiSemiApply::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftAntiSemiApply::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalLeftAntiSemiApply::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
 	(void) pxfs->FExchangeSet(CXform::ExfLeftAntiSemiApply2LeftAntiSemiJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftAntiSemiApply2LeftAntiSemiJoinNoCorrelations);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftAntiSemiApply2LeftAntiSemiJoinNoCorrelations);
 
 	return pxfs;
 }
@@ -93,17 +82,15 @@ CLogicalLeftAntiSemiApply::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalLeftAntiSemiApply::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalLeftAntiSemiApply::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+													  HMUlCr *phmulcr,
+													  BOOL fMustExist)
 {
-	DrgPcr *pdrgpcrInner = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
+	DrgPcr *pdrgpcrInner =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
 
-	return GPOS_NEW(pmp) CLogicalLeftAntiSemiApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
+	return GPOS_NEW(pmp)
+		CLogicalLeftAntiSemiApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
 }
 
 // EOF
-

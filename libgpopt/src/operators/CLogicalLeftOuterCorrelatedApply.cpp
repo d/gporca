@@ -23,13 +23,11 @@ using namespace gpopt;
 //		Ctor - for patterns
 //
 //---------------------------------------------------------------------------
-CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalLeftOuterApply(pmp)
-{}
+CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply(
+	IMemoryPool *pmp)
+	: CLogicalLeftOuterApply(pmp)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -40,15 +38,11 @@ CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcrInner,
-	EOperatorId eopidOriginSubq
-	)
-	:
-	CLogicalLeftOuterApply(pmp, pdrgpcrInner, eopidOriginSubq)
-{}
+CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply(
+	IMemoryPool *pmp, DrgPcr *pdrgpcrInner, EOperatorId eopidOriginSubq)
+	: CLogicalLeftOuterApply(pmp, pdrgpcrInner, eopidOriginSubq)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -60,11 +54,7 @@ CLogicalLeftOuterCorrelatedApply::CLogicalLeftOuterCorrelatedApply
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftOuterCorrelatedApply::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalLeftOuterCorrelatedApply::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfImplementLeftOuterCorrelatedApply);
@@ -81,15 +71,12 @@ CLogicalLeftOuterCorrelatedApply::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalLeftOuterCorrelatedApply::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalLeftOuterCorrelatedApply::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
-		return m_pdrgpcrInner->FEqual(CLogicalLeftOuterCorrelatedApply::PopConvert(pop)->PdrgPcrInner());
+		return m_pdrgpcrInner->FEqual(
+			CLogicalLeftOuterCorrelatedApply::PopConvert(pop)->PdrgPcrInner());
 	}
 
 	return false;
@@ -104,17 +91,15 @@ CLogicalLeftOuterCorrelatedApply::FMatch
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalLeftOuterCorrelatedApply::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalLeftOuterCorrelatedApply::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+															 HMUlCr *phmulcr,
+															 BOOL fMustExist)
 {
-	DrgPcr *pdrgpcrInner = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
+	DrgPcr *pdrgpcrInner =
+		CUtils::PdrgpcrRemap(pmp, m_pdrgpcrInner, phmulcr, fMustExist);
 
-	return GPOS_NEW(pmp) CLogicalLeftOuterCorrelatedApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
+	return GPOS_NEW(pmp)
+		CLogicalLeftOuterCorrelatedApply(pmp, pdrgpcrInner, m_eopidOriginSubq);
 }
 
 // EOF
-

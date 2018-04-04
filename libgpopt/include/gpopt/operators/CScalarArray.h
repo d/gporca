@@ -19,127 +19,128 @@
 
 namespace gpopt
 {
+using namespace gpos;
+using namespace gpmd;
 
-	using namespace gpos;
-	using namespace gpmd;
+typedef CDynamicPtrArray<CScalarConst, CleanupRelease> DrgPconst;
 
-	typedef CDynamicPtrArray<CScalarConst, CleanupRelease> DrgPconst;
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarArray
+//
+//	@doc:
+//		Scalar array
+//
+//---------------------------------------------------------------------------
+class CScalarArray : public CScalar
+{
+private:
+	// element type id
+	IMDId *m_pmdidElem;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarArray
-	//
-	//	@doc:
-	//		Scalar array
-	//
-	//---------------------------------------------------------------------------
-	class CScalarArray : public CScalar
+	// array type id
+	IMDId *m_pmdidArray;
+
+	// is array multidimensional
+	BOOL m_fMultiDimensional;
+
+	// const values
+	DrgPconst *m_pdrgPconst;
+
+	// private copy ctor
+	CScalarArray(const CScalarArray &);
+
+public:
+	// ctor
+	CScalarArray(IMemoryPool *pmp, IMDId *pmdidElem, IMDId *pmdidArray,
+				 BOOL fMultiDimensional);
+
+	// ctor
+	CScalarArray(IMemoryPool *pmp, IMDId *pmdidElem, IMDId *pmdidArray,
+				 BOOL fMultiDimensional, DrgPconst *pdrgPconst);
+
+	// dtor
+	virtual ~CScalarArray();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
-	
-			// element type id
-			IMDId *m_pmdidElem;
-			
-			// array type id
-			IMDId *m_pmdidArray;
-			
-			// is array multidimensional
-			BOOL m_fMultiDimensional;
+		return EopScalarArray;
+	}
 
-			// const values
-			DrgPconst *m_pdrgPconst;
-
-			// private copy ctor
-			CScalarArray(const CScalarArray &);
-		
-		public:
-		
-			// ctor
-			CScalarArray(IMemoryPool *pmp, IMDId *pmdidElem, IMDId *pmdidArray, BOOL fMultiDimensional);
-
-			// ctor
-			CScalarArray(IMemoryPool *pmp, IMDId *pmdidElem, IMDId *pmdidArray, BOOL fMultiDimensional, DrgPconst *pdrgPconst);
-
-			// dtor
-			virtual 
-			~CScalarArray();
-
-			// ident accessors
-			virtual 
-			EOperatorId Eopid() const
-			{
-				return EopScalarArray;
-			}
-			
-			// return a string for aggregate function
-			virtual 
-			const CHAR *SzId() const
-			{
-				return "CScalarArray";
-			}
+	// return a string for aggregate function
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarArray";
+	}
 
 
-			// operator specific hash function
-			ULONG UlHash() const;
-			
-			// match function
-			BOOL FMatch(COperator *pop) const;
-			
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
-			
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
+	// operator specific hash function
+	ULONG
+	UlHash() const;
 
-			// conversion function
-			static
-			CScalarArray *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarArray == pop->Eopid());
-				
-				return reinterpret_cast<CScalarArray*>(pop);
-			}
-			
-			// element type id
-			IMDId *PmdidElem() const;
-			
-			// array type id
-			IMDId *PmdidArray() const;
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-			// is array multi-dimensional
-			BOOL FMultiDimensional() const;
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-			// type of expression's result
-			virtual 
-			IMDId *PmdidType() const;
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-			// CScalarConst array
-			DrgPconst *PdrgPconst() const;
+	// conversion function
+	static CScalarArray *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarArray == pop->Eopid());
 
-			// print
-			IOstream &OsPrint(IOstream &os) const;
+		return reinterpret_cast<CScalarArray *>(pop);
+	}
 
-	}; // class CScalarArray
+	// element type id
+	IMDId *
+	PmdidElem() const;
 
-}
+	// array type id
+	IMDId *
+	PmdidArray() const;
+
+	// is array multi-dimensional
+	BOOL
+	FMultiDimensional() const;
+
+	// type of expression's result
+	virtual IMDId *
+	PmdidType() const;
+
+	// CScalarConst array
+	DrgPconst *
+	PdrgPconst() const;
+
+	// print
+	IOstream &
+	OsPrint(IOstream &os) const;
+
+};  // class CScalarArray
+
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CScalarArray_H
+#endif  // !GPOPT_CScalarArray_H
 
 // EOF

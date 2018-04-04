@@ -36,17 +36,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerMDRelationExternal::CParseHandlerMDRelationExternal
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerMDRelation(pmp, pphm, pphRoot),
-	m_iRejectLimit(GPDXL_DEFAULT_REJLIMIT),
-	m_fRejLimitInRows(false),
-	m_pmdidFmtErrRel(NULL)
+CParseHandlerMDRelationExternal::CParseHandlerMDRelationExternal(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerMDRelation(pmp, pphm, pphRoot),
+	  m_iRejectLimit(GPDXL_DEFAULT_REJLIMIT),
+	  m_fRejLimitInRows(false),
+	  m_pmdidFmtErrRel(NULL)
 {
 	m_erelstorage = IMDRelation::ErelstorageExternal;
 }
@@ -60,17 +55,17 @@ CParseHandlerMDRelationExternal::CParseHandlerMDRelationExternal
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelationExternal::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerMDRelationExternal::StartElement(const XMLCh *const,  // xmlszUri,
+											  const XMLCh *const xmlszLocalname,
+											  const XMLCh *const,  // xmlszQname
+											  const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationExternal), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenRelationExternal), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -78,31 +73,36 @@ CParseHandlerMDRelationExternal::StartElement
 	ParseRelationAttributes(attrs, EdxltokenRelation);
 
 	// parse reject limit
-	const XMLCh *xmlszRejLimit = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenExtRelRejLimit));
+	const XMLCh *xmlszRejLimit =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenExtRelRejLimit));
 	if (NULL != xmlszRejLimit)
 	{
-		m_iRejectLimit = CDXLOperatorFactory::IValueFromXmlstr(m_pphm->Pmm(), xmlszRejLimit, EdxltokenExtRelRejLimit, EdxltokenRelationExternal);
-		m_fRejLimitInRows = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenExtRelRejLimitInRows, EdxltokenRelationExternal);
+		m_iRejectLimit = CDXLOperatorFactory::IValueFromXmlstr(
+			m_pphm->Pmm(), xmlszRejLimit, EdxltokenExtRelRejLimit,
+			EdxltokenRelationExternal);
+		m_fRejLimitInRows = CDXLOperatorFactory::FValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenExtRelRejLimitInRows,
+			EdxltokenRelationExternal);
 	}
 
 	// format error table id
-	const XMLCh *xmlszErrRel = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenExtRelFmtErrRel));
+	const XMLCh *xmlszErrRel =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenExtRelFmtErrRel));
 	if (NULL != xmlszErrRel)
 	{
-		m_pmdidFmtErrRel = CDXLOperatorFactory::PmdidFromXMLCh(m_pphm->Pmm(), xmlszErrRel, EdxltokenExtRelFmtErrRel, EdxltokenRelationExternal);
+		m_pmdidFmtErrRel = CDXLOperatorFactory::PmdidFromXMLCh(
+			m_pphm->Pmm(), xmlszErrRel, EdxltokenExtRelFmtErrRel,
+			EdxltokenRelationExternal);
 	}
 
 	// parse whether a hash distributed relation needs to be considered as random distributed
-	const XMLCh *xmlszConvertHashToRandom = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenConvertHashToRandom));
+	const XMLCh *xmlszConvertHashToRandom =
+		attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenConvertHashToRandom));
 	if (NULL != xmlszConvertHashToRandom)
 	{
-		m_fConvertHashToRandom = CDXLOperatorFactory::FValueFromXmlstr
-										(
-										m_pphm->Pmm(),
-										xmlszConvertHashToRandom,
-										EdxltokenConvertHashToRandom,
-										EdxltokenRelationExternal
-										);
+		m_fConvertHashToRandom = CDXLOperatorFactory::FValueFromXmlstr(
+			m_pphm->Pmm(), xmlszConvertHashToRandom,
+			EdxltokenConvertHashToRandom, EdxltokenRelationExternal);
 	}
 
 	// parse children
@@ -118,24 +118,29 @@ CParseHandlerMDRelationExternal::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerMDRelationExternal::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerMDRelationExternal::EndElement(const XMLCh *const,  // xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenRelationExternal), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenRelationExternal), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct metadata object from the created child elements
-	CParseHandlerMetadataColumns *pphMdCol = dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
-	CParseHandlerMDIndexInfoList *pphMdlIndexInfo = dynamic_cast<CParseHandlerMDIndexInfoList*>((*this)[1]);
-	CParseHandlerMetadataIdList *pphMdidlTriggers = dynamic_cast<CParseHandlerMetadataIdList*>((*this)[2]);
-	CParseHandlerMetadataIdList *pphMdidlCheckConstraints = dynamic_cast<CParseHandlerMetadataIdList*>((*this)[3]);
+	CParseHandlerMetadataColumns *pphMdCol =
+		dynamic_cast<CParseHandlerMetadataColumns *>((*this)[0]);
+	CParseHandlerMDIndexInfoList *pphMdlIndexInfo =
+		dynamic_cast<CParseHandlerMDIndexInfoList *>((*this)[1]);
+	CParseHandlerMetadataIdList *pphMdidlTriggers =
+		dynamic_cast<CParseHandlerMetadataIdList *>((*this)[2]);
+	CParseHandlerMetadataIdList *pphMdidlCheckConstraints =
+		dynamic_cast<CParseHandlerMetadataIdList *>((*this)[3]);
 
 	GPOS_ASSERT(NULL != pphMdCol->Pdrgpmdcol());
 	GPOS_ASSERT(NULL != pphMdlIndexInfo->PdrgpmdIndexInfo());
@@ -149,26 +154,14 @@ CParseHandlerMDRelationExternal::EndElement
 
 	pdrgpmdcol->AddRef();
 	pdrgpmdIndexInfo->AddRef();
- 	pdrgpmdidTriggers->AddRef();
- 	pdrgpmdidCheckConstraint->AddRef();
+	pdrgpmdidTriggers->AddRef();
+	pdrgpmdidCheckConstraint->AddRef();
 
-	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationExternalGPDB
-								(
-									m_pmp,
-									m_pmdid,
-									m_pmdname,
-									m_ereldistrpolicy,
-									pdrgpmdcol,
-									m_pdrgpulDistrColumns,
-									m_fConvertHashToRandom,
-									m_pdrgpdrgpulKeys,
-									pdrgpmdIndexInfo,
-									pdrgpmdidTriggers,
-									pdrgpmdidCheckConstraint,
-									m_iRejectLimit,
-									m_fRejLimitInRows,
-									m_pmdidFmtErrRel
-								);
+	m_pimdobj = GPOS_NEW(m_pmp) CMDRelationExternalGPDB(
+		m_pmp, m_pmdid, m_pmdname, m_ereldistrpolicy, pdrgpmdcol,
+		m_pdrgpulDistrColumns, m_fConvertHashToRandom, m_pdrgpdrgpulKeys,
+		pdrgpmdIndexInfo, pdrgpmdidTriggers, pdrgpmdidCheckConstraint,
+		m_iRejectLimit, m_fRejLimitInRows, m_pmdidFmtErrRel);
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

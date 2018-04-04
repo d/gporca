@@ -28,18 +28,13 @@ using namespace gpmd;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSubqueryQuantified::CDXLScalarSubqueryQuantified
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidScalarOp,
-	CMDName *pmdnameScalarOp,
-	ULONG ulColId
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidScalarOp(pmdidScalarOp),
-	m_pmdnameScalarOp(pmdnameScalarOp),
-	m_ulColId(ulColId)
+CDXLScalarSubqueryQuantified::CDXLScalarSubqueryQuantified(
+	IMemoryPool *pmp, IMDId *pmdidScalarOp, CMDName *pmdnameScalarOp,
+	ULONG ulColId)
+	: CDXLScalar(pmp),
+	  m_pmdidScalarOp(pmdidScalarOp),
+	  m_pmdnameScalarOp(pmdnameScalarOp),
+	  m_ulColId(ulColId)
 {
 	GPOS_ASSERT(pmdidScalarOp->FValid());
 	GPOS_ASSERT(NULL != pmdnameScalarOp);
@@ -68,25 +63,24 @@ CDXLScalarSubqueryQuantified::~CDXLScalarSubqueryQuantified()
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubqueryQuantified::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSubqueryQuantified::SerializeToDXL(CXMLSerializer *pxmlser,
+											 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize operator id and name
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpName), m_pmdnameScalarOp->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpName),
+						  m_pmdnameScalarOp->Pstr());
 	m_pmdidScalarOp->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
 
 	// serialize computed column id
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulColId);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -99,23 +93,21 @@ CDXLScalarSubqueryQuantified::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubqueryQuantified::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarSubqueryQuantified::AssertValid(const CDXLNode *pdxln,
+										  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(2 == pdxln->UlArity());
 
 	CDXLNode *pdxlnScalarChild = (*pdxln)[EdxlsqquantifiedIndexScalar];
 	CDXLNode *pdxlnRelationalChild = (*pdxln)[EdxlsqquantifiedIndexRelational];
 
-	GPOS_ASSERT(EdxloptypeScalar == pdxlnScalarChild->Pdxlop()->Edxloperatortype());
-	GPOS_ASSERT(EdxloptypeLogical == pdxlnRelationalChild->Pdxlop()->Edxloperatortype());
+	GPOS_ASSERT(EdxloptypeScalar ==
+				pdxlnScalarChild->Pdxlop()->Edxloperatortype());
+	GPOS_ASSERT(EdxloptypeLogical ==
+				pdxlnRelationalChild->Pdxlop()->Edxloperatortype());
 
 	pdxln->AssertValid(fValidateChildren);
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

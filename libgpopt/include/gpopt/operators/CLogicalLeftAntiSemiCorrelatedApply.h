@@ -20,107 +20,93 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalLeftAntiSemiCorrelatedApply
+//
+//	@doc:
+//		Logical Apply operator used in correlated execution of NOT EXISTS subqueries
+//
+//---------------------------------------------------------------------------
+class CLogicalLeftAntiSemiCorrelatedApply : public CLogicalLeftAntiSemiApply
+{
+private:
+	// private copy ctor
+	CLogicalLeftAntiSemiCorrelatedApply(
+		const CLogicalLeftAntiSemiCorrelatedApply &);
 
-
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalLeftAntiSemiCorrelatedApply
-	//
-	//	@doc:
-	//		Logical Apply operator used in correlated execution of NOT EXISTS subqueries
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalLeftAntiSemiCorrelatedApply : public CLogicalLeftAntiSemiApply
+public:
+	// ctor
+	explicit CLogicalLeftAntiSemiCorrelatedApply(IMemoryPool *pmp)
+		: CLogicalLeftAntiSemiApply(pmp)
 	{
+	}
 
-		private:
+	// ctor
+	CLogicalLeftAntiSemiCorrelatedApply(IMemoryPool *pmp, DrgPcr *pdrgpcrInner,
+										EOperatorId eopidOriginSubq)
+		: CLogicalLeftAntiSemiApply(pmp, pdrgpcrInner, eopidOriginSubq)
+	{
+	}
 
-			// private copy ctor
-			CLogicalLeftAntiSemiCorrelatedApply(const CLogicalLeftAntiSemiCorrelatedApply &);
+	// dtor
+	virtual ~CLogicalLeftAntiSemiCorrelatedApply()
+	{
+	}
 
-		public:
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopLogicalLeftAntiSemiCorrelatedApply;
+	}
 
-			// ctor
-			explicit
-			CLogicalLeftAntiSemiCorrelatedApply
-				(
-				IMemoryPool *pmp
-				)
-				:
-				CLogicalLeftAntiSemiApply(pmp)
-			{}
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalLeftAntiSemiCorrelatedApply";
+	}
 
-			// ctor
-			CLogicalLeftAntiSemiCorrelatedApply
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcrInner,
-				EOperatorId eopidOriginSubq
-				)
-				:
-				CLogicalLeftAntiSemiApply(pmp, pdrgpcrInner, eopidOriginSubq)
-			{}
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// dtor
-			virtual
-			~CLogicalLeftAntiSemiCorrelatedApply()
-			{}
+	// candidate set of xforms
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalLeftAntiSemiCorrelatedApply;
-			}
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalLeftAntiSemiCorrelatedApply";
-			}
+	// return true if operator is a correlated apply
+	virtual BOOL
+	FCorrelated() const
+	{
+		return true;
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// candidate set of xforms
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+	// conversion function
+	static CLogicalLeftAntiSemiCorrelatedApply *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalLeftAntiSemiCorrelatedApply == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
+		return dynamic_cast<CLogicalLeftAntiSemiCorrelatedApply *>(pop);
+	}
 
-			// return true if operator is a correlated apply
-			virtual
-			BOOL FCorrelated() const
-			{
-				return true;
-			}
+};  // class CLogicalLeftAntiSemiCorrelatedApply
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
-
-			// conversion function
-			static
-			CLogicalLeftAntiSemiCorrelatedApply *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalLeftAntiSemiCorrelatedApply == pop->Eopid());
-
-				return dynamic_cast<CLogicalLeftAntiSemiCorrelatedApply*>(pop);
-			}
-
-	}; // class CLogicalLeftAntiSemiCorrelatedApply
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CLogicalLeftAntiSemiCorrelatedApply_H
+#endif  // !GPOPT_CLogicalLeftAntiSemiCorrelatedApply_H
 
 // EOF

@@ -38,17 +38,13 @@ using namespace gpos;
 //  	the CMemoryPoolManager global instance
 //
 //---------------------------------------------------------------------------
-CAutoMemoryPool::CAutoMemoryPool
-	(
-	ELeakCheck elc,
-	CMemoryPoolManager::EAllocType ept,
-	BOOL fThreadSafe,
-	ULLONG ullCapacity
-	)
-	:
-	m_elc(elc)
+CAutoMemoryPool::CAutoMemoryPool(ELeakCheck elc,
+								 CMemoryPoolManager::EAllocType ept,
+								 BOOL fThreadSafe, ULLONG ullCapacity)
+	: m_elc(elc)
 {
-	m_pmp = CMemoryPoolManager::Pmpm()->PmpCreate(ept, fThreadSafe, ullCapacity);
+	m_pmp =
+		CMemoryPoolManager::Pmpm()->PmpCreate(ept, fThreadSafe, ullCapacity);
 }
 
 
@@ -67,7 +63,7 @@ CAutoMemoryPool::PmpDetach()
 {
 	IMemoryPool *pmp = m_pmp;
 	m_pmp = NULL;
-	
+
 	return pmp;
 }
 
@@ -88,20 +84,21 @@ CAutoMemoryPool::~CAutoMemoryPool()
 	{
 		return;
 	}
-	
+
 	// suspend cancellation
 	CAutoSuspendAbort asa;
 
 #ifdef GPOS_DEBUG
 
 	ITask *ptsk = ITask::PtskSelf();
-	
+
 	// ElcExc must be used inside tasks only
 	GPOS_ASSERT_IMP(ElcExc == m_elc, NULL != ptsk);
-	
+
 	GPOS_TRY
 	{
-		if (ElcStrict == m_elc || (ElcExc == m_elc && !ptsk->Perrctxt()->FPending()))
+		if (ElcStrict == m_elc ||
+			(ElcExc == m_elc && !ptsk->Perrctxt()->FPending()))
 		{
 			gpos::IOstream &os = gpos::oswcerr;
 
@@ -114,22 +111,22 @@ CAutoMemoryPool::~CAutoMemoryPool()
 	}
 	GPOS_CATCH_EX(ex)
 	{
-		GPOS_ASSERT(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert));
+		GPOS_ASSERT(
+			GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert));
 
 		// release pool
-		CMemoryPoolManager::Pmpm()->Destroy(m_pmp);	
-		
+		CMemoryPoolManager::Pmpm()->Destroy(m_pmp);
+
 		GPOS_RETHROW(ex);
 	}
 	GPOS_CATCH_END;
 
-#else // GPOS_DEBUG
-	
+#else  // GPOS_DEBUG
+
 	// hand in pool and return
 	CMemoryPoolManager::Pmpm()->Destroy(m_pmp);
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
 // EOF
-

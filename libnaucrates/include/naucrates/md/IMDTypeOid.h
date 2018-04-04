@@ -19,45 +19,45 @@
 // fwd decl
 namespace gpnaucrates
 {
-	class IDatumOid;
+class IDatumOid;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpnaucrates;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDTypeOid
-	//
-	//	@doc:
-	//		Interface for OID types in the metadata cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDTypeOid : public IMDType
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDTypeOid
+//
+//	@doc:
+//		Interface for OID types in the metadata cache
+//
+//---------------------------------------------------------------------------
+class IMDTypeOid : public IMDType
+{
+public:
+	// type id
+	static ETypeInfo
+	EtiType()
 	{
-		public:
-			// type id
-			static
-			ETypeInfo EtiType()
-			{
-				return EtiOid;
-			}
+		return EtiOid;
+	}
 
-			virtual
-			ETypeInfo Eti() const
-			{
-				return IMDTypeOid::EtiType();
-			}
+	virtual ETypeInfo
+	Eti() const
+	{
+		return IMDTypeOid::EtiType();
+	}
 
-			// factory function for OID datums
-			virtual
-			IDatumOid *PdatumOid(IMemoryPool *pmp, OID oidValue, BOOL fNull) const = 0;
-	};
-}
+	// factory function for OID datums
+	virtual IDatumOid *
+	PdatumOid(IMemoryPool *pmp, OID oidValue, BOOL fNull) const = 0;
+};
+}  // namespace gpmd
 
-#endif // !GPMD_IMDTypeOid_H
+#endif  // !GPMD_IMDTypeOid_H
 
 // EOF

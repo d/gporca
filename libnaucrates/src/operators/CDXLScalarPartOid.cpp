@@ -28,14 +28,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarPartOid::CDXLScalarPartOid
-	(
-	IMemoryPool *pmp,
-	ULONG ulLevel
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulLevel(ulLevel)
+CDXLScalarPartOid::CDXLScalarPartOid(IMemoryPool *pmp, ULONG ulLevel)
+	: CDXLScalar(pmp), m_ulLevel(ulLevel)
 {
 }
 
@@ -76,18 +70,17 @@ CDXLScalarPartOid::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartOid::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * // pdxln
-	)
-	const
+CDXLScalarPartOid::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *  // pdxln
+								  ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartLevel), m_ulLevel);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -100,15 +93,12 @@ CDXLScalarPartOid::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartOid::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarPartOid::AssertValid(const CDXLNode *pdxln,
+							   BOOL  // fValidateChildren
+							   ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

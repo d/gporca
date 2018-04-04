@@ -26,16 +26,9 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalAppend::CDXLPhysicalAppend
-	(
-	IMemoryPool *pmp,
-	BOOL fIsTarget,
-	BOOL fIsZapped
-	)
-	:
-	CDXLPhysical(pmp),
-	m_fIsTarget(fIsTarget),
-	m_fIsZapped(fIsZapped)
+CDXLPhysicalAppend::CDXLPhysicalAppend(IMemoryPool *pmp, BOOL fIsTarget,
+									   BOOL fIsZapped)
+	: CDXLPhysical(pmp), m_fIsTarget(fIsTarget), m_fIsZapped(fIsZapped)
 {
 }
 
@@ -106,27 +99,27 @@ CDXLPhysicalAppend::FIsZapped() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAppend::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalAppend::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAppendIsTarget), m_fIsTarget);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAppendIsZapped), m_fIsZapped);
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAppendIsTarget),
+						  m_fIsTarget);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAppendIsZapped),
+						  m_fIsZapped);
+
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
-	
+
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);		
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -136,32 +129,29 @@ CDXLPhysicalAppend::SerializeToDXL
 //		CDXLPhysicalAppend::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAppend::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalAppend::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
-	
+
 	const ULONG ulChildren = pdxln->UlArity();
 	for (ULONG ul = EdxlappendIndexFirstChild; ul < ulChildren; ul++)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(EdxloptypePhysical ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
-	
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

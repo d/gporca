@@ -19,7 +19,7 @@ using namespace gpos;
 
 #ifdef GPOS_DEBUG
 BOOL IWorker::m_fEnforceTimeSlices(false);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -33,12 +33,12 @@ IWorker *
 IWorker::PwrkrSelf()
 {
 	IWorker *pwrkr = NULL;
-	
+
 	if (NULL != CWorkerPoolManager::Pwpm())
 	{
 		pwrkr = CWorkerPoolManager::Pwpm()->PwrkrSelf();
 	}
-	
+
 	return pwrkr;
 }
 
@@ -52,11 +52,7 @@ IWorker::PwrkrSelf()
 //
 //---------------------------------------------------------------------------
 void
-IWorker::CheckAbort
-	(
-	const CHAR *szFile,
-	ULONG cLine
-	)
+IWorker::CheckAbort(const CHAR *szFile, ULONG cLine)
 {
 	IWorker *pwrkr = PwrkrSelf();
 	if (NULL != pwrkr)
@@ -66,4 +62,3 @@ IWorker::CheckAbort
 }
 
 // EOF
-

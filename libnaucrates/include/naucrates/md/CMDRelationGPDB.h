@@ -25,291 +25,278 @@
 
 namespace gpdxl
 {
-	class CXMLSerializer;
+class CXMLSerializer;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpdxl;
+using namespace gpos;
+using namespace gpdxl;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMDRelationGPDB
-	//
-	//	@doc:
-	//		Class representing MD relations
-	//
-	//---------------------------------------------------------------------------
-	class CMDRelationGPDB : public IMDRelation
-	{		
-		private:
-			// memory pool
-			IMemoryPool *m_pmp;
+//---------------------------------------------------------------------------
+//	@class:
+//		CMDRelationGPDB
+//
+//	@doc:
+//		Class representing MD relations
+//
+//---------------------------------------------------------------------------
+class CMDRelationGPDB : public IMDRelation
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
 
-			// DXL for object
-			const CWStringDynamic *m_pstr;
-			
-			// relation mdid
-			IMDId *m_pmdid;
-			
-			// table name
-			CMDName *m_pmdname;
-			
-			// is this a temporary relation
-			BOOL m_fTemporary;
-			
-			// storage type
-			Erelstoragetype m_erelstorage;
-			
-			// distribution policy
-			Ereldistrpolicy m_ereldistrpolicy;
-			
-			// columns
-			DrgPmdcol *m_pdrgpmdcol;
-			
-			// number of dropped columns
-			ULONG m_ulDroppedCols;
-			
-			// indices of distribution columns
-			DrgPul *m_pdrgpulDistrColumns;
-			
-			// do we need to consider a hash distributed table as random distributed
-			BOOL m_fConvertHashToRandom;
+	// DXL for object
+	const CWStringDynamic *m_pstr;
 
-			// indices of partition columns
-			DrgPul *m_pdrgpulPartColumns;
-			
-			// partition types
-			DrgPsz *m_pdrgpszPartTypes;
+	// relation mdid
+	IMDId *m_pmdid;
 
-			// number of partition
-			ULONG m_ulPartitions;
+	// table name
+	CMDName *m_pmdname;
 
-			// array of key sets
-			DrgPdrgPul *m_pdrgpdrgpulKeys;
+	// is this a temporary relation
+	BOOL m_fTemporary;
 
-			// array of index info
-			DrgPmdIndexInfo *m_pdrgpmdIndexInfo;
+	// storage type
+	Erelstoragetype m_erelstorage;
 
-			// array of trigger ids
-			DrgPmdid *m_pdrgpmdidTriggers;
+	// distribution policy
+	Ereldistrpolicy m_ereldistrpolicy;
 
-			// array of check constraint mdids
-			DrgPmdid *m_pdrgpmdidCheckConstraint;
+	// columns
+	DrgPmdcol *m_pdrgpmdcol;
 
-			// partition constraint
-			IMDPartConstraint *m_pmdpartcnstr;
+	// number of dropped columns
+	ULONG m_ulDroppedCols;
 
-			// does this table have oids
-			BOOL m_fHasOids;
+	// indices of distribution columns
+	DrgPul *m_pdrgpulDistrColumns;
 
-			// number of system columns
-			ULONG m_ulSystemColumns;
-			
-			// mapping of column position to positions excluding dropped columns
-			HMUlUl *m_phmululNonDroppedCols;
-		
-			// mapping of attribute number in the system catalog to the positions of
-			// the non dropped column in the metadata object
-			HMIUl *m_phmiulAttno2Pos;
+	// do we need to consider a hash distributed table as random distributed
+	BOOL m_fConvertHashToRandom;
 
-			// the original positions of all the non-dropped columns
-			DrgPul *m_pdrgpulNonDroppedCols;
+	// indices of partition columns
+	DrgPul *m_pdrgpulPartColumns;
 
-			// array of column widths including dropped columns
-			DrgPdouble *m_pdrgpdoubleColWidths;
+	// partition types
+	DrgPsz *m_pdrgpszPartTypes;
 
-			// private copy ctor
-			CMDRelationGPDB(const CMDRelationGPDB &);
-		
-		public:
-			
-			// ctor
-			CMDRelationGPDB
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdid,
-				CMDName *pmdname,
-				BOOL fTemporary,
-				Erelstoragetype erelstorage, 
-				Ereldistrpolicy ereldistrpolicy,
-				DrgPmdcol *pdrgpmdcol,
-				DrgPul *pdrgpulDistrColumns,
-				DrgPul *pdrgpulPartColumns,
-				DrgPsz *pdrgpszPartTypes,
-				ULONG ulPartitions,
-				BOOL fConvertHashToRandom,
-				DrgPdrgPul *pdrgpdrgpul,
-				DrgPmdIndexInfo *pdrgpmdIndexInfo,
-				DrgPmdid *pdrgpmdidTriggers,
-				DrgPmdid *pdrgpmdidCheckConstraint,
-				IMDPartConstraint *pmdpartcnstr,
-				BOOL fHasOids
-				);
-			
-			// dtor
-			virtual
-			~CMDRelationGPDB();
-			
-			// accessors
-			virtual 
-			const CWStringDynamic *Pstr() const
-			{
-				return m_pstr;
-			}	
-			
-			// the metadata id
-			virtual 
-			IMDId *Pmdid() const;
-			
-			// relation name
-			virtual 
-			CMDName Mdname() const;
-			
-			// is this a temp relation
-			virtual 
-			BOOL FTemporary() const;
-			
-			// storage type (heap, appendonly, ...)
-			virtual 
-			Erelstoragetype Erelstorage() const; 
-			
-			// distribution policy (none, hash, random)
-			virtual 
-			Ereldistrpolicy Ereldistribution() const; 
-			
-			// number of columns
-			virtual 
-			ULONG UlColumns() const;
+	// number of partition
+	ULONG m_ulPartitions;
 
-			// width of a column with regards to the position
-			virtual
-			DOUBLE DColWidth(ULONG ulPos) const;
+	// array of key sets
+	DrgPdrgPul *m_pdrgpdrgpulKeys;
 
-			// does relation have dropped columns
-			virtual
-			BOOL FHasDroppedColumns() const; 
-			
-			// number of non-dropped columns
-			virtual 
-			ULONG UlNonDroppedCols() const; 
-			
-			// return the absolute position of the given attribute position excluding dropped columns
-			virtual 
-			ULONG UlPosNonDropped(ULONG ulPos) const;
-			
-			// return the position of a column in the metadata object given the attribute number in the system catalog
-			virtual
-			ULONG UlPosFromAttno(INT iAttno) const;
+	// array of index info
+	DrgPmdIndexInfo *m_pdrgpmdIndexInfo;
 
-			// return the original positions of all the non-dropped columns
-			virtual
-			DrgPul *PdrgpulNonDroppedCols() const;
+	// array of trigger ids
+	DrgPmdid *m_pdrgpmdidTriggers;
 
-			// number of system columns
-			virtual
-			ULONG UlSystemColumns() const;
+	// array of check constraint mdids
+	DrgPmdid *m_pdrgpmdidCheckConstraint;
 
-			// retrieve the column at the given position
-			virtual 
-			const IMDColumn *Pmdcol(ULONG ulPos) const;
-			
-			// number of key sets
-			virtual
-			ULONG UlKeySets() const;
-			
-			// key set at given position
-			virtual
-			const DrgPul *PdrgpulKeyset(ULONG ulPos) const;
-			
-			// number of distribution columns
-			virtual 
-			ULONG UlDistrColumns() const;
-			
-			// retrieve the column at the given position in the distribution columns list for the relation
-			virtual 
-			const IMDColumn *PmdcolDistrColumn(ULONG ulPos) const;
-			
-			// return true if a hash distributed table needs to be considered as random
-			virtual 
-			BOOL FConvertHashToRandom() const;
-			
-			// does this table have oids
-			virtual
-			BOOL FHasOids() const;
+	// partition constraint
+	IMDPartConstraint *m_pmdpartcnstr;
 
-			// is this a partitioned table
-			virtual
-			BOOL FPartitioned() const;
-			
-			// number of partition keys
-			virtual
-			ULONG UlPartColumns() const;
-			
-			// number of partitions
-			virtual
-			ULONG UlPartitions() const;
+	// does this table have oids
+	BOOL m_fHasOids;
 
-			// retrieve the partition key column at the given position
-			virtual 
-			const IMDColumn *PmdcolPartColumn(ULONG ulPos) const;
+	// number of system columns
+	ULONG m_ulSystemColumns;
 
-			// retrieve list of partition types
-			virtual
-			DrgPsz *PdrgpszPartTypes() const;
+	// mapping of column position to positions excluding dropped columns
+	HMUlUl *m_phmululNonDroppedCols;
 
-			// retrieve the partition type of the given level
-			virtual
-			CHAR SzPartType(ULONG ulLevel) const;
+	// mapping of attribute number in the system catalog to the positions of
+	// the non dropped column in the metadata object
+	HMIUl *m_phmiulAttno2Pos;
 
-			// number of indices
-			virtual 
-			ULONG UlIndices() const;
-			
-			// number of triggers
-			virtual
-			ULONG UlTriggers() const;
+	// the original positions of all the non-dropped columns
+	DrgPul *m_pdrgpulNonDroppedCols;
 
-			// retrieve the id of the metadata cache index at the given position
-			virtual 
-			IMDId *PmdidIndex(ULONG ulPos) const;
+	// array of column widths including dropped columns
+	DrgPdouble *m_pdrgpdoubleColWidths;
 
-			// check if index is partial given its mdid
-			virtual
-			BOOL FPartialIndex(IMDId *pmdid) const;
+	// private copy ctor
+	CMDRelationGPDB(const CMDRelationGPDB &);
 
-			// retrieve the id of the metadata cache trigger at the given position
-			virtual
-			IMDId *PmdidTrigger(ULONG ulPos) const;
+public:
+	// ctor
+	CMDRelationGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+					BOOL fTemporary, Erelstoragetype erelstorage,
+					Ereldistrpolicy ereldistrpolicy, DrgPmdcol *pdrgpmdcol,
+					DrgPul *pdrgpulDistrColumns, DrgPul *pdrgpulPartColumns,
+					DrgPsz *pdrgpszPartTypes, ULONG ulPartitions,
+					BOOL fConvertHashToRandom, DrgPdrgPul *pdrgpdrgpul,
+					DrgPmdIndexInfo *pdrgpmdIndexInfo,
+					DrgPmdid *pdrgpmdidTriggers,
+					DrgPmdid *pdrgpmdidCheckConstraint,
+					IMDPartConstraint *pmdpartcnstr, BOOL fHasOids);
 
-			// serialize metadata relation in DXL format given a serializer object
-			virtual 
-			void Serialize(gpdxl::CXMLSerializer *) const;
+	// dtor
+	virtual ~CMDRelationGPDB();
 
-			// number of check constraints
-			virtual
-			ULONG UlCheckConstraints() const;
+	// accessors
+	virtual const CWStringDynamic *
+	Pstr() const
+	{
+		return m_pstr;
+	}
 
-			// retrieve the id of the check constraint cache at the given position
-			virtual
-			IMDId *PmdidCheckConstraint(ULONG ulPos) const;
+	// the metadata id
+	virtual IMDId *
+	Pmdid() const;
 
-			// part constraint
-			virtual
-			IMDPartConstraint *Pmdpartcnstr() const;
+	// relation name
+	virtual CMDName
+	Mdname() const;
+
+	// is this a temp relation
+	virtual BOOL
+	FTemporary() const;
+
+	// storage type (heap, appendonly, ...)
+	virtual Erelstoragetype
+	Erelstorage() const;
+
+	// distribution policy (none, hash, random)
+	virtual Ereldistrpolicy
+	Ereldistribution() const;
+
+	// number of columns
+	virtual ULONG
+	UlColumns() const;
+
+	// width of a column with regards to the position
+	virtual DOUBLE
+	DColWidth(ULONG ulPos) const;
+
+	// does relation have dropped columns
+	virtual BOOL
+	FHasDroppedColumns() const;
+
+	// number of non-dropped columns
+	virtual ULONG
+	UlNonDroppedCols() const;
+
+	// return the absolute position of the given attribute position excluding dropped columns
+	virtual ULONG
+	UlPosNonDropped(ULONG ulPos) const;
+
+	// return the position of a column in the metadata object given the attribute number in the system catalog
+	virtual ULONG
+	UlPosFromAttno(INT iAttno) const;
+
+	// return the original positions of all the non-dropped columns
+	virtual DrgPul *
+	PdrgpulNonDroppedCols() const;
+
+	// number of system columns
+	virtual ULONG
+	UlSystemColumns() const;
+
+	// retrieve the column at the given position
+	virtual const IMDColumn *
+	Pmdcol(ULONG ulPos) const;
+
+	// number of key sets
+	virtual ULONG
+	UlKeySets() const;
+
+	// key set at given position
+	virtual const DrgPul *
+	PdrgpulKeyset(ULONG ulPos) const;
+
+	// number of distribution columns
+	virtual ULONG
+	UlDistrColumns() const;
+
+	// retrieve the column at the given position in the distribution columns list for the relation
+	virtual const IMDColumn *
+	PmdcolDistrColumn(ULONG ulPos) const;
+
+	// return true if a hash distributed table needs to be considered as random
+	virtual BOOL
+	FConvertHashToRandom() const;
+
+	// does this table have oids
+	virtual BOOL
+	FHasOids() const;
+
+	// is this a partitioned table
+	virtual BOOL
+	FPartitioned() const;
+
+	// number of partition keys
+	virtual ULONG
+	UlPartColumns() const;
+
+	// number of partitions
+	virtual ULONG
+	UlPartitions() const;
+
+	// retrieve the partition key column at the given position
+	virtual const IMDColumn *
+	PmdcolPartColumn(ULONG ulPos) const;
+
+	// retrieve list of partition types
+	virtual DrgPsz *
+	PdrgpszPartTypes() const;
+
+	// retrieve the partition type of the given level
+	virtual CHAR
+	SzPartType(ULONG ulLevel) const;
+
+	// number of indices
+	virtual ULONG
+	UlIndices() const;
+
+	// number of triggers
+	virtual ULONG
+	UlTriggers() const;
+
+	// retrieve the id of the metadata cache index at the given position
+	virtual IMDId *
+	PmdidIndex(ULONG ulPos) const;
+
+	// check if index is partial given its mdid
+	virtual BOOL
+	FPartialIndex(IMDId *pmdid) const;
+
+	// retrieve the id of the metadata cache trigger at the given position
+	virtual IMDId *
+	PmdidTrigger(ULONG ulPos) const;
+
+	// serialize metadata relation in DXL format given a serializer object
+	virtual void
+	Serialize(gpdxl::CXMLSerializer *) const;
+
+	// number of check constraints
+	virtual ULONG
+	UlCheckConstraints() const;
+
+	// retrieve the id of the check constraint cache at the given position
+	virtual IMDId *
+	PmdidCheckConstraint(ULONG ulPos) const;
+
+	// part constraint
+	virtual IMDPartConstraint *
+	Pmdpartcnstr() const;
 
 #ifdef GPOS_DEBUG
-			// debug print of the metadata relation
-			virtual 
-			void DebugPrint(IOstream &os) const;
+	// debug print of the metadata relation
+	virtual void
+	DebugPrint(IOstream &os) const;
 #endif
-	};
-}
+};
+}  // namespace gpmd
 
 
 
-#endif // !GPMD_CMDRelationGPDB_H
+#endif  // !GPMD_CMDRelationGPDB_H
 
 // EOF

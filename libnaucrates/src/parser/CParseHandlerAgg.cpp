@@ -33,15 +33,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerAgg::CParseHandlerAgg
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_pdxlop(NULL)
+CParseHandlerAgg::CParseHandlerAgg(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								   CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot), m_pdxlop(NULL)
 {
 }
 
@@ -55,53 +49,59 @@ CParseHandlerAgg::CParseHandlerAgg
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerAgg::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
-{	
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalAggregate), xmlszLocalname))
+CParseHandlerAgg::StartElement(const XMLCh *const,  // xmlszUri,
+							   const XMLCh *const xmlszLocalname,
+							   const XMLCh *const,  // xmlszQname
+							   const Attributes &attrs)
+{
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalAggregate),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// parse and create group by operator
-	m_pdxlop = (CDXLPhysicalAgg *) CDXLOperatorFactory::PdxlopAgg(m_pphm->Pmm(), attrs);
-	
+	m_pdxlop = (CDXLPhysicalAgg *) CDXLOperatorFactory::PdxlopAgg(m_pphm->Pmm(),
+																  attrs);
+
 	// create and activate the parse handler for the children nodes in reverse
 	// order of their expected appearance
-	
+
 	// parse handler for child node
-	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
+	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphChild);
-	
+
 	// parse handler for the filter
-	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
+	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphFilter);
-	
+
 	// parse handler for the proj list
-	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphPrL);
-	
+
 	//parse handler for the grouping columns list
-	CParseHandlerBase *pphGrpColList = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarGroupingColList), m_pphm, this);
+	CParseHandlerBase *pphGrpColList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarGroupingColList), m_pphm,
+		this);
 	m_pphm->ActivateParseHandler(pphGrpColList);
 
 	//parse handler for the properties of the operator
-	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphProp);
-	
+
 	// store parse handlers
 	this->Append(pphProp);
 	this->Append(pphGrpColList);
 	this->Append(pphPrL);
 	this->Append(pphFilter);
 	this->Append(pphChild);
-
 }
 
 //---------------------------------------------------------------------------
@@ -113,28 +113,34 @@ CParseHandlerAgg::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerAgg::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerAgg::EndElement(const XMLCh *const,  // xmlszUri,
+							 const XMLCh *const xmlszLocalname,
+							 const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalAggregate), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalAggregate),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// construct node from the created child nodes
-	
+
 	GPOS_ASSERT(5 == this->UlLength());
-	
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-	CParseHandlerGroupingColList *pphGrpColList = dynamic_cast<CParseHandlerGroupingColList*>((*this)[1]);
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[2]);
-	CParseHandlerFilter *pphFilter = dynamic_cast<CParseHandlerFilter *>((*this)[3]);
-	CParseHandlerPhysicalOp *pphChild = dynamic_cast<CParseHandlerPhysicalOp *>((*this)[4]);
+
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerGroupingColList *pphGrpColList =
+		dynamic_cast<CParseHandlerGroupingColList *>((*this)[1]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[2]);
+	CParseHandlerFilter *pphFilter =
+		dynamic_cast<CParseHandlerFilter *>((*this)[3]);
+	CParseHandlerPhysicalOp *pphChild =
+		dynamic_cast<CParseHandlerPhysicalOp *>((*this)[4]);
 
 	// set grouping cols list
 	GPOS_ASSERT(NULL != pphGrpColList->PdrgpulGroupingCols());
@@ -142,8 +148,8 @@ CParseHandlerAgg::EndElement
 	DrgPul *pdrgpul = pphGrpColList->PdrgpulGroupingCols();
 	pdrgpul->AddRef();
 	m_pdxlop->SetGroupingCols(pdrgpul);
-	
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);	
+
+	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);
 
 	// set physical properties
 	CParseHandlerUtils::SetProperties(m_pdxln, pphProp);
@@ -152,7 +158,7 @@ CParseHandlerAgg::EndElement
 	AddChildFromParseHandler(pphPrL);
 	AddChildFromParseHandler(pphFilter);
 	AddChildFromParseHandler(pphChild);
-	
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }

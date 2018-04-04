@@ -9,7 +9,7 @@
 //		Transform select over table into a bitmap table get over bitmap bool op
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -30,22 +30,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformSelect2BitmapBoolOp::CXformSelect2BitmapBoolOp
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalSelect(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalGet(pmp)),  // logical child
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
-				)
-		)
-{}
+CXformSelect2BitmapBoolOp::CXformSelect2BitmapBoolOp(IMemoryPool *pmp)
+	: CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSelect(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGet(pmp)),  // logical child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -56,11 +50,8 @@ CXformSelect2BitmapBoolOp::CXformSelect2BitmapBoolOp
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformSelect2BitmapBoolOp::Exfp
-	(
-	CExpressionHandle &  // exprhdl
-	)
-	const
+CXformSelect2BitmapBoolOp::Exfp(CExpressionHandle &  // exprhdl
+								) const
 {
 	return CXform::ExfpHigh;
 }
@@ -74,19 +65,16 @@ CXformSelect2BitmapBoolOp::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformSelect2BitmapBoolOp::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformSelect2BitmapBoolOp::Transform(CXformContext *pxfctxt,
+									 CXformResult *pxfres,
+									 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
 	GPOS_ASSERT(FCheckPattern(pexpr));
 
-	CExpression *pexprResult = CXformUtils::PexprSelect2BitmapBoolOp(pxfctxt->Pmp(), pexpr);
+	CExpression *pexprResult =
+		CXformUtils::PexprSelect2BitmapBoolOp(pxfctxt->Pmp(), pexpr);
 
 	if (NULL != pexprResult)
 	{

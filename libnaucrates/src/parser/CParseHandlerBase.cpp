@@ -28,20 +28,14 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerBase::CParseHandlerBase
-	(
-	IMemoryPool *pmp, 
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	m_pmp(pmp),
-	m_pphm(pphm),
-	m_pphRoot(pphRoot)
+CParseHandlerBase::CParseHandlerBase(IMemoryPool *pmp,
+									 CParseHandlerManager *pphm,
+									 CParseHandlerBase *pphRoot)
+	: m_pmp(pmp), m_pphm(pphm), m_pphRoot(pphRoot)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != pphm);
-	
+
 	m_pdrgpph = GPOS_NEW(m_pmp) DrgPph(m_pmp);
 }
 
@@ -64,7 +58,7 @@ CParseHandlerBase::~CParseHandlerBase()
 //		CParseHandlerBase::Edxlphtype
 //
 //	@doc:
-//		Return the type of the parse handler. Currently we overload this method to 
+//		Return the type of the parse handler. Currently we overload this method to
 //		return a specific type for the plan, query, metadata and traceflags parse handlers.
 //
 //---------------------------------------------------------------------------
@@ -83,16 +77,13 @@ CParseHandlerBase::Edxlphtype() const
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerBase::ReplaceParseHandler
-	(
-	CParseHandlerBase *pphOld,
-	CParseHandlerBase *pphNew
-	)
+CParseHandlerBase::ReplaceParseHandler(CParseHandlerBase *pphOld,
+									   CParseHandlerBase *pphNew)
 {
 	ULONG ulPos = 0;
-	
+
 	GPOS_ASSERT(NULL != m_pdrgpph);
-	
+
 	for (ulPos = 0; ulPos < m_pdrgpph->UlLength(); ulPos++)
 	{
 		if ((*m_pdrgpph)[ulPos] == pphOld)
@@ -100,10 +91,10 @@ CParseHandlerBase::ReplaceParseHandler
 			break;
 		}
 	}
-	
+
 	// assert old parse handler was found in array
 	GPOS_ASSERT(ulPos < m_pdrgpph->UlLength());
-	
+
 	m_pdrgpph->Replace(ulPos, pphNew);
 }
 
@@ -116,13 +107,10 @@ CParseHandlerBase::ReplaceParseHandler
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerBase::startElement
-	(
-		const XMLCh* const xmlszUri,
-		const XMLCh* const xmlszLocalname,
-		const XMLCh* const xmlszQname,
-		const Attributes& attrs
-	)
+CParseHandlerBase::startElement(const XMLCh *const xmlszUri,
+								const XMLCh *const xmlszLocalname,
+								const XMLCh *const xmlszQname,
+								const Attributes &attrs)
 {
 	StartElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 }
@@ -136,12 +124,9 @@ CParseHandlerBase::startElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerBase::endElement
-	(
-		const XMLCh* const xmlszUri,
-		const XMLCh* const xmlszLocalname,
-		const XMLCh* const xmlszQname
-	)
+CParseHandlerBase::endElement(const XMLCh *const xmlszUri,
+							  const XMLCh *const xmlszLocalname,
+							  const XMLCh *const xmlszQname)
 {
 	EndElement(xmlszUri, xmlszLocalname, xmlszQname);
 }
@@ -155,14 +140,10 @@ CParseHandlerBase::endElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerBase::error
-	(
-	const SAXParseException& toCatch
-	)
+CParseHandlerBase::error(const SAXParseException &toCatch)
 {
-	CHAR* szMessage = XMLString::transcode(toCatch.getMessage(), m_pphm->Pmm());
+	CHAR *szMessage = XMLString::transcode(toCatch.getMessage(), m_pphm->Pmm());
 	GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLValidationError, szMessage);
 }
 
 // EOF
-

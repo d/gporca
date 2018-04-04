@@ -27,11 +27,9 @@ using namespace gpdxl;
 using namespace gpmd;
 using namespace gpnaucrates;
 
-// static member initialization 
-CWStringConst
-CMDTypeBoolGPDB::m_str = CWStringConst(GPOS_WSZ_LIT("bool"));
-CMDName
-CMDTypeBoolGPDB::m_mdname(&m_str);
+// static member initialization
+CWStringConst CMDTypeBoolGPDB::m_str = CWStringConst(GPOS_WSZ_LIT("bool"));
+CMDName CMDTypeBoolGPDB::m_mdname(&m_str);
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -41,12 +39,7 @@ CMDTypeBoolGPDB::m_mdname(&m_str);
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDTypeBoolGPDB::CMDTypeBoolGPDB
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp)
+CMDTypeBoolGPDB::CMDTypeBoolGPDB(IMemoryPool *pmp) : m_pmp(pmp)
 {
 	m_pmdid = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_OID);
 	m_pmdidOpEq = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_EQ_OP);
@@ -57,19 +50,22 @@ CMDTypeBoolGPDB::CMDTypeBoolGPDB
 	m_pmdidOpGEq = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_GEQ_OP);
 	m_pmdidOpComp = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_COMP_OP);
 	m_pmdidTypeArray = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_ARRAY_TYPE);
-	
+
 	m_pmdidMin = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_AGG_MIN);
 	m_pmdidMax = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_AGG_MAX);
 	m_pmdidAvg = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_AGG_AVG);
 	m_pmdidSum = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_AGG_SUM);
 	m_pmdidCount = GPOS_NEW(pmp) CMDIdGPDB(GPDB_BOOL_AGG_COUNT);
 
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 
 	m_pmdid->AddRef();
 
-	GPOS_ASSERT(GPDB_BOOL_OID == CMDIdGPDB::PmdidConvert(m_pmdid)->OidObjectId());
-	m_pdatumNull = GPOS_NEW(pmp) CDatumBoolGPDB(m_pmdid, false /* fVal */, true /* fNull */);
+	GPOS_ASSERT(GPDB_BOOL_OID ==
+				CMDIdGPDB::PmdidConvert(m_pmdid)->OidObjectId());
+	m_pdatumNull = GPOS_NEW(pmp)
+		CDatumBoolGPDB(m_pmdid, false /* fVal */, true /* fNull */);
 }
 
 //---------------------------------------------------------------------------
@@ -91,7 +87,7 @@ CMDTypeBoolGPDB::~CMDTypeBoolGPDB()
 	m_pmdidOpGEq->Release();
 	m_pmdidOpComp->Release();
 	m_pmdidTypeArray->Release();
-	
+
 	m_pmdidMin->Release();
 	m_pmdidMax->Release();
 	m_pmdidAvg->Release();
@@ -110,11 +106,7 @@ CMDTypeBoolGPDB::~CMDTypeBoolGPDB()
 //
 //---------------------------------------------------------------------------
 IMDId *
-CMDTypeBoolGPDB::PmdidCmp
-	(
-	ECmpType ecmpt
-	) 
-	const
+CMDTypeBoolGPDB::PmdidCmp(ECmpType ecmpt) const
 {
 	switch (ecmpt)
 	{
@@ -124,7 +116,7 @@ CMDTypeBoolGPDB::PmdidCmp
 			return m_pmdidOpNeq;
 		case EcmptL:
 			return m_pmdidOpLT;
-		case EcmptLEq: 
+		case EcmptLEq:
 			return m_pmdidOpLEq;
 		case EcmptG:
 			return m_pmdidOpGT;
@@ -145,11 +137,7 @@ CMDTypeBoolGPDB::PmdidCmp
 //
 //---------------------------------------------------------------------------
 IMDId *
-CMDTypeBoolGPDB::PmdidAgg
-	(
-	EAggType eagg
-	) 
-	const
+CMDTypeBoolGPDB::PmdidAgg(EAggType eagg) const
 {
 	switch (eagg)
 	{
@@ -178,13 +166,7 @@ CMDTypeBoolGPDB::PmdidAgg
 //
 //---------------------------------------------------------------------------
 IDatumBool *
-CMDTypeBoolGPDB::PdatumBool
-	(
-	IMemoryPool *pmp, 
-	BOOL fValue, 
-	BOOL fNULL
-	)
-	const
+CMDTypeBoolGPDB::PdatumBool(IMemoryPool *pmp, BOOL fValue, BOOL fNULL) const
 {
 	return GPOS_NEW(pmp) CDatumBoolGPDB(m_pmdid->Sysid(), fValue, fNULL);
 }
@@ -214,7 +196,8 @@ CMDTypeBoolGPDB::Pmdid() const
 CMDName
 CMDTypeBoolGPDB::Mdname() const
 {
-	return CMDTypeBoolGPDB::m_mdname;;
+	return CMDTypeBoolGPDB::m_mdname;
+	;
 }
 
 //---------------------------------------------------------------------------
@@ -226,11 +209,7 @@ CMDTypeBoolGPDB::Mdname() const
 //
 //---------------------------------------------------------------------------
 void
-CMDTypeBoolGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CMDTypeBoolGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
 	CGPDBTypeHelper<CMDTypeBoolGPDB>::Serialize(pxmlser, this);
 }
@@ -245,16 +224,14 @@ CMDTypeBoolGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 IDatum *
-CMDTypeBoolGPDB::Pdatum
-	(
-	const CDXLScalarConstValue *pdxlop
-	)
-	const
+CMDTypeBoolGPDB::Pdatum(const CDXLScalarConstValue *pdxlop) const
 {
-	CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(const_cast<CDXLDatum*>(pdxlop->Pdxldatum()));
+	CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(
+		const_cast<CDXLDatum *>(pdxlop->Pdxldatum()));
 	GPOS_ASSERT(pdxldatum->FByValue());
 
-	return GPOS_NEW(m_pmp) CDatumBoolGPDB(m_pmdid->Sysid(), pdxldatum->FValue(), pdxldatum->FNull());
+	return GPOS_NEW(m_pmp) CDatumBoolGPDB(m_pmdid->Sysid(), pdxldatum->FValue(),
+										  pdxldatum->FNull());
 }
 
 //---------------------------------------------------------------------------
@@ -265,19 +242,15 @@ CMDTypeBoolGPDB::Pdatum
 //		Construct a bool datum from a DXL datum
 //
 //---------------------------------------------------------------------------
-IDatum*
-CMDTypeBoolGPDB::Pdatum
-	(
-	IMemoryPool *pmp,
-	const CDXLDatum *pdxldatum
-	)
-	const
+IDatum *
+CMDTypeBoolGPDB::Pdatum(IMemoryPool *pmp, const CDXLDatum *pdxldatum) const
 {
-	CDXLDatumBool *pdxldatumbool = CDXLDatumBool::PdxldatumConvert(const_cast<CDXLDatum *>(pdxldatum));
+	CDXLDatumBool *pdxldatumbool =
+		CDXLDatumBool::PdxldatumConvert(const_cast<CDXLDatum *>(pdxldatum));
 	GPOS_ASSERT(pdxldatumbool->FByValue());
 	BOOL fVal = pdxldatumbool->FValue();
 	BOOL fNull = pdxldatumbool->FNull();
-	
+
 	return GPOS_NEW(pmp) CDatumBoolGPDB(m_pmdid->Sysid(), fVal, fNull);
 }
 
@@ -290,16 +263,12 @@ CMDTypeBoolGPDB::Pdatum
 //
 //---------------------------------------------------------------------------
 CDXLDatum *
-CMDTypeBoolGPDB::Pdxldatum
-	(
-	IMemoryPool *pmp,
-	IDatum *pdatum
-	)
-	const
+CMDTypeBoolGPDB::Pdxldatum(IMemoryPool *pmp, IDatum *pdatum) const
 {
-	CDatumBoolGPDB *pdatumbool = dynamic_cast<CDatumBoolGPDB*>(pdatum);
+	CDatumBoolGPDB *pdatumbool = dynamic_cast<CDatumBoolGPDB *>(pdatum);
 	m_pmdid->AddRef();
-	return GPOS_NEW(pmp) CDXLDatumBool(pmp, m_pmdid, pdatumbool->FNull(), pdatumbool->FValue());
+	return GPOS_NEW(pmp)
+		CDXLDatumBool(pmp, m_pmdid, pdatumbool->FNull(), pdatumbool->FValue());
 }
 
 //---------------------------------------------------------------------------
@@ -311,17 +280,13 @@ CMDTypeBoolGPDB::Pdxldatum
 //
 //---------------------------------------------------------------------------
 CDXLScalarConstValue *
-CMDTypeBoolGPDB::PdxlopScConst
-	(
-	IMemoryPool *pmp,
-	IDatum *pdatum
-	)
-	const
+CMDTypeBoolGPDB::PdxlopScConst(IMemoryPool *pmp, IDatum *pdatum) const
 {
 	CDatumBoolGPDB *pdatumboolgpdb = dynamic_cast<CDatumBoolGPDB *>(pdatum);
 
 	m_pmdid->AddRef();
-	CDXLDatumBool *pdxldatum = GPOS_NEW(pmp) CDXLDatumBool(pmp, m_pmdid, pdatumboolgpdb->FNull(), pdatumboolgpdb->FValue());
+	CDXLDatumBool *pdxldatum = GPOS_NEW(pmp) CDXLDatumBool(
+		pmp, m_pmdid, pdatumboolgpdb->FNull(), pdatumboolgpdb->FValue());
 
 	return GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum);
 }
@@ -335,11 +300,7 @@ CMDTypeBoolGPDB::PdxlopScConst
 //
 //---------------------------------------------------------------------------
 CDXLDatum *
-CMDTypeBoolGPDB::PdxldatumNull
-	(
-	IMemoryPool *pmp
-	)
-	const
+CMDTypeBoolGPDB::PdxldatumNull(IMemoryPool *pmp) const
 {
 	m_pmdid->AddRef();
 
@@ -356,16 +317,11 @@ CMDTypeBoolGPDB::PdxldatumNull
 //
 //---------------------------------------------------------------------------
 void
-CMDTypeBoolGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDTypeBoolGPDB::DebugPrint(IOstream &os) const
 {
 	CGPDBTypeHelper<CMDTypeBoolGPDB>::DebugPrint(os, this);
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

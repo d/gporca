@@ -19,71 +19,70 @@
 
 namespace gpdxl
 {
-	// indices of sort node elements in the children array
-	enum Edxlsort
+// indices of sort node elements in the children array
+enum Edxlsort
+{
+	EdxlsortIndexProjList = 0,
+	EdxlsortIndexFilter,
+	EdxlsortIndexSortColList,
+	EdxlsortIndexLimitCount,
+	EdxlsortIndexLimitOffset,
+	EdxlsortIndexChild,
+	EdxlsortIndexSentinel
+};
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalSort
+//
+//	@doc:
+//		Class for representing DXL sort operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalSort : public CDXLPhysical
+{
+private:
+	// private copy ctor
+	CDXLPhysicalSort(const CDXLPhysicalSort &);
+
+	// whether sort discards duplicates
+	BOOL m_fDiscardDuplicates;
+
+
+public:
+	// ctor/dtor
+	CDXLPhysicalSort(IMemoryPool *pmp, BOOL fDiscardDuplicates);
+
+	// accessors
+	Edxlopid
+	Edxlop() const;
+	const CWStringConst *
+	PstrOpName() const;
+	BOOL
+	FDiscardDuplicates() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// conversion function
+	static CDXLPhysicalSort *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		EdxlsortIndexProjList = 0,
-		EdxlsortIndexFilter,
-		EdxlsortIndexSortColList,
-		EdxlsortIndexLimitCount,
-		EdxlsortIndexLimitOffset,
-		EdxlsortIndexChild,
-		EdxlsortIndexSentinel
-	};
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopPhysicalSort == pdxlop->Edxlop());
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalSort
-	//
-	//	@doc:
-	//		Class for representing DXL sort operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalSort : public CDXLPhysical
-	{
-		private:
-			// private copy ctor
-			CDXLPhysicalSort(const CDXLPhysicalSort&);
-			
-			// whether sort discards duplicates
-			BOOL m_fDiscardDuplicates;
-			
-
-		public:
-			// ctor/dtor
-			CDXLPhysicalSort(IMemoryPool *pmp, BOOL fDiscardDuplicates);
-			
-			// accessors
-			Edxlopid Edxlop() const;
-			const CWStringConst *PstrOpName() const;
-			BOOL FDiscardDuplicates() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLPhysicalSort *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopPhysicalSort == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLPhysicalSort*>(pdxlop);
-			}
+		return dynamic_cast<CDXLPhysicalSort *>(pdxlop);
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-			
-	};
-}
-#endif // !GPDXL_CDXLPhysicalSort_H
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLPhysicalSort_H
 
 // EOF
-

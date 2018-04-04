@@ -18,49 +18,50 @@
 
 namespace gpdxl
 {
-	using namespace gpmd;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLIndexDescr
-	//
-	//	@doc:
-	//		Class for representing index descriptors in a DXL index scan node.
-	//
-	//---------------------------------------------------------------------------
-	class CDXLIndexDescr : public CRefCount
-	{
-		private:
-			// memory pool
-			IMemoryPool *m_pmp;
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLIndexDescr
+//
+//	@doc:
+//		Class for representing index descriptors in a DXL index scan node.
+//
+//---------------------------------------------------------------------------
+class CDXLIndexDescr : public CRefCount
+{
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
 
-			// id and version information for the table
-			IMDId *m_pmdid;
+	// id and version information for the table
+	IMDId *m_pmdid;
 
-			// index name
-			CMDName *m_pmdname;
+	// index name
+	CMDName *m_pmdname;
 
-			// private copy ctor
-			CDXLIndexDescr(const CDXLIndexDescr &);
+	// private copy ctor
+	CDXLIndexDescr(const CDXLIndexDescr &);
 
-		public:
-			// ctor
-			CDXLIndexDescr(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname);
+public:
+	// ctor
+	CDXLIndexDescr(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname);
 
-			// dtor
-			virtual
-			~CDXLIndexDescr();
+	// dtor
+	virtual ~CDXLIndexDescr();
 
-			// accessors
-			const CMDName *Pmdname() const;
-			IMDId *Pmdid() const;
+	// accessors
+	const CMDName *
+	Pmdname() const;
+	IMDId *
+	Pmdid() const;
 
-			// serialize the operator to a DXL document
-			void SerializeToDXL(CXMLSerializer *) const;
-	};
-}
+	// serialize the operator to a DXL document
+	void
+	SerializeToDXL(CXMLSerializer *) const;
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLIndexDescriptor_H
+#endif  // !GPDXL_CDXLIndexDescriptor_H
 
 // EOF
-

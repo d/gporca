@@ -9,7 +9,7 @@
 //		Implementation of DXL datum of types having LINT mapping
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -30,15 +30,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLDirectDispatchInfo::CDXLDirectDispatchInfo
-	(
-	DrgPdrgPdxldatum *pdrgpdrgdxldatum
-	)
-	:
-	m_pdrgpdrgpdxldatum(pdrgpdrgdxldatum)
+CDXLDirectDispatchInfo::CDXLDirectDispatchInfo(
+	DrgPdrgPdxldatum *pdrgpdrgdxldatum)
+	: m_pdrgpdrgpdxldatum(pdrgpdrgdxldatum)
 {
 	GPOS_ASSERT(NULL != pdrgpdrgdxldatum);
-	
+
 #ifdef GPOS_DEBUG
 	const ULONG ulLength = pdrgpdrgdxldatum->UlLength();
 	if (0 < ulLength)
@@ -49,7 +46,7 @@ CDXLDirectDispatchInfo::CDXLDirectDispatchInfo
 			GPOS_ASSERT(ulDatums == ((*pdrgpdrgdxldatum)[ul])->UlLength());
 		}
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
 //---------------------------------------------------------------------------
@@ -74,32 +71,37 @@ CDXLDirectDispatchInfo::~CDXLDirectDispatchInfo()
 //
 //---------------------------------------------------------------------------
 void
-CDXLDirectDispatchInfo::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
+CDXLDirectDispatchInfo::Serialize(CXMLSerializer *pxmlser)
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
-	
-	const ULONG ulValueCombinations = (m_pdrgpdrgpdxldatum == NULL) ? 0 : m_pdrgpdrgpdxldatum->UlLength();
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
+
+	const ULONG ulValueCombinations =
+		(m_pdrgpdrgpdxldatum == NULL) ? 0 : m_pdrgpdrgpdxldatum->UlLength();
+
 	for (ULONG ulA = 0; ulA < ulValueCombinations; ulA++)
 	{
-		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchKeyValue));
+		pxmlser->OpenElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenDirectDispatchKeyValue));
 
 		DrgPdxldatum *pdrgpdxldatum = (*m_pdrgpdrgpdxldatum)[ulA];
-		
+
 		const ULONG ulDatums = pdrgpdxldatum->UlLength();
-		for (ULONG ulB = 0; ulB < ulDatums; ulB++) 
+		for (ULONG ulB = 0; ulB < ulDatums; ulB++)
 		{
 			CDXLDatum *pdxldatum = (*pdrgpdxldatum)[ulB];
-			pdxldatum->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenDatum));
+			pdxldatum->Serialize(pxmlser,
+								 CDXLTokens::PstrToken(EdxltokenDatum));
 		}
-		
-		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchKeyValue));
+
+		pxmlser->CloseElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenDirectDispatchKeyValue));
 	}
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenDirectDispatchInfo));
 }
 
 // EOF

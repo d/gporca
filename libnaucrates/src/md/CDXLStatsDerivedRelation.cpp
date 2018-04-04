@@ -25,16 +25,11 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLStatsDerivedRelation::CDXLStatsDerivedRelation
-	(
-	CDouble dRows,
-	BOOL fEmpty,
-	DrgPdxlstatsdercol *pdrgpdxldercolstat
-	)
-	:
-	m_dRows(dRows),
-	m_fEmpty(fEmpty),
-	m_pdrgpdxlstatsdercol(pdrgpdxldercolstat)
+CDXLStatsDerivedRelation::CDXLStatsDerivedRelation(
+	CDouble dRows, BOOL fEmpty, DrgPdxlstatsdercol *pdrgpdxldercolstat)
+	: m_dRows(dRows),
+	  m_fEmpty(fEmpty),
+	  m_pdrgpdxlstatsdercol(pdrgpdxldercolstat)
 {
 	GPOS_ASSERT(NULL != pdrgpdxldercolstat);
 }
@@ -75,17 +70,14 @@ CDXLStatsDerivedRelation::Pdrgpdxlstatsdercol() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLStatsDerivedRelation::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLStatsDerivedRelation::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenStatsDerivedRelation));
+						 CDXLTokens::PstrToken(EdxltokenStatsDerivedRelation));
 
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenRows), m_dRows);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenEmptyRelation), m_fEmpty);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenEmptyRelation),
+						  m_fEmpty);
 
 	const ULONG ulColStats = m_pdrgpdxlstatsdercol->UlLength();
 	for (ULONG ul = 0; ul < ulColStats; ul++)
@@ -99,7 +91,7 @@ CDXLStatsDerivedRelation::Serialize
 	}
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenStatsDerivedRelation));
+						  CDXLTokens::PstrToken(EdxltokenStatsDerivedRelation));
 }
 
 #ifdef GPOS_DEBUG
@@ -112,18 +104,13 @@ CDXLStatsDerivedRelation::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CDXLStatsDerivedRelation::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CDXLStatsDerivedRelation::DebugPrint(IOstream &os) const
 {
 	os << "Rows: " << DRows() << std::endl;
 
 	os << "Empty: " << FEmpty() << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

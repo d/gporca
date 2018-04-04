@@ -26,22 +26,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementSequence::CXformImplementSequence
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalSequence(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-				)
-		)
-{}
+CXformImplementSequence::CXformImplementSequence(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CLogicalSequence(pmp),
+						  GPOS_NEW(pmp) CExpression(
+							  pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -53,13 +46,8 @@ CXformImplementSequence::CXformImplementSequence
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementSequence::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementSequence::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -69,19 +57,13 @@ CXformImplementSequence::Transform
 
 	DrgPexpr *pdrgpexpr = pexpr->PdrgPexpr();
 	pdrgpexpr->AddRef();
-	
+
 	// create alternative expression
-	CExpression *pexprAlt = 
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalSequence(pmp),
-			pdrgpexpr
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CPhysicalSequence(pmp), pdrgpexpr);
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
 }
 
 
 // EOF
-

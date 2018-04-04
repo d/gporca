@@ -26,216 +26,217 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// hash map from CTE id to corresponding producer plan properties
-	typedef CHashMap<ULONG, CDrvdPropPlan, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-					CleanupDelete<ULONG>, CleanupRelease<CDrvdPropPlan> > HMUlPdp;
+// hash map from CTE id to corresponding producer plan properties
+typedef CHashMap<ULONG, CDrvdPropPlan, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
+				 CleanupDelete<ULONG>, CleanupRelease<CDrvdPropPlan> >
+	HMUlPdp;
 
-	// iterator for plan properties map
-	typedef CHashMapIter<ULONG, CDrvdPropPlan, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-					CleanupDelete<ULONG>, CleanupRelease<CDrvdPropPlan> > HMUlPdpIter;
+// iterator for plan properties map
+typedef CHashMapIter<ULONG, CDrvdPropPlan, gpos::UlHash<ULONG>,
+					 gpos::FEqual<ULONG>, CleanupDelete<ULONG>,
+					 CleanupRelease<CDrvdPropPlan> >
+	HMUlPdpIter;
 
-	// forward declaration
-	class CCTEReq;
+// forward declaration
+class CCTEReq;
+//---------------------------------------------------------------------------
+//	@class:
+//		CCTEMap
+//
+//	@doc:
+//		CTE map that is derived as part of plan properties
+//
+//---------------------------------------------------------------------------
+class CCTEMap : public CRefCount
+{
+public:
+	// CTE types
+	enum ECteType
+	{
+		EctProducer,
+		EctConsumer,
+		EctSentinel
+	};
+
+private:
 	//---------------------------------------------------------------------------
 	//	@class:
-	//		CCTEMap
+	//		CCTEMapEntry
 	//
 	//	@doc:
-	//		CTE map that is derived as part of plan properties
+	//		A single entry in the CTE map;
+	//		Each entry has a CTE ID and whether it is a consumer or a producer.
+	//		If entry corresponds to a producer, the entry also has properties of
+	//		the plan rooted by producer node.
 	//
 	//---------------------------------------------------------------------------
-	class CCTEMap : public CRefCount
+	class CCTEMapEntry : public CRefCount
 	{
-		public:
-			// CTE types
-			enum ECteType
+	private:
+		// cte id
+		ULONG m_ulId;
+
+		// cte type
+		CCTEMap::ECteType m_ect;
+
+		// derived plan properties if entry corresponds to CTE producer
+		CDrvdPropPlan *m_pdpplan;
+
+		// private copy ctor
+		CCTEMapEntry(const CCTEMapEntry &);
+
+	public:
+		// ctor
+		CCTEMapEntry(ULONG ulId, CCTEMap::ECteType ect, CDrvdPropPlan *pdpplan)
+			: m_ulId(ulId), m_ect(ect), m_pdpplan(pdpplan)
+		{
+			GPOS_ASSERT(EctSentinel > ect);
+			GPOS_ASSERT_IMP(EctProducer == ect, NULL != pdpplan);
+		}
+
+		// dtor
+		virtual ~CCTEMapEntry()
+		{
+			CRefCount::SafeRelease(m_pdpplan);
+		}
+
+		// cte id
+		ULONG
+		UlId() const
+		{
+			return m_ulId;
+		}
+
+		// cte type
+		CCTEMap::ECteType
+		Ect() const
+		{
+			return m_ect;
+		}
+
+		// plan properties
+		CDrvdPropPlan *
+		Pdpplan() const
+		{
+			return m_pdpplan;
+		}
+
+		// hash function
+		ULONG
+		UlHash() const
+		{
+			return gpos::UlCombineHashes(
+				gpos::UlHash<ULONG>(&m_ulId),
+				gpos::UlHash<CCTEMap::ECteType>(&m_ect));
+		}
+
+		// print function
+		virtual IOstream &
+		OsPrint(IOstream &os) const
+		{
+			os << m_ulId << (EctProducer == m_ect ? "p" : "c");
+			if (NULL != m_pdpplan)
 			{
-				EctProducer,
-				EctConsumer,
-				EctSentinel
-			};
-
-		private:
-
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		CCTEMapEntry
-			//
-			//	@doc:
-			//		A single entry in the CTE map;
-			//		Each entry has a CTE ID and whether it is a consumer or a producer.
-			//		If entry corresponds to a producer, the entry also has properties of
-			//		the plan rooted by producer node.
-			//
-			//---------------------------------------------------------------------------
-			class CCTEMapEntry : public CRefCount
-			{
-
-				private:
-
-					// cte id
-					ULONG m_ulId;
-
-					// cte type
-					CCTEMap::ECteType m_ect;
-
-					// derived plan properties if entry corresponds to CTE producer
-					CDrvdPropPlan *m_pdpplan;
-
-					// private copy ctor
-					CCTEMapEntry(const CCTEMapEntry&);
-
-				public:
-
-					// ctor
-					CCTEMapEntry
-						(
-						ULONG ulId,
-						CCTEMap::ECteType ect,
-						CDrvdPropPlan *pdpplan
-						)
-						:
-						m_ulId(ulId),
-						m_ect(ect),
-						m_pdpplan(pdpplan)
-					{
-						GPOS_ASSERT(EctSentinel > ect);
-						GPOS_ASSERT_IMP(EctProducer == ect, NULL != pdpplan);
-					}
-
-					// dtor
-					virtual
-					~CCTEMapEntry()
-					{
-						CRefCount::SafeRelease(m_pdpplan);
-					}
-
-					// cte id
-					ULONG UlId() const
-					{
-						return m_ulId;
-					}
-
-					// cte type
-					CCTEMap::ECteType Ect() const
-					{
-						return m_ect;
-					}
-
-					// plan properties
-					CDrvdPropPlan *Pdpplan() const
-					{
-						return m_pdpplan;
-					}
-
-					// hash function
-					ULONG UlHash() const
-					{
-						return gpos::UlCombineHashes(gpos::UlHash<ULONG>(&m_ulId), gpos::UlHash<CCTEMap::ECteType>(&m_ect));
-					}
-
-					// print function
-					virtual
-					IOstream &OsPrint
-						(
-						IOstream &os
-						)
-						const
-					{
-						os << m_ulId << (EctProducer == m_ect ? "p" : "c");
-						if (NULL != m_pdpplan)
-						{
-							os << "(" << *m_pdpplan << ")";
-						}
-						return os;
-					}
-
-
-			}; // class CCTEMapEntry
-
-			// map CTE id to CTE map entry
-			typedef CHashMap<ULONG, CCTEMapEntry, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-				CleanupDelete<ULONG>, CleanupRelease<CCTEMapEntry> > HMCteMap;
-
-			// map iterator
-			typedef CHashMapIter<ULONG, CCTEMapEntry, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-				CleanupDelete<ULONG>, CleanupRelease<CCTEMapEntry> > HMCteMapIter;
-
-			// memory pool
-			IMemoryPool *m_pmp;
-
-			// cte map
-			HMCteMap *m_phmcm;
-
-			// private copy ctor
-			CCTEMap(const CCTEMap&);
-
-			// lookup info for given cte id
-			CCTEMapEntry * PcmeLookup(ULONG ulCteId) const;
-
-			// helper to add entries found in first map and are unresolved based on second map
-			static
-			void AddUnresolved(const CCTEMap &cmFirst, const CCTEMap &cmSecond, CCTEMap* pcmResult);
-
-		public:
-
-			// ctor
-			explicit
-			CCTEMap(IMemoryPool *pmp);
-
-			// dtor
-			virtual
-			~CCTEMap();
-
-			// return the CTE type associated with the given ID in the map
-			ECteType Ect(const ULONG ulId) const;
-
-			// inserting a new map entry, no entry with the same id can already exist
-			void Insert(ULONG ulCteId, ECteType ect, CDrvdPropPlan *pdpplan);
-
-			// hash function
-			ULONG UlHash() const;
-
-			// check if two cte maps are equal
-			BOOL FEqual
-					(
-					const CCTEMap *pcm
-					)
-					const
-			{
-				return (m_phmcm->UlEntries() == pcm->m_phmcm->UlEntries()) &&
-						this->FSubset(pcm);
+				os << "(" << *m_pdpplan << ")";
 			}
+			return os;
+		}
 
-			// extract plan properties of the only producer in the map, if any
-			CDrvdPropPlan *PdpplanProducer(ULONG *ulpId) const;
 
-			// check if current  map is a subset of the given one
-			BOOL FSubset(const CCTEMap *pcm) const;
+	};  // class CCTEMapEntry
 
-			// check whether the current CTE map satisfies the given CTE requirements
-			BOOL FSatisfies(const CCTEReq *pcter) const;
+	// map CTE id to CTE map entry
+	typedef CHashMap<ULONG, CCTEMapEntry, gpos::UlHash<ULONG>,
+					 gpos::FEqual<ULONG>, CleanupDelete<ULONG>,
+					 CleanupRelease<CCTEMapEntry> >
+		HMCteMap;
 
-			// return producer ids that are in this map but not in the given requirement
-			DrgPul *PdrgpulAdditionalProducers(IMemoryPool *pmp, const CCTEReq *pcter) const;
+	// map iterator
+	typedef CHashMapIter<ULONG, CCTEMapEntry, gpos::UlHash<ULONG>,
+						 gpos::FEqual<ULONG>, CleanupDelete<ULONG>,
+						 CleanupRelease<CCTEMapEntry> >
+		HMCteMapIter;
 
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
+	// memory pool
+	IMemoryPool *m_pmp;
 
-			// combine the two given maps and return the resulting map
-			static
-			CCTEMap *PcmCombine(IMemoryPool *pmp, const CCTEMap &cmFirst, const CCTEMap &cmSecond);
+	// cte map
+	HMCteMap *m_phmcm;
 
-	}; // class CCTEMap
+	// private copy ctor
+	CCTEMap(const CCTEMap &);
 
- 	// shorthand for printing
-	IOstream &operator << (IOstream &os, CCTEMap &cm);
+	// lookup info for given cte id
+	CCTEMapEntry *
+	PcmeLookup(ULONG ulCteId) const;
 
-}
+	// helper to add entries found in first map and are unresolved based on second map
+	static void
+	AddUnresolved(const CCTEMap &cmFirst, const CCTEMap &cmSecond,
+				  CCTEMap *pcmResult);
 
-#endif // !GPOPT_CCTEMap_H
+public:
+	// ctor
+	explicit CCTEMap(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CCTEMap();
+
+	// return the CTE type associated with the given ID in the map
+	ECteType
+	Ect(const ULONG ulId) const;
+
+	// inserting a new map entry, no entry with the same id can already exist
+	void
+	Insert(ULONG ulCteId, ECteType ect, CDrvdPropPlan *pdpplan);
+
+	// hash function
+	ULONG
+	UlHash() const;
+
+	// check if two cte maps are equal
+	BOOL
+	FEqual(const CCTEMap *pcm) const
+	{
+		return (m_phmcm->UlEntries() == pcm->m_phmcm->UlEntries()) &&
+			   this->FSubset(pcm);
+	}
+
+	// extract plan properties of the only producer in the map, if any
+	CDrvdPropPlan *
+	PdpplanProducer(ULONG *ulpId) const;
+
+	// check if current  map is a subset of the given one
+	BOOL
+	FSubset(const CCTEMap *pcm) const;
+
+	// check whether the current CTE map satisfies the given CTE requirements
+	BOOL
+	FSatisfies(const CCTEReq *pcter) const;
+
+	// return producer ids that are in this map but not in the given requirement
+	DrgPul *
+	PdrgpulAdditionalProducers(IMemoryPool *pmp, const CCTEReq *pcter) const;
+
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
+
+	// combine the two given maps and return the resulting map
+	static CCTEMap *
+	PcmCombine(IMemoryPool *pmp, const CCTEMap &cmFirst,
+			   const CCTEMap &cmSecond);
+
+};  // class CCTEMap
+
+// shorthand for printing
+IOstream &
+operator<<(IOstream &os, CCTEMap &cm);
+
+}  // namespace gpopt
+
+#endif  // !GPOPT_CCTEMap_H
 
 // EOF

@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Class representing the result of the Query to DXL translation
-//		
+//
 //---------------------------------------------------------------------------
 
 #ifndef GPDXL_CTranslatorQueryToDXLOutput_H
@@ -18,48 +18,50 @@
 
 namespace gpdxl
 {
+using namespace gpos;
 
-	using namespace gpos;
+//---------------------------------------------------------------------------
+//	@class:
+//		CQueryToDXLResult
+//
+//	@doc:
+//		Class representing the result of the Query to DXL translation
+//
+//---------------------------------------------------------------------------
+class CQueryToDXLResult
+{
+private:
+	// DXL representing the Query
+	CDXLNode *m_pdxln;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CQueryToDXLResult
-	//
-	//	@doc:
-	//		Class representing the result of the Query to DXL translation
-	//
-	//---------------------------------------------------------------------------
-	class CQueryToDXLResult
-	{
-		private:
+	// array of DXL nodes that represent the query output
+	DrgPdxln *m_pdrgpdxlnQueryOutput;
 
-			// DXL representing the Query
-			CDXLNode *m_pdxln;
+	// CTE list
+	DrgPdxln *m_pdrgpdxlnCTE;
 
-			// array of DXL nodes that represent the query output
-			DrgPdxln *m_pdrgpdxlnQueryOutput;
-			
-			// CTE list
-			DrgPdxln *m_pdrgpdxlnCTE;
+public:
+	// ctor
+	CQueryToDXLResult(CDXLNode *pdxlnQuery, DrgPdxln *pdrgpdxlnOutput,
+					  DrgPdxln *pdrgpdxlnCTE);
 
-		public:
-			// ctor
-			CQueryToDXLResult(CDXLNode *pdxlnQuery, DrgPdxln *pdrgpdxlnOutput, DrgPdxln *pdrgpdxlnCTE);
+	// dtor
+	~CQueryToDXLResult();
 
-			// dtor
-			~CQueryToDXLResult();
+	// return the DXL representation of the query
+	const CDXLNode *
+	Pdxln() const;
 
-			// return the DXL representation of the query
-			const CDXLNode *Pdxln() const;
+	// return the array of output columns
+	const DrgPdxln *
+	PdrgpdxlnOutputCols() const;
 
-			// return the array of output columns
-			const DrgPdxln *PdrgpdxlnOutputCols() const;
-			
-			// return the array of CTEs
-			const DrgPdxln *PdrgpdxlnCTE() const;
-	};
-}
+	// return the array of CTEs
+	const DrgPdxln *
+	PdrgpdxlnCTE() const;
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CTranslatorQueryToDXLOutput_H
+#endif  // !GPDXL_CTranslatorQueryToDXLOutput_H
 
 // EOF

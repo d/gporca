@@ -26,12 +26,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalResult::CDXLPhysicalResult
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLPhysical(pmp)
+CDXLPhysicalResult::CDXLPhysicalResult(IMemoryPool *pmp) : CDXLPhysical(pmp)
 {
 }
 
@@ -75,16 +70,13 @@ CDXLPhysicalResult::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalResult::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalResult::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
@@ -92,7 +84,8 @@ CDXLPhysicalResult::SerializeToDXL
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -105,37 +98,34 @@ CDXLPhysicalResult::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalResult::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLPhysicalResult::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
-
 	GPOS_ASSERT(EdxlresultIndexSentinel >= pdxln->UlArity());
-	
+
 	// check that one time filter is valid
 	CDXLNode *pdxlnOneTimeFilter = (*pdxln)[EdxlresultIndexOneTimeFilter];
-	GPOS_ASSERT(EdxlopScalarOneTimeFilter == pdxlnOneTimeFilter->Pdxlop()->Edxlop());
-	
+	GPOS_ASSERT(EdxlopScalarOneTimeFilter ==
+				pdxlnOneTimeFilter->Pdxlop()->Edxlop());
+
 	if (fValidateChildren)
 	{
-		pdxlnOneTimeFilter->Pdxlop()->AssertValid(pdxlnOneTimeFilter, fValidateChildren);
+		pdxlnOneTimeFilter->Pdxlop()->AssertValid(pdxlnOneTimeFilter,
+												  fValidateChildren);
 	}
-	
+
 	if (EdxlresultIndexSentinel == pdxln->UlArity())
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[EdxlresultIndexChild];
-		GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypePhysical ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
-
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

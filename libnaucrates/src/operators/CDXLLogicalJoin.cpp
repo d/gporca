@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL logical Join operator
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/operators/CDXLLogicalJoin.h"
@@ -26,13 +26,8 @@ using namespace gpdxl;
 //		Construct a DXL Logical Join node
 //
 //---------------------------------------------------------------------------
-CDXLLogicalJoin::CDXLLogicalJoin
-	(
-	IMemoryPool *pmp,
-	EdxlJoinType edxljt
-	)
-	:CDXLLogical(pmp),
-	 m_edxljt(edxljt)
+CDXLLogicalJoin::CDXLLogicalJoin(IMemoryPool *pmp, EdxlJoinType edxljt)
+	: CDXLLogical(pmp), m_edxljt(edxljt)
 {
 }
 
@@ -87,23 +82,22 @@ CDXLLogicalJoin::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalJoin::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalJoin::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinType), PstrJoinTypeName());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenJoinType),
+						  PstrJoinTypeName());
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -130,11 +124,8 @@ CDXLLogicalJoin::PstrJoinTypeName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalJoin::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLLogicalJoin::AssertValid(const CDXLNode *pdxln,
+							 BOOL fValidateChildren) const
 {
 	const ULONG ulChildren = pdxln->UlArity();
 	GPOS_ASSERT(2 < ulChildren);
@@ -142,8 +133,9 @@ CDXLLogicalJoin::AssertValid
 	for (ULONG ul = 0; ul < ulChildren - 1; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeLogical == pdxlnChild->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(EdxloptypeLogical ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
@@ -154,13 +146,15 @@ CDXLLogicalJoin::AssertValid
 	GPOS_ASSERT(NULL != pdxlnLastChild);
 
 	//The last child is a CDXLScalar operator representing the join qual
-	GPOS_ASSERT(EdxloptypeScalar == pdxlnLastChild->Pdxlop()->Edxloperatortype());
-	
+	GPOS_ASSERT(EdxloptypeScalar ==
+				pdxlnLastChild->Pdxlop()->Edxloperatortype());
+
 	if (fValidateChildren)
 	{
-		pdxlnLastChild->Pdxlop()->AssertValid(pdxlnLastChild, fValidateChildren);
+		pdxlnLastChild->Pdxlop()->AssertValid(pdxlnLastChild,
+											  fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

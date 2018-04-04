@@ -27,22 +27,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformIndexGet2IndexScan::CXformIndexGet2IndexScan
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalIndexGet(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))	// index lookup predicate
-				)
-		)
-{}
+CXformIndexGet2IndexScan::CXformIndexGet2IndexScan(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalIndexGet(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // index lookup predicate
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -53,13 +46,9 @@ CXformIndexGet2IndexScan::CXformIndexGet2IndexScan
 //
 //---------------------------------------------------------------------------
 void
-CXformIndexGet2IndexScan::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformIndexGet2IndexScan::Transform(CXformContext *pxfctxt,
+									CXformResult *pxfres,
+									CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -88,25 +77,14 @@ CXformIndexGet2IndexScan::Transform
 	// addref all children
 	pexprIndexCond->AddRef();
 
-	CExpression *pexprAlt =
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalIndexScan
-				(
-				pmp,
-				pindexdesc,
-				ptabdesc,
-				pexpr->Pop()->UlOpId(),
-				GPOS_NEW(pmp) CName (pmp, pop->NameAlias()),
-				pdrgpcrOutput,
-				pos
-				),
-			pexprIndexCond
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp) CPhysicalIndexScan(
+			pmp, pindexdesc, ptabdesc, pexpr->Pop()->UlOpId(),
+			GPOS_NEW(pmp) CName(pmp, pop->NameAlias()), pdrgpcrOutput, pos),
+		pexprIndexCond);
 	pxfres->Add(pexprAlt);
 }
 
 
 // EOF
-

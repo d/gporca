@@ -24,12 +24,7 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarSwitchCase::CScalarSwitchCase
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CScalar(pmp)
+CScalarSwitchCase::CScalarSwitchCase(IMemoryPool *pmp) : CScalar(pmp)
 {
 }
 
@@ -42,14 +37,9 @@ CScalarSwitchCase::CScalarSwitchCase
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarSwitchCase::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarSwitchCase::FMatch(COperator *pop) const
 {
 	return (pop->Eopid() == Eopid());
 }
 
 // EOF
-

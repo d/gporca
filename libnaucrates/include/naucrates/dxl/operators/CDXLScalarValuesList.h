@@ -18,53 +18,53 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
 
-	// class for representing DXL value list operator
-	class CDXLScalarValuesList : public CDXLScalar
-	{
-		private:
+// class for representing DXL value list operator
+class CDXLScalarValuesList : public CDXLScalar
+{
+private:
+	// private copy ctor
+	CDXLScalarValuesList(CDXLScalarValuesList &);
 
-			// private copy ctor
-			CDXLScalarValuesList(CDXLScalarValuesList&);
+public:
+	// ctor
+	CDXLScalarValuesList(IMemoryPool *pmp);
 
-		public:
+	// dtor
+	virtual ~CDXLScalarValuesList();
 
-			// ctor
-			CDXLScalarValuesList(IMemoryPool *pmp);
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
 
-			// dtor
-			virtual
-			~CDXLScalarValuesList();
+	// name of the DXL operator
+	const CWStringConst *
+	PstrOpName() const;
 
-			// ident accessors
-			Edxlopid Edxlop() const;
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// name of the DXL operator
-			const CWStringConst *PstrOpName() const;
+	// conversion function
+	static CDXLScalarValuesList *
+	PdxlopConvert(CDXLOperator *pdxlop);
 
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLScalarValuesList *PdxlopConvert(CDXLOperator *pdxlop);
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean(CMDAccessor * /*pmda*/) const;
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor * /*pmda*/) const;
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-	};
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-#endif // !GPDXL_CDXLScalarValuesList_H
+#endif  // !GPDXL_CDXLScalarValuesList_H
 
 // EOF

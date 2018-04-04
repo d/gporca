@@ -17,21 +17,15 @@ using namespace gpmd;
 
 // helper for LAS-joining histograms
 void
-CLeftAntiSemiJoinStatsProcessor::JoinHistogramsLASJ
-			(
-			IMemoryPool *pmp,
-			const CHistogram *phist1,
-			const CHistogram *phist2,
-			CStatsPredJoin *pstatsjoin,
-			CDouble dRows1,
-			CDouble ,//dRows2,
-			CHistogram **pphist1, // output: histogram 1 after join
-			CHistogram **pphist2, // output: histogram 2 after join
-			CDouble *pdScaleFactor, // output: scale factor based on the join
-			BOOL fEmptyInput,
-			IStatistics::EStatsJoinType,
-			BOOL fIgnoreLasjHistComputation
-			)
+CLeftAntiSemiJoinStatsProcessor::JoinHistogramsLASJ(
+	IMemoryPool *pmp, const CHistogram *phist1, const CHistogram *phist2,
+	CStatsPredJoin *pstatsjoin, CDouble dRows1,
+	CDouble,				 //dRows2,
+	CHistogram **pphist1,	// output: histogram 1 after join
+	CHistogram **pphist2,	// output: histogram 2 after join
+	CDouble *pdScaleFactor,  // output: scale factor based on the join
+	BOOL fEmptyInput, IStatistics::EStatsJoinType,
+	BOOL fIgnoreLasjHistComputation)
 {
 	GPOS_ASSERT(NULL != phist1);
 	GPOS_ASSERT(NULL != phist2);
@@ -57,15 +51,9 @@ CLeftAntiSemiJoinStatsProcessor::JoinHistogramsLASJ
 	BOOL fEmptyHistograms = phist1->FEmpty() || phist2->FEmpty();
 	if (!fEmptyHistograms && CHistogram::FSupportsJoinPred(escmpt))
 	{
-		*pphist1 = phist1->PhistLASJoinNormalized
-				(
-				pmp,
-				escmpt,
-				dRows1,
-				phist2,
-				pdScaleFactor,
-				fIgnoreLasjHistComputation
-				);
+		*pphist1 = phist1->PhistLASJoinNormalized(pmp, escmpt, dRows1, phist2,
+												  pdScaleFactor,
+												  fIgnoreLasjHistComputation);
 		*pphist2 = NULL;
 
 		if ((*pphist1)->FEmpty())
@@ -87,40 +75,28 @@ CLeftAntiSemiJoinStatsProcessor::JoinHistogramsLASJ
 
 //	Return statistics object after performing LASJ
 CStatistics *
-CLeftAntiSemiJoinStatsProcessor::PstatsLASJoinStatic
-		(
-		IMemoryPool *pmp,
-		const IStatistics *pistatsOuter,
-		const IStatistics *pistatsInner,
-		DrgPstatspredjoin *pdrgpstatspredjoin,
-		BOOL fIgnoreLasjHistComputation
-		)
+CLeftAntiSemiJoinStatsProcessor::PstatsLASJoinStatic(
+	IMemoryPool *pmp, const IStatistics *pistatsOuter,
+	const IStatistics *pistatsInner, DrgPstatspredjoin *pdrgpstatspredjoin,
+	BOOL fIgnoreLasjHistComputation)
 {
 	GPOS_ASSERT(NULL != pistatsInner);
 	GPOS_ASSERT(NULL != pistatsOuter);
 	GPOS_ASSERT(NULL != pdrgpstatspredjoin);
-	const CStatistics *pstatsOuter = dynamic_cast<const CStatistics *> (pistatsOuter);
+	const CStatistics *pstatsOuter =
+		dynamic_cast<const CStatistics *>(pistatsOuter);
 
-	return CJoinStatsProcessor::PstatsJoinDriver
-			(
-			pmp,
-			pstatsOuter->PStatsConf(),
-			pistatsOuter,
-			pistatsInner,
-			pdrgpstatspredjoin,
-			IStatistics::EsjtLeftAntiSemiJoin /* esjt */,
-			fIgnoreLasjHistComputation
-			);
+	return CJoinStatsProcessor::PstatsJoinDriver(
+		pmp, pstatsOuter->PStatsConf(), pistatsOuter, pistatsInner,
+		pdrgpstatspredjoin, IStatistics::EsjtLeftAntiSemiJoin /* esjt */,
+		fIgnoreLasjHistComputation);
 }
 
 // Compute the null frequency for LASJ
 CDouble
-CLeftAntiSemiJoinStatsProcessor::DNullFreqLASJ
-		(
-		CStatsPred::EStatsCmpType escmpt,
-		const CHistogram *phistOuter,
-		const CHistogram *phistInner
-		)
+CLeftAntiSemiJoinStatsProcessor::DNullFreqLASJ(CStatsPred::EStatsCmpType escmpt,
+											   const CHistogram *phistOuter,
+											   const CHistogram *phistInner)
 {
 	GPOS_ASSERT(NULL != phistOuter);
 	GPOS_ASSERT(NULL != phistInner);

@@ -34,20 +34,16 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalIndexGet::CLogicalIndexGet
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_pindexdesc(NULL),
-	m_ptabdesc(NULL),
-	m_ulOriginOpId(ULONG_MAX),
-	m_pnameAlias(NULL),
-	m_pdrgpcrOutput(NULL),
-	m_pcrsOutput(NULL),
-	m_pos(NULL),
-	m_pcrsDist(NULL)
+CLogicalIndexGet::CLogicalIndexGet(IMemoryPool *pmp)
+	: CLogical(pmp),
+	  m_pindexdesc(NULL),
+	  m_ptabdesc(NULL),
+	  m_ulOriginOpId(ULONG_MAX),
+	  m_pnameAlias(NULL),
+	  m_pdrgpcrOutput(NULL),
+	  m_pcrsOutput(NULL),
+	  m_pos(NULL),
+	  m_pcrsDist(NULL)
 {
 	m_fPattern = true;
 }
@@ -61,24 +57,18 @@ CLogicalIndexGet::CLogicalIndexGet
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalIndexGet::CLogicalIndexGet
-	(
-	IMemoryPool *pmp,
-	const IMDIndex *pmdindex,
-	CTableDescriptor *ptabdesc,
-	ULONG ulOriginOpId,
-	const CName *pnameAlias,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CLogical(pmp),
-	m_pindexdesc(NULL),
-	m_ptabdesc(ptabdesc),
-	m_ulOriginOpId(ulOriginOpId),
-	m_pnameAlias(pnameAlias),
-	m_pdrgpcrOutput(pdrgpcrOutput),
-	m_pcrsOutput(NULL),
-	m_pcrsDist(NULL)
+CLogicalIndexGet::CLogicalIndexGet(IMemoryPool *pmp, const IMDIndex *pmdindex,
+								   CTableDescriptor *ptabdesc,
+								   ULONG ulOriginOpId, const CName *pnameAlias,
+								   DrgPcr *pdrgpcrOutput)
+	: CLogical(pmp),
+	  m_pindexdesc(NULL),
+	  m_ptabdesc(ptabdesc),
+	  m_ulOriginOpId(ulOriginOpId),
+	  m_pnameAlias(pnameAlias),
+	  m_pdrgpcrOutput(pdrgpcrOutput),
+	  m_pcrsOutput(NULL),
+	  m_pcrsDist(NULL)
 {
 	GPOS_ASSERT(NULL != pmdindex);
 	GPOS_ASSERT(NULL != ptabdesc);
@@ -86,7 +76,7 @@ CLogicalIndexGet::CLogicalIndexGet
 	GPOS_ASSERT(NULL != pdrgpcrOutput);
 
 	// create the index descriptor
-	m_pindexdesc  = CIndexDescriptor::Pindexdesc(pmp, ptabdesc, pmdindex);
+	m_pindexdesc = CIndexDescriptor::Pindexdesc(pmp, ptabdesc, pmdindex);
 
 	// compute the order spec
 	m_pos = PosFromIndex(m_pmp, pmdindex, m_pdrgpcrOutput, ptabdesc);
@@ -113,7 +103,7 @@ CLogicalIndexGet::~CLogicalIndexGet()
 	CRefCount::SafeRelease(m_pcrsOutput);
 	CRefCount::SafeRelease(m_pos);
 	CRefCount::SafeRelease(m_pcrsDist);
-	
+
 	GPOS_DELETE(m_pnameAlias);
 }
 
@@ -129,8 +119,9 @@ ULONG
 CLogicalIndexGet::UlHash() const
 {
 	ULONG ulHash = gpos::UlCombineHashes(COperator::UlHash(),
-	                                     m_pindexdesc->Pmdid()->UlHash());
-	ulHash = gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
+										 m_pindexdesc->Pmdid()->UlHash());
+	ulHash =
+		gpos::UlCombineHashes(ulHash, CUtils::UlHashColArray(m_pdrgpcrOutput));
 	return ulHash;
 }
 
@@ -144,11 +135,7 @@ CLogicalIndexGet::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalIndexGet::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalIndexGet::FMatch(COperator *pop) const
 {
 	return CUtils::FMatchIndex(this, pop);
 }
@@ -162,12 +149,8 @@ CLogicalIndexGet::FMatch
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalIndexGet::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalIndexGet::PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+											 BOOL fMustExist)
 {
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 	const IMDIndex *pmdindex = pmda->Pmdindex(m_pindexdesc->Pmdid());
@@ -175,17 +158,20 @@ CLogicalIndexGet::PopCopyWithRemappedColumns
 	DrgPcr *pdrgpcrOutput = NULL;
 	if (fMustExist)
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemapAndCreate(pmp, m_pdrgpcrOutput, phmulcr);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemapAndCreate(pmp, m_pdrgpcrOutput, phmulcr);
 	}
 	else
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemap(pmp, m_pdrgpcrOutput, phmulcr, fMustExist);
 	}
 	CName *pnameAlias = GPOS_NEW(pmp) CName(pmp, *m_pnameAlias);
 
 	m_ptabdesc->AddRef();
 
-	return GPOS_NEW(pmp) CLogicalIndexGet(pmp, pmdindex, m_ptabdesc, m_ulOriginOpId, pnameAlias, pdrgpcrOutput);
+	return GPOS_NEW(pmp) CLogicalIndexGet(
+		pmp, pmdindex, m_ptabdesc, m_ulOriginOpId, pnameAlias, pdrgpcrOutput);
 }
 
 //---------------------------------------------------------------------------
@@ -197,11 +183,9 @@ CLogicalIndexGet::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalIndexGet::PcrsDeriveOutput
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
+CLogicalIndexGet::PcrsDeriveOutput(IMemoryPool *pmp,
+								   CExpressionHandle &  // exprhdl
+)
 {
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrs->Include(m_pdrgpcrOutput);
@@ -218,11 +202,7 @@ CLogicalIndexGet::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalIndexGet::PcrsDeriveOuter
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
+CLogicalIndexGet::PcrsDeriveOuter(IMemoryPool *pmp, CExpressionHandle &exprhdl)
 {
 	return PcrsDeriveOuterIndexGet(pmp, exprhdl);
 }
@@ -250,11 +230,7 @@ CLogicalIndexGet::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalIndexGet::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-const
+CLogicalIndexGet::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
@@ -273,13 +249,8 @@ const
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalIndexGet::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat *pdrgpstatCtxt
-	)
-	const
+CLogicalIndexGet::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							   DrgPstat *pdrgpstatCtxt) const
 {
 	return CStatisticsUtils::PstatsIndexGet(pmp, exprhdl, pdrgpstatCtxt);
 }
@@ -294,11 +265,7 @@ CLogicalIndexGet::PstatsDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalIndexGet::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalIndexGet::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
@@ -310,10 +277,10 @@ CLogicalIndexGet::OsPrint
 	os << "  Index Name: (";
 	m_pindexdesc->Name().OsPrint(os);
 	// table alias name
-	os <<")";
+	os << ")";
 	os << ", Table Name: (";
 	m_pnameAlias->OsPrint(os);
-	os <<")";
+	os << ")";
 	os << ", Columns: [";
 	CUtils::OsPrintDrgPcr(os, m_pdrgpcrOutput);
 	os << "]";

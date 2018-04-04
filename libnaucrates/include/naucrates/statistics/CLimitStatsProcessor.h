@@ -13,18 +13,16 @@
 
 namespace gpnaucrates
 {
+class CLimitStatsProcessor
+{
+public:
+	// limit
+	static CStatistics *
+	PstatsLimit(IMemoryPool *pmp, const CStatistics *pstatsInput,
+				CDouble dLimitRows);
+};
+}  // namespace gpnaucrates
 
-	class CLimitStatsProcessor
-	{
-		public:
-
-		// limit
-		static
-		CStatistics *PstatsLimit(IMemoryPool *pmp, const CStatistics *pstatsInput, CDouble dLimitRows);
-	};
-}
-
-#endif // !GPNAUCRATES_CLimitStatsProcessor_H
+#endif  // !GPNAUCRATES_CLimitStatsProcessor_H
 
 // EOF
-

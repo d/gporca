@@ -29,16 +29,12 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerCostParams::CParseHandlerCostParams
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pcp(NULL)
-{}
+CParseHandlerCostParams::CParseHandlerCostParams(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pcp(NULL)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -64,35 +60,38 @@ CParseHandlerCostParams::~CParseHandlerCostParams()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostParams::StartElement
-	(
-	const XMLCh* const xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const xmlstrQname,
-	const Attributes& attrs
-	)
+CParseHandlerCostParams::StartElement(const XMLCh *const xmlstrUri,
+									  const XMLCh *const xmlstrLocalname,
+									  const XMLCh *const xmlstrQname,
+									  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlstrLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlstrLocalname))
 	{
 		// as of now, we only parse params of GPDB cost model
 		m_pcp = GPOS_NEW(m_pmp) CCostModelParamsGPDB(m_pmp);
 	}
-	else if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
+	else if (0 ==
+			 XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParam), xmlstrLocalname))
 	{
 		GPOS_ASSERT(NULL != m_pcp);
 
 		// start new search stage
-		CParseHandlerBase *pphCostParam = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenCostParam), m_pphm, this);
+		CParseHandlerBase *pphCostParam = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenCostParam), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphCostParam);
 
 		// store parse handler
 		this->Append(pphCostParam);
 
-		pphCostParam->startElement(xmlstrUri, xmlstrLocalname, xmlstrQname, attrs);
+		pphCostParam->startElement(xmlstrUri, xmlstrLocalname, xmlstrQname,
+								   attrs);
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -107,24 +106,27 @@ CParseHandlerCostParams::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerCostParams::EndElement
-	(
-	const XMLCh* const, // xmlstrUri,
-	const XMLCh* const xmlstrLocalname,
-	const XMLCh* const // xmlstrQname
-	)
+CParseHandlerCostParams::EndElement(const XMLCh *const,  // xmlstrUri,
+									const XMLCh *const xmlstrLocalname,
+									const XMLCh *const  // xmlstrQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlstrLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenCostParams), xmlstrLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlstrLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerCostParam *pphCostParam = dynamic_cast<CParseHandlerCostParam*>((*this)[ul]);
-		m_pcp->SetParam(pphCostParam->SzName(), pphCostParam->DVal(), pphCostParam->DLowerBound(), pphCostParam->DUpperBound());
+		CParseHandlerCostParam *pphCostParam =
+			dynamic_cast<CParseHandlerCostParam *>((*this)[ul]);
+		m_pcp->SetParam(pphCostParam->SzName(), pphCostParam->DVal(),
+						pphCostParam->DLowerBound(),
+						pphCostParam->DUpperBound());
 	}
 
 	// deactivate handler
@@ -132,4 +134,3 @@ CParseHandlerCostParams::EndElement
 }
 
 // EOF
-

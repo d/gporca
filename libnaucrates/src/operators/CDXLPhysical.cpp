@@ -23,12 +23,7 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysical::CDXLPhysical
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLOperator(pmp)
+CDXLPhysical::CDXLPhysical(IMemoryPool *pmp) : CDXLOperator(pmp)
 {
 }
 
@@ -65,34 +60,29 @@ CDXLPhysical::Edxloperatortype() const
 //		CDXLPhysical::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysical::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysical::AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(NULL != pdxln);
-	
+
 	GPOS_ASSERT(2 <= pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnProjList = (*pdxln)[0];
 	CDXLNode *pdxlnFilter = (*pdxln)[1];
-	
+
 	GPOS_ASSERT(EdxlopScalarProjectList == pdxlnProjList->Pdxlop()->Edxlop());
 	GPOS_ASSERT(EdxlopScalarFilter == pdxlnFilter->Pdxlop()->Edxlop());
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnProjList->Pdxlop()->AssertValid(pdxlnProjList, fValidateChildren);
 		pdxlnFilter->Pdxlop()->AssertValid(pdxlnFilter, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF
-

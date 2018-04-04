@@ -36,23 +36,19 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CJoinOrderMinCard::CJoinOrderMinCard
-	(
-	IMemoryPool *pmp,
-	DrgPexpr *pdrgpexprComponents,
-	DrgPexpr *pdrgpexprConjuncts
-	)
-	:
-	CJoinOrder(pmp, pdrgpexprComponents, pdrgpexprConjuncts),
-	m_pcompResult(NULL)
+CJoinOrderMinCard::CJoinOrderMinCard(IMemoryPool *pmp,
+									 DrgPexpr *pdrgpexprComponents,
+									 DrgPexpr *pdrgpexprConjuncts)
+	: CJoinOrder(pmp, pdrgpexprComponents, pdrgpexprConjuncts),
+	  m_pcompResult(NULL)
 {
 #ifdef GPOS_DEBUG
 	for (ULONG ul = 0; ul < m_ulComps; ul++)
 	{
 		GPOS_ASSERT(NULL != m_rgpcomp[ul]->m_pexpr->Pstats() &&
-				"stats were not derived on input component");
+					"stats were not derived on input component");
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
 
@@ -80,11 +76,7 @@ CJoinOrderMinCard::~CJoinOrderMinCard()
 //
 //---------------------------------------------------------------------------
 CJoinOrder::SComponent *
-CJoinOrderMinCard::PcompCombine
-	(
-	SComponent *pcompOuter,
-	SComponent *pcompInner
-	)
+CJoinOrderMinCard::PcompCombine(SComponent *pcompOuter, SComponent *pcompInner)
 {
 	CBitSet *pbs = GPOS_NEW(m_pmp) CBitSet(m_pmp);
 	pbs->Union(pcompOuter->m_pbs);
@@ -110,7 +102,8 @@ CJoinOrderMinCard::PcompCombine
 
 	CExpression *pexprOuter = pcompOuter->m_pexpr;
 	CExpression *pexprInner = pcompInner->m_pexpr;
-	CExpression *pexprScalar = CPredicateUtils::PexprConjunction(m_pmp, pdrgpexpr);
+	CExpression *pexprScalar =
+		CPredicateUtils::PexprConjunction(m_pmp, pdrgpexpr);
 
 	CExpression *pexpr = NULL;
 	if (NULL == pexprOuter)
@@ -124,7 +117,8 @@ CJoinOrderMinCard::PcompCombine
 		// not first call, we create an Inner Join
 		pexprInner->AddRef();
 		pexprOuter->AddRef();
-		pexpr = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(m_pmp, pexprOuter, pexprInner, pexprScalar);
+		pexpr = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+			m_pmp, pexprOuter, pexprInner, pexprScalar);
 	}
 
 	return GPOS_NEW(m_pmp) SComponent(pexpr, pbs);
@@ -146,15 +140,16 @@ CJoinOrderMinCard::MarkUsedEdges()
 
 	CExpression *pexpr = m_pcompResult->m_pexpr;
 	COperator::EOperatorId eopid = pexpr->Pop()->Eopid();
-	if (0 == pexpr->UlArity() ||
-		(COperator::EopLogicalSelect != eopid && COperator::EopLogicalInnerJoin != eopid))
+	if (0 == pexpr->UlArity() || (COperator::EopLogicalSelect != eopid &&
+								  COperator::EopLogicalInnerJoin != eopid))
 	{
 		// result component does not have a scalar child, e.g. a Get node
 		return;
 	}
 
-	CExpression *pexprScalar = (*pexpr) [pexpr->UlArity() - 1];
-	DrgPexpr *pdrgpexpr = CPredicateUtils::PdrgpexprConjuncts(m_pmp, pexprScalar);
+	CExpression *pexprScalar = (*pexpr)[pexpr->UlArity() - 1];
+	DrgPexpr *pdrgpexpr =
+		CPredicateUtils::PdrgpexprConjuncts(m_pmp, pexprScalar);
 	const ULONG ulSize = pdrgpexpr->UlLength();
 
 	for (ULONG ulEdge = 0; ulEdge < m_ulEdges; ulEdge++)
@@ -186,11 +181,7 @@ CJoinOrderMinCard::MarkUsedEdges()
 //
 //---------------------------------------------------------------------------
 void
-CJoinOrderMinCard::DeriveStats
-	(
-	IMemoryPool *pmp,
-	SComponent *pcomp
-	)
+CJoinOrderMinCard::DeriveStats(IMemoryPool *pmp, SComponent *pcomp)
 {
 	GPOS_ASSERT(NULL != pcomp);
 	GPOS_ASSERT(NULL != pcomp->m_pexpr);
@@ -226,8 +217,10 @@ CJoinOrderMinCard::PexprExpand()
 	while (ulCoveredComps < m_ulComps)
 	{
 		CDouble dMinRows(0.0);
-		SComponent *pcompBest = NULL; // best component to be added to current result
-		SComponent *pcompBestResult = NULL; // result after adding best component
+		SComponent *pcompBest =
+			NULL;  // best component to be added to current result
+		SComponent *pcompBestResult =
+			NULL;  // result after adding best component
 
 		for (ULONG ul = 0; ul < m_ulComps; ul++)
 		{
@@ -239,7 +232,8 @@ CJoinOrderMinCard::PexprExpand()
 			}
 
 			// combine component with current result and derive stats
-			CJoinOrder::SComponent *pcompTemp = PcompCombine(m_pcompResult, pcompCurrent);
+			CJoinOrder::SComponent *pcompTemp =
+				PcompCombine(m_pcompResult, pcompCurrent);
 			DeriveStats(m_pmp, pcompTemp);
 			CDouble dRows = pcompTemp->m_pexpr->Pstats()->DRows();
 
@@ -282,11 +276,7 @@ CJoinOrderMinCard::PexprExpand()
 //
 //---------------------------------------------------------------------------
 IOstream &
-CJoinOrderMinCard::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CJoinOrderMinCard::OsPrint(IOstream &os) const
 {
 	if (NULL != m_pcompResult->m_pexpr)
 	{

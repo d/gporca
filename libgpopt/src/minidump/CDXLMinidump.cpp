@@ -29,31 +29,23 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLMinidump::CDXLMinidump
-	(
-	CBitSet *pbs,
-	COptimizerConfig *poconf,
-	CDXLNode *pdxlnQuery, 
-	DrgPdxln *pdrgpdxlnQueryOutput,
-	DrgPdxln *pdrgpdxlnCTE,
-	CDXLNode *pdxlnPlan, 
-	DrgPimdobj *pdrgpmdobj,
-	DrgPsysid *pdrgpsysid,
-	ULLONG ullPlanId,
-	ULLONG ullPlanSpaceSize
-	)
-	:
-	m_pbs(pbs),
-	m_poconf(poconf),
-	m_pdxlnQuery(pdxlnQuery),
-	m_pdrgpdxlnQueryOutput(pdrgpdxlnQueryOutput),
-	m_pdrgpdxlnCTE(pdrgpdxlnCTE),
-	m_pdxlnPlan(pdxlnPlan),
-	m_pdrgpmdobj(pdrgpmdobj),
-	m_pdrgpsysid(pdrgpsysid),
-	m_ullPlanId(ullPlanId),
-	m_ullPlanSpaceSize(ullPlanSpaceSize)
-{}
+CDXLMinidump::CDXLMinidump(CBitSet *pbs, COptimizerConfig *poconf,
+						   CDXLNode *pdxlnQuery, DrgPdxln *pdrgpdxlnQueryOutput,
+						   DrgPdxln *pdrgpdxlnCTE, CDXLNode *pdxlnPlan,
+						   DrgPimdobj *pdrgpmdobj, DrgPsysid *pdrgpsysid,
+						   ULLONG ullPlanId, ULLONG ullPlanSpaceSize)
+	: m_pbs(pbs),
+	  m_poconf(poconf),
+	  m_pdxlnQuery(pdxlnQuery),
+	  m_pdrgpdxlnQueryOutput(pdrgpdxlnQueryOutput),
+	  m_pdrgpdxlnCTE(pdrgpdxlnCTE),
+	  m_pdxlnPlan(pdxlnPlan),
+	  m_pdrgpmdobj(pdrgpmdobj),
+	  m_pdrgpsysid(pdrgpsysid),
+	  m_ullPlanId(ullPlanId),
+	  m_ullPlanSpaceSize(ullPlanSpaceSize)
+{
+}
 
 
 //---------------------------------------------------------------------------

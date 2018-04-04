@@ -19,7 +19,7 @@
 using namespace gpos;
 
 // host system callback function to report abort requests
-bool (*CWorker::pfnAbortRequestedBySystem) (void);
+bool (*CWorker::pfnAbortRequestedBySystem)(void);
 
 
 //---------------------------------------------------------------------------
@@ -30,37 +30,32 @@ bool (*CWorker::pfnAbortRequestedBySystem) (void);
 //		ctor
 //
 //---------------------------------------------------------------------------
-CWorker::CWorker
-	(
-	ULONG ulThreadId,
-	ULONG cStackSize,
-	ULONG_PTR ulpStackStart
-	)
-	:
-	m_ptsk(NULL),
-	m_ulThreadId(ulThreadId),
-	m_cStackSize(cStackSize),
-	m_ulpStackStart(ulpStackStart)
+CWorker::CWorker(ULONG ulThreadId, ULONG cStackSize, ULONG_PTR ulpStackStart)
+	: m_ptsk(NULL),
+	  m_ulThreadId(ulThreadId),
+	  m_cStackSize(cStackSize),
+	  m_ulpStackStart(ulpStackStart)
 {
-#ifdef GPOS_DEBUG			
+#ifdef GPOS_DEBUG
 	m_listSlock.Init(GPOS_OFFSET(CSpinlockBase, m_link));
 	m_listMutex.Init(GPOS_OFFSET(CMutexBase, m_link));
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
-	GPOS_ASSERT(cStackSize >= 2 * 1024 && "Worker has to have at least 2KB stack");
+	GPOS_ASSERT(cStackSize >= 2 * 1024 &&
+				"Worker has to have at least 2KB stack");
 
 	// register worker
 	GPOS_ASSERT(NULL == PwrkrSelf() && "Found registered worker!");
-	
+
 	CWorkerPoolManager::Pwpm()->RegisterWorker(this);
 	GPOS_ASSERT(this == CWorkerPoolManager::Pwpm()->PwrkrSelf());
 
 #ifdef GPOS_DEBUG
 	ResetTimeSlice();
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
-			
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CWorker::~CWorker
@@ -76,11 +71,13 @@ CWorker::~CWorker()
 	// the destructor we must assume the worst
 	//
 	// CONSIDER: 03/27/2008; if this is ever a problem on a production system,
-	// introduce emergency release/unlock function which suspends tracking; make 
+	// introduce emergency release/unlock function which suspends tracking; make
 	// tracking available in optimized builds
-	GPOS_ASSERT(!FOwnsSpinlocks() && "Cannot destruct worker while holding a spinlock.");
-	GPOS_ASSERT(!FOwnsMutexes() && "Cannot destruct worker while holding a mutex.");
-	
+	GPOS_ASSERT(!FOwnsSpinlocks() &&
+				"Cannot destruct worker while holding a spinlock.");
+	GPOS_ASSERT(!FOwnsMutexes() &&
+				"Cannot destruct worker while holding a mutex.");
+
 	// unregister worker
 	GPOS_ASSERT(this == PwrkrSelf() && "Unidentified worker found.");
 	CWorkerPoolManager::Pwpm()->PwrkrRemoveWorker(m_wid);
@@ -102,7 +99,8 @@ CWorker::Run()
 
 	CTask *ptsk = NULL;
 
-	while (CWorkerPoolManager::EsrExecTask == CWorkerPoolManager::Pwpm()->EsrTskNext(&ptsk))
+	while (CWorkerPoolManager::EsrExecTask ==
+		   CWorkerPoolManager::Pwpm()->EsrTskNext(&ptsk))
 	{
 		Execute(ptsk);
 	}
@@ -125,7 +123,7 @@ CWorker::Execute(CTask *ptsk)
 
 #ifdef GPOS_DEBUG
 	ResetTimeSlice();
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	m_ptsk = ptsk;
 	GPOS_TRY
@@ -151,29 +149,27 @@ CWorker::Execute(CTask *ptsk)
 //
 //---------------------------------------------------------------------------
 void
-CWorker::CheckForAbort
-	(
+CWorker::CheckForAbort(
 #ifdef GPOS_FPSIMULATOR
-	const CHAR *szFile,
-	ULONG ulLine
+	const CHAR *szFile, ULONG ulLine
 #else
-	const CHAR *,
-	ULONG
-#endif // GPOS_FPSIMULATOR
-	)
+	const CHAR *, ULONG
+#endif  // GPOS_FPSIMULATOR
+)
 {
 	// check if there is a task assigned to worker,
 	// task is still running and CFA is not suspended
 	if (NULL != m_ptsk && m_ptsk->FRunning() && !m_ptsk->FAbortSuspended())
 	{
 		GPOS_ASSERT(!m_ptsk->Perrctxt()->FPending() &&
-		            "Check-For-Abort while an exception is pending");
+					"Check-For-Abort while an exception is pending");
 
 #ifdef GPOS_FPSIMULATOR
 		SimulateAbort(szFile, ulLine);
-#endif // GPOS_FPSIMULATOR
+#endif  // GPOS_FPSIMULATOR
 
-		if ((NULL != pfnAbortRequestedBySystem && pfnAbortRequestedBySystem()) ||
+		if ((NULL != pfnAbortRequestedBySystem &&
+			 pfnAbortRequestedBySystem()) ||
 			m_ptsk->FCanceled())
 		{
 			// raise exception
@@ -204,10 +200,10 @@ BOOL
 CWorker::FCheckStackSize(ULONG ulRequest) const
 {
 	ULONG_PTR ulptr = 0;
-	
+
 	// get current stack size
-	ULONG_PTR ulpSize = m_ulpStackStart - (ULONG_PTR)&ulptr;
-	
+	ULONG_PTR ulpSize = m_ulpStackStart - (ULONG_PTR) &ulptr;
+
 	// check if we have exceeded stack space
 	if (ulpSize >= m_cStackSize)
 	{
@@ -235,14 +231,11 @@ CWorker::FCheckStackSize(ULONG ulRequest) const
 //
 //---------------------------------------------------------------------------
 void
-CWorker::SimulateAbort
-	(
-	const CHAR *szFile,
-	ULONG ulLine
-	)
+CWorker::SimulateAbort(const CHAR *szFile, ULONG ulLine)
 {
 	if (m_ptsk->FTrace(EtraceSimulateAbort) &&
-		CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem, CException::ExmiAbort))
+		CFSimulator::Pfsim()->FNewStack(CException::ExmaSystem,
+										CException::ExmiAbort))
 	{
 		// GPOS_TRACE has CFA, disable simulation temporarily
 		m_ptsk->FTrace(EtraceSimulateAbort, false);
@@ -256,7 +249,7 @@ CWorker::SimulateAbort
 	}
 }
 
-#endif // GPOS_FPSIMULATOR
+#endif  // GPOS_FPSIMULATOR
 
 
 #ifdef GPOS_DEBUG
@@ -293,10 +286,12 @@ CWorker::CheckTimeSlice()
 	if (IWorker::m_fEnforceTimeSlices)
 	{
 		ULONG ulInterval = m_timerLastCA.UlElapsedMS();
-		
-		ULONG ulThreads = std::max((ULONG) 1, CWorkerPoolManager::Pwpm()->UlWorkersRunning());
-		
-		if (GPOS_CHECK_ABORT_MAX_INTERVAL_MSEC * ulThreads <= ulInterval && m_ptsk->FRunning())
+
+		ULONG ulThreads =
+			std::max((ULONG) 1, CWorkerPoolManager::Pwpm()->UlWorkersRunning());
+
+		if (GPOS_CHECK_ABORT_MAX_INTERVAL_MSEC * ulThreads <= ulInterval &&
+			m_ptsk->FRunning())
 		{
 			// get stack trace for last checkpoint
 			WCHAR wszBuffer[GPOS_STACK_TRACE_BUFFER_SIZE];
@@ -304,13 +299,8 @@ CWorker::CheckTimeSlice()
 			m_sdLastCA.AppendTrace(&str);
 
 			ResetTimeSlice();
-			GPOS_RAISE
-				(
-				CException::ExmaSystem,
-				CException::ExmiAbortTimeout,
-				ulInterval,
-				str.Wsz()
-				);
+			GPOS_RAISE(CException::ExmaSystem, CException::ExmiAbortTimeout,
+					   ulInterval, str.Wsz());
 		}
 	}
 }
@@ -341,11 +331,7 @@ CWorker::FOwnsSpinlocks() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CWorker::FCanAcquireSpinlock
-	(
-	const CSpinlockBase *pslock
-	)
-	const
+CWorker::FCanAcquireSpinlock(const CSpinlockBase *pslock) const
 {
 	GPOS_ASSERT(NULL != pslock);
 
@@ -363,10 +349,7 @@ CWorker::FCanAcquireSpinlock
 //
 //---------------------------------------------------------------------------
 void
-CWorker::RegisterSpinlock
-	(
-	CSpinlockBase *pslock
-	)
+CWorker::RegisterSpinlock(CSpinlockBase *pslock)
 {
 	// make sure this one can actually be acquired
 	GPOS_ASSERT(FCanAcquireSpinlock(pslock));
@@ -384,13 +367,10 @@ CWorker::RegisterSpinlock
 //
 //---------------------------------------------------------------------------
 void
-CWorker::UnregisterSpinlock
-	(
-	CSpinlockBase *pslock
-	)
+CWorker::UnregisterSpinlock(CSpinlockBase *pslock)
 {
 	m_listSlock.Remove(pslock);
-	
+
 	// must be able to re-acquire now
 	GPOS_ASSERT(FCanAcquireSpinlock(pslock));
 }
@@ -406,10 +386,7 @@ CWorker::UnregisterSpinlock
 //
 //---------------------------------------------------------------------------
 void
-CWorker::RegisterMutex
-	(
-	CMutexBase *pmutex
-	)
+CWorker::RegisterMutex(CMutexBase *pmutex)
 {
 	GPOS_ASSERT(NULL != pmutex);
 	GPOS_ASSERT(GPOS_OK != m_listMutex.EresFind(pmutex));
@@ -427,14 +404,11 @@ CWorker::RegisterMutex
 //
 //---------------------------------------------------------------------------
 void
-CWorker::UnregisterMutex
-	(
-	CMutexBase *pmutex
-	)
+CWorker::UnregisterMutex(CMutexBase *pmutex)
 {
 	GPOS_ASSERT(NULL != pmutex);
 	GPOS_ASSERT(GPOS_OK == m_listMutex.EresFind(pmutex));
-	
+
 	m_listMutex.Remove(pmutex);
 }
 
@@ -453,7 +427,6 @@ CWorker::FOwnsMutexes() const
 	return !m_listMutex.FEmpty();
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

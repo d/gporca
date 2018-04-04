@@ -29,15 +29,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarIdent::CParseHandlerScalarIdent
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_pdxlop(NULL)
+CParseHandlerScalarIdent::CParseHandlerScalarIdent(IMemoryPool *pmp,
+												   CParseHandlerManager *pphm,
+												   CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_pdxlop(NULL)
 {
 }
 
@@ -62,22 +57,22 @@ CParseHandlerScalarIdent::~CParseHandlerScalarIdent()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarIdent::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerScalarIdent::StartElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const,  // xmlszQname
+									   const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIdent), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarIdent), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// parse and create identifier operator
-	m_pdxlop = (CDXLScalarIdent *) CDXLOperatorFactory::PdxlopScalarIdent(m_pphm->Pmm(), attrs);
+	m_pdxlop = (CDXLScalarIdent *) CDXLOperatorFactory::PdxlopScalarIdent(
+		m_pphm->Pmm(), attrs);
 }
 
 //---------------------------------------------------------------------------
@@ -89,27 +84,26 @@ CParseHandlerScalarIdent::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarIdent::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarIdent::EndElement(const XMLCh *const,  // xmlszUri,
+									 const XMLCh *const xmlszLocalname,
+									 const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIdent), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarIdent), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// construct scalar ident node
 	GPOS_ASSERT(NULL != m_pdxlop);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp);
 	m_pdxln->SetOperator(m_pdxlop);
-			
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }
 
 // EOF
-

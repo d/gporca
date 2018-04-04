@@ -21,87 +21,83 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CJobQueue
-	//
-	//	@doc:
-	//		Forces unique execution of an operation assigned to many jobs.
-	//
-	//---------------------------------------------------------------------------
-	class CJobQueue
+//---------------------------------------------------------------------------
+//	@class:
+//		CJobQueue
+//
+//	@doc:
+//		Forces unique execution of an operation assigned to many jobs.
+//
+//---------------------------------------------------------------------------
+class CJobQueue
+{
+private:
+	// main job
+	volatile CJob *m_pj;
+
+	// flag indicating if main job has completed
+	volatile BOOL m_fCompleted;
+
+	// list of jobs waiting for main job to complete
+	CList<CJob> m_listjQueued;
+
+	// lock protecting queue
+	CSpinlockJobQueue m_slock;
+
+public:
+	// enum indicating job queueing result
+	enum EJobQueueResult
 	{
-		private:
+		EjqrMain = 0,
+		EjqrQueued,
+		EjqrCompleted
+	};
 
-			// main job
-			volatile CJob *m_pj;
+	// ctor
+	CJobQueue() : m_pj(NULL), m_fCompleted(false)
+	{
+		m_listjQueued.Init(GPOS_OFFSET(CJob, m_linkQueue));
+	}
 
-			// flag indicating if main job has completed
-			volatile BOOL m_fCompleted;
+	// dtor
+	~CJobQueue()
+	{
+		GPOS_ASSERT_IMP(NULL != ITask::PtskSelf() &&
+							!ITask::PtskSelf()->FPendingExc(),
+						m_listjQueued.FEmpty());
+	}
 
-			// list of jobs waiting for main job to complete
-			CList<CJob> m_listjQueued;
+	// reset job queue
+	void
+	Reset()
+	{
+		GPOS_ASSERT(m_listjQueued.FEmpty());
 
-			// lock protecting queue
-			CSpinlockJobQueue m_slock;
+		m_pj = NULL;
+		m_fCompleted = false;
+	}
 
-		public:
+	// add job as a waiter;
+	EJobQueueResult
+	EjqrAdd(CJob *pj);
 
-			// enum indicating job queueing result
-			enum EJobQueueResult
-			{
-				EjqrMain = 0,
-				EjqrQueued,
-				EjqrCompleted
-			};
-
-			// ctor
-			CJobQueue()
-				:
-				m_pj(NULL),
-				m_fCompleted(false)
-			{
-				m_listjQueued.Init(GPOS_OFFSET(CJob, m_linkQueue));
-			}
-
-			// dtor
-			~CJobQueue()
-			{
-				GPOS_ASSERT_IMP
-					(
-					NULL != ITask::PtskSelf() &&
-					!ITask::PtskSelf()->FPendingExc(),
-					m_listjQueued.FEmpty()
-					);
-			}
-
-			// reset job queue
-			void Reset()
-			{
-				GPOS_ASSERT(m_listjQueued.FEmpty());
-
-				m_pj = NULL;
-				m_fCompleted = false;
-			}
-
-			// add job as a waiter;
-			EJobQueueResult EjqrAdd(CJob *pj);
-
-			// notify waiting jobs of job completion
-			void NotifyCompleted(CSchedulerContext *psc);
+	// notify waiting jobs of job completion
+	void
+	NotifyCompleted(CSchedulerContext *psc);
 
 #ifdef GPOS_DEBUG
-			// print queue - not thread-safe
-			IOstream &OsPrintQueuedJobs(IOstream &);
-#endif // GPOS_DEBUG
+	// print queue - not thread-safe
+	IOstream &
+	OsPrintQueuedJobs(IOstream &);
+#endif  // GPOS_DEBUG
 
-	}; // class CJobQueue
+};  // class CJobQueue
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CJobQueue_H
+#endif  // !GPOPT_CJobQueue_H
 
 
 // EOF

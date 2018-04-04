@@ -30,13 +30,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalSequence::CPhysicalSequence
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CPhysical(pmp),
-	m_pcrsEmpty(NULL)
+CPhysicalSequence::CPhysicalSequence(IMemoryPool *pmp)
+	: CPhysical(pmp), m_pcrsEmpty(NULL)
 {
 	// Sequence generates two distribution requests for its children:
 	// (1) If incoming distribution from above is Singleton, pass it through
@@ -79,11 +74,7 @@ CPhysicalSequence::~CPhysicalSequence()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalSequence::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalSequence::FMatch(COperator *pop) const
 {
 	return Eopid() == pop->Eopid();
 }
@@ -97,23 +88,20 @@ CPhysicalSequence::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalSequence::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalSequence::PcrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								CColRefSet *pcrsRequired, ULONG ulChildIndex,
+								DrgPdp *,  // pdrgpdpCtxt
+								ULONG	  // ulOptReq
+)
 {
 	const ULONG ulArity = exprhdl.UlArity();
 	if (ulChildIndex == ulArity - 1)
 	{
 		// request required columns from the last child of the sequence
-		return PcrsChildReqd(pmp, exprhdl, pcrsRequired, ulChildIndex, ULONG_MAX);
+		return PcrsChildReqd(pmp, exprhdl, pcrsRequired, ulChildIndex,
+							 ULONG_MAX);
 	}
-	
+
 	m_pcrsEmpty->AddRef();
 	GPOS_ASSERT(0 == m_pcrsEmpty->CElements());
 
@@ -129,19 +117,17 @@ CPhysicalSequence::PcrsRequired
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalSequence::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, //pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
+CPhysicalSequence::PppsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								CPartitionPropagationSpec *pppsRequired,
+								ULONG ulChildIndex,
+								DrgPdp *,  //pdrgpdpCtxt,
+								ULONG	  //ulOptReq
+)
 {
 	GPOS_ASSERT(NULL != pppsRequired);
-	
-	return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired, ulChildIndex);
+
+	return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired,
+											   ulChildIndex);
 }
 
 //---------------------------------------------------------------------------
@@ -153,16 +139,11 @@ CPhysicalSequence::PppsRequired
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CPhysicalSequence::PcteRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CCTEReq *pcter,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
-	const
+CPhysicalSequence::PcteRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+								CCTEReq *pcter, ULONG ulChildIndex,
+								DrgPdp *pdrgpdpCtxt,
+								ULONG  //ulOptReq
+								) const
 {
 	GPOS_ASSERT(NULL != pcter);
 	if (ulChildIndex < exprhdl.UlArity() - 1)
@@ -174,7 +155,8 @@ CPhysicalSequence::PcteRequired
 	CCTEMap *pcmCombined = PcmCombine(pmp, pdrgpdpCtxt);
 
 	// pass the remaining requirements that have not been resolved
-	CCTEReq *pcterUnresolved = pcter->PcterUnresolvedSequence(pmp, pcmCombined, pdrgpdpCtxt);
+	CCTEReq *pcterUnresolved =
+		pcter->PcterUnresolvedSequence(pmp, pcmCombined, pdrgpdpCtxt);
 	pcmCombined->Release();
 
 	return pcterUnresolved;
@@ -189,20 +171,17 @@ CPhysicalSequence::PcteRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalSequence::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSequence::FProvidesReqdCols(CExpressionHandle &exprhdl,
+									 CColRefSet *pcrsRequired,
+									 ULONG  // ulOptReq
+									 ) const
 {
 	GPOS_ASSERT(NULL != pcrsRequired);
 
 	// last child must provide required columns
 	ULONG ulArity = exprhdl.UlArity();
 	GPOS_ASSERT(0 < ulArity);
-	
+
 	CColRefSet *pcrsChild = exprhdl.Pdprel(ulArity - 1)->PcrsOutput();
 
 	return pcrsChild->FSubset(pcrsRequired);
@@ -217,20 +196,15 @@ CPhysicalSequence::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalSequence::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &
+CPhysicalSequence::PdsRequired(IMemoryPool *pmp,
+							   CExpressionHandle &
 #ifdef GPOS_DEBUG
-	exprhdl
-#endif // GPOS_DEBUG
-	,
-	CDistributionSpec *pdsRequired,
-	ULONG  ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG  ulOptReq
-	)
-	const
+								   exprhdl
+#endif  // GPOS_DEBUG
+							   ,
+							   CDistributionSpec *pdsRequired,
+							   ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+							   ULONG ulOptReq) const
 {
 	GPOS_ASSERT(2 == exprhdl.UlArity());
 	GPOS_ASSERT(ulChildIndex < exprhdl.UlArity());
@@ -242,7 +216,8 @@ CPhysicalSequence::PdsRequired
 			CDistributionSpec::EdtStrictSingleton == pdsRequired->Edt())
 		{
 			// incoming request is a singleton, request singleton on all children
-			CDistributionSpecSingleton *pdss = CDistributionSpecSingleton::PdssConvert(pdsRequired);
+			CDistributionSpecSingleton *pdss =
+				CDistributionSpecSingleton::PdssConvert(pdsRequired);
 			return GPOS_NEW(pmp) CDistributionSpecSingleton(pdss->Est());
 		}
 
@@ -264,7 +239,8 @@ CPhysicalSequence::PdsRequired
 	if (pds->FSingletonOrStrictSingleton())
 	{
 		// first child is singleton, request singleton distribution on second child
-		CDistributionSpecSingleton *pdss = CDistributionSpecSingleton::PdssConvert(pds);
+		CDistributionSpecSingleton *pdss =
+			CDistributionSpecSingleton::PdssConvert(pds);
 		return GPOS_NEW(pmp) CDistributionSpecSingleton(pdss->Est());
 	}
 
@@ -288,16 +264,13 @@ CPhysicalSequence::PdsRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalSequence::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl,
-	COrderSpec * ,// posRequired,
-	ULONG , // ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSequence::PosRequired(IMemoryPool *pmp,
+							   CExpressionHandle &,  // exprhdl,
+							   COrderSpec *,		 // posRequired,
+							   ULONG,				 // ulChildIndex,
+							   DrgPdp *,			 // pdrgpdpCtxt
+							   ULONG				 // ulOptReq
+							   ) const
 {
 	// no order requirement on the children
 	return GPOS_NEW(pmp) COrderSpec(pmp);
@@ -312,16 +285,13 @@ CPhysicalSequence::PosRequired
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalSequence::PrsRequired
-	(
-	IMemoryPool *, // pmp,
-	CExpressionHandle &, // exprhdl,
-	CRewindabilitySpec *, // prsRequired,
-	ULONG , // ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSequence::PrsRequired(IMemoryPool *,		  // pmp,
+							   CExpressionHandle &,   // exprhdl,
+							   CRewindabilitySpec *,  // prsRequired,
+							   ULONG,				  // ulChildIndex,
+							   DrgPdp *,			  // pdrgpdpCtxt
+							   ULONG				  // ulOptReq
+							   ) const
 {
 	// no rewindability required on the children
 	return GPOS_NEW(m_pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone);
@@ -336,18 +306,14 @@ CPhysicalSequence::PrsRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalSequence::PosDerive
-	(
-	IMemoryPool *, // pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalSequence::PosDerive(IMemoryPool *,  // pmp,
+							 CExpressionHandle &exprhdl) const
 {
 	// pass through sort order from last child
 	const ULONG ulArity = exprhdl.UlArity();
-	
+
 	GPOS_ASSERT(1 <= ulArity);
-	
+
 	COrderSpec *pos = exprhdl.Pdpplan(ulArity - 1 /*ulChildIndex*/)->Pos();
 	pos->AddRef();
 
@@ -363,19 +329,16 @@ CPhysicalSequence::PosDerive
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalSequence::PdsDerive
-	(
-	IMemoryPool *, // pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalSequence::PdsDerive(IMemoryPool *,  // pmp,
+							 CExpressionHandle &exprhdl) const
 {
 	// pass through distribution from last child
 	const ULONG ulArity = exprhdl.UlArity();
-	
+
 	GPOS_ASSERT(1 <= ulArity);
-	
-	CDistributionSpec *pds = exprhdl.Pdpplan(ulArity - 1 /*ulChildIndex*/)->Pds();
+
+	CDistributionSpec *pds =
+		exprhdl.Pdpplan(ulArity - 1 /*ulChildIndex*/)->Pds();
 	pds->AddRef();
 
 	return pds;
@@ -391,15 +354,13 @@ CPhysicalSequence::PdsDerive
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalSequence::PrsDerive
-	(
-	IMemoryPool *, // pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalSequence::PrsDerive(IMemoryPool *,		  // pmp,
+							 CExpressionHandle &  // exprhdl
+							 ) const
 {
 	// no rewindability by sequence
-	return GPOS_NEW(m_pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
+	return GPOS_NEW(m_pmp)
+		CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
 }
 
 
@@ -412,12 +373,8 @@ CPhysicalSequence::PrsDerive
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalSequence::EpetOrder
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalSequence::EpetOrder(CExpressionHandle &exprhdl,
+							 const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 
@@ -444,12 +401,9 @@ CPhysicalSequence::EpetOrder
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalSequence::EpetRewindability
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdRewindability * // per
-	)
-	const
+CPhysicalSequence::EpetRewindability(CExpressionHandle &,		 // exprhdl
+									 const CEnfdRewindability *  // per
+									 ) const
 {
 	// rewindability must be enforced on operator's output
 	return CEnfdProp::EpetRequired;

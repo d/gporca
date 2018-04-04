@@ -20,55 +20,48 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerExternalScan
-	//
-	//	@doc:
-	//		Parse handler for parsing external scan operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerExternalScan : public CParseHandlerTableScan
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerExternalScan
+//
+//	@doc:
+//		Parse handler for parsing external scan operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerExternalScan : public CParseHandlerTableScan
+{
+private:
+	// private copy ctor
+	CParseHandlerExternalScan(const CParseHandlerExternalScan &);
 
-			// private copy ctor
-			CParseHandlerExternalScan(const CParseHandlerExternalScan &);
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			virtual
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			virtual
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerExternalScan(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerExternalScan
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerExternalScan_H
+#endif  // !GPDXL_CParseHandlerExternalScan_H
 
 // EOF

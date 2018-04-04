@@ -13,34 +13,32 @@
 
 namespace gpnaucrates
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CPointTest
+//
+//	@doc:
+//		Static unit tests for point
+//
+//---------------------------------------------------------------------------
+class CPointTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPointTest
-	//
-	//	@doc:
-	//		Static unit tests for point
-	//
-	//---------------------------------------------------------------------------
-	class CPointTest
-	{
-		public:
+	// point related tests
+	static GPOS_RESULT
+	EresUnittest_CPointInt4();
 
-			// unittests
-			static
-			GPOS_RESULT EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_CPointBool();
 
-			// point related tests
-			static
-			GPOS_RESULT EresUnittest_CPointInt4();
+};  // class CPointTest
+}  // namespace gpnaucrates
 
-			static
-			GPOS_RESULT EresUnittest_CPointBool();
-
-	}; // class CPointTest
-}
-
-#endif // !GPNAUCRATES_CPointTest_H
+#endif  // !GPNAUCRATES_CPointTest_H
 
 
 // EOF

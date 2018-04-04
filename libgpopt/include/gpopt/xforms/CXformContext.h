@@ -15,56 +15,49 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformContext
-	//
-	//	@doc:
-	//		context container
-	//
-	//---------------------------------------------------------------------------
-	class CXformContext : public CRefCount
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformContext
+//
+//	@doc:
+//		context container
+//
+//---------------------------------------------------------------------------
+class CXformContext : public CRefCount
+{
+private:
+	// Memory pool
+	IMemoryPool *m_pmp;
+
+	// private copy ctor
+	CXformContext(const CXformContext &);
+
+public:
+	// ctor
+	explicit CXformContext(IMemoryPool *pmp) : m_pmp(pmp)
 	{
+	}
 
-		private:
-
-			// Memory pool
-			IMemoryPool *m_pmp;
-
-			// private copy ctor
-			CXformContext(const CXformContext &);
-
-		public:
-		
-			// ctor
-			explicit
-			CXformContext
-				(
-				IMemoryPool *pmp
-				)
-				: 
-				m_pmp(pmp)
-			{
-			}
-
-			// dtor
-			~CXformContext() {}
+	// dtor
+	~CXformContext()
+	{
+	}
 
 
-			// accessor
-			inline
-			IMemoryPool *Pmp() const
-			{
-				return m_pmp;
-			}
+	// accessor
+	inline IMemoryPool *
+	Pmp() const
+	{
+		return m_pmp;
+	}
 
-	}; // class CXformContext
+};  // class CXformContext
 
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CXformContext_H
+#endif  // !GPOPT_CXformContext_H
 
 // EOF

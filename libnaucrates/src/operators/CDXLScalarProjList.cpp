@@ -25,12 +25,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarProjList::CDXLScalarProjList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarProjList::CDXLScalarProjList(IMemoryPool *pmp) : CDXLScalar(pmp)
 {
 }
 
@@ -73,17 +68,15 @@ CDXLScalarProjList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarProjList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarProjList::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -96,19 +89,15 @@ CDXLScalarProjList::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarProjList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren 
-	) 
-	const
+CDXLScalarProjList::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
 		GPOS_ASSERT(EdxlopScalarProjectElem == pdxlnChild->Pdxlop()->Edxlop());
-		
+
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
@@ -116,7 +105,7 @@ CDXLScalarProjList::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

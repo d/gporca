@@ -16,104 +16,89 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPattern
-	//
-	//	@doc:
-	//		base class for all pattern operators
-	//
-	//---------------------------------------------------------------------------
-	class CPattern : public COperator
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CPattern
+//
+//	@doc:
+//		base class for all pattern operators
+//
+//---------------------------------------------------------------------------
+class CPattern : public COperator
+{
+private:
+	// private copy ctor
+	CPattern(const CPattern &);
+
+public:
+	// ctor
+	explicit CPattern(IMemoryPool *pmp) : COperator(pmp)
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CPattern()
+	{
+	}
 
-			// private copy ctor
-			CPattern(const CPattern &);
+	// type of operator
+	virtual BOOL
+	FPattern() const
+	{
+		GPOS_ASSERT(!FPhysical() && !FScalar() && !FLogical());
+		return true;
+	}
 
-		public:
-		
-			// ctor
-			explicit
-			CPattern
-				(
-				IMemoryPool *pmp
-				)
-				: 
-				COperator(pmp)
-			{}
+	// create derived properties container
+	virtual CDrvdProp *
+	PdpCreate(IMemoryPool *pmp) const;
 
-			// dtor
-			virtual 
-			~CPattern() {}
+	// create required properties container
+	virtual CReqdProp *
+	PrpCreate(IMemoryPool *pmp) const;
 
-			// type of operator
-			virtual
-			BOOL FPattern() const
-			{
-				GPOS_ASSERT(!FPhysical() && !FScalar() && !FLogical());
-				return true;
-			}
+	// match function
+	BOOL
+	FMatch(COperator *) const;
 
-			// create derived properties container
-			virtual
-			CDrvdProp *PdpCreate(IMemoryPool *pmp) const;
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const;
 
-			// create required properties container
-			virtual
-			CReqdProp *PrpCreate(IMemoryPool *pmp) const;
-						
-			// match function
-			BOOL FMatch(COperator *) const;
-			
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const;
+	// check if operator is a pattern leaf
+	virtual BOOL
+	FLeaf() const = 0;
 
-			// check if operator is a pattern leaf
-			virtual
-			BOOL FLeaf() const = 0;
-			
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *pmp,
-						HMUlCr *phmulcr,
-						BOOL fMustExist
-						);
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// conversion function
-			static
-			CPattern *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(pop->FPattern());
+	// conversion function
+	static CPattern *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(pop->FPattern());
 
-				return reinterpret_cast<CPattern*>(pop);
-			}
+		return reinterpret_cast<CPattern *>(pop);
+	}
 
-			// helper to check multi-node pattern
-			static
-			BOOL FMultiNode
-				(
-				COperator *pop
-				)
-			{
-				return COperator::EopPatternMultiLeaf == pop->Eopid() ||
-					COperator::EopPatternMultiTree == pop->Eopid();
-			}
+	// helper to check multi-node pattern
+	static BOOL
+	FMultiNode(COperator *pop)
+	{
+		return COperator::EopPatternMultiLeaf == pop->Eopid() ||
+			   COperator::EopPatternMultiTree == pop->Eopid();
+	}
 
-	}; // class CPattern
+};  // class CPattern
 
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CPattern_H
+#endif  // !GPOPT_CPattern_H
 
 // EOF

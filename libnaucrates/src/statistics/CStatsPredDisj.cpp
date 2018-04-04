@@ -23,13 +23,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CStatsPredDisj::CStatsPredDisj
-	(
-	DrgPstatspred *pdrgpstatspred
-	)
-	:
-	CStatsPred(ULONG_MAX),
-	m_pdrgpstatspred(pdrgpstatspred)
+CStatsPredDisj::CStatsPredDisj(DrgPstatspred *pdrgpstatspred)
+	: CStatsPred(ULONG_MAX), m_pdrgpstatspred(pdrgpstatspred)
 {
 	GPOS_ASSERT(NULL != pdrgpstatspred);
 	m_ulColId = CStatisticsUtils::UlColId(pdrgpstatspred);
@@ -44,11 +39,7 @@ CStatsPredDisj::CStatsPredDisj
 //
 //---------------------------------------------------------------------------
 CStatsPred *
-CStatsPredDisj::Pstatspred
-	(
-	ULONG ulPos
-	)
-	const
+CStatsPredDisj::Pstatspred(ULONG ulPos) const
 {
 	return (*m_pdrgpstatspred)[ulPos];
 }

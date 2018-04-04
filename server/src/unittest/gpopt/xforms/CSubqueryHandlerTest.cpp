@@ -27,17 +27,16 @@
 #include "naucrates/md/CMDIdGPDB.h"
 #include "unittest/gpopt/CTestUtils.h"
 
-ULONG CSubqueryHandlerTest::m_ulSubqueryHandlerMinidumpTestCounter = 0;  // start from first test
+ULONG CSubqueryHandlerTest::m_ulSubqueryHandlerMinidumpTestCounter =
+	0;  // start from first test
 
 // minidump files
-const CHAR *rgszSubqueryHandlerMinidumpFileNames[] =
-	{
-		"../data/dxl/minidump/SemiJoinWithWindowsFuncInSubquery.mdp",
-		"../data/dxl/minidump/CorrelatedSubqueryWithAggWindowFunc.mdp",
-		"../data/dxl/minidump/AllSubqueryWithSubqueryInScalar.mdp",
-		"../data/dxl/minidump/AnySubqueryWithAllSubqueryInScalar.mdp",
-		"../data/dxl/minidump/AnySubqueryWithSubqueryInScalar.mdp"
-	};
+const CHAR *rgszSubqueryHandlerMinidumpFileNames[] = {
+	"../data/dxl/minidump/SemiJoinWithWindowsFuncInSubquery.mdp",
+	"../data/dxl/minidump/CorrelatedSubqueryWithAggWindowFunc.mdp",
+	"../data/dxl/minidump/AllSubqueryWithSubqueryInScalar.mdp",
+	"../data/dxl/minidump/AnySubqueryWithAllSubqueryInScalar.mdp",
+	"../data/dxl/minidump/AnySubqueryWithSubqueryInScalar.mdp"};
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -50,16 +49,16 @@ const CHAR *rgszSubqueryHandlerMinidumpFileNames[] =
 GPOS_RESULT
 CSubqueryHandlerTest::EresUnittest()
 {
-
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CSubqueryHandlerTest::EresUnittest_Subquery2Apply),
-		GPOS_UNITTEST_FUNC(CSubqueryHandlerTest::EresUnittest_SubqueryWithDisjunction),
+		GPOS_UNITTEST_FUNC(
+			CSubqueryHandlerTest::EresUnittest_SubqueryWithDisjunction),
 		GPOS_UNITTEST_FUNC(CSubqueryHandlerTest::EresUnittest_RunMinidumpTests),
 #ifdef GPOS_DEBUG
-		GPOS_UNITTEST_FUNC_ASSERT(CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries),
-#endif // GPOS_DEBUG
-		};
+		GPOS_UNITTEST_FUNC_ASSERT(
+			CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries),
+#endif  // GPOS_DEBUG
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -68,14 +67,13 @@ CSubqueryHandlerTest::EresUnittest()
 GPOS_RESULT
 CSubqueryHandlerTest::EresUnittest_RunMinidumpTests()
 {
-	return CTestUtils::EresUnittest_RunTestsWithoutAdditionalTraceFlags
-						(
-						rgszSubqueryHandlerMinidumpFileNames,
-						&m_ulSubqueryHandlerMinidumpTestCounter,
-						GPOS_ARRAY_SIZE(rgszSubqueryHandlerMinidumpFileNames),
-						true, /* fMatchPlans */
-						true /* fTestSpacePruning */
-						);
+	return CTestUtils::EresUnittest_RunTestsWithoutAdditionalTraceFlags(
+		rgszSubqueryHandlerMinidumpFileNames,
+		&m_ulSubqueryHandlerMinidumpTestCounter,
+		GPOS_ARRAY_SIZE(rgszSubqueryHandlerMinidumpFileNames),
+		true, /* fMatchPlans */
+		true  /* fTestSpacePruning */
+	);
 }
 
 //---------------------------------------------------------------------------
@@ -96,10 +94,9 @@ CSubqueryHandlerTest::EresUnittest_Subquery2Apply()
 	CMDProviderMemory *pmdp = CTestUtils::m_pmdpf;
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
-	
-	typedef CExpression *(*Pfpexpr)(IMemoryPool*, BOOL);
-	Pfpexpr rgpf[] =
-		{
+
+	typedef CExpression *(*Pfpexpr)(IMemoryPool *, BOOL);
+	Pfpexpr rgpf[] = {
 		CSubqueryTestUtils::PexprSelectWithAggSubquery,
 		CSubqueryTestUtils::PexprSelectWithAggSubqueryConstComparison,
 		CSubqueryTestUtils::PexprProjectWithAggSubquery,
@@ -129,7 +126,7 @@ CSubqueryHandlerTest::EresUnittest_Subquery2Apply()
 		CSubqueryTestUtils::PexprUndecorrelatableExistsSubquery,
 		CSubqueryTestUtils::PexprUndecorrelatableNotExistsSubquery,
 		CSubqueryTestUtils::PexprUndecorrelatableScalarSubquery,
-		};
+	};
 
 	// xforms to test
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
@@ -144,31 +141,27 @@ CSubqueryHandlerTest::EresUnittest_Subquery2Apply()
 	{
 		ULONG ulIndex = ul / 2;
 		// install opt context in TLS
-		CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL,  /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
+		CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+						 CTestUtils::Pcm(pmp));
 
 		// generate expression
 		CExpression *pexpr = rgpf[ulIndex](pmp, fCorrelated);
-		
+
 		// check for subq xforms
-		CXformSet *pxfsCand = CLogical::PopConvert(pexpr->Pop())->PxfsCandidates(pmp);
+		CXformSet *pxfsCand =
+			CLogical::PopConvert(pexpr->Pop())->PxfsCandidates(pmp);
 		pxfsCand->Intersection(pxfs);
-		
+
 		CXformSetIter xsi(*pxfsCand);
 		while (xsi.FAdvance())
-		{			
+		{
 			CXform *pxform = CXformFactory::Pxff()->Pxf(xsi.TBit());
 			GPOS_ASSERT(NULL != pxform);
 
 			CWStringDynamic str(pmp);
 			COstreamString oss(&str);
 
-			oss	<< std::endl << "INPUT:" << std::endl << *pexpr << std::endl;
+			oss << std::endl << "INPUT:" << std::endl << *pexpr << std::endl;
 
 			CXformContext *pxfctxt = GPOS_NEW(pmp) CXformContext(pmp);
 			CXformResult *pxfres = GPOS_NEW(pmp) CXformResult(pmp);
@@ -177,7 +170,7 @@ CSubqueryHandlerTest::EresUnittest_Subquery2Apply()
 			pxform->Transform(pxfctxt, pxfres, pexpr);
 			CExpression *pexprResult = pxfres->PexprNext();
 
-			oss	<< std::endl << "OUTPUT:" << std::endl;
+			oss << std::endl << "OUTPUT:" << std::endl;
 			if (NULL != pexprResult)
 			{
 				oss << *pexprResult << std::endl;
@@ -193,7 +186,7 @@ CSubqueryHandlerTest::EresUnittest_Subquery2Apply()
 			pxfres->Release();
 			pxfctxt->Release();
 		}
-		
+
 		pxfsCand->Release();
 		pexpr->Release();
 		fCorrelated = !fCorrelated;
@@ -221,17 +214,15 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries()
 	// setup a file-based provider
 	CMDProviderMemory *pmdp = CTestUtils::m_pmdpf;
 	pmdp->AddRef();
-	
+
 	// we need to use an auto pointer for the cache here to ensure
 	// deleting memory of cached objects when we throw
 	CAutoP<CMDAccessor::MDCache> apcache;
-	apcache = CCacheFactory::PCacheCreate<gpopt::IMDCacheObject*, gpopt::CMDKey*>
-					(
-					true, // fUnique
-					0 /* unlimited cache quota */,
-					CMDKey::UlHashMDKey,
-					CMDKey::FEqualMDKey
-					);
+	apcache =
+		CCacheFactory::PCacheCreate<gpopt::IMDCacheObject *, gpopt::CMDKey *>(
+			true,  // fUnique
+			0 /* unlimited cache quota */, CMDKey::UlHashMDKey,
+			CMDKey::FEqualMDKey);
 
 	CMDAccessor::MDCache *pcache = apcache.Pt();
 
@@ -239,27 +230,25 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries()
 		CMDAccessor mda(pmp, pcache, CTestUtils::m_sysidDefault, pmdp);
 
 		// install opt context in TLS
-		CAutoOptCtxt aoc
-						(
-						pmp,
-						&mda,
-						NULL,  /* pceeval */
-						CTestUtils::Pcm(pmp)
-						);
+		CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+						 CTestUtils::Pcm(pmp));
 
 		// create a subquery with const table get expression
-		CExpression *pexpr = CSubqueryTestUtils::PexprSubqueryWithDisjunction(pmp);
+		CExpression *pexpr =
+			CSubqueryTestUtils::PexprSubqueryWithDisjunction(pmp);
 		CXform *pxform = CXformFactory::Pxff()->Pxf(CXform::ExfSelect2Apply);
 
 		CWStringDynamic str(pmp);
 		COstreamString oss(&str);
 
-		oss	<< std::endl << "EXPRESSION:" << std::endl << *pexpr << std::endl;
+		oss << std::endl << "EXPRESSION:" << std::endl << *pexpr << std::endl;
 
 		CExpression *pexprLogical = (*pexpr)[0];
 		CExpression *pexprScalar = (*pexpr)[1];
-		oss	<< std::endl << "LOGICAL:" << std::endl << *pexprLogical << std::endl;
-		oss	<< std::endl << "SCALAR:" << std::endl << *pexprScalar << std::endl;
+		oss << std::endl
+			<< "LOGICAL:" << std::endl
+			<< *pexprLogical << std::endl;
+		oss << std::endl << "SCALAR:" << std::endl << *pexprScalar << std::endl;
 
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
@@ -271,9 +260,13 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries()
 		// xform must fail since we do not expect constant subqueries
 		pxform->Transform(pxfctxt, pxfres, pexpr);
 		CExpression *pexprResult = pxfres->PexprNext();
-		
-		oss	<< std::endl << "NEW LOGICAL:" << std::endl << *((*pexprResult)[0]) << std::endl;
-		oss	<< std::endl << "RESIDUAL SCALAR:" << std::endl << *((*pexprResult)[1]) << std::endl;
+
+		oss << std::endl
+			<< "NEW LOGICAL:" << std::endl
+			<< *((*pexprResult)[0]) << std::endl;
+		oss << std::endl
+			<< "RESIDUAL SCALAR:" << std::endl
+			<< *((*pexprResult)[1]) << std::endl;
 
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
@@ -281,7 +274,6 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithConstSubqueries()
 		pxfres->Release();
 		pxfctxt->Release();
 		pexpr->Release();
-	
 	}
 
 	return GPOS_FAILED;
@@ -307,35 +299,32 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithDisjunction()
 	pmdp->AddRef();
 	CMDAccessor mda(pmp, CMDCache::Pcache());
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
-	
+
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-					(
-					pmp,
-					&mda,
-					NULL,  /* pceeval */
-					CTestUtils::Pcm(pmp)
-					);
-		
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
+
 	// create a subquery with const table get expression
 
 	CExpression *pexprOuter = NULL;
 	CExpression *pexprInner = NULL;
 	CSubqueryTestUtils::GenerateGetExpressions(pmp, &pexprOuter, &pexprInner);
 
-	CExpression *pexpr = CSubqueryTestUtils::PexprSelectWithSubqueryBoolOp(pmp, pexprOuter, pexprInner, true /*fCorrelated*/, CScalarBoolOp::EboolopOr);
-	
+	CExpression *pexpr = CSubqueryTestUtils::PexprSelectWithSubqueryBoolOp(
+		pmp, pexprOuter, pexprInner, true /*fCorrelated*/,
+		CScalarBoolOp::EboolopOr);
+
 	CXform *pxform = CXformFactory::Pxff()->Pxf(CXform::ExfSelect2Apply);
 
 	CWStringDynamic str(pmp);
 	COstreamString oss(&str);
 
-	oss	<< std::endl << "EXPRESSION:" << std::endl << *pexpr << std::endl;
+	oss << std::endl << "EXPRESSION:" << std::endl << *pexpr << std::endl;
 
 	CExpression *pexprLogical = (*pexpr)[0];
 	CExpression *pexprScalar = (*pexpr)[1];
-	oss	<< std::endl << "LOGICAL:" << std::endl << *pexprLogical << std::endl;
-	oss	<< std::endl << "SCALAR:" << std::endl << *pexprScalar << std::endl;
+	oss << std::endl << "LOGICAL:" << std::endl << *pexprLogical << std::endl;
+	oss << std::endl << "SCALAR:" << std::endl << *pexprScalar << std::endl;
 
 	GPOS_TRACE(str.Wsz());
 	str.Reset();
@@ -346,9 +335,13 @@ CSubqueryHandlerTest::EresUnittest_SubqueryWithDisjunction()
 	// calling the xform to perform subquery to Apply transformation
 	pxform->Transform(pxfctxt, pxfres, pexpr);
 	CExpression *pexprResult = pxfres->PexprNext();
-	
-	oss	<< std::endl << "NEW LOGICAL:" << std::endl << *((*pexprResult)[0]) << std::endl;
-	oss	<< std::endl << "RESIDUAL SCALAR:" << std::endl << *((*pexprResult)[1]) << std::endl;
+
+	oss << std::endl
+		<< "NEW LOGICAL:" << std::endl
+		<< *((*pexprResult)[0]) << std::endl;
+	oss << std::endl
+		<< "RESIDUAL SCALAR:" << std::endl
+		<< *((*pexprResult)[1]) << std::endl;
 
 	GPOS_TRACE(str.Wsz());
 	str.Reset();

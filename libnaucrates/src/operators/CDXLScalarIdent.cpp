@@ -29,14 +29,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarIdent::CDXLScalarIdent
-	(
-	IMemoryPool *pmp,
-	CDXLColRef *pdxlcr
-	)
-	:
-	CDXLScalar(pmp),
-	m_pdxlcr(pdxlcr)
+CDXLScalarIdent::CDXLScalarIdent(IMemoryPool *pmp, CDXLColRef *pdxlcr)
+	: CDXLScalar(pmp), m_pdxlcr(pdxlcr)
 {
 	GPOS_ASSERT(NULL != m_pdxlcr);
 }
@@ -127,32 +121,33 @@ CDXLScalarIdent::ITypeModifier() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarIdent::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarIdent::SerializeToDXL(CXMLSerializer *pxmlser,
+								const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-		
-	// add col name and col id
-	const CWStringConst *strCName = (m_pdxlcr->Pmdname())->Pstr(); 
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_pdxlcr->UlID());
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
+	// add col name and col id
+	const CWStringConst *strCName = (m_pdxlcr->Pmdname())->Pstr();
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId),
+						  m_pdxlcr->UlID());
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColName), strCName);
-	m_pdxlcr->PmdidType()->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
+	m_pdxlcr->PmdidType()->Serialize(pxmlser,
+									 CDXLTokens::PstrToken(EdxltokenTypeId));
 
 	if (IDefaultTypeModifier != ITypeModifier())
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod), ITypeModifier());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod),
+							  ITypeModifier());
 	}
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);	
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -164,11 +159,7 @@ CDXLScalarIdent::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarIdent::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarIdent::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pdxlcr->PmdidType())->Eti());
 }
@@ -183,17 +174,14 @@ CDXLScalarIdent::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarIdent::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren 
-	) 
-	const
+CDXLScalarIdent::AssertValid(const CDXLNode *pdxln,
+							 BOOL  // fValidateChildren
+							 ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 	GPOS_ASSERT(m_pdxlcr->PmdidType()->FValid());
 	GPOS_ASSERT(NULL != m_pdxlcr);
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

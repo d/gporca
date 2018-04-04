@@ -30,15 +30,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerStatistics::CParseHandlerStatistics
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdrgpdxlstatsderrel(NULL)
+CParseHandlerStatistics::CParseHandlerStatistics(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pdrgpdxlstatsderrel(NULL)
 {
 }
 
@@ -94,15 +89,13 @@ CParseHandlerStatistics::Pdrgpdxlstatsderrel() const
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStatistics::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerStatistics::StartElement(const XMLCh *const xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const xmlszQname,
+									  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenStatistics)))
+	if (0 == XMLString::compareString(
+				 xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenStatistics)))
 	{
 		// start of the statistics section in the DXL document
 		GPOS_ASSERT(NULL == m_pdrgpdxlstatsderrel);
@@ -115,7 +108,8 @@ CParseHandlerStatistics::StartElement
 		GPOS_ASSERT(NULL != m_pdrgpdxlstatsderrel);
 
 		// install a parse handler for the given element
-		CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+		CParseHandlerBase *pph =
+			CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
 
 		m_pphm->ActivateParseHandler(pph);
 
@@ -135,16 +129,16 @@ CParseHandlerStatistics::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerStatistics::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerStatistics::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenStatistics)))
+	if (0 != XMLString::compareString(
+				 xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenStatistics)))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -153,7 +147,8 @@ CParseHandlerStatistics::EndElement
 	const ULONG ulStats = this->UlLength();
 	for (ULONG ul = 0; ul < ulStats; ul++)
 	{
-		CParseHandlerStatsDerivedRelation *pph = dynamic_cast<CParseHandlerStatsDerivedRelation *>((*this)[ul]);
+		CParseHandlerStatsDerivedRelation *pph =
+			dynamic_cast<CParseHandlerStatsDerivedRelation *>((*this)[ul]);
 
 		CDXLStatsDerivedRelation *pdxlstatsderrel = pph->Pdxlstatsderrel();
 		pdxlstatsderrel->AddRef();

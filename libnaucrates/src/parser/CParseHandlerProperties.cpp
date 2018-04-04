@@ -27,16 +27,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerProperties::CParseHandlerProperties
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdxlprop(NULL),
-	m_pdxlstatsderrel(NULL)
+CParseHandlerProperties::CParseHandlerProperties(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot),
+	  m_pdxlprop(NULL),
+	  m_pdxlstatsderrel(NULL)
 {
 }
 
@@ -78,29 +74,32 @@ CParseHandlerProperties::Pdxlprop() const
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerProperties::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerProperties::StartElement(const XMLCh *const xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const xmlszQname,
+									  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenProperties), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenProperties), xmlszLocalname))
 	{
 		// create and install cost and output column parsers
-		CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenCost), m_pphm, this);
+		CParseHandlerBase *pph = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenCost), m_pphm, this);
 		m_pphm->ActivateParseHandler(pph);
 
 		// store parse handler
 		this->Append(pph);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation), xmlszLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation),
+					  xmlszLocalname))
 	{
 		GPOS_ASSERT(1 == this->UlLength());
 
 		// create and install derived relation statistics parsers
-		CParseHandlerBase *pphStats = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation), m_pphm, this);
+		CParseHandlerBase *pphStats = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenStatsDerivedRelation),
+			m_pphm, this);
 		m_pphm->ActivateParseHandler(pphStats);
 
 		// store parse handler
@@ -110,7 +109,8 @@ CParseHandlerProperties::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -124,30 +124,31 @@ CParseHandlerProperties::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerProperties::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerProperties::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenProperties), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenProperties), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	GPOS_ASSERT((1 == this->UlLength()) || (2 == this->UlLength()));
-	
+
 	// assemble the properties container from the cost
 	CParseHandlerCost *pph = dynamic_cast<CParseHandlerCost *>((*this)[0]);
 
 	CDXLOperatorCost *pdxlopcost = pph->Pdxlopcost();
 	pdxlopcost->AddRef();
-	
+
 	if (2 == this->UlLength())
 	{
-		CParseHandlerStatsDerivedRelation *pphStats = dynamic_cast<CParseHandlerStatsDerivedRelation *>((*this)[1]);
+		CParseHandlerStatsDerivedRelation *pphStats =
+			dynamic_cast<CParseHandlerStatsDerivedRelation *>((*this)[1]);
 
 		CDXLStatsDerivedRelation *pdxlstatsderrel = pphStats->Pdxlstatsderrel();
 		pdxlstatsderrel->AddRef();
@@ -161,4 +162,3 @@ CParseHandlerProperties::EndElement
 }
 
 // EOF
-

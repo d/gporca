@@ -13,59 +13,55 @@
 
 #include "gpos/error/CLogger.h"
 
-#define GPOS_SYSLOG_ALERT(szMsg)   CLoggerSyslog::Alert(GPOS_WSZ_LIT(szMsg))
+#define GPOS_SYSLOG_ALERT(szMsg) CLoggerSyslog::Alert(GPOS_WSZ_LIT(szMsg))
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLoggerSyslog
-	//
-	//	@doc:
-	//		Syslog logging.
-	//
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CLoggerSyslog
+//
+//	@doc:
+//		Syslog logging.
+//
+//---------------------------------------------------------------------------
 
-	class CLoggerSyslog : public CLogger
-	{
-		private:
+class CLoggerSyslog : public CLogger
+{
+private:
+	// executable name
+	const CHAR *m_szProcName;
 
-			// executable name
-			const CHAR *m_szProcName;
+	// initialization flags
+	ULONG m_ulInitMask;
 
-			// initialization flags
-			ULONG m_ulInitMask;
+	// message priotity
+	ULONG m_ulMessagePriority;
 
-			// message priotity
-			ULONG m_ulMessagePriority;
+	// no copy ctor
+	CLoggerSyslog(const CLoggerSyslog &);
 
-			// no copy ctor
-			CLoggerSyslog(const CLoggerSyslog&);
+	// write string to syslog
+	void
+	Write(const WCHAR *wszLogEntry, ULONG ulSev);
 
-			// write string to syslog
-			void Write(const WCHAR *wszLogEntry, ULONG ulSev);
+	static CLoggerSyslog m_loggerAlert;
 
-			static CLoggerSyslog m_loggerAlert;
+public:
+	// ctor
+	CLoggerSyslog(const CHAR *szProcName, ULONG ulInitMask,
+				  ULONG ulMessagePriority);
 
-		public:
-			// ctor
-			CLoggerSyslog
-				(
-				const CHAR *szProcName,
-				ULONG ulInitMask,
-				ULONG ulMessagePriority
-				);
+	// dtor
+	virtual ~CLoggerSyslog();
 
-			// dtor
-			virtual	~CLoggerSyslog();
+	// write alert message to syslog - use ASCII characters only
+	static void
+	Alert(const WCHAR *wszMsg);
 
-			// write alert message to syslog - use ASCII characters only
-			static void Alert(const WCHAR *wszMsg);
+};  // class CLoggerSyslog
+}  // namespace gpos
 
-	};	// class CLoggerSyslog
-}
-
-#endif // !GPOS_CLoggerSyslog_H
+#endif  // !GPOS_CLoggerSyslog_H
 
 // EOF
-

@@ -32,27 +32,22 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarOp::CScalarOp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp,
-	IMDId *pmdidReturnType,
-	const CWStringConst *pstrOp
-	)
-	:
-	CScalar(pmp),
-	m_pmdidOp(pmdidOp),
-	m_pmdidReturnType(pmdidReturnType),
-	m_pstrOp(pstrOp),
-	m_fReturnsNullOnNullInput(false),
-	m_fBoolReturnType(false),
-	m_fCommutative(false)
+CScalarOp::CScalarOp(IMemoryPool *pmp, IMDId *pmdidOp, IMDId *pmdidReturnType,
+					 const CWStringConst *pstrOp)
+	: CScalar(pmp),
+	  m_pmdidOp(pmdidOp),
+	  m_pmdidReturnType(pmdidReturnType),
+	  m_pstrOp(pstrOp),
+	  m_fReturnsNullOnNullInput(false),
+	  m_fBoolReturnType(false),
+	  m_fCommutative(false)
 {
 	GPOS_ASSERT(pmdidOp->FValid());
 
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 
-	m_fReturnsNullOnNullInput = CMDAccessorUtils::FScalarOpReturnsNullOnNullInput(pmda, m_pmdidOp);
+	m_fReturnsNullOnNullInput =
+		CMDAccessorUtils::FScalarOpReturnsNullOnNullInput(pmda, m_pmdidOp);
 	m_fCommutative = CMDAccessorUtils::FCommutativeScalarOp(pmda, m_pmdidOp);
 	m_fBoolReturnType = CMDAccessorUtils::FBoolType(pmda, m_pmdidReturnType);
 }
@@ -111,11 +106,7 @@ CScalarOp::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarOp::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarOp::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
@@ -157,7 +148,7 @@ CScalarOp::PmdidType() const
 	{
 		return m_pmdidReturnType;
 	}
-	
+
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 	return pmda->Pmdscop(m_pmdidOp)->PmdidTypeResult();
 }
@@ -186,11 +177,7 @@ CScalarOp::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarOp::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarOp::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << Pstr()->Wsz();
@@ -208,11 +195,7 @@ CScalarOp::OsPrint
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarOp::Eber
-	(
-	DrgPul *pdrgpulChildren
-	)
-	const
+CScalarOp::Eber(DrgPul *pdrgpulChildren) const
 {
 	if (m_fReturnsNullOnNullInput)
 	{
@@ -223,4 +206,3 @@ CScalarOp::Eber
 }
 
 // EOF
-

@@ -22,11 +22,11 @@
 GPOS_RESULT
 CEquivalenceClassesTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
-		GPOS_UNITTEST_FUNC(CEquivalenceClassesTest::EresUnittest_NotDisjointEquivalanceClasses),
-		GPOS_UNITTEST_FUNC(CEquivalenceClassesTest::EresUnittest_IntersectEquivalanceClasses)
-		};
+	CUnittest rgut[] = {
+		GPOS_UNITTEST_FUNC(CEquivalenceClassesTest::
+							   EresUnittest_NotDisjointEquivalanceClasses),
+		GPOS_UNITTEST_FUNC(
+			CEquivalenceClassesTest::EresUnittest_IntersectEquivalanceClasses)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -47,13 +47,8 @@ CEquivalenceClassesTest::EresUnittest_NotDisjointEquivalanceClasses()
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
 
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-				(
-				pmp,
-				&mda,
-				NULL, /* pceeval */
-				CTestUtils::Pcm(pmp)
-				);
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	// get column factory from optimizer context object
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
@@ -88,15 +83,15 @@ CEquivalenceClassesTest::EresUnittest_NotDisjointEquivalanceClasses()
 	pcrsTwo->AddRef();
 	pdrgpcrs->Append(pcrs);
 	pdrgpcrs->Append(pcrsTwo);
-	GPOS_ASSERT(!CUtils::FEquivalanceClassesDisjoint(pmp,pdrgpcrs));
-	
+	GPOS_ASSERT(!CUtils::FEquivalanceClassesDisjoint(pmp, pdrgpcrs));
+
 	DrgPcrs *pdrgpcrsTwo = GPOS_NEW(pmp) DrgPcrs(pmp);
 	pcrs->AddRef();
 	pcrsThree->AddRef();
 	pdrgpcrsTwo->Append(pcrs);
 	pdrgpcrsTwo->Append(pcrsThree);
-	GPOS_ASSERT(CUtils::FEquivalanceClassesDisjoint(pmp,pdrgpcrsTwo));
-	
+	GPOS_ASSERT(CUtils::FEquivalanceClassesDisjoint(pmp, pdrgpcrsTwo));
+
 	pcrsThree->Release();
 	pcrsTwo->Release();
 	pcrs->Release();
@@ -122,13 +117,8 @@ CEquivalenceClassesTest::EresUnittest_IntersectEquivalanceClasses()
 	mda.RegisterProvider(CTestUtils::m_sysidDefault, pmdp);
 
 	// install opt context in TLS
-	CAutoOptCtxt aoc
-	(
-	 pmp,
-	 &mda,
-	 NULL, /* pceeval */
-	 CTestUtils::Pcm(pmp)
-	 );
+	CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+					 CTestUtils::Pcm(pmp));
 
 	// get column factory from optimizer context object
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
@@ -150,18 +140,23 @@ CEquivalenceClassesTest::EresUnittest_IntersectEquivalanceClasses()
 	GPOS_ASSERT(pcrs->CElements() == ulCols);
 
 	// Generate equivalence classes
-	INT setBoundaryFirst[] = {2,5,7};
-	DrgPcrs *pdrgpFirst = CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundaryFirst);
+	INT setBoundaryFirst[] = {2, 5, 7};
+	DrgPcrs *pdrgpFirst =
+		CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundaryFirst);
 
-	INT setBoundarySecond[] = {1,4,5,6};
-	DrgPcrs *pdrgpSecond = CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundarySecond);
+	INT setBoundarySecond[] = {1, 4, 5, 6};
+	DrgPcrs *pdrgpSecond =
+		CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundarySecond);
 
-	INT setBoundaryExpected[] = {1,2,4,5,6,7};
-	DrgPcrs *pdrgpIntersectExpectedOp = CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundaryExpected);
+	INT setBoundaryExpected[] = {1, 2, 4, 5, 6, 7};
+	DrgPcrs *pdrgpIntersectExpectedOp =
+		CTestUtils::createEquivalenceClasses(pmp, pcrs, setBoundaryExpected);
 
-	DrgPcrs *pdrgpResult = CUtils::PdrgpcrsIntersectEquivClasses(pmp, pdrgpFirst, pdrgpSecond);
-	GPOS_ASSERT(CUtils::FEquivalanceClassesDisjoint(pmp,pdrgpResult));
-	GPOS_ASSERT(CUtils::FEquivalanceClassesEqual(pmp, pdrgpResult, pdrgpIntersectExpectedOp));
+	DrgPcrs *pdrgpResult =
+		CUtils::PdrgpcrsIntersectEquivClasses(pmp, pdrgpFirst, pdrgpSecond);
+	GPOS_ASSERT(CUtils::FEquivalanceClassesDisjoint(pmp, pdrgpResult));
+	GPOS_ASSERT(CUtils::FEquivalanceClassesEqual(pmp, pdrgpResult,
+												 pdrgpIntersectExpectedOp));
 
 	pcrs->Release();
 	pdrgpFirst->Release();

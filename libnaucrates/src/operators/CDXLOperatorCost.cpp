@@ -15,18 +15,14 @@
 using namespace gpos;
 using namespace gpdxl;
 
-CDXLOperatorCost::CDXLOperatorCost
-	(
-	CWStringDynamic *pstrStartupCost,
-	CWStringDynamic *pstrTotalCost,
-	CWStringDynamic *pstrRows,
-	CWStringDynamic *pstrWidth
-	)
-	:
-	m_pstrStartupCost(pstrStartupCost),
-	m_pstrTotalCost(pstrTotalCost),
-	m_pstrRows(pstrRows),
-	m_pstrWidth(pstrWidth)
+CDXLOperatorCost::CDXLOperatorCost(CWStringDynamic *pstrStartupCost,
+								   CWStringDynamic *pstrTotalCost,
+								   CWStringDynamic *pstrRows,
+								   CWStringDynamic *pstrWidth)
+	: m_pstrStartupCost(pstrStartupCost),
+	  m_pstrTotalCost(pstrTotalCost),
+	  m_pstrRows(pstrRows),
+	  m_pstrWidth(pstrWidth)
 {
 }
 
@@ -71,10 +67,7 @@ CDXLOperatorCost::PstrWidth() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLOperatorCost::SetRows
-	(
-	CWStringDynamic *pstr
-	)
+CDXLOperatorCost::SetRows(CWStringDynamic *pstr)
 {
 	GPOS_ASSERT(NULL != pstr);
 	GPOS_DELETE(m_pstrRows);
@@ -90,10 +83,7 @@ CDXLOperatorCost::SetRows
 //
 //---------------------------------------------------------------------------
 void
-CDXLOperatorCost::SetCost
-	(
-	CWStringDynamic *pstr
-	)
+CDXLOperatorCost::SetCost(CWStringDynamic *pstr)
 {
 	GPOS_ASSERT(NULL != pstr);
 	GPOS_DELETE(m_pstrTotalCost);
@@ -101,20 +91,20 @@ CDXLOperatorCost::SetCost
 }
 
 void
-CDXLOperatorCost::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CDXLOperatorCost::SerializeToDXL(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCost));
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStartupCost), m_pstrStartupCost);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTotalCost), m_pstrTotalCost);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenCost));
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenStartupCost),
+						  m_pstrStartupCost);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTotalCost),
+						  m_pstrTotalCost);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenRows), m_pstrRows);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWidth), m_pstrWidth);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCost));
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenCost));
 }
 
 // EOF

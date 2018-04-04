@@ -30,29 +30,22 @@ const CTaskId CTaskId::m_tidInvalid;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CTask::CTask
-	(
-	IMemoryPool *pmp,
-	CTaskContext *ptskctxt,
-	IErrorContext *perrctxt,
-	CEvent *pevent,
-	volatile BOOL *pfCancel
-	)
-	:
-	m_pmp(pmp),
-	m_ptskctxt(ptskctxt),
-	m_perrctxt(perrctxt),
-	m_perrhdl(NULL),
-	m_pfunc(NULL),
-	m_pvArg(NULL),
-	m_pvRes(NULL),
-	m_pmutex(pevent->Pmutex()),
-	m_pevent(pevent),
-	m_estatus(EtsInit),
-	m_pfCancel(pfCancel),
-	m_fCancel(false),
-	m_ulAbortSuspendCount(false),
-	m_fReported(false)
+CTask::CTask(IMemoryPool *pmp, CTaskContext *ptskctxt, IErrorContext *perrctxt,
+			 CEvent *pevent, volatile BOOL *pfCancel)
+	: m_pmp(pmp),
+	  m_ptskctxt(ptskctxt),
+	  m_perrctxt(perrctxt),
+	  m_perrhdl(NULL),
+	  m_pfunc(NULL),
+	  m_pvArg(NULL),
+	  m_pvRes(NULL),
+	  m_pmutex(pevent->Pmutex()),
+	  m_pevent(pevent),
+	  m_estatus(EtsInit),
+	  m_pfCancel(pfCancel),
+	  m_fCancel(false),
+	  m_ulAbortSuspendCount(false),
+	  m_fReported(false)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != ptskctxt);
@@ -95,15 +88,11 @@ CTask::~CTask()
 //		Bind task to function and arguments
 //
 //---------------------------------------------------------------------------
-void 
-CTask::Bind
-	(
-	void *(*pfunc)(void*),
-	void *pvArg
-	)
+void
+CTask::Bind(void *(*pfunc)(void *), void *pvArg)
 {
 	GPOS_ASSERT(NULL != pfunc);
-	
+
 	m_pfunc = pfunc;
 	m_pvArg = pvArg;
 }
@@ -117,7 +106,7 @@ CTask::Bind
 //		Execution of task function; wrapped in asserts to prevent leaks
 //
 //---------------------------------------------------------------------------
-void 
+void
 CTask::Execute()
 {
 	GPOS_ASSERT(EtsDequeued == m_estatus);
@@ -144,7 +133,7 @@ CTask::Execute()
 #ifdef GPOS_DEBUG
 			// check interval since last CFA
 			GPOS_CHECK_ABORT;
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 			// task completed
 			ets = EtsCompleted;
@@ -156,7 +145,7 @@ CTask::Execute()
 		}
 		GPOS_CATCH_END;
 	}
-	
+
 	// signal end of task execution
 	Signal(ets);
 }
@@ -250,13 +239,10 @@ CTask::FFinished() const
 //
 //---------------------------------------------------------------------------
 void
-CTask::Signal
-	(
-	ETaskStatus Ets
-	)
-	throw()
+CTask::Signal(ETaskStatus Ets) throw()
 {
-	GPOS_ASSERT(FScheduled() && !FFinished() && "Invalid task status after execution");
+	GPOS_ASSERT(FScheduled() && !FFinished() &&
+				"Invalid task status after execution");
 
 	// scope for locking mutex
 	{
@@ -314,10 +300,7 @@ CTask::ResumeAbort()
 //
 //---------------------------------------------------------------------------
 BOOL
-CTask::FCheckStatus
-	(
-	BOOL fCompleted
-	)
+CTask::FCheckStatus(BOOL fCompleted)
 {
 	GPOS_ASSERT(!FCanceled());
 	if (fCompleted)
@@ -332,7 +315,6 @@ CTask::FCheckStatus
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

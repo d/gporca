@@ -24,16 +24,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLCtasStorageOptions::CDXLCtasStorageOptions
-	( 
-	CMDName *pmdnameTablespace,
-	ECtasOnCommitAction ectascommit,
-	DrgPctasOpt *pdrgpctasopt
-	)
-	:
-	m_pmdnameTablespace(pmdnameTablespace),
-	m_ectascommit(ectascommit),
-	m_pdrgpctasopt(pdrgpctasopt)
+CDXLCtasStorageOptions::CDXLCtasStorageOptions(CMDName *pmdnameTablespace,
+											   ECtasOnCommitAction ectascommit,
+											   DrgPctasOpt *pdrgpctasopt)
+	: m_pmdnameTablespace(pmdnameTablespace),
+	  m_ectascommit(ectascommit),
+	  m_pdrgpctasopt(pdrgpctasopt)
 {
 	GPOS_ASSERT(EctascommitSentinel > ectascommit);
 }
@@ -103,32 +99,39 @@ CDXLCtasStorageOptions::Pdrgpctasopt() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLCtasStorageOptions::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) 
-	const
+CDXLCtasStorageOptions::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTASOptions));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenCTASOptions));
 	if (NULL != m_pmdnameTablespace)
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTablespace), m_pmdnameTablespace->Pstr());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTablespace),
+							  m_pmdnameTablespace->Pstr());
 	}
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOnCommitAction), PstrOnCommitAction(m_ectascommit));
-	
-	const ULONG ulOptions = (m_pdrgpctasopt == NULL) ? 0 : m_pdrgpctasopt->UlLength();
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOnCommitAction),
+						  PstrOnCommitAction(m_ectascommit));
+
+	const ULONG ulOptions =
+		(m_pdrgpctasopt == NULL) ? 0 : m_pdrgpctasopt->UlLength();
 	for (ULONG ul = 0; ul < ulOptions; ul++)
 	{
 		CDXLCtasOption *pdxlctasopt = (*m_pdrgpctasopt)[ul];
-		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTASOption));
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCtasOptionType), pdxlctasopt->m_ulType);
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), pdxlctasopt->m_pstrName);
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), pdxlctasopt->m_pstrValue);
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull), pdxlctasopt->m_fNull);
-		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTASOption));
+		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							 CDXLTokens::PstrToken(EdxltokenCTASOption));
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCtasOptionType),
+							  pdxlctasopt->m_ulType);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+							  pdxlctasopt->m_pstrName);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue),
+							  pdxlctasopt->m_pstrValue);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull),
+							  pdxlctasopt->m_fNull);
+		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							  CDXLTokens::PstrToken(EdxltokenCTASOption));
 	}
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenCTASOptions));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenCTASOptions));
 }
 
 //---------------------------------------------------------------------------
@@ -140,25 +143,23 @@ CDXLCtasStorageOptions::Serialize
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-CDXLCtasStorageOptions::PstrOnCommitAction
-	(
-	CDXLCtasStorageOptions::ECtasOnCommitAction ectascommit
-	) 
+CDXLCtasStorageOptions::PstrOnCommitAction(
+	CDXLCtasStorageOptions::ECtasOnCommitAction ectascommit)
 {
 	switch (ectascommit)
 	{
 		case EctascommitNOOP:
 			return CDXLTokens::PstrToken(EdxltokenOnCommitNOOP);
-			
+
 		case EctascommitPreserve:
 			return CDXLTokens::PstrToken(EdxltokenOnCommitPreserve);
-			
+
 		case EctascommitDelete:
 			return CDXLTokens::PstrToken(EdxltokenOnCommitDelete);
-			
+
 		case EctascommitDrop:
 			return CDXLTokens::PstrToken(EdxltokenOnCommitDrop);
-		
+
 		default:
 			GPOS_ASSERT("Invalid on commit option");
 			return NULL;

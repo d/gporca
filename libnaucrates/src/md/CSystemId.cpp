@@ -23,14 +23,8 @@ using namespace gpmd;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CSystemId::CSystemId
-	(
-	IMDId::EMDIdType emdidt,
-	const WCHAR *wsz,
-	ULONG ulLength
-	)
-	:
-	m_emdidt(emdidt)
+CSystemId::CSystemId(IMDId::EMDIdType emdidt, const WCHAR *wsz, ULONG ulLength)
+	: m_emdidt(emdidt)
 {
 	GPOS_ASSERT(GPDXL_SYSID_LENGTH >= ulLength);
 
@@ -38,7 +32,7 @@ CSystemId::CSystemId
 	{
 		clib::WszWcsNCpy(m_wsz, wsz, ulLength);
 	}
-	
+
 	// ensure string is terminated
 	m_wsz[ulLength] = WCHAR_EOS;
 }
@@ -51,12 +45,7 @@ CSystemId::CSystemId
 //		Copy constructor
 //
 //---------------------------------------------------------------------------
-CSystemId::CSystemId
-	(
-	const CSystemId &sysid
-	)
-	:
-	m_emdidt(sysid.Emdidt())
+CSystemId::CSystemId(const CSystemId &sysid) : m_emdidt(sysid.Emdidt())
 {
 	clib::WszWcsNCpy(m_wsz, sysid.Wsz(), GPDXL_SYSID_LENGTH);
 }
@@ -70,15 +59,11 @@ CSystemId::CSystemId
 //
 //---------------------------------------------------------------------------
 BOOL
-CSystemId::FEquals
-	(
-	const CSystemId &sysid
-	)
-	const
+CSystemId::FEquals(const CSystemId &sysid) const
 {
 	ULONG ulLength = GPOS_WSZ_LENGTH(m_wsz);
 	return ulLength == GPOS_WSZ_LENGTH(sysid.m_wsz) &&
-			0 == clib::IWcsNCmp(m_wsz, sysid.m_wsz, ulLength);
+		   0 == clib::IWcsNCmp(m_wsz, sysid.m_wsz, ulLength);
 }
 
 //---------------------------------------------------------------------------
@@ -92,7 +77,8 @@ CSystemId::FEquals
 ULONG
 CSystemId::UlHash() const
 {
-	return gpos::UlHashByteArray((BYTE*) m_wsz, GPOS_WSZ_LENGTH(m_wsz) * GPOS_SIZEOF(WCHAR));
+	return gpos::UlHashByteArray((BYTE *) m_wsz,
+								 GPOS_WSZ_LENGTH(m_wsz) * GPOS_SIZEOF(WCHAR));
 }
 
 // EOF

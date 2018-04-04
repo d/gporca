@@ -22,146 +22,158 @@
 
 namespace gpos
 {
+class CTask;
 
-	class CTask;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CWorker
-	//
-	//	@doc:
-	//		Worker abstraction keeps track of resource held by worker; management
-	//		of control flow such as abort signal etc.
-	//
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CWorker
+//
+//	@doc:
+//		Worker abstraction keeps track of resource held by worker; management
+//		of control flow such as abort signal etc.
+//
+//---------------------------------------------------------------------------
 
-	class CWorker : public IWorker
-	{	
-		friend class CThreadManager;
-		friend class CAutoTaskProxy;
-		
-		private:
+class CWorker : public IWorker
+{
+	friend class CThreadManager;
+	friend class CAutoTaskProxy;
 
-			// current task
-			CTask *m_ptsk;
+private:
+	// current task
+	CTask *m_ptsk;
 
-			// thread id
-			ULONG m_ulThreadId;
+	// thread id
+	ULONG m_ulThreadId;
 
-			// available stack
-			ULONG m_cStackSize;
+	// available stack
+	ULONG m_cStackSize;
 
-			// start address of current thread's stack
-			const ULONG_PTR m_ulpStackStart;
+	// start address of current thread's stack
+	const ULONG_PTR m_ulpStackStart;
 
 #ifdef GPOS_DEBUG
-			// currently owned spinlocks
-			CList<CSpinlockBase> m_listSlock;
-			
-			// currently owned mutexes
-			CList<CMutexBase> m_listMutex;
+	// currently owned spinlocks
+	CList<CSpinlockBase> m_listSlock;
 
-			// stack descriptor for last abort checkpoint
-			CStackDescriptor m_sdLastCA;
+	// currently owned mutexes
+	CList<CMutexBase> m_listMutex;
 
-			// timer for measuring intervals between abort checkpoints
-			CTimerUser m_timerLastCA;
+	// stack descriptor for last abort checkpoint
+	CStackDescriptor m_sdLastCA;
 
-			// check if interval since last abort checkpoint exceeds maximum
-			void CheckTimeSlice();
+	// timer for measuring intervals between abort checkpoints
+	CTimerUser m_timerLastCA;
 
-#endif // GPOS_DEBUG
+	// check if interval since last abort checkpoint exceeds maximum
+	void
+	CheckTimeSlice();
 
-			// execute tasks iteratively
-			void Run();
+#endif  // GPOS_DEBUG
 
-			// execute single task
-			void Execute(CTask *ptsk);
+	// execute tasks iteratively
+	void
+	Run();
 
-			// check for abort request
-			void CheckForAbort(const CHAR *szFile, ULONG cLine);
+	// execute single task
+	void
+	Execute(CTask *ptsk);
+
+	// check for abort request
+	void
+	CheckForAbort(const CHAR *szFile, ULONG cLine);
 
 #ifdef GPOS_FPSIMULATOR
-			// simulate abort request, log abort injection
-			void SimulateAbort(const CHAR *szFile, ULONG ulLine);
-#endif // GPOS_FPSIMULATOR
+	// simulate abort request, log abort injection
+	void
+	SimulateAbort(const CHAR *szFile, ULONG ulLine);
+#endif  // GPOS_FPSIMULATOR
 
-			// no copy ctor
-			CWorker(const CWorker&);
+	// no copy ctor
+	CWorker(const CWorker &);
 
-		public:
-		
-			// ctor
-			CWorker(ULONG ulThreadId, ULONG cStackSize, ULONG_PTR ulpStackStart);
+public:
+	// ctor
+	CWorker(ULONG ulThreadId, ULONG cStackSize, ULONG_PTR ulpStackStart);
 
-			// dtor
-			virtual ~CWorker();
+	// dtor
+	virtual ~CWorker();
 
-			// thread identification
-			ULONG UlThreadId() const
-			{
-				return m_ulThreadId;
-			}
+	// thread identification
+	ULONG
+	UlThreadId() const
+	{
+		return m_ulThreadId;
+	}
 
-			// worker identification
-			inline
-			CWorkerId Wid() const
-			{
-				return m_wid;
-			}
+	// worker identification
+	inline CWorkerId
+	Wid() const
+	{
+		return m_wid;
+	}
 
-			// stack start accessor
-			inline
-			ULONG_PTR UlpStackStart() const
-			{
-				return m_ulpStackStart;
-			}
+	// stack start accessor
+	inline ULONG_PTR
+	UlpStackStart() const
+	{
+		return m_ulpStackStart;
+	}
 
 #ifdef GPOS_DEBUG
-			BOOL FCanAcquireSpinlock(const CSpinlockBase *pslock) const;
-			BOOL FOwnsSpinlocks() const;
-			
-			void RegisterSpinlock(CSpinlockBase *pslock);
-			void UnregisterSpinlock(CSpinlockBase *pslock);				
+	BOOL
+	FCanAcquireSpinlock(const CSpinlockBase *pslock) const;
+	BOOL
+	FOwnsSpinlocks() const;
 
-			BOOL FOwnsMutexes() const;
-			void RegisterMutex(CMutexBase *pmutex);
-			void UnregisterMutex(CMutexBase *pmutex);
+	void
+	RegisterSpinlock(CSpinlockBase *pslock);
+	void
+	UnregisterSpinlock(CSpinlockBase *pslock);
 
-			// reset abort-related stack descriptor and timer
-			void ResetTimeSlice();
+	BOOL
+	FOwnsMutexes() const;
+	void
+	RegisterMutex(CMutexBase *pmutex);
+	void
+	UnregisterMutex(CMutexBase *pmutex);
 
-#endif // GPOS_DEBUG
+	// reset abort-related stack descriptor and timer
+	void
+	ResetTimeSlice();
 
-			// stack check
-			BOOL FCheckStackSize(ULONG ulRequest = 0) const;
+#endif  // GPOS_DEBUG
 
-			// accessor
-			inline
-			CTask *Ptsk()
-			{
-				return m_ptsk;
-			}
+	// stack check
+	BOOL
+	FCheckStackSize(ULONG ulRequest = 0) const;
 
-			// slink for hashtable
-			SLink m_link;
+	// accessor
+	inline CTask *
+	Ptsk()
+	{
+		return m_ptsk;
+	}
 
-			// identification; public in order to be used as key in HTs
-			CWorkerId m_wid;
+	// slink for hashtable
+	SLink m_link;
 
-			// lookup worker in worker pool manager
-			static CWorker *PwrkrSelf()
-			{
-				return dynamic_cast<CWorker*>(IWorker::PwrkrSelf());
-			}
+	// identification; public in order to be used as key in HTs
+	CWorkerId m_wid;
 
-			// host system callback function to report abort requests
-			static bool (*pfnAbortRequestedBySystem) (void);
+	// lookup worker in worker pool manager
+	static CWorker *
+	PwrkrSelf()
+	{
+		return dynamic_cast<CWorker *>(IWorker::PwrkrSelf());
+	}
 
-	}; // class CWorker
-}
+	// host system callback function to report abort requests
+	static bool (*pfnAbortRequestedBySystem)(void);
 
-#endif // !GPOS_CWorker_H
+};  // class CWorker
+}  // namespace gpos
+
+#endif  // !GPOS_CWorker_H
 
 // EOF
-

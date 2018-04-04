@@ -26,18 +26,12 @@ const ULONG CColRef::m_ulInvalid = ULONG_MAX;
 //		takes ownership of string; verify string is properly formatted
 //
 //---------------------------------------------------------------------------
-CColRef::CColRef
-	(
-	const IMDType *pmdtype,
-	const INT iTypeModifier,
-	ULONG ulId,
-	const CName *pname
-	)
-	:
-	m_pmdtype(pmdtype),
-	m_iTypeModifier(iTypeModifier),
-	m_pname(pname),
-	m_ulId(ulId)
+CColRef::CColRef(const IMDType *pmdtype, const INT iTypeModifier, ULONG ulId,
+				 const CName *pname)
+	: m_pmdtype(pmdtype),
+	  m_iTypeModifier(iTypeModifier),
+	  m_pname(pname),
+	  m_ulId(ulId)
 {
 	GPOS_ASSERT(NULL != pmdtype);
 	GPOS_ASSERT(pmdtype->Pmdid()->FValid());
@@ -55,7 +49,7 @@ CColRef::CColRef
 //---------------------------------------------------------------------------
 CColRef::~CColRef()
 {
-	// we own the name 
+	// we own the name
 	GPOS_DELETE(m_pname);
 }
 
@@ -69,10 +63,7 @@ CColRef::~CColRef()
 //
 //---------------------------------------------------------------------------
 ULONG
-CColRef::UlHash
-	(
-	const ULONG &ulptr
-	)
+CColRef::UlHash(const ULONG &ulptr)
 {
 	return gpos::UlHash<ULONG>(&ulptr);
 }
@@ -86,10 +77,7 @@ CColRef::UlHash
 //
 //---------------------------------------------------------------------------
 ULONG
-CColRef::UlHash
-	(
-	const CColRef *pcr
-	)
+CColRef::UlHash(const CColRef *pcr)
 {
 	ULONG ulId = pcr->UlId();
 	return gpos::UlHash<ULONG>(&ulId);
@@ -105,15 +93,11 @@ CColRef::UlHash
 //
 //---------------------------------------------------------------------------
 IOstream &
-CColRef::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CColRef::OsPrint(IOstream &os) const
 {
 	m_pname->OsPrint(os);
 	os << " (" << UlId() << ")";
-	
+
 	return os;
 }
 
@@ -126,11 +110,7 @@ CColRef::OsPrint
 //
 //---------------------------------------------------------------------------
 DrgPul *
-CColRef::Pdrgpul
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr
-	)
+CColRef::Pdrgpul(IMemoryPool *pmp, DrgPcr *pdrgpcr)
 {
 	DrgPul *pdrgpul = GPOS_NEW(pmp) DrgPul(pmp);
 	const ULONG ulLen = pdrgpcr->UlLength();
@@ -152,15 +132,11 @@ CColRef::Pdrgpul
 //
 //---------------------------------------------------------------------------
 BOOL
-CColRef::FEqual
-	(
-	const DrgPcr *pdrgpcr1,
-	const DrgPcr *pdrgpcr2
-	)
+CColRef::FEqual(const DrgPcr *pdrgpcr1, const DrgPcr *pdrgpcr2)
 {
 	if (NULL == pdrgpcr1 || NULL == pdrgpcr2)
 	{
-		return  (NULL == pdrgpcr1 && NULL == pdrgpcr2);
+		return (NULL == pdrgpcr1 && NULL == pdrgpcr2);
 	}
 
 	return pdrgpcr1->FEqual(pdrgpcr2);
@@ -169,11 +145,7 @@ CColRef::FEqual
 // check if the the array of column references are equal. Note that since we have unique
 // copy of the column references, we can compare pointers.
 BOOL
-CColRef::FEqual
-	(
-	const DrgDrgPcr *pdrgdrgpcr1,
-	const DrgDrgPcr *pdrgdrgpcr2
-	)
+CColRef::FEqual(const DrgDrgPcr *pdrgdrgpcr1, const DrgDrgPcr *pdrgdrgpcr2)
 {
 	ULONG ulLen1 = (pdrgdrgpcr1 == NULL) ? 0 : pdrgdrgpcr1->UlLength();
 	ULONG ulLen2 = (pdrgdrgpcr2 == NULL) ? 0 : pdrgdrgpcr2->UlLength();
@@ -196,4 +168,3 @@ CColRef::FEqual
 }
 
 // EOF
-

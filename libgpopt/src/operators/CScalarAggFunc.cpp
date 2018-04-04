@@ -33,34 +33,29 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarAggFunc::CScalarAggFunc
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidAggFunc,
-	IMDId *pmdidResolvedRetType,
-	const CWStringConst *pstrAggFunc,
-	BOOL fDistinct,
-	EAggfuncStage eaggfuncstage,
-	BOOL fSplit
-	)
-	:
-	CScalar(pmp),
-	m_pmdidAggFunc(pmdidAggFunc),
-	m_pmdidResolvedRetType(pmdidResolvedRetType),
-	m_pmdidRetType(NULL),
-	m_pstrAggFunc(pstrAggFunc),
-	m_fDistinct(fDistinct),
-	m_eaggfuncstage(eaggfuncstage),
-	m_fSplit(fSplit)
+CScalarAggFunc::CScalarAggFunc(IMemoryPool *pmp, IMDId *pmdidAggFunc,
+							   IMDId *pmdidResolvedRetType,
+							   const CWStringConst *pstrAggFunc, BOOL fDistinct,
+							   EAggfuncStage eaggfuncstage, BOOL fSplit)
+	: CScalar(pmp),
+	  m_pmdidAggFunc(pmdidAggFunc),
+	  m_pmdidResolvedRetType(pmdidResolvedRetType),
+	  m_pmdidRetType(NULL),
+	  m_pstrAggFunc(pstrAggFunc),
+	  m_fDistinct(fDistinct),
+	  m_eaggfuncstage(eaggfuncstage),
+	  m_fSplit(fSplit)
 {
 	GPOS_ASSERT(NULL != pmdidAggFunc);
 	GPOS_ASSERT(NULL != pstrAggFunc);
 	GPOS_ASSERT(pmdidAggFunc->FValid());
-	GPOS_ASSERT_IMP(NULL != pmdidResolvedRetType, pmdidResolvedRetType->FValid());
+	GPOS_ASSERT_IMP(NULL != pmdidResolvedRetType,
+					pmdidResolvedRetType->FValid());
 	GPOS_ASSERT(EaggfuncstageSentinel > eaggfuncstage);
 
 	// store id of type obtained by looking up MD cache
-	IMDId *pmdid = PmdidLookupReturnType(m_pmdidAggFunc, (EaggfuncstageGlobal == m_eaggfuncstage));
+	IMDId *pmdid = PmdidLookupReturnType(
+		m_pmdidAggFunc, (EaggfuncstageGlobal == m_eaggfuncstage));
 	pmdid->AddRef();
 	m_pmdidRetType = pmdid;
 }
@@ -140,18 +135,14 @@ ULONG
 CScalarAggFunc::UlHash() const
 {
 	ULONG ulAggfuncstage = (ULONG) m_eaggfuncstage;
-	return gpos::UlCombineHashes
-					(
-					UlCombineHashes(COperator::UlHash(), m_pmdidAggFunc->UlHash()),
-					UlCombineHashes
-						(
-						gpos::UlHash<ULONG>(&ulAggfuncstage),
-						UlCombineHashes(gpos::UlHash<BOOL>(&m_fDistinct),gpos::UlHash<BOOL>(&m_fSplit))
-						)
-					);
+	return gpos::UlCombineHashes(
+		UlCombineHashes(COperator::UlHash(), m_pmdidAggFunc->UlHash()),
+		UlCombineHashes(gpos::UlHash<ULONG>(&ulAggfuncstage),
+						UlCombineHashes(gpos::UlHash<BOOL>(&m_fDistinct),
+										gpos::UlHash<BOOL>(&m_fSplit))));
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CScalarAggFunc::FMatch
@@ -161,26 +152,19 @@ CScalarAggFunc::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarAggFunc::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarAggFunc::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CScalarAggFunc *popScAggFunc = CScalarAggFunc::PopConvert(pop);
-		
+
 		// match if func ids are identical
-		return
-				(
-				(popScAggFunc->FDistinct() ==  m_fDistinct)
-				&& (popScAggFunc->Eaggfuncstage() ==  Eaggfuncstage())
-				&& (popScAggFunc->FSplit() ==  m_fSplit)
-				&& m_pmdidAggFunc->FEquals(popScAggFunc->Pmdid())
-				);
+		return ((popScAggFunc->FDistinct() == m_fDistinct) &&
+				(popScAggFunc->Eaggfuncstage() == Eaggfuncstage()) &&
+				(popScAggFunc->FSplit() == m_fSplit) &&
+				m_pmdidAggFunc->FEquals(popScAggFunc->Pmdid()));
 	}
-	
+
 	return false;
 }
 
@@ -194,12 +178,8 @@ CScalarAggFunc::FMatch
 //
 //---------------------------------------------------------------------------
 IMDId *
-CScalarAggFunc::PmdidLookupReturnType
-	(
-	IMDId *pmdidAggFunc,
-	BOOL fGlobal,
-	CMDAccessor *pmdaInput
-	)
+CScalarAggFunc::PmdidLookupReturnType(IMDId *pmdidAggFunc, BOOL fGlobal,
+									  CMDAccessor *pmdaInput)
 {
 	GPOS_ASSERT(NULL != pmdidAggFunc);
 	CMDAccessor *pmda = pmdaInput;
@@ -230,11 +210,7 @@ CScalarAggFunc::PmdidLookupReturnType
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarAggFunc::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarAggFunc::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << PstrAggFunc()->Wsz();
@@ -245,26 +221,25 @@ CScalarAggFunc::OsPrint
 	switch (m_eaggfuncstage)
 	{
 		case EaggfuncstageGlobal:
-				os << "Global";
-				break;
+			os << "Global";
+			break;
 
 		case EaggfuncstageIntermediate:
-				os << "Intermediate";
-				break;
+			os << "Intermediate";
+			break;
 
 		case EaggfuncstageLocal:
-				os << "Local";
-				break;
+			os << "Local";
+			break;
 
 		default:
 			GPOS_ASSERT(!"Unsupported aggregate type");
 	}
 
 	os << ")";
-	
+
 	return os;
 }
 
 
 // EOF
-

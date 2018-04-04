@@ -20,15 +20,12 @@ using namespace gpopt;
 
 // return statistics object after union all operation with input statistics object
 CStatistics *
-CUnionAllStatsProcessor::PstatsUnionAll
-	(
-	IMemoryPool *pmp,
-	const CStatistics *pstatsFst,
-	const CStatistics *pstatsSnd,
-	DrgPul *pdrgpulOutput,
-	DrgPul *pdrgpulInput1,
-	DrgPul *pdrgpulInput2
-	)
+CUnionAllStatsProcessor::PstatsUnionAll(IMemoryPool *pmp,
+										const CStatistics *pstatsFst,
+										const CStatistics *pstatsSnd,
+										DrgPul *pdrgpulOutput,
+										DrgPul *pdrgpulInput1,
+										DrgPul *pdrgpulInput2)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != pstatsSnd);
@@ -48,7 +45,9 @@ CUnionAllStatsProcessor::PstatsUnionAll
 	CDouble dRowsUnionAll = CStatistics::DMinRows;
 	if (fEmptyUnionAll)
 	{
-		CHistogram::AddDummyHistogramAndWidthInfo(pmp, pcf, phmulhistNew, phmuldoubleWidth, pdrgpulOutput, true /*fEmpty*/);
+		CHistogram::AddDummyHistogramAndWidthInfo(
+			pmp, pcf, phmulhistNew, phmuldoubleWidth, pdrgpulOutput,
+			true /*fEmpty*/);
 	}
 	else
 	{
@@ -66,8 +65,10 @@ CUnionAllStatsProcessor::PstatsUnionAll
 
 			if (phistInput1->FWellDefined() || phistInput2->FWellDefined())
 			{
-				CHistogram *phistOutput = phistInput1->PhistUnionAllNormalized(pmp, pstatsFst->DRows(), phistInput2, pstatsSnd->DRows());
-				CStatisticsUtils::AddHistogram(pmp, ulColIdOutput, phistOutput, phmulhistNew);
+				CHistogram *phistOutput = phistInput1->PhistUnionAllNormalized(
+					pmp, pstatsFst->DRows(), phistInput2, pstatsSnd->DRows());
+				CStatisticsUtils::AddHistogram(pmp, ulColIdOutput, phistOutput,
+											   phmulhistNew);
 				GPOS_DELETE(phistOutput);
 			}
 			else
@@ -75,14 +76,17 @@ CUnionAllStatsProcessor::PstatsUnionAll
 				CColRef *pcr = pcf->PcrLookup(ulColIdOutput);
 				GPOS_ASSERT(NULL != pcr);
 
-				CHistogram *phistDummy = CHistogram::PhistDefault(pmp, pcr, false /* fEmpty*/);
-				phmulhistNew->FInsert(GPOS_NEW(pmp) ULONG(ulColIdOutput), phistDummy);
+				CHistogram *phistDummy =
+					CHistogram::PhistDefault(pmp, pcr, false /* fEmpty*/);
+				phmulhistNew->FInsert(GPOS_NEW(pmp) ULONG(ulColIdOutput),
+									  phistDummy);
 			}
 
 			// look up width
 			const CDouble *pdWidth = pstatsFst->PdWidth(ulColIdInput1);
 			GPOS_ASSERT(NULL != pdWidth);
-			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColIdOutput), GPOS_NEW(pmp) CDouble(*pdWidth));
+			phmuldoubleWidth->FInsert(GPOS_NEW(pmp) ULONG(ulColIdOutput),
+									  GPOS_NEW(pmp) CDouble(*pdWidth));
 		}
 
 		dRowsUnionAll = pstatsFst->DRows() + pstatsSnd->DRows();
@@ -94,21 +98,18 @@ CUnionAllStatsProcessor::PstatsUnionAll
 	pdrgpulInput2->Release();
 
 	// create an output stats object
-	CStatistics *pstatsUnionAll = GPOS_NEW(pmp) CStatistics
-											(
-											pmp,
-											phmulhistNew,
-											phmuldoubleWidth,
-											dRowsUnionAll,
-											fEmptyUnionAll,
-											0 /* m_ulNumPredicates */
-											);
+	CStatistics *pstatsUnionAll = GPOS_NEW(pmp)
+		CStatistics(pmp, phmulhistNew, phmuldoubleWidth, dRowsUnionAll,
+					fEmptyUnionAll, 0 /* m_ulNumPredicates */
+		);
 
 	// In the output statistics object, the upper bound source cardinality of the UNION ALL column
 	// is the estimate union all cardinality.
 
 	// modify upper bound card information
-	CStatisticsUtils::ComputeCardUpperBounds(pmp, pstatsFst, pstatsUnionAll, dRowsUnionAll, CStatistics::EcbmOutputCard /* ecbm */);
+	CStatisticsUtils::ComputeCardUpperBounds(
+		pmp, pstatsFst, pstatsUnionAll, dRowsUnionAll,
+		CStatistics::EcbmOutputCard /* ecbm */);
 
 	return pstatsUnionAll;
 }

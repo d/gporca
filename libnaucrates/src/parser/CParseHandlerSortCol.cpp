@@ -28,14 +28,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerSortCol::CParseHandlerSortCol
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerSortCol::CParseHandlerSortCol(IMemoryPool *pmp,
+										   CParseHandlerManager *pphm,
+										   CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -49,22 +45,24 @@ CParseHandlerSortCol::CParseHandlerSortCol
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSortCol::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerSortCol::StartElement(const XMLCh *const,  // xmlszUri,
+								   const XMLCh *const xmlszLocalname,
+								   const XMLCh *const,  // xmlszQname
+								   const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSortCol), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarSortCol), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// parse and create sort col operator
-	CDXLScalarSortCol *pdxlop = (CDXLScalarSortCol *) CDXLOperatorFactory::PdxlopSortCol(m_pphm->Pmm(), attrs);
+	CDXLScalarSortCol *pdxlop =
+		(CDXLScalarSortCol *) CDXLOperatorFactory::PdxlopSortCol(m_pphm->Pmm(),
+																 attrs);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 }
 
@@ -77,26 +75,26 @@ CParseHandlerSortCol::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSortCol::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerSortCol::EndElement(const XMLCh *const,  // xmlszUri,
+								 const XMLCh *const xmlszLocalname,
+								 const XMLCh *const  // xmlszQname
+)
 {
-	
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSortCol), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarSortCol), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	GPOS_ASSERT(NULL != m_pdxln);
-	
+
 #ifdef GPOS_DEBUG
 	m_pdxln->Pdxlop()->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
-	
+#endif  // GPOS_DEBUG
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }

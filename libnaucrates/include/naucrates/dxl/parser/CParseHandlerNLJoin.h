@@ -19,58 +19,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerNLJoin
-	//
-	//	@doc:
-	//		Parse handler for nested loop join operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerNLJoin : public CParseHandlerPhysicalOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerNLJoin
+//
+//	@doc:
+//		Parse handler for nested loop join operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerNLJoin : public CParseHandlerPhysicalOp
+{
+private:
+	// the nested loop join operator
+	CDXLPhysicalNLJoin *m_pdxlop;
 
-			// the nested loop join operator
-			CDXLPhysicalNLJoin *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerNLJoin(const CParseHandlerNLJoin &);
+	// private copy ctor
+	CParseHandlerNLJoin(const CParseHandlerNLJoin &);
 
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerNLJoin
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-	};
-}
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-#endif // !GPDXL_CParseHandlerNLJoin_H
+public:
+	// ctor/dtor
+	CParseHandlerNLJoin(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerNLJoin_H
 
 // EOF

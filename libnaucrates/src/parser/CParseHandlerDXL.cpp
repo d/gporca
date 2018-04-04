@@ -42,30 +42,26 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerDXL::CParseHandlerDXL
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm
-	)
-	:
-	CParseHandlerBase(pmp, pphm, NULL),
-	m_pbs(NULL),
-	m_poconf(NULL),
-	m_pmdr(NULL),
-	m_pdxlnQuery(NULL),
-	m_pdrgpdxlnOutputCols(NULL),
-	m_pdrgpdxlnCTE(NULL),
-	m_pdxlnPlan(NULL),
-	m_pdrgpmdobj(NULL),
-	m_pdrgpmdid(NULL),
-	m_pdxlnScalarExpr(NULL),
-	m_pdrgpsysid(NULL),
-	m_pdrgpdxlstatsderrel(NULL),
-	m_pdrgpss(NULL),
-	m_ullPlanId(ULLONG_MAX),
-	m_ullPlanSpaceSize(ULLONG_MAX),
-	m_pcp(NULL)
-{}
+CParseHandlerDXL::CParseHandlerDXL(IMemoryPool *pmp, CParseHandlerManager *pphm)
+	: CParseHandlerBase(pmp, pphm, NULL),
+	  m_pbs(NULL),
+	  m_poconf(NULL),
+	  m_pmdr(NULL),
+	  m_pdxlnQuery(NULL),
+	  m_pdrgpdxlnOutputCols(NULL),
+	  m_pdrgpdxlnCTE(NULL),
+	  m_pdxlnPlan(NULL),
+	  m_pdrgpmdobj(NULL),
+	  m_pdrgpmdid(NULL),
+	  m_pdxlnScalarExpr(NULL),
+	  m_pdrgpsysid(NULL),
+	  m_pdrgpdxlstatsderrel(NULL),
+	  m_pdrgpss(NULL),
+	  m_ullPlanId(ULLONG_MAX),
+	  m_ullPlanSpaceSize(ULLONG_MAX),
+	  m_pcp(NULL)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -92,7 +88,6 @@ CParseHandlerDXL::~CParseHandlerDXL()
 	CRefCount::SafeRelease(m_pdrgpdxlstatsderrel);
 	CRefCount::SafeRelease(m_pdrgpss);
 	CRefCount::SafeRelease(m_pcp);
-
 }
 
 //---------------------------------------------------------------------------
@@ -241,7 +236,7 @@ CParseHandlerDXL::PdxlnScalarExpr() const
 //		CParseHandlerDXL::Pdrgpsysid
 //
 //	@doc:
-//		Returns the list of source system ids for the metadata 
+//		Returns the list of source system ids for the metadata
 //
 //---------------------------------------------------------------------------
 DrgPsysid *
@@ -334,14 +329,10 @@ CParseHandlerDXL::Pcp() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CParseHandlerDXL::FValidStartElement
-	(
-	const XMLCh* const xmlszName
-	)
+CParseHandlerDXL::FValidStartElement(const XMLCh *const xmlszName)
 {
 	// names of valid start elements of DXL document
-	const XMLCh *xmlstrValidStartElement [] =
-		{
+	const XMLCh *xmlstrValidStartElement[] = {
 		CDXLTokens::XmlstrToken(EdxltokenTraceFlags),
 		CDXLTokens::XmlstrToken(EdxltokenOptimizerConfig),
 		CDXLTokens::XmlstrToken(EdxltokenPlan),
@@ -353,12 +344,15 @@ CParseHandlerDXL::FValidStartElement
 		CDXLTokens::XmlstrToken(EdxltokenSearchStrategy),
 		CDXLTokens::XmlstrToken(EdxltokenCostParams),
 		CDXLTokens::XmlstrToken(EdxltokenScalarExpr),
-		};
+	};
 
 	BOOL fValidStartElement = false;
-	for (ULONG ul = 0; !fValidStartElement && ul < GPOS_ARRAY_SIZE(xmlstrValidStartElement); ul++)
+	for (ULONG ul = 0;
+		 !fValidStartElement && ul < GPOS_ARRAY_SIZE(xmlstrValidStartElement);
+		 ul++)
 	{
-		fValidStartElement = (0 == XMLString::compareString(xmlszName, xmlstrValidStartElement[ul]));
+		fValidStartElement = (0 == XMLString::compareString(
+									   xmlszName, xmlstrValidStartElement[ul]));
 	}
 
 	return fValidStartElement;
@@ -374,22 +368,23 @@ CParseHandlerDXL::FValidStartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
-{		
+CParseHandlerDXL::StartElement(const XMLCh *const xmlszUri,
+							   const XMLCh *const xmlszLocalname,
+							   const XMLCh *const xmlszQname,
+							   const Attributes &attrs)
+{
 	// reset time slice counter to ignore time taken by Xerces XSD grammar loader (OPT-491)
 #ifdef GPOS_DEBUG
-    CWorker::PwrkrSelf()->ResetTimeSlice();
-#endif // GPOS_DEBUG
-	
-	if (0 == XMLString::compareString(xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenDXLMessage)) ||
-		0 == XMLString::compareString(xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenThread)) ||
-		0 == XMLString::compareString(xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenComment)))
+	CWorker::PwrkrSelf()->ResetTimeSlice();
+#endif  // GPOS_DEBUG
+
+	if (0 ==
+			XMLString::compareString(
+				xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenDXLMessage)) ||
+		0 == XMLString::compareString(
+				 xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenThread)) ||
+		0 == XMLString::compareString(
+				 xmlszLocalname, CDXLTokens::XmlstrToken(EdxltokenComment)))
 	{
 		// beginning of DXL document or a new thread info
 		;
@@ -399,13 +394,14 @@ CParseHandlerDXL::StartElement
 		GPOS_ASSERT(FValidStartElement(xmlszLocalname));
 
 		// install a parse handler for the given element
-		CParseHandlerBase *pph = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
-	
+		CParseHandlerBase *pph =
+			CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+
 		m_pphm->ActivateParseHandler(pph);
-			
+
 		// store parse handler
 		this->Append(pph);
-		
+
 		pph->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 	}
 }
@@ -419,12 +415,10 @@ CParseHandlerDXL::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const, // xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerDXL::EndElement(const XMLCh *const,  // xmlszUri,
+							 const XMLCh *const,  // xmlszLocalname,
+							 const XMLCh *const   // xmlszQname
+)
 {
 	// ignore
 }
@@ -447,7 +441,7 @@ CParseHandlerDXL::endDocument()
 			(this->*pf)(pph);
 		}
 	}
-	
+
 	m_pphm->DeactivateHandler();
 }
 
@@ -461,13 +455,9 @@ CParseHandlerDXL::endDocument()
 //
 //---------------------------------------------------------------------------
 Pfparse
-CParseHandlerDXL::FindParseHandler
-	(
-	EDxlParseHandlerType edxlphtype
-	)
+CParseHandlerDXL::FindParseHandler(EDxlParseHandlerType edxlphtype)
 {
-	SParseElem rgParseHandlers[] =
-	{
+	SParseElem rgParseHandlers[] = {
 		{EdxlphTraceFlags, &CParseHandlerDXL::ExtractTraceFlags},
 		{EdxlphOptConfig, &CParseHandlerDXL::ExtractOptimizerConfig},
 		{EdxlphPlan, &CParseHandlerDXL::ExtractDXLPlan},
@@ -504,16 +494,13 @@ CParseHandlerDXL::FindParseHandler
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractTraceFlags
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractTraceFlags(CParseHandlerBase *pph)
 {
 	CParseHandlerTraceFlags *pphtf = (CParseHandlerTraceFlags *) pph;
 	GPOS_ASSERT(NULL != pphtf);
 
-	GPOS_ASSERT (NULL == m_pbs && "Traceflags already set");
-	
+	GPOS_ASSERT(NULL == m_pbs && "Traceflags already set");
+
 	m_pbs = pphtf->Pbs();
 	m_pbs->AddRef();
 }
@@ -527,20 +514,18 @@ CParseHandlerDXL::ExtractTraceFlags
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractOptimizerConfig
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractOptimizerConfig(CParseHandlerBase *pph)
 {
-	CParseHandlerOptimizerConfig *pphOptConfig = (CParseHandlerOptimizerConfig *) pph;
+	CParseHandlerOptimizerConfig *pphOptConfig =
+		(CParseHandlerOptimizerConfig *) pph;
 	GPOS_ASSERT(NULL != pphOptConfig);
 
-	GPOS_ASSERT (NULL == m_pbs && "Traceflags already set");
+	GPOS_ASSERT(NULL == m_pbs && "Traceflags already set");
 
 	m_pbs = pphOptConfig->Pbs();
 	m_pbs->AddRef();
-	
-	GPOS_ASSERT (NULL == m_poconf && "Optimizer configuration already set");
+
+	GPOS_ASSERT(NULL == m_poconf && "Optimizer configuration already set");
 
 	m_poconf = pphOptConfig->Poconf();
 	m_poconf->AddRef();
@@ -555,10 +540,7 @@ CParseHandlerDXL::ExtractOptimizerConfig
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractDXLPlan
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractDXLPlan(CParseHandlerBase *pph)
 {
 	CParseHandlerPlan *pphPlan = (CParseHandlerPlan *) pph;
 	GPOS_ASSERT(NULL != pphPlan && NULL != pphPlan->Pdxln());
@@ -579,17 +561,14 @@ CParseHandlerDXL::ExtractDXLPlan
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractMetadataObjects
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractMetadataObjects(CParseHandlerBase *pph)
 {
 	CParseHandlerMetadata *pphmd = dynamic_cast<CParseHandlerMetadata *>(pph);
 	GPOS_ASSERT(NULL != pphmd && NULL != pphmd->Pdrgpmdobj());
 
 	m_pdrgpmdobj = pphmd->Pdrgpmdobj();
 	m_pdrgpmdobj->AddRef();
-	
+
 	m_pdrgpmdid = pphmd->Pdrgpmdid();
 	m_pdrgpmdid->AddRef();
 
@@ -610,12 +589,10 @@ CParseHandlerDXL::ExtractMetadataObjects
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractStats
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractStats(CParseHandlerBase *pph)
 {
-	CParseHandlerStatistics *pphStats = dynamic_cast<CParseHandlerStatistics *>(pph);
+	CParseHandlerStatistics *pphStats =
+		dynamic_cast<CParseHandlerStatistics *>(pph);
 	GPOS_ASSERT(NULL != pphStats);
 
 	DrgPdxlstatsderrel *pdrgpdxlstatsderrel = pphStats->Pdrgpdxlstatsderrel();
@@ -634,10 +611,7 @@ CParseHandlerDXL::ExtractStats
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractDXLQuery
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractDXLQuery(CParseHandlerBase *pph)
 {
 	CParseHandlerQuery *pphquery = dynamic_cast<CParseHandlerQuery *>(pph);
 	GPOS_ASSERT(NULL != pphquery && NULL != pphquery->Pdxln());
@@ -649,7 +623,7 @@ CParseHandlerDXL::ExtractDXLQuery
 
 	m_pdrgpdxlnOutputCols = pphquery->PdrgpdxlnOutputCols();
 	m_pdrgpdxlnOutputCols->AddRef();
-	
+
 	m_pdrgpdxlnCTE = pphquery->PdrgpdxlnCTE();
 	m_pdrgpdxlnCTE->AddRef();
 }
@@ -664,20 +638,18 @@ CParseHandlerDXL::ExtractDXLQuery
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractMDRequest
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractMDRequest(CParseHandlerBase *pph)
 {
-	CParseHandlerMDRequest *pphMDRequest = dynamic_cast<CParseHandlerMDRequest *>(pph);
+	CParseHandlerMDRequest *pphMDRequest =
+		dynamic_cast<CParseHandlerMDRequest *>(pph);
 	GPOS_ASSERT(NULL != pphMDRequest && NULL != pphMDRequest->Pdrgpmdid());
-	
+
 	DrgPmdid *pdrgpmdid = pphMDRequest->Pdrgpmdid();
 	CMDRequest::DrgPtr *pdrgptr = pphMDRequest->Pdrgptr();
-	
+
 	pdrgpmdid->AddRef();
 	pdrgptr->AddRef();
-	
+
 	m_pmdr = GPOS_NEW(m_pmp) CMDRequest(m_pmp, pdrgpmdid, pdrgptr);
 }
 
@@ -691,13 +663,12 @@ CParseHandlerDXL::ExtractMDRequest
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractSearchStrategy
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractSearchStrategy(CParseHandlerBase *pph)
 {
-	CParseHandlerSearchStrategy *pphSearchStrategy = dynamic_cast<CParseHandlerSearchStrategy *>(pph);
-	GPOS_ASSERT(NULL != pphSearchStrategy && NULL != pphSearchStrategy->Pdrgppss());
+	CParseHandlerSearchStrategy *pphSearchStrategy =
+		dynamic_cast<CParseHandlerSearchStrategy *>(pph);
+	GPOS_ASSERT(NULL != pphSearchStrategy &&
+				NULL != pphSearchStrategy->Pdrgppss());
 
 	DrgPss *pdrgpss = pphSearchStrategy->Pdrgppss();
 
@@ -715,12 +686,10 @@ CParseHandlerDXL::ExtractSearchStrategy
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractCostParams
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractCostParams(CParseHandlerBase *pph)
 {
-	CParseHandlerCostParams *pphCostParams = dynamic_cast<CParseHandlerCostParams *>(pph);
+	CParseHandlerCostParams *pphCostParams =
+		dynamic_cast<CParseHandlerCostParams *>(pph);
 	GPOS_ASSERT(NULL != pphCostParams && NULL != pphCostParams->Pcp());
 
 	ICostModelParams *pcp = pphCostParams->Pcp();
@@ -738,12 +707,10 @@ CParseHandlerDXL::ExtractCostParams
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerDXL::ExtractScalarExpr
-	(
-	CParseHandlerBase *pph
-	)
+CParseHandlerDXL::ExtractScalarExpr(CParseHandlerBase *pph)
 {
-	CParseHandlerScalarExpr *pphScalarExpr = dynamic_cast<CParseHandlerScalarExpr *>(pph);
+	CParseHandlerScalarExpr *pphScalarExpr =
+		dynamic_cast<CParseHandlerScalarExpr *>(pph);
 	GPOS_ASSERT(NULL != pphScalarExpr && NULL != pphScalarExpr->Pdxln());
 
 	m_pdxlnScalarExpr = pphScalarExpr->Pdxln();

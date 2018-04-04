@@ -33,15 +33,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerRoutedMotion::CParseHandlerRoutedMotion
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_pdxlop(NULL)
+CParseHandlerRoutedMotion::CParseHandlerRoutedMotion(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot), m_pdxlop(NULL)
 {
 }
 
@@ -55,43 +50,51 @@ CParseHandlerRoutedMotion::CParseHandlerRoutedMotion
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerRoutedMotion::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
-{	
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalRoutedDistributeMotion), xmlszLocalname))
+CParseHandlerRoutedMotion::StartElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const,  // xmlszQname
+										const Attributes &attrs)
+{
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalRoutedDistributeMotion),
+			xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
-	m_pdxlop = (CDXLPhysicalRoutedDistributeMotion *) CDXLOperatorFactory::PdxlopRoutedMotion(m_pphm->Pmm(), attrs);
-	
+
+	m_pdxlop = (CDXLPhysicalRoutedDistributeMotion *)
+		CDXLOperatorFactory::PdxlopRoutedMotion(m_pphm->Pmm(), attrs);
+
 	// create and activate the parse handler for the children nodes in reverse
 	// order of their expected appearance
-	
+
 	// parse handler for child node
-	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
+	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenPhysical), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphChild);
-	
+
 	// parse handler for sorting column list
-	CParseHandlerBase *pphSortColList = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarSortColList), m_pphm, this);
+	CParseHandlerBase *pphSortColList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarSortColList), m_pphm,
+		this);
 	m_pphm->ActivateParseHandler(pphSortColList);
 
 	// parse handler for the filter
-	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
+	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphFilter);
-	
+
 	// parse handler for the proj list
-	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphPrL);
-	
+
 	//parse handler for the properties of the operator
-	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphProp);
 
 	// store parse handlers
@@ -100,7 +103,6 @@ CParseHandlerRoutedMotion::StartElement
 	this->Append(pphFilter);
 	this->Append(pphSortColList);
 	this->Append(pphChild);
-
 }
 
 //---------------------------------------------------------------------------
@@ -112,37 +114,44 @@ CParseHandlerRoutedMotion::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerRoutedMotion::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerRoutedMotion::EndElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalRoutedDistributeMotion), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalRoutedDistributeMotion),
+			xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// construct node from the created child nodes
-	
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
-	CParseHandlerFilter *pphFilter = dynamic_cast<CParseHandlerFilter *>((*this)[2]);
-	CParseHandlerSortColList *pphSortColList = dynamic_cast<CParseHandlerSortColList *>((*this)[3]);
-	CParseHandlerPhysicalOp *pphChild = dynamic_cast<CParseHandlerPhysicalOp *>((*this)[4]);
-	
+
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
+	CParseHandlerFilter *pphFilter =
+		dynamic_cast<CParseHandlerFilter *>((*this)[2]);
+	CParseHandlerSortColList *pphSortColList =
+		dynamic_cast<CParseHandlerSortColList *>((*this)[3]);
+	CParseHandlerPhysicalOp *pphChild =
+		dynamic_cast<CParseHandlerPhysicalOp *>((*this)[4]);
+
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);
 	// set statictics and physical properties
 	CParseHandlerUtils::SetProperties(m_pdxln, pphProp);
-	
+
 	// add children
 	AddChildFromParseHandler(pphPrL);
 	AddChildFromParseHandler(pphFilter);
 	AddChildFromParseHandler(pphSortColList);
 	AddChildFromParseHandler(pphChild);
-	
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }

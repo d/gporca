@@ -28,14 +28,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarNullIf::CParseHandlerScalarNullIf
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarNullIf::CParseHandlerScalarNullIf(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -48,40 +44,44 @@ CParseHandlerScalarNullIf::CParseHandlerScalarNullIf
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarNullIf::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerScalarNullIf::StartElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const,  // xmlszQname
+										const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarNullIf), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarNullIf),
+								 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	IMDId *pmdidOp = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenOpNo, EdxltokenScalarNullIf);
-	IMDId *pmdidRetType = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenScalarNullIf);
+	IMDId *pmdidOp = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenOpNo, EdxltokenScalarNullIf);
+	IMDId *pmdidRetType = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenScalarNullIf);
 
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarNullIf(m_pmp, pmdidOp, pmdidRetType));
+	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(
+		m_pmp, GPOS_NEW(m_pmp) CDXLScalarNullIf(m_pmp, pmdidOp, pmdidRetType));
 
 	// create and activate the parse handler for the children nodes in reverse
 	// order of their expected appearance
 
 	// parse handler for right scalar node
-	CParseHandlerBase *pphRight = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pphRight = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphRight);
 
 	// parse handler for left scalar node
-	CParseHandlerBase *pphLeft = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pphLeft = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphLeft);
 
 	// store parse handlers
 	this->Append(pphLeft);
 	this->Append(pphRight);
-
 }
 
 //---------------------------------------------------------------------------
@@ -93,21 +93,24 @@ CParseHandlerScalarNullIf::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarNullIf::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarNullIf::EndElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarNullIf), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarNullIf),
+								 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CParseHandlerScalarOp *pphLeft = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
-	CParseHandlerScalarOp *pphRight = dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
+	CParseHandlerScalarOp *pphLeft =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+	CParseHandlerScalarOp *pphRight =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
 
 	// add constructed children
 	AddChildFromParseHandler(pphLeft);
@@ -118,4 +121,3 @@ CParseHandlerScalarNullIf::EndElement
 }
 
 // EOF
-

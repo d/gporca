@@ -19,7 +19,7 @@
 //            +--CScalarAssertConstraint (ErrorMsg: Check constraint r_c_check for table r violated)
 //               +--CScalarIsDistinctFrom (=)
 //                  |--CScalarCmp (>)
-//                  |  |--CScalarIdent "c" (3) 
+//                  |  |--CScalarIdent "c" (3)
 //                  |  +--CScalarConst (0)
 //                  +--CScalarConst (0)
 //---------------------------------------------------------------------------
@@ -34,87 +34,79 @@
 
 namespace gpopt
 {
+using namespace gpos;
+using namespace gpmd;
 
-	using namespace gpos;
-	using namespace gpmd;
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarAssertConstraintList
+//
+//	@doc:
+//		Scalar assert constraint list
+//
+//---------------------------------------------------------------------------
+class CScalarAssertConstraintList : public CScalar
+{
+private:
+	// private copy ctor
+	CScalarAssertConstraintList(const CScalarAssertConstraintList &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarAssertConstraintList
-	//
-	//	@doc:
-	//		Scalar assert constraint list
-	//
-	//---------------------------------------------------------------------------
-	class CScalarAssertConstraintList : public CScalar
+public:
+	// ctor
+	CScalarAssertConstraintList(IMemoryPool *pmp);
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopScalarAssertConstraintList;
+	}
 
-			// private copy ctor
-			CScalarAssertConstraintList(const CScalarAssertConstraintList &);
+	// operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarAssertConstraintList";
+	}
 
-		public:
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// ctor
-			CScalarAssertConstraintList(IMemoryPool *pmp);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return false;
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarAssertConstraintList;
-			}
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-			// operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarAssertConstraintList";
-			}
+	// type of expression's result
+	virtual IMDId *
+	PmdidType() const;
 
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
+	// conversion function
+	static CScalarAssertConstraintList *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarAssertConstraintList == pop->Eopid());
 
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return false;
-			}
+		return dynamic_cast<CScalarAssertConstraintList *>(pop);
+	}
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
+};  // class CScalarAssertConstraintList
+}  // namespace gpopt
 
-			// type of expression's result
-			virtual
-			IMDId *PmdidType() const;
-
-			// conversion function
-			static
-			CScalarAssertConstraintList *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarAssertConstraintList == pop->Eopid());
-
-				return dynamic_cast<CScalarAssertConstraintList*>(pop);
-			}
-
-	}; // class CScalarAssertConstraintList
-}
-
-#endif // !GPOPT_CScalarAssertConstraintList_H
+#endif  // !GPOPT_CScalarAssertConstraintList_H
 
 // EOF

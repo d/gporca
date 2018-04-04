@@ -26,12 +26,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalLimit::CDXLPhysicalLimit
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLPhysical(pmp)
+CDXLPhysicalLimit::CDXLPhysicalLimit(IMemoryPool *pmp) : CDXLPhysical(pmp)
 {
 }
 
@@ -73,16 +68,13 @@ CDXLPhysicalLimit::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalLimit::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalLimit::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
@@ -99,7 +91,8 @@ CDXLPhysicalLimit::SerializeToDXL
 		pdxlnChild->SerializeToDXL(pxmlser);
 	}
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -110,15 +103,12 @@ CDXLPhysicalLimit::SerializeToDXL
 //		CDXLPhysicalLimit::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalLimit::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalLimit::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(4 == pdxln->UlArity());
 
@@ -147,6 +137,6 @@ CDXLPhysicalLimit::AssertValid
 		pdxlnOffset->Pdxlop()->AssertValid(pdxlnOffset, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

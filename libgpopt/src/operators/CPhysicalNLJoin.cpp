@@ -31,12 +31,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalNLJoin::CPhysicalNLJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CPhysicalJoin(pmp)
+CPhysicalNLJoin::CPhysicalNLJoin(IMemoryPool *pmp) : CPhysicalJoin(pmp)
 {
 	// NLJ creates two partition propagation requests for children:
 	// (0) push possible Dynamic Partition Elimination (DPE) predicates from join's predicate to
@@ -59,7 +54,8 @@ CPhysicalNLJoin::CPhysicalNLJoin
 //
 //---------------------------------------------------------------------------
 CPhysicalNLJoin::~CPhysicalNLJoin()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -71,19 +67,15 @@ CPhysicalNLJoin::~CPhysicalNLJoin()
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalNLJoin::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	COrderSpec *posInput,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalNLJoin::PosRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 COrderSpec *posInput, ULONG ulChildIndex,
+							 DrgPdp *,  // pdrgpdpCtxt
+							 ULONG		// ulOptReq
+							 ) const
 {
-	GPOS_ASSERT(ulChildIndex < 2 &&
-				"Required sort order can be computed on the relational child only");
+	GPOS_ASSERT(
+		ulChildIndex < 2 &&
+		"Required sort order can be computed on the relational child only");
 
 	if (0 == ulChildIndex)
 	{
@@ -103,19 +95,16 @@ CPhysicalNLJoin::PosRequired
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalNLJoin::PrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CRewindabilitySpec *prsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, //pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalNLJoin::PrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CRewindabilitySpec *prsRequired,
+							 ULONG ulChildIndex,
+							 DrgPdp *,  //pdrgpdpCtxt
+							 ULONG		// ulOptReq
+							 ) const
 {
-	GPOS_ASSERT(ulChildIndex < 2 &&
-				"Required rewindability can be computed on the relational child only");
+	GPOS_ASSERT(
+		ulChildIndex < 2 &&
+		"Required rewindability can be computed on the relational child only");
 
 	// if there are outer references, then we need a materialize on both children
 	if (exprhdl.FHasOuterRefs())
@@ -126,7 +115,8 @@ CPhysicalNLJoin::PrsRequired
 	if (1 == ulChildIndex)
 	{
 		// inner child has to be rewindable
-		return GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtGeneral /*ert*/);
+		return GPOS_NEW(pmp)
+			CRewindabilitySpec(CRewindabilitySpec::ErtGeneral /*ert*/);
 	}
 
 	// pass through requirements to outer child
@@ -142,18 +132,15 @@ CPhysicalNLJoin::PrsRequired
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalNLJoin::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalNLJoin::PcrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							  CColRefSet *pcrsRequired, ULONG ulChildIndex,
+							  DrgPdp *,  // pdrgpdpCtxt
+							  ULONG		 // ulOptReq
+)
 {
-	GPOS_ASSERT(ulChildIndex < 2 &&
-				"Required properties can only be computed on the relational child");
+	GPOS_ASSERT(
+		ulChildIndex < 2 &&
+		"Required properties can only be computed on the relational child");
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrs->Include(pcrsRequired);
@@ -173,7 +160,8 @@ CPhysicalNLJoin::PcrsRequired
 		pcrs->Include(PdrgPcrInner());
 	}
 
-	CColRefSet *pcrsReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, 2 /*ulScalarIndex*/);
+	CColRefSet *pcrsReqd =
+		PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, 2 /*ulScalarIndex*/);
 	pcrs->Release();
 
 	return pcrsReqd;
@@ -189,12 +177,8 @@ CPhysicalNLJoin::PcrsRequired
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalNLJoin::EpetOrder
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalNLJoin::EpetOrder(CExpressionHandle &exprhdl,
+						   const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -217,15 +201,10 @@ CPhysicalNLJoin::EpetOrder
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalNLJoin::PppsRequiredNLJoinChild
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq
-	)
+CPhysicalNLJoin::PppsRequiredNLJoinChild(
+	IMemoryPool *pmp, CExpressionHandle &exprhdl,
+	CPartitionPropagationSpec *pppsRequired, ULONG ulChildIndex,
+	DrgPdp *pdrgpdpCtxt, ULONG ulOptReq)
 {
 	GPOS_ASSERT(NULL != pppsRequired);
 
@@ -234,13 +213,14 @@ CPhysicalNLJoin::PppsRequiredNLJoinChild
 		// request (1): push partition propagation requests to join's children,
 		// do not consider possible dynamic partition elimination using join predicate here,
 		// this is handled by optimization request (0) below
-		return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired, ulChildIndex);
+		return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired,
+												   ulChildIndex);
 	}
 	GPOS_ASSERT(0 == ulOptReq);
 
-	return PppsRequiredJoinChild(pmp, exprhdl, pppsRequired, ulChildIndex, pdrgpdpCtxt, true);
+	return PppsRequiredJoinChild(pmp, exprhdl, pppsRequired, ulChildIndex,
+								 pdrgpdpCtxt, true);
 }
 
 
 // EOF
-

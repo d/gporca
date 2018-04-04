@@ -18,67 +18,60 @@
 
 namespace gpdxl
 {
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarFilter
-	//
-	//	@doc:
-	//		Class for representing DXL filter operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarFilter : public CDXLScalar
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarFilter
+//
+//	@doc:
+//		Class for representing DXL filter operators
+//
+//---------------------------------------------------------------------------
+class CDXLScalarFilter : public CDXLScalar
+{
+private:
+	// private copy ctor
+	CDXLScalarFilter(CDXLScalarFilter &);
+
+public:
+	// ctor/dtor
+	explicit CDXLScalarFilter(IMemoryPool *pmp);
+
+	// accessors
+	Edxlopid
+	Edxlop() const;
+	const CWStringConst *
+	PstrOpName() const;
+
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+
+	// conversion function
+	static CDXLScalarFilter *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
-			// private copy ctor
-			CDXLScalarFilter(CDXLScalarFilter&);
-			
-		public:
-			// ctor/dtor
-			explicit
-			CDXLScalarFilter(IMemoryPool *pmp);
-			
-			// accessors
-			Edxlopid Edxlop() const;
-			const CWStringConst *PstrOpName() const;
-			
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarFilter == pdxlop->Edxlop());
 
-			// conversion function
-			static
-			CDXLScalarFilter *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarFilter == pdxlop->Edxlop());
+		return dynamic_cast<CDXLScalarFilter *>(pdxlop);
+	}
 
-				return dynamic_cast<CDXLScalarFilter*>(pdxlop);
-			}
-
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-					(
-					CMDAccessor *//pmda
-					)
-					const
-			{
-				GPOS_ASSERT(!"Invalid function call for a container operator");
-				return false;
-			}
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
+	{
+		GPOS_ASSERT(!"Invalid function call for a container operator");
+		return false;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure
-			virtual
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG	
-	};
-}
-#endif // !GPDXL_CDXLScalarFilter_H
+	// checks whether the operator has valid structure
+	virtual void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLScalarFilter_H
 
 // EOF
-

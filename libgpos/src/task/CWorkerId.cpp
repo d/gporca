@@ -19,7 +19,7 @@ using namespace gpos;
 
 
 // invalid worker id
-const CWorkerId CWorkerId::m_widInvalid (false /*fvalid*/);
+const CWorkerId CWorkerId::m_widInvalid(false /*fvalid*/);
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -29,10 +29,7 @@ const CWorkerId CWorkerId::m_widInvalid (false /*fvalid*/);
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CWorkerId::CWorkerId
-	(
-	BOOL fValid
-	)
+CWorkerId::CWorkerId(BOOL fValid)
 {
 	if (fValid)
 	{
@@ -54,11 +51,7 @@ CWorkerId::CWorkerId
 //
 //---------------------------------------------------------------------------
 BOOL
-CWorkerId::FEqual
-	(
-	const CWorkerId &wid
-	)
-	const
+CWorkerId::FEqual(const CWorkerId &wid) const
 {
 	// compare on thread id first; if equal then there cannot be a race on the
 	// valid flags
@@ -107,10 +100,7 @@ CWorkerId::Invalid()
 //
 //---------------------------------------------------------------------------
 ULONG
-CWorkerId::UlHash
-	(
-	const CWorkerId &wid
-	)
+CWorkerId::UlHash(const CWorkerId &wid)
 {
 	// don't compute hash value for invalid id
 	GPOS_ASSERT(wid.FValid() && "Invalid worker id.");
@@ -135,7 +125,6 @@ CWorkerId::FValid() const
 	return !FEqual(m_widInvalid);
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

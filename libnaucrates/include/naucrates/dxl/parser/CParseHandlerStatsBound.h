@@ -19,76 +19,72 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpopt;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpopt;
+using namespace gpnaucrates;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerStatsBound
-	//
-	//	@doc:
-	//		Parse handler for parsing the upper/lower bounds of a bucket
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerStatsBound : public CParseHandlerBase
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerStatsBound
+//
+//	@doc:
+//		Parse handler for parsing the upper/lower bounds of a bucket
+//
+//---------------------------------------------------------------------------
+class CParseHandlerStatsBound : public CParseHandlerBase
+{
+private:
+	// dxl datum representing the bound
+	CDXLDatum *m_pdxldatum;
+
+	// is stats bound closed
+	BOOL m_fStatsBoundClosed;
+
+	// private copy ctor
+	CParseHandlerStatsBound(const CParseHandlerStatsBound &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerStatsBound(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerStatsBound();
+
+	// return the dxl datum representing the bound point
+	CDXLDatum *
+	Pdxldatum() const
 	{
-		private:
+		return m_pdxldatum;
+	}
 
-			// dxl datum representing the bound
-			CDXLDatum *m_pdxldatum;
+	// is stats bound closed
+	BOOL
+	FStatsBoundClosed() const
+	{
+		return m_fStatsBoundClosed;
+	}
+};
+}  // namespace gpdxl
 
-			// is stats bound closed
-			BOOL m_fStatsBoundClosed;
-
-			// private copy ctor
-			CParseHandlerStatsBound(const CParseHandlerStatsBound &);
-
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
-
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
-
-		public:
-			// ctor/dtor
-			CParseHandlerStatsBound
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-
-			virtual
-			~CParseHandlerStatsBound();
-
-			// return the dxl datum representing the bound point
-			CDXLDatum *Pdxldatum() const
-			{
-				return m_pdxldatum;
-			}
-
-			// is stats bound closed
-			BOOL FStatsBoundClosed() const
-			{
-				return m_fStatsBoundClosed;
-			}
-	};
-}
-
-#endif // GPDXL_CParseHandlerStatsBound_H
+#endif  // GPDXL_CParseHandlerStatsBound_H
 
 // EOF

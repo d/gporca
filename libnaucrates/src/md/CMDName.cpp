@@ -25,14 +25,8 @@ using namespace gpmd;
 //		Creates a deep copy of the provided string
 //
 //---------------------------------------------------------------------------
-CMDName::CMDName
-	(
-	IMemoryPool *pmp,
-	const CWStringBase *pstr
-	)
-	:
-	m_psc(NULL),
-	m_fDeepCopy(true)
+CMDName::CMDName(IMemoryPool *pmp, const CWStringBase *pstr)
+	: m_psc(NULL), m_fDeepCopy(true)
 {
 	m_psc = GPOS_NEW(pmp) CWStringConst(pmp, pstr->Wsz());
 }
@@ -47,14 +41,8 @@ CMDName::CMDName
 //		can become property of the CMDName object
 //
 //---------------------------------------------------------------------------
-CMDName::CMDName
-	(
-	const CWStringConst *pstr,
-	BOOL fOwnsMemory
-	)
-	:
-	m_psc(pstr),
-	m_fDeepCopy(fOwnsMemory)
+CMDName::CMDName(const CWStringConst *pstr, BOOL fOwnsMemory)
+	: m_psc(pstr), m_fDeepCopy(fOwnsMemory)
 {
 	GPOS_ASSERT(NULL != m_psc);
 	GPOS_ASSERT(m_psc->FValid());
@@ -68,16 +56,10 @@ CMDName::CMDName
 //		Shallow copy constructor
 //
 //---------------------------------------------------------------------------
-CMDName::CMDName
-	(
-	const CMDName &name
-	)
-	:
-	m_psc(name.Pstr()),
-	m_fDeepCopy(false)
+CMDName::CMDName(const CMDName &name) : m_psc(name.Pstr()), m_fDeepCopy(false)
 {
 	GPOS_ASSERT(NULL != m_psc->Wsz());
-	GPOS_ASSERT(m_psc->FValid());	
+	GPOS_ASSERT(m_psc->FValid());
 }
 
 
@@ -100,4 +82,3 @@ CMDName::~CMDName()
 }
 
 // EOF
-

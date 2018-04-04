@@ -23,107 +23,103 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CIndexDescriptor
-	//
-	//	@doc:
-	//		Base class for index descriptor
-	//
-	//---------------------------------------------------------------------------
-	class CIndexDescriptor : public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		CIndexDescriptor
+//
+//	@doc:
+//		Base class for index descriptor
+//
+//---------------------------------------------------------------------------
+class CIndexDescriptor : public CRefCount
+{
+private:
+	// mdid of the index
+	IMDId *m_pmdidIndex;
+
+	// name of index
+	CName m_name;
+
+	// array of index key columns
+	DrgPcoldesc *m_pdrgpcoldescKeyCols;
+
+	// array of index included columns
+	DrgPcoldesc *m_pdrgpcoldescIncludedCols;
+
+	// clustered index
+	BOOL m_fClustered;
+
+	// private copy ctor
+	CIndexDescriptor(const CIndexDescriptor &);
+
+public:
+	// ctor
+	CIndexDescriptor(IMemoryPool *pmp, IMDId *pmdidIndex, const CName &name,
+					 DrgPcoldesc *pdrgcoldescKeyCols,
+					 DrgPcoldesc *pdrgcoldescIncludedCols, BOOL fClustered);
+
+	// dtor
+	virtual ~CIndexDescriptor();
+
+	// number of key columns
+	ULONG
+	UlKeys() const;
+
+	// number of included columns
+	ULONG
+	UlIncludedColumns() const;
+
+	// index mdid accessor
+	IMDId *
+	Pmdid() const
 	{
-		private:
+		return m_pmdidIndex;
+	}
 
-			// mdid of the index
-			IMDId *m_pmdidIndex;
+	// index name
+	const CName &
+	Name() const
+	{
+		return m_name;
+	}
 
-			// name of index
-			CName m_name;
+	// key column descriptors
+	DrgPcoldesc *
+	PdrgpcoldescKey() const
+	{
+		return m_pdrgpcoldescKeyCols;
+	}
 
-			// array of index key columns
-			DrgPcoldesc *m_pdrgpcoldescKeyCols;
+	// included column descriptors
+	DrgPcoldesc *
+	PdrgpcoldescIncluded() const
+	{
+		return m_pdrgpcoldescIncludedCols;
+	}
 
-			// array of index included columns
-			DrgPcoldesc *m_pdrgpcoldescIncludedCols;
+	// is index clustered
+	BOOL
+	FClustered() const
+	{
+		return m_fClustered;
+	}
 
-			// clustered index
-			BOOL m_fClustered;
-
-			// private copy ctor
-			CIndexDescriptor(const CIndexDescriptor &);
-
-		public:
-
-			// ctor
-			CIndexDescriptor
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidIndex,
-				const CName &name,
-				DrgPcoldesc *pdrgcoldescKeyCols,
-				DrgPcoldesc *pdrgcoldescIncludedCols,
-				BOOL fClustered
-				);
-
-			// dtor
-			virtual
-			~CIndexDescriptor();
-
-			// number of key columns
-			ULONG UlKeys() const;
-
-			// number of included columns
-			ULONG UlIncludedColumns() const;
-
-			// index mdid accessor
-			IMDId *Pmdid() const
-			{
-				return m_pmdidIndex;
-			}
-
-			// index name
-			const CName &Name() const
-			{
-				return m_name;
-			}
-
-			// key column descriptors
-			DrgPcoldesc *PdrgpcoldescKey() const
-			{
-				return m_pdrgpcoldescKeyCols;
-			}
-
-			// included column descriptors
-			DrgPcoldesc *PdrgpcoldescIncluded() const
-			{
-				return m_pdrgpcoldescIncludedCols;
-			}
-			
-			// is index clustered
-			BOOL FClustered() const
-			{
-				return m_fClustered;
-			}
-
-			// create an index descriptor
-			static CIndexDescriptor *Pindexdesc
-				(
-				IMemoryPool *pmp,
-				const CTableDescriptor *ptabdesc,
-				const IMDIndex *pmdindex
-				);
+	// create an index descriptor
+	static CIndexDescriptor *
+	Pindexdesc(IMemoryPool *pmp, const CTableDescriptor *ptabdesc,
+			   const IMDIndex *pmdindex);
 
 #ifdef GPOS_DEBUG
-			IOstream &OsPrint(IOstream &) const;
-#endif // GPOS_DEBUG
+	IOstream &
+	OsPrint(IOstream &) const;
+#endif  // GPOS_DEBUG
 
-	}; // class CIndexDescriptor
-}
+};  // class CIndexDescriptor
+}  // namespace gpopt
 
-#endif // !GPOPT_CIndexDescriptor_H
+#endif  // !GPOPT_CIndexDescriptor_H
 
 // EOF

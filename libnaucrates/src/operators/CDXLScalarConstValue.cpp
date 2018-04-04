@@ -28,14 +28,9 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarConstValue::CDXLScalarConstValue
-	(
-	IMemoryPool *pmp,
-	CDXLDatum *pdxldatum
-	)
-	:
-	CDXLScalar(pmp),
-	m_pdxldatum(pdxldatum)
+CDXLScalarConstValue::CDXLScalarConstValue(IMemoryPool *pmp,
+										   CDXLDatum *pdxldatum)
+	: CDXLScalar(pmp), m_pdxldatum(pdxldatum)
 {
 }
 
@@ -79,7 +74,8 @@ CDXLScalarConstValue::Edxlop() const
 const CWStringConst *
 CDXLScalarConstValue::PstrOpName() const
 {
-	return CDXLTokens::PstrToken(EdxltokenScalarConstValue);;
+	return CDXLTokens::PstrToken(EdxltokenScalarConstValue);
+	;
 }
 
 //---------------------------------------------------------------------------
@@ -91,12 +87,9 @@ CDXLScalarConstValue::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarConstValue::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *//pdxln
-	)
-	const
+CDXLScalarConstValue::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *  //pdxln
+									 ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 	m_pdxldatum->Serialize(pxmlser, pstrElemName);
@@ -111,11 +104,7 @@ CDXLScalarConstValue::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarConstValue::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarConstValue::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pdxldatum->Pmdid())->Eti());
 }
@@ -130,16 +119,13 @@ CDXLScalarConstValue::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarConstValue::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren 
-	) 
-	const
+CDXLScalarConstValue::AssertValid(const CDXLNode *pdxln,
+								  BOOL  // fValidateChildren
+								  ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 	GPOS_ASSERT(m_pdxldatum->Pmdid()->FValid());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

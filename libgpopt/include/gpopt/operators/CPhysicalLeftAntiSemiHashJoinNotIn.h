@@ -16,79 +16,68 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalLeftAntiSemiHashJoinNotIn
+//
+//	@doc:
+//		Left anti semi hash join operator with NotIn semantics
+//
+//---------------------------------------------------------------------------
+class CPhysicalLeftAntiSemiHashJoinNotIn : public CPhysicalLeftAntiSemiHashJoin
+{
+private:
+	// private copy ctor
+	CPhysicalLeftAntiSemiHashJoinNotIn(
+		const CPhysicalLeftAntiSemiHashJoinNotIn &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalLeftAntiSemiHashJoinNotIn
-	//
-	//	@doc:
-	//		Left anti semi hash join operator with NotIn semantics
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalLeftAntiSemiHashJoinNotIn : public CPhysicalLeftAntiSemiHashJoin
+public:
+	// ctor
+	CPhysicalLeftAntiSemiHashJoinNotIn(IMemoryPool *pmp,
+									   DrgPexpr *pdrgpexprOuterKeys,
+									   DrgPexpr *pdrgpexprInnerKeys);
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopPhysicalLeftAntiSemiHashJoinNotIn;
+	}
 
-		private:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalLeftAntiSemiHashJoinNotIn";
+	}
 
-			// private copy ctor
-			CPhysicalLeftAntiSemiHashJoinNotIn(const CPhysicalLeftAntiSemiHashJoinNotIn &);
+	//-------------------------------------------------------------------------------------
+	// Required Plan Properties
+	//-------------------------------------------------------------------------------------
 
-		public:
+	// compute required distribution of the n-th child
+	virtual CDistributionSpec *
+	PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				CDistributionSpec *pdsRequired, ULONG ulChildIndex,
+				DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const;
 
-			// ctor
-			CPhysicalLeftAntiSemiHashJoinNotIn(IMemoryPool *pmp, DrgPexpr *pdrgpexprOuterKeys, DrgPexpr *pdrgpexprInnerKeys);
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalLeftAntiSemiHashJoinNotIn;
-			}
+	// conversion function
+	static CPhysicalLeftAntiSemiHashJoinNotIn *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(EopPhysicalLeftAntiSemiHashJoinNotIn == pop->Eopid());
 
-			 // return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalLeftAntiSemiHashJoinNotIn";
-			}
+		return dynamic_cast<CPhysicalLeftAntiSemiHashJoinNotIn *>(pop);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Required Plan Properties
-			//-------------------------------------------------------------------------------------
+};  // class CPhysicalLeftAntiSemiHashJoinNotIn
 
-			// compute required distribution of the n-th child
-			virtual
-			CDistributionSpec *PdsRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CDistributionSpec *pdsRequired,
-				ULONG ulChildIndex,
-				DrgPdp *pdrgpdpCtxt,
-				ULONG ulOptReq
-				)
-				const;
+}  // namespace gpopt
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CPhysicalLeftAntiSemiHashJoinNotIn *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(EopPhysicalLeftAntiSemiHashJoinNotIn == pop->Eopid());
-
-				return dynamic_cast<CPhysicalLeftAntiSemiHashJoinNotIn*>(pop);
-			}
-
-	}; // class CPhysicalLeftAntiSemiHashJoinNotIn
-
-}
-
-#endif // !GPOPT_CPhysicalLeftAntiSemiHashJoinNotIn_H
+#endif  // !GPOPT_CPhysicalLeftAntiSemiHashJoinNotIn_H
 
 // EOF

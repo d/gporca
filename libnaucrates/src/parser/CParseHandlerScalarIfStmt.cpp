@@ -6,7 +6,7 @@
 //		CParseHandlerScalarIfStmt.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for an if statement.
 //---------------------------------------------------------------------------
 
@@ -30,14 +30,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarIfStmt::CParseHandlerScalarIfStmt
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarIfStmt::CParseHandlerScalarIfStmt(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -51,18 +47,19 @@ CParseHandlerScalarIfStmt::CParseHandlerScalarIfStmt
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarIfStmt::StartElement
-	(
-	const XMLCh* const,// xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const,// xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarIfStmt::StartElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const,  // xmlszQname,
+										const Attributes &attrs)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIfStmt), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIfStmt),
+								 xmlszLocalname))
 	{
 		// parse and create scalar if statment
-		CDXLScalarIfStmt *pdxlop = (CDXLScalarIfStmt*) CDXLOperatorFactory::PdxlopIfStmt(m_pphm->Pmm(), attrs);
+		CDXLScalarIfStmt *pdxlop =
+			(CDXLScalarIfStmt *) CDXLOperatorFactory::PdxlopIfStmt(
+				m_pphm->Pmm(), attrs);
 
 		// construct node
 		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
@@ -71,26 +68,29 @@ CParseHandlerScalarIfStmt::StartElement
 		// order of their expected appearance
 
 		// parse handler for handling else result expression scalar node
-		CParseHandlerBase *pphElse = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphElse = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphElse);
 
 		// parse handler for handling result expression scalar node
-		CParseHandlerBase *pphResult = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphResult = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphResult);
 
 		// parse handler for the when condition clause
-		CParseHandlerBase *pphWhenCond = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphWhenCond = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphWhenCond);
 
 		// store parse handlers
 		this->Append(pphWhenCond);
 		this->Append(pphResult);
 		this->Append(pphElse);
-
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -104,22 +104,26 @@ CParseHandlerScalarIfStmt::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarIfStmt::EndElement
-	(
-	const XMLCh* const ,// xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarIfStmt::EndElement(const XMLCh *const,  // xmlszUri
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIfStmt), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarIfStmt),
+								 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CParseHandlerScalarOp *pphWhenCond = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
-	CParseHandlerScalarOp *pphResult = dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
-	CParseHandlerScalarOp *pphElse = dynamic_cast<CParseHandlerScalarOp *>((*this)[2]);
+	CParseHandlerScalarOp *pphWhenCond =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+	CParseHandlerScalarOp *pphResult =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
+	CParseHandlerScalarOp *pphElse =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[2]);
 
 	// add constructed children
 	AddChildFromParseHandler(pphWhenCond);

@@ -30,23 +30,18 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformSimplifyGbAgg::CXformSimplifyGbAgg
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalGbAgg(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // relational child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
-					)
-		)
-{}
+CXformSimplifyGbAgg::CXformSimplifyGbAgg(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
+			  ))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -59,11 +54,7 @@ CXformSimplifyGbAgg::CXformSimplifyGbAgg
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformSimplifyGbAgg::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformSimplifyGbAgg::Exfp(CExpressionHandle &exprhdl) const
 {
 	CLogicalGbAgg *popAgg = CLogicalGbAgg::PopConvert(exprhdl.Pop());
 
@@ -88,12 +79,8 @@ CXformSimplifyGbAgg::Exfp
 //
 //---------------------------------------------------------------------------
 BOOL
-CXformSimplifyGbAgg::FDropGbAgg
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CXformResult *pxfres
-	)
+CXformSimplifyGbAgg::FDropGbAgg(IMemoryPool *pmp, CExpression *pexpr,
+								CXformResult *pxfres)
 {
 	CLogicalGbAgg *popAgg = CLogicalGbAgg::PopConvert(pexpr->Pop());
 	CExpression *pexprRelational = (*pexpr)[0];
@@ -105,7 +92,8 @@ CXformSimplifyGbAgg::FDropGbAgg
 		return false;
 	}
 
-	CKeyCollection *pkc = CDrvdPropRelational::Pdprel(pexprRelational->PdpDerive())->Pkc();
+	CKeyCollection *pkc =
+		CDrvdPropRelational::Pdprel(pexprRelational->PdpDerive())->Pkc();
 	if (NULL == pkc)
 	{
 		// relational child does not have key
@@ -130,8 +118,9 @@ CXformSimplifyGbAgg::FDropGbAgg
 		{
 			// Gb operator can be dropped
 			pexprRelational->AddRef();
-			CExpression *pexprResult =
-				CUtils::PexprLogicalSelect(pmp, pexprRelational, CPredicateUtils::PexprConjunction(pmp, NULL));
+			CExpression *pexprResult = CUtils::PexprLogicalSelect(
+				pmp, pexprRelational,
+				CPredicateUtils::PexprConjunction(pmp, NULL));
 			pxfres->Add(pexprResult);
 			fDrop = true;
 		}
@@ -150,13 +139,8 @@ CXformSimplifyGbAgg::FDropGbAgg
 //
 //---------------------------------------------------------------------------
 void
-CXformSimplifyGbAgg::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformSimplifyGbAgg::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+							   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(NULL != pxfres);
@@ -165,9 +149,9 @@ CXformSimplifyGbAgg::Transform
 
 	IMemoryPool *pmp = pxfctxt->Pmp();
 
-	if (FDropGbAgg(pmp, pexpr,pxfres))
+	if (FDropGbAgg(pmp, pexpr, pxfres))
 	{
-		 // grouping columns could be dropped, GbAgg is transformed to a Select
+		// grouping columns could be dropped, GbAgg is transformed to a Select
 		return;
 	}
 
@@ -180,9 +164,12 @@ CXformSimplifyGbAgg::Transform
 	CColRefSet *pcrsGrpCols = GPOS_NEW(pmp) CColRefSet(pmp);
 	pcrsGrpCols->Include(pdrgpcr);
 
-	CColRefSet *pcrsCovered = GPOS_NEW(pmp) CColRefSet(pmp);	// set of grouping columns covered by FD's
-	CColRefSet *pcrsMinimal = GPOS_NEW(pmp) CColRefSet(pmp); // a set of minimal grouping columns based on FD's
-	DrgPfd *pdrgpfd = CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->Pdrgpfd();
+	CColRefSet *pcrsCovered = GPOS_NEW(pmp)
+		CColRefSet(pmp);  // set of grouping columns covered by FD's
+	CColRefSet *pcrsMinimal = GPOS_NEW(pmp)
+		CColRefSet(pmp);  // a set of minimal grouping columns based on FD's
+	DrgPfd *pdrgpfd =
+		CDrvdPropRelational::Pdprel(pexpr->PdpDerive())->Pdrgpfd();
 
 	// collect grouping columns FD's
 	const ULONG ulSize = (pdrgpfd == NULL) ? 0 : pdrgpfd->UlLength();
@@ -210,13 +197,16 @@ CXformSimplifyGbAgg::Transform
 	// create a new Agg with minimal grouping columns
 	pdrgpcr->AddRef();
 
-	CLogicalGbAgg *popAggNew = GPOS_NEW(pmp) CLogicalGbAgg(pmp, pdrgpcr, pcrsMinimal->Pdrgpcr(pmp), popAgg->Egbaggtype());
+	CLogicalGbAgg *popAggNew = GPOS_NEW(pmp) CLogicalGbAgg(
+		pmp, pdrgpcr, pcrsMinimal->Pdrgpcr(pmp), popAgg->Egbaggtype());
 	pcrsMinimal->Release();
-	GPOS_ASSERT(!popAgg->FMatch(popAggNew) && "Simplified aggregate matches original aggregate");
+	GPOS_ASSERT(!popAgg->FMatch(popAggNew) &&
+				"Simplified aggregate matches original aggregate");
 
 	pexprRelational->AddRef();
 	pexprProjectList->AddRef();
-	CExpression *pexprResult = GPOS_NEW(pmp) CExpression(pmp, popAggNew, pexprRelational, pexprProjectList);
+	CExpression *pexprResult = GPOS_NEW(pmp)
+		CExpression(pmp, popAggNew, pexprRelational, pexprProjectList);
 	pxfres->Add(pexprResult);
 }
 

@@ -15,10 +15,9 @@
 using namespace gpdxl;
 using namespace gpos;
 
-CIdGenerator::CIdGenerator(ULONG ulStartId)
-	:m_ulId(ulStartId)
-	{
-	}
+CIdGenerator::CIdGenerator(ULONG ulStartId) : m_ulId(ulStartId)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:

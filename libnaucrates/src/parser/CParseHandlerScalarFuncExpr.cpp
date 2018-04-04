@@ -6,7 +6,7 @@
 //		CParseHandlerScalarFuncExpr.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing scalar FuncExpr.
 //---------------------------------------------------------------------------
 
@@ -31,15 +31,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarFuncExpr::CParseHandlerScalarFuncExpr
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_fInsideFuncExpr(false)
+CParseHandlerScalarFuncExpr::CParseHandlerScalarFuncExpr(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_fInsideFuncExpr(false)
 {
 }
 
@@ -53,20 +47,21 @@ CParseHandlerScalarFuncExpr::CParseHandlerScalarFuncExpr
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarFuncExpr::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarFuncExpr::StartElement(const XMLCh *const xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const xmlszQname,
+										  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), xmlszLocalname))
 	{
-		if(!m_fInsideFuncExpr)
+		if (!m_fInsideFuncExpr)
 		{
 			// parse and create scalar FuncExpr
-			CDXLScalarFuncExpr *pdxlop = (CDXLScalarFuncExpr*) CDXLOperatorFactory::PdxlopFuncExpr(m_pphm->Pmm(), attrs);
+			CDXLScalarFuncExpr *pdxlop =
+				(CDXLScalarFuncExpr *) CDXLOperatorFactory::PdxlopFuncExpr(
+					m_pphm->Pmm(), attrs);
 
 			// construct node from the created scalar FuncExpr
 			m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
@@ -76,7 +71,9 @@ CParseHandlerScalarFuncExpr::StartElement
 		else
 		{
 			// This is to support nested FuncExpr
-			CParseHandlerBase *pphFunc = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), m_pphm, this);
+			CParseHandlerBase *pphFunc = CParseHandlerFactory::Pph(
+				m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), m_pphm,
+				this);
 			m_pphm->ActivateParseHandler(pphFunc);
 
 			// store parse handlers
@@ -89,14 +86,14 @@ CParseHandlerScalarFuncExpr::StartElement
 	{
 		GPOS_ASSERT(m_fInsideFuncExpr);
 
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handlers
 		this->Append(pphChild);
 
 		pphChild->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
-
 	}
 }
 
@@ -109,23 +106,25 @@ CParseHandlerScalarFuncExpr::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarFuncExpr::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarFuncExpr::EndElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarFuncExpr), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	const ULONG ulSize = this->UlLength();
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphChild);
 	}
 

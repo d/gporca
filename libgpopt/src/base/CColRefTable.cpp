@@ -26,18 +26,12 @@ using namespace gpmd;
 //		takes ownership of string; verify string is properly formatted
 //
 //---------------------------------------------------------------------------
-CColRefTable::CColRefTable
-	(
-	const CColumnDescriptor *pcoldesc,
-	ULONG ulId,
-	const CName *pname,
-	ULONG ulOpSource
-	)
-	:
-	CColRef(pcoldesc->Pmdtype(), pcoldesc->ITypeModifier(), ulId, pname),
-	m_iAttno(0),
-	m_ulSourceOpId(ulOpSource),
-	m_ulWidth(pcoldesc->UlWidth())
+CColRefTable::CColRefTable(const CColumnDescriptor *pcoldesc, ULONG ulId,
+						   const CName *pname, ULONG ulOpSource)
+	: CColRef(pcoldesc->Pmdtype(), pcoldesc->ITypeModifier(), ulId, pname),
+	  m_iAttno(0),
+	  m_ulSourceOpId(ulOpSource),
+	  m_ulWidth(pcoldesc->UlWidth())
 {
 	GPOS_ASSERT(NULL != pname);
 
@@ -54,23 +48,14 @@ CColRefTable::CColRefTable
 //		takes ownership of string; verify string is properly formatted
 //
 //---------------------------------------------------------------------------
-CColRefTable::CColRefTable
-	(
-	const IMDType *pmdtype,
-	INT iTypeModifier,
-	INT iAttno,
-	BOOL fNullable,
-	ULONG ulId,
-	const CName *pname,
-	ULONG ulOpSource,
-	ULONG ulWidth
-	)
-	:
-	CColRef(pmdtype, iTypeModifier, ulId, pname),
-	m_iAttno(iAttno),
-	m_fNullable(fNullable),
-	m_ulSourceOpId(ulOpSource),
-	m_ulWidth(ulWidth)
+CColRefTable::CColRefTable(const IMDType *pmdtype, INT iTypeModifier,
+						   INT iAttno, BOOL fNullable, ULONG ulId,
+						   const CName *pname, ULONG ulOpSource, ULONG ulWidth)
+	: CColRef(pmdtype, iTypeModifier, ulId, pname),
+	  m_iAttno(iAttno),
+	  m_fNullable(fNullable),
+	  m_ulSourceOpId(ulOpSource),
+	  m_ulWidth(ulWidth)
 {
 	GPOS_ASSERT(NULL != pname);
 }
@@ -84,8 +69,8 @@ CColRefTable::CColRefTable
 //
 //---------------------------------------------------------------------------
 CColRefTable::~CColRefTable()
-{}
+{
+}
 
 
 // EOF
-

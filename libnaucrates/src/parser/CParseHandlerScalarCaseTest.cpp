@@ -27,15 +27,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarCaseTest::CParseHandlerScalarCaseTest
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_pmdidType(NULL)
+CParseHandlerScalarCaseTest::CParseHandlerScalarCaseTest(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_pmdidType(NULL)
 {
 }
 
@@ -48,22 +42,23 @@ CParseHandlerScalarCaseTest::CParseHandlerScalarCaseTest
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarCaseTest::StartElement
-	(
-	const XMLCh* const, //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, //xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarCaseTest::StartElement(const XMLCh *const,  //xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const,  //xmlszQname,
+										  const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarCaseTest), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarCaseTest), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse type id
-	m_pmdidType = CDXLOperatorFactory::PmdidFromAttrs(m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenScalarCaseTest);
+	m_pmdidType = CDXLOperatorFactory::PmdidFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenTypeId, EdxltokenScalarCaseTest);
 }
 
 //---------------------------------------------------------------------------
@@ -75,21 +70,23 @@ CParseHandlerScalarCaseTest::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarCaseTest::EndElement
-	(
-	const XMLCh* const ,// xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarCaseTest::EndElement(const XMLCh *const,  // xmlszUri
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarCaseTest), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarCaseTest), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct node
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarCaseTest(m_pmp, m_pmdidType));
+	m_pdxln = GPOS_NEW(m_pmp)
+		CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarCaseTest(m_pmp, m_pmdidType));
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

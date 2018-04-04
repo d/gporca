@@ -19,72 +19,58 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CRangeTest
-	//
-	//	@doc:
-	//		Static unit tests for ranges
-	//
-	//---------------------------------------------------------------------------
-	class CRangeTest
-	{
-		typedef IDatum * (*PfPdatum)(IMemoryPool *pmp, INT i);
+//---------------------------------------------------------------------------
+//	@class:
+//		CRangeTest
+//
+//	@doc:
+//		Static unit tests for ranges
+//
+//---------------------------------------------------------------------------
+class CRangeTest
+{
+	typedef IDatum *(*PfPdatum)(IMemoryPool *pmp, INT i);
 
-		private:
+private:
+	static GPOS_RESULT
+	EresInitAndCheckRanges(IMemoryPool *pmp, IMDId *pmdid, PfPdatum pf);
 
-			static
-			GPOS_RESULT EresInitAndCheckRanges
-						(
-						IMemoryPool *pmp,
-						IMDId *pmdid,
-						PfPdatum pf
-						);
+	static void
+	TestRangeRelationship(IMemoryPool *pmp, CRange *prange1, CRange *prange2,
+						  CRange *prange3, CRange *prange4, CRange *prange5);
 
-			static
-			void TestRangeRelationship
-					(
-					IMemoryPool *pmp,
-					CRange *prange1,
-					CRange *prange2,
-					CRange *prange3,
-					CRange *prange4,
-					CRange *prange5
-					);
+	static void
+	PrintRange(IMemoryPool *pmp, CColRef *pcr, CRange *prange);
 
-			static
-			void PrintRange
-					(
-					IMemoryPool *pmp,
-					CColRef *pcr,
-					CRange *prange
-					);
+	// int2 datum
+	static IDatum *
+	PdatumInt2(IMemoryPool *pmp, INT i);
 
-			// int2 datum
-			static
-			IDatum *PdatumInt2(IMemoryPool *pmp, INT i);
+	// int4 datum
+	static IDatum *
+	PdatumInt4(IMemoryPool *pmp, INT i);
 
-			// int4 datum
-			static
-			IDatum *PdatumInt4(IMemoryPool *pmp, INT i);
+	// int8 datum
+	static IDatum *
+	PdatumInt8(IMemoryPool *pmp, INT li);
 
-			// int8 datum
-			static
-			IDatum *PdatumInt8(IMemoryPool *pmp, INT li);
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_CRangeInt2();
+	static GPOS_RESULT
+	EresUnittest_CRangeInt4();
+	static GPOS_RESULT
+	EresUnittest_CRangeInt8();
+	static GPOS_RESULT
+	EresUnittest_CRangeFromScalar();
 
-		public:
+};  // class CRangeTest
+}  // namespace gpopt
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_CRangeInt2();
-			static GPOS_RESULT EresUnittest_CRangeInt4();
-			static GPOS_RESULT EresUnittest_CRangeInt8();
-			static GPOS_RESULT EresUnittest_CRangeFromScalar();
-
-	}; // class CRangeTest
-}
-
-#endif // !GPOPT_CRangeTest_H
+#endif  // !GPOPT_CRangeTest_H
 
 
 // EOF

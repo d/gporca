@@ -29,24 +29,24 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalLeftAntiSemiJoin(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)), // left child is a tree since we may need to push predicates down
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate is a tree since we may need to do clean-up of scalar expression
-					)
-		)
-{}
+CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct(
+	IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalLeftAntiSemiJoin(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp,
+			  GPOS_NEW(pmp) CPatternTree(
+				  pmp)),  // left child is a tree since we may need to push predicates down
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp,
+			  GPOS_NEW(pmp) CPatternTree(
+				  pmp))  // predicate is a tree since we may need to do clean-up of scalar expression
+		  ))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -56,13 +56,11 @@ CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct
 //		ctor
 //
 //---------------------------------------------------------------------------
-CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct
-	(
-	CExpression *pexprPattern
-	)
-	:
-	CXformExploration(pexprPattern)
-{}
+CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct(
+	CExpression *pexprPattern)
+	: CXformExploration(pexprPattern)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -74,11 +72,7 @@ CXformLeftAntiSemiJoin2CrossProduct::CXformLeftAntiSemiJoin2CrossProduct
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformLeftAntiSemiJoin2CrossProduct::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformLeftAntiSemiJoin2CrossProduct::Exfp(CExpressionHandle &exprhdl) const
 {
 	return CXformUtils::ExfpSemiJoin2CrossProduct(exprhdl);
 }
@@ -97,13 +91,9 @@ CXformLeftAntiSemiJoin2CrossProduct::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformLeftAntiSemiJoin2CrossProduct::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformLeftAntiSemiJoin2CrossProduct::Transform(CXformContext *pxfctxt,
+											   CXformResult *pxfres,
+											   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -122,15 +112,20 @@ CXformLeftAntiSemiJoin2CrossProduct::Transform
 	CExpression *pexprNegatedScalar = CUtils::PexprNegate(pmp, pexprScalar);
 
 	// create a (limit 1) on top of inner child
-	CExpression *pexprLimitOffset = CUtils::PexprScalarConstInt8(pmp, 0 /*iVal*/);
-	CExpression *pexprLimitCount = CUtils::PexprScalarConstInt8(pmp, 1 /*iVal*/);
+	CExpression *pexprLimitOffset =
+		CUtils::PexprScalarConstInt8(pmp, 0 /*iVal*/);
+	CExpression *pexprLimitCount =
+		CUtils::PexprScalarConstInt8(pmp, 1 /*iVal*/);
 	COrderSpec *pos = GPOS_NEW(pmp) COrderSpec(pmp);
-	CLogicalLimit *popLimit =
-			GPOS_NEW(pmp) CLogicalLimit(pmp, pos, true /*fGlobal*/, true /*fHasCount*/, false /*fNonRemovableLimit*/);
-	CExpression *pexprLimit = GPOS_NEW(pmp) CExpression(pmp, popLimit, pexprInner, pexprLimitOffset, pexprLimitCount);
+	CLogicalLimit *popLimit = GPOS_NEW(pmp)
+		CLogicalLimit(pmp, pos, true /*fGlobal*/, true /*fHasCount*/,
+					  false /*fNonRemovableLimit*/);
+	CExpression *pexprLimit = GPOS_NEW(pmp) CExpression(
+		pmp, popLimit, pexprInner, pexprLimitOffset, pexprLimitCount);
 
 	// create cross product
-	CExpression *pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp, pexprOuter, pexprLimit, pexprNegatedScalar);
+	CExpression *pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+		pmp, pexprOuter, pexprLimit, pexprNegatedScalar);
 	CExpression *pexprNormalized = CNormalizer::PexprNormalize(pmp, pexprJoin);
 	pexprJoin->Release();
 

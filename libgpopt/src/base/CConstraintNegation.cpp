@@ -25,14 +25,8 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CConstraintNegation::CConstraintNegation
-	(
-	IMemoryPool *pmp,
-	CConstraint *pcnstr
-	)
-	:
-	CConstraint(pmp),
-	m_pcnstr(pcnstr)
+CConstraintNegation::CConstraintNegation(IMemoryPool *pmp, CConstraint *pcnstr)
+	: CConstraint(pmp), m_pcnstr(pcnstr)
 {
 	GPOS_ASSERT(NULL != pcnstr);
 
@@ -63,14 +57,12 @@ CConstraintNegation::~CConstraintNegation()
 //
 //---------------------------------------------------------------------------
 CConstraint *
-CConstraintNegation::PcnstrCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CConstraintNegation::PcnstrCopyWithRemappedColumns(IMemoryPool *pmp,
+												   HMUlCr *phmulcr,
+												   BOOL fMustExist)
 {
-	CConstraint *pcnstr = m_pcnstr->PcnstrCopyWithRemappedColumns(pmp, phmulcr, fMustExist);
+	CConstraint *pcnstr =
+		m_pcnstr->PcnstrCopyWithRemappedColumns(pmp, phmulcr, fMustExist);
 	return GPOS_NEW(pmp) CConstraintNegation(pmp, pcnstr);
 }
 
@@ -83,11 +75,7 @@ CConstraintNegation::PcnstrCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CConstraint *
-CConstraintNegation::Pcnstr
-	(
-	IMemoryPool *pmp,
-	const CColRef *pcr
-	)
+CConstraintNegation::Pcnstr(IMemoryPool *pmp, const CColRef *pcr)
 {
 	if (!m_pcrsUsed->FMember(pcr))
 	{
@@ -114,11 +102,7 @@ CConstraintNegation::Pcnstr
 //
 //---------------------------------------------------------------------------
 CConstraint *
-CConstraintNegation::Pcnstr
-	(
-	IMemoryPool *pmp,
-	CColRefSet *pcrs
-	)
+CConstraintNegation::Pcnstr(IMemoryPool *pmp, CColRefSet *pcrs)
 {
 	if (m_pcrsUsed->FDisjoint(pcrs))
 	{
@@ -137,16 +121,12 @@ CConstraintNegation::Pcnstr
 //
 //---------------------------------------------------------------------------
 CConstraint *
-CConstraintNegation::PcnstrRemapForColumn
-	(
-	IMemoryPool *pmp,
-	CColRef *pcr
-	)
-	const
+CConstraintNegation::PcnstrRemapForColumn(IMemoryPool *pmp, CColRef *pcr) const
 {
 	GPOS_ASSERT(1 == m_pcrsUsed->CElements());
 
-	return GPOS_NEW(pmp) CConstraintNegation(pmp, m_pcnstr->PcnstrRemapForColumn(pmp, pcr));
+	return GPOS_NEW(pmp)
+		CConstraintNegation(pmp, m_pcnstr->PcnstrRemapForColumn(pmp, pcr));
 }
 
 //---------------------------------------------------------------------------
@@ -158,23 +138,20 @@ CConstraintNegation::PcnstrRemapForColumn
 //
 //---------------------------------------------------------------------------
 CExpression *
-CConstraintNegation::PexprScalar
-	(
-	IMemoryPool *pmp
-	)
+CConstraintNegation::PexprScalar(IMemoryPool *pmp)
 {
 	if (NULL == m_pexprScalar)
 	{
 		EConstraintType ect = m_pcnstr->Ect();
 		if (EctNegation == ect)
 		{
-			CConstraintNegation *pcn = (CConstraintNegation *)m_pcnstr;
+			CConstraintNegation *pcn = (CConstraintNegation *) m_pcnstr;
 			m_pexprScalar = pcn->PcnstrChild()->PexprScalar(pmp);
 			m_pexprScalar->AddRef();
 		}
 		else if (EctInterval == ect)
 		{
-			CConstraintInterval *pci = (CConstraintInterval *)m_pcnstr;
+			CConstraintInterval *pci = (CConstraintInterval *) m_pcnstr;
 			CConstraintInterval *pciComp = pci->PciComplement(pmp);
 			m_pexprScalar = pciComp->PexprScalar(pmp);
 			m_pexprScalar->AddRef();
@@ -200,11 +177,7 @@ CConstraintNegation::PexprScalar
 //
 //---------------------------------------------------------------------------
 IOstream &
-CConstraintNegation::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CConstraintNegation::OsPrint(IOstream &os) const
 {
 	os << "(NOT " << *m_pcnstr << ")";
 

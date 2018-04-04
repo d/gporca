@@ -37,7 +37,8 @@ CThreadManager::CThreadManager()
 		GPOS_OOM_CHECK(NULL);
 	}
 
-	if (0 != pthread::IPthreadAttrSetDetachState(&m_pthrAttr, PTHREAD_CREATE_JOINABLE))
+	if (0 != pthread::IPthreadAttrSetDetachState(&m_pthrAttr,
+												 PTHREAD_CREATE_JOINABLE))
 	{
 		// release pthread attribute
 		pthread::PthreadAttrDestroy(&m_pthrAttr);
@@ -98,7 +99,8 @@ CThreadManager::EresCreate()
 		ptd = m_tdlUnused.RemoveHead();
 
 		// attempt to create thread
-		INT res = pthread::IPthreadCreate(&ptd->m_pthrdt, NULL /*pthrAttr*/, RunWorker, ptd);
+		INT res = pthread::IPthreadCreate(&ptd->m_pthrdt, NULL /*pthrAttr*/,
+										  RunWorker, ptd);
 
 		// check for error
 		if (0 != res)
@@ -129,10 +131,7 @@ CThreadManager::EresCreate()
 //
 //---------------------------------------------------------------------------
 void *
-CThreadManager::RunWorker
-	(
-	void *pv
-	)
+CThreadManager::RunWorker(void *pv)
 {
 	SThreadDescriptor *ptd = reinterpret_cast<SThreadDescriptor *>(pv);
 	CWorkerPoolManager *pwpm = CWorkerPoolManager::Pwpm();
@@ -150,26 +149,22 @@ CThreadManager::RunWorker
 		// mark thread as finished
 		pwpm->m_tm.SetFinished(ptd);
 	}
-	catch(CException ex)
+	catch (CException ex)
 	{
-		std::cerr
-			<< "Unexpected exception reached top of execution stack:"
-			<< " major=" << ex.UlMajor()
-			<< " minor=" << ex.UlMinor()
-			<< " file=" << ex.SzFilename()
-			<< " line=" << ex.UlLine()
-			<< std::endl;
+		std::cerr << "Unexpected exception reached top of execution stack:"
+				  << " major=" << ex.UlMajor() << " minor=" << ex.UlMinor()
+				  << " file=" << ex.SzFilename() << " line=" << ex.UlLine()
+				  << std::endl;
 
 		GPOS_ASSERT(!"Unexpected exception reached top of execution stack");
 	}
-	catch(...)
+	catch (...)
 	{
 		GPOS_ASSERT(!"Unexpected exception reached top of execution stack");
 	}
 
 	// destroy thread
 	return NULL;
-
 }
 
 
@@ -182,10 +177,7 @@ CThreadManager::RunWorker
 //
 //---------------------------------------------------------------------------
 void
-CThreadManager::SetFinished
-	(
-	SThreadDescriptor *ptd
-	)
+CThreadManager::SetFinished(SThreadDescriptor *ptd)
 {
 	CAutoMutex am(m_mutex);
 	am.Lock();
@@ -298,10 +290,7 @@ CThreadManager::SetSignalMask()
 //
 //---------------------------------------------------------------------------
 BOOL
-CThreadManager::FRunningThread
-	(
-	PTHREAD_T pthrdt
-	)
+CThreadManager::FRunningThread(PTHREAD_T pthrdt)
 {
 	SThreadDescriptor *ptd = m_tdlRunning.PtFirst();
 	while (NULL != ptd)
@@ -315,8 +304,6 @@ CThreadManager::FRunningThread
 	}
 
 	return false;
-
 }
 
 // EOF
-

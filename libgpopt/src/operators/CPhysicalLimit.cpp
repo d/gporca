@@ -28,21 +28,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalLimit::CPhysicalLimit
-	(
-	IMemoryPool *pmp,
-	COrderSpec *pos,
-	BOOL fGlobal,
-	BOOL fHasCount,
-	BOOL fTopLimitUnderDML
-	)
-	:
-	CPhysical(pmp),
-	m_pos(pos),
-	m_fGlobal(fGlobal),
-	m_fHasCount(fHasCount),
-	m_fTopLimitUnderDML(fTopLimitUnderDML),
-	m_pcrsSort(NULL)
+CPhysicalLimit::CPhysicalLimit(IMemoryPool *pmp, COrderSpec *pos, BOOL fGlobal,
+							   BOOL fHasCount, BOOL fTopLimitUnderDML)
+	: CPhysical(pmp),
+	  m_pos(pos),
+	  m_fGlobal(fGlobal),
+	  m_fHasCount(fHasCount),
+	  m_fTopLimitUnderDML(fTopLimitUnderDML),
+	  m_pcrsSort(NULL)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != pos);
@@ -75,16 +68,12 @@ CPhysicalLimit::~CPhysicalLimit()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalLimit::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalLimit::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CPhysicalLimit *popLimit = CPhysicalLimit::PopConvert(pop);
-		
+
 		if (popLimit->FGlobal() == m_fGlobal &&
 			popLimit->FHasCount() == m_fHasCount)
 		{
@@ -92,7 +81,7 @@ CPhysicalLimit::FMatch
 			return m_pos->FMatch(popLimit->m_pos);
 		}
 	}
-	
+
 	return false;
 }
 
@@ -106,22 +95,19 @@ CPhysicalLimit::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalLimit::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalLimit::PcrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CColRefSet *pcrsRequired, ULONG ulChildIndex,
+							 DrgPdp *,  // pdrgpdpCtxt
+							 ULONG		// ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp, *m_pcrsSort);
 	pcrs->Union(pcrsRequired);
 
-	CColRefSet *pcrsChildReqd = PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
+	CColRefSet *pcrsChildReqd =
+		PcrsChildReqd(pmp, exprhdl, pcrs, ulChildIndex, ULONG_MAX);
 	pcrs->Release();
 
 	return pcrsChildReqd;
@@ -137,20 +123,17 @@ CPhysicalLimit::PcrsRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalLimit::PosRequired
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &, // exprhdl
-	COrderSpec *, // posInput
-	ULONG
+CPhysicalLimit::PosRequired(IMemoryPool *,		  // pmp
+							CExpressionHandle &,  // exprhdl
+							COrderSpec *,		  // posInput
+							ULONG
 #ifdef GPOS_DEBUG
-		ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+								ulChildIndex
+#endif  // GPOS_DEBUG
+							,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -172,16 +155,11 @@ CPhysicalLimit::PosRequired
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalLimit::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsInput,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalLimit::PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							CDistributionSpec *pdsInput, ULONG ulChildIndex,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -199,7 +177,7 @@ CPhysicalLimit::PdsRequired
 			// pass through input distribution if it has no count nor offset and is not
 			// a singleton
 			if (CDistributionSpec::EdtSingleton != pdsInput->Edt() &&
-					CDistributionSpec::EdtStrictSingleton != pdsInput->Edt())
+				CDistributionSpec::EdtStrictSingleton != pdsInput->Edt())
 			{
 				return PdsPassThru(pmp, exprhdl, pdsInput, ulChildIndex);
 			}
@@ -213,7 +191,8 @@ CPhysicalLimit::PdsRequired
 		}
 
 		// otherwise, require a singleton explicitly
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	// if expression has to execute on master then we need a gather
@@ -240,16 +219,11 @@ CPhysicalLimit::PdsRequired
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalLimit::PrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CRewindabilitySpec *prsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalLimit::PrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							CRewindabilitySpec *prsRequired, ULONG ulChildIndex,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -265,29 +239,27 @@ CPhysicalLimit::PrsRequired
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalLimit::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG
+CPhysicalLimit::PppsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CPartitionPropagationSpec *pppsRequired,
+							 ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
+								 ulChildIndex
 #endif
-	,
-	DrgPdp *, //pdrgpdpCtxt
-	ULONG //ulOptReq
-	)
+							 ,
+							 DrgPdp *,  //pdrgpdpCtxt
+							 ULONG		//ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 	GPOS_ASSERT(NULL != pppsRequired);
-	
+
 	// limit should not push predicate below it as it will generate wrong results
 	// for example, the following two queries are not equivalent.
 	// Q1: select * from (select * from foo order by a limit 1) x where x.a = 10
 	// Q2: select * from (select * from foo where a = 10 order by a limit 1) x
 
-	return CPhysical::PppsRequiredPushThruUnresolvedUnary(pmp, exprhdl, pppsRequired, CPhysical::EppcProhibited);
+	return CPhysical::PppsRequiredPushThruUnresolvedUnary(
+		pmp, exprhdl, pppsRequired, CPhysical::EppcProhibited);
 }
 
 //---------------------------------------------------------------------------
@@ -299,20 +271,17 @@ CPhysicalLimit::PppsRequired
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CPhysicalLimit::PcteRequired
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle &, //exprhdl,
-	CCTEReq *pcter,
-	ULONG
+CPhysicalLimit::PcteRequired(IMemoryPool *,		   //pmp,
+							 CExpressionHandle &,  //exprhdl,
+							 CCTEReq *pcter,
+							 ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
+								 ulChildIndex
 #endif
-	,
-	DrgPdp *, //pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
-	const
+							 ,
+							 DrgPdp *,  //pdrgpdpCtxt,
+							 ULONG		//ulOptReq
+							 ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 	return PcterPushThru(pcter);
@@ -327,13 +296,10 @@ CPhysicalLimit::PcteRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalLimit::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalLimit::FProvidesReqdCols(CExpressionHandle &exprhdl,
+								  CColRefSet *pcrsRequired,
+								  ULONG  // ulOptReq
+								  ) const
 {
 	return FUnaryProvidesReqdCols(exprhdl, pcrsRequired);
 }
@@ -348,12 +314,9 @@ CPhysicalLimit::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalLimit::PosDerive
-	(
-	IMemoryPool *,// pmp
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalLimit::PosDerive(IMemoryPool *,	   // pmp
+						  CExpressionHandle &  // exprhdl
+						  ) const
 {
 	m_pos->AddRef();
 
@@ -369,13 +332,9 @@ CPhysicalLimit::PosDerive
 //		Derive distribution
 //
 //---------------------------------------------------------------------------
-CDistributionSpec*
-CPhysicalLimit::PdsDerive
-	(
-	IMemoryPool *,// pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CDistributionSpec *
+CPhysicalLimit::PdsDerive(IMemoryPool *,  // pmp
+						  CExpressionHandle &exprhdl) const
 {
 	return PdsDerivePassThruOuter(exprhdl);
 }
@@ -390,12 +349,8 @@ CPhysicalLimit::PdsDerive
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalLimit::PrsDerive
-	(
-	IMemoryPool *, //pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalLimit::PrsDerive(IMemoryPool *,  //pmp
+						  CExpressionHandle &exprhdl) const
 {
 	return PrsDerivePassThruOuter(exprhdl);
 }
@@ -410,12 +365,8 @@ CPhysicalLimit::PrsDerive
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalLimit::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalLimit::EpetOrder(CExpressionHandle &,  // exprhdl
+						  const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -440,12 +391,8 @@ CPhysicalLimit::EpetOrder
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalLimit::EpetDistribution
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdDistribution *ped
-	)
-	const
+CPhysicalLimit::EpetDistribution(CExpressionHandle &exprhdl,
+								 const CEnfdDistribution *ped) const
 {
 	GPOS_ASSERT(NULL != ped);
 
@@ -477,12 +424,9 @@ CPhysicalLimit::EpetDistribution
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalLimit::EpetRewindability
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdRewindability * // per
-	)
-	const
+CPhysicalLimit::EpetRewindability(CExpressionHandle &,		  // exprhdl
+								  const CEnfdRewindability *  // per
+								  ) const
 {
 	// rewindability is preserved on operator's output
 	return CEnfdProp::EpetOptional;
@@ -498,14 +442,10 @@ CPhysicalLimit::EpetRewindability
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalLimit::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalLimit::OsPrint(IOstream &os) const
 {
 	os << SzId() << " " << (*m_pos) << " " << (m_fGlobal ? "global" : "local");
-	
+
 	return os;
 }
 

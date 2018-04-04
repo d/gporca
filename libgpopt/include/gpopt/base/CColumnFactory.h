@@ -26,122 +26,111 @@
 
 namespace gpopt
 {
-	class CExpression;
+class CExpression;
 
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CColumnFactory
-	//
-	//	@doc:
-	//		Singleton factory class used to generate and manage CColRefs in ORCA.
-	//		The created CColRef objects are maintained in a hash table keyed by
-	//		Column ID.  CColumnFactory provides various overloaded PcrCreate()
-	//		methods to create CColRef and a PcrLookup() method to probe the hash
-	//		table.
-	//		NB: The class also owns the memory pool in which CColRefs are
-	//		allocated.
-	//
-	//---------------------------------------------------------------------------
-	class CColumnFactory
+//---------------------------------------------------------------------------
+//	@class:
+//		CColumnFactory
+//
+//	@doc:
+//		Singleton factory class used to generate and manage CColRefs in ORCA.
+//		The created CColRef objects are maintained in a hash table keyed by
+//		Column ID.  CColumnFactory provides various overloaded PcrCreate()
+//		methods to create CColRef and a PcrLookup() method to probe the hash
+//		table.
+//		NB: The class also owns the memory pool in which CColRefs are
+//		allocated.
+//
+//---------------------------------------------------------------------------
+class CColumnFactory
+{
+private:
+	// MTS memory pool
+	IMemoryPool *m_pmp;
+
+	// mapping between column id of computed column and a set of used column references
+	HMCrCrs *m_phmcrcrs;
+
+	// id counter
+	CAtomicULONG m_aul;
+
+	// hash table
+	CSyncHashtable<CColRef, ULONG, CSpinlockColumnFactory> m_sht;
+
+	// private copy ctor
+	CColumnFactory(const CColumnFactory &);
+
+	// implementation of factory methods
+	CColRef *
+	PcrCreate(const IMDType *pmdtype, INT iTypeModifier, ULONG ulId,
+			  const CName &name);
+	CColRef *
+	PcrCreate(const CColumnDescriptor *pcoldesc, ULONG ulId, const CName &name,
+			  ULONG ulOpSource);
+
+public:
+	// ctor
+	CColumnFactory();
+
+	// dtor
+	~CColumnFactory();
+
+	// initialize the hash map between computed column and used columns
+	void
+	Initialize();
+
+	// create a column reference given only its type and type modifier, used for computed columns
+	CColRef *
+	PcrCreate(const IMDType *pmdtype, INT iTypeModifier);
+
+	// create column reference given its type, type modifier, and name
+	CColRef *
+	PcrCreate(const IMDType *pmdtype, INT iTypeModifier, const CName &name);
+
+	// create a column reference given its descriptor and name
+	CColRef *
+	PcrCreate(const CColumnDescriptor *pcoldescr, const CName &name,
+			  ULONG ulOpSource);
+
+	// create a column reference given its type, attno, nullability and name
+	CColRef *
+	PcrCreate(const IMDType *pmdtype, INT iTypeModifier, INT iAttno,
+			  BOOL fNullable, ULONG ulId, const CName &name, ULONG ulOpSource,
+			  ULONG ulWidth = ULONG_MAX);
+
+	// create a column reference with the same type as passed column reference
+	CColRef *
+	PcrCreate(const CColRef *pcr)
 	{
-		private:
+		return PcrCreate(pcr->Pmdtype(), pcr->ITypeModifier());
+	}
 
-			// MTS memory pool
-			IMemoryPool *m_pmp;
+	// add mapping between computed column to its used columns
+	void
+	AddComputedToUsedColsMap(CExpression *pexpr);
 
-			// mapping between column id of computed column and a set of used column references
-			HMCrCrs *m_phmcrcrs;
+	// lookup the set of used column references (if any) based on id of computed column
+	const CColRefSet *
+	PcrsUsedInComputedCol(const CColRef *pcrComputedCol);
 
-			// id counter
-			CAtomicULONG m_aul;
+	// create a copy of the given colref
+	CColRef *
+	PcrCopy(const CColRef *pcr);
 
-			// hash table
-			CSyncHashtable
-				<CColRef,
-				ULONG,
-				CSpinlockColumnFactory> m_sht;
+	// lookup by id
+	CColRef *
+	PcrLookup(ULONG ulId);
 
-			// private copy ctor
-			CColumnFactory(const CColumnFactory &);
+	// destructor
+	void
+	Destroy(CColRef *);
 
-			// implementation of factory methods
-			CColRef *PcrCreate(const IMDType *pmdtype, INT iTypeModifier, ULONG ulId, const CName &name);
-			CColRef *PcrCreate
-					(
-					const CColumnDescriptor *pcoldesc,
-					ULONG ulId,
-					const CName &name,
-					ULONG ulOpSource
-					);
+};  // class CColumnFactory
+}  // namespace gpopt
 
-		public:
-
-			// ctor
-			CColumnFactory();
-
-			// dtor
-			~CColumnFactory();
-
-			// initialize the hash map between computed column and used columns
-			void Initialize();
-
-			// create a column reference given only its type and type modifier, used for computed columns
-			CColRef *PcrCreate(const IMDType *pmdtype, INT iTypeModifier);
-
-			// create column reference given its type, type modifier, and name
-			CColRef *PcrCreate(const IMDType *pmdtype, INT iTypeModifier, const CName &name);
-
-			// create a column reference given its descriptor and name
-			CColRef *PcrCreate
-				(
-				const CColumnDescriptor *pcoldescr,
-				const CName &name,
-				ULONG ulOpSource
-				);
-
-			// create a column reference given its type, attno, nullability and name
-			CColRef *PcrCreate
-				(
-				const IMDType *pmdtype,
-				INT iTypeModifier,
-				INT iAttno,
-				BOOL fNullable,
-				ULONG ulId,
-				const CName &name,
-				ULONG ulOpSource,
-				ULONG ulWidth = ULONG_MAX
-				);
-
-			// create a column reference with the same type as passed column reference
-			CColRef *PcrCreate
-				(
-				const CColRef *pcr
-				)
-			{
-				return PcrCreate(pcr->Pmdtype(), pcr->ITypeModifier());
-			}
-
-			// add mapping between computed column to its used columns
-			void AddComputedToUsedColsMap(CExpression *pexpr);
-
-			// lookup the set of used column references (if any) based on id of computed column
-			const CColRefSet *PcrsUsedInComputedCol(const CColRef *pcrComputedCol);
-
-			// create a copy of the given colref
-			CColRef *PcrCopy(const CColRef* pcr);
-
-			// lookup by id
-			CColRef *PcrLookup(ULONG ulId);
-			
-			// destructor
-			void Destroy(CColRef *);
-
-	}; // class CColumnFactory
-}
-
-#endif // !GPOPT_CColumnFactory_H
+#endif  // !GPOPT_CColumnFactory_H
 
 // EOF

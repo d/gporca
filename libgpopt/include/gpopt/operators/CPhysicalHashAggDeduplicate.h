@@ -16,124 +16,106 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalHashAggDeduplicate
-	//
-	//	@doc:
-	//		Hash-based aggregate operator for deduplicating join outputs
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalHashAggDeduplicate : public CPhysicalHashAgg
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalHashAggDeduplicate
+//
+//	@doc:
+//		Hash-based aggregate operator for deduplicating join outputs
+//
+//---------------------------------------------------------------------------
+class CPhysicalHashAggDeduplicate : public CPhysicalHashAgg
+{
+private:
+	// array of keys from the join's child
+	DrgPcr *m_pdrgpcrKeys;
+
+	// private copy ctor
+	CPhysicalHashAggDeduplicate(const CPhysicalHashAggDeduplicate &);
+
+public:
+	// ctor
+	CPhysicalHashAggDeduplicate(IMemoryPool *pmp, DrgPcr *pdrgpcr,
+								DrgPcr *pdrgpcrMinimal,
+								COperator::EGbAggType egbaggtype,
+								DrgPcr *pdrgpcrKeys, BOOL fGeneratesDuplicates,
+								BOOL fMultiStage);
+
+	// dtor
+	virtual ~CPhysicalHashAggDeduplicate();
+
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopPhysicalHashAggDeduplicate;
+	}
 
-			// array of keys from the join's child
-			DrgPcr *m_pdrgpcrKeys;
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalHashAggDeduplicate";
+	}
 
-			// private copy ctor
-			CPhysicalHashAggDeduplicate(const CPhysicalHashAggDeduplicate &);
+	// array of keys from the join's child
+	DrgPcr *
+	PdrgpcrKeys() const
+	{
+		return m_pdrgpcrKeys;
+	}
 
-		public:
+	//-------------------------------------------------------------------------------------
+	// Required Plan Properties
+	//-------------------------------------------------------------------------------------
 
-			// ctor
-			CPhysicalHashAggDeduplicate
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcr,
-				DrgPcr *pdrgpcrMinimal,
-				COperator::EGbAggType egbaggtype,
-				DrgPcr *pdrgpcrKeys,
-				BOOL fGeneratesDuplicates,
-				BOOL fMultiStage
-				);
+	// compute required output columns of the n-th child
+	virtual CColRefSet *
+	PcrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 CColRefSet *pcrsRequired, ULONG ulChildIndex,
+				 DrgPdp *,  //pdrgpdpCtxt,
+				 ULONG		//ulOptReq
+	)
+	{
+		return PcrsRequiredAgg(pmp, exprhdl, pcrsRequired, ulChildIndex,
+							   m_pdrgpcrKeys);
+	}
 
-			// dtor
-			virtual
-			~CPhysicalHashAggDeduplicate();
+	// compute required distribution of the n-th child
+	virtual CDistributionSpec *
+	PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				CDistributionSpec *pdsRequired, ULONG ulChildIndex,
+				DrgPdp *,  //pdrgpdpCtxt,
+				ULONG ulOptReq) const
+	{
+		return PdsRequiredAgg(pmp, exprhdl, pdsRequired, ulChildIndex, ulOptReq,
+							  m_pdrgpcrKeys, m_pdrgpcrKeys);
+	}
 
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalHashAggDeduplicate;
-			}
+	// debug print
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalHashAggDeduplicate";
-			}
+	// conversion function
+	static CPhysicalHashAggDeduplicate *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalHashAggDeduplicate == pop->Eopid());
 
-			// array of keys from the join's child
-			DrgPcr *PdrgpcrKeys() const
-			{
-				return m_pdrgpcrKeys;
-			}
+		return reinterpret_cast<CPhysicalHashAggDeduplicate *>(pop);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Required Plan Properties
-			//-------------------------------------------------------------------------------------
+};  // class CPhysicalHashAggDeduplicate
 
-			// compute required output columns of the n-th child
-			virtual
-			CColRefSet *PcrsRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CColRefSet *pcrsRequired,
-				ULONG ulChildIndex,
-				DrgPdp *, //pdrgpdpCtxt,
-				ULONG //ulOptReq
-				)
-			{
-				return PcrsRequiredAgg(pmp, exprhdl, pcrsRequired, ulChildIndex, m_pdrgpcrKeys);
-			}
-
-			// compute required distribution of the n-th child
-			virtual
-			CDistributionSpec *PdsRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CDistributionSpec *pdsRequired,
-				ULONG ulChildIndex,
-				DrgPdp *, //pdrgpdpCtxt,
-				ULONG ulOptReq
-				)
-				const
-			{
-				return PdsRequiredAgg(pmp, exprhdl, pdsRequired, ulChildIndex, ulOptReq, m_pdrgpcrKeys, m_pdrgpcrKeys);
-			}
-
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// debug print
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
-
-			// conversion function
-			static
-			CPhysicalHashAggDeduplicate *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalHashAggDeduplicate == pop->Eopid());
-
-				return reinterpret_cast<CPhysicalHashAggDeduplicate*>(pop);
-			}
-
-	}; // class CPhysicalHashAggDeduplicate
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOS_CPhysicalHashAggDeduplicate_H
+#endif  // !GPOS_CPhysicalHashAggDeduplicate_H
 
 // EOF

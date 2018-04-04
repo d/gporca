@@ -26,23 +26,17 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementSequenceProject::CXformImplementSequenceProject
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformImplementation
-		(
-		GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalSequenceProject(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // relational child
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // scalar child
-						)
-		)
-{}
+CXformImplementSequenceProject::CXformImplementSequenceProject(IMemoryPool *pmp)
+	:  // pattern
+	  CXformImplementation(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSequenceProject(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+		  GPOS_NEW(pmp)
+			  CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // scalar child
+		  ))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -54,13 +48,9 @@ CXformImplementSequenceProject::CXformImplementSequenceProject
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementSequenceProject::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementSequenceProject::Transform(CXformContext *pxfctxt,
+										  CXformResult *pxfres,
+										  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -77,7 +67,8 @@ CXformImplementSequenceProject::Transform
 	pexprScalar->AddRef();
 
 	// extract members of logical sequence project operator
-	CLogicalSequenceProject *popLogicalSequenceProject = CLogicalSequenceProject::PopConvert(pexpr->Pop());
+	CLogicalSequenceProject *popLogicalSequenceProject =
+		CLogicalSequenceProject::PopConvert(pexpr->Pop());
 	CDistributionSpec *pds = popLogicalSequenceProject->Pds();
 	DrgPos *pdrgpos = popLogicalSequenceProject->Pdrgpos();
 	DrgPwf *pdrgpwf = popLogicalSequenceProject->Pdrgpwf();
@@ -86,14 +77,9 @@ CXformImplementSequenceProject::Transform
 	pdrgpwf->AddRef();
 
 	// assemble physical operator
-	CExpression *pexprSequenceProject =
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CPhysicalSequenceProject(pmp, pds, pdrgpos, pdrgpwf),
-					pexprRelational,
-					pexprScalar
-					);
+	CExpression *pexprSequenceProject = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CPhysicalSequenceProject(pmp, pds, pdrgpos, pdrgpwf),
+		pexprRelational, pexprScalar);
 
 	// add alternative to results
 	pxfres->Add(pexprSequenceProject);
@@ -101,4 +87,3 @@ CXformImplementSequenceProject::Transform
 
 
 // EOF
-

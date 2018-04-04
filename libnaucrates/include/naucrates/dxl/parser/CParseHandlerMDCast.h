@@ -21,54 +21,49 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerMDCast
-	//
-	//	@doc:
-	//		Parse handler for GPDB cast function metadata
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerMDCast : public CParseHandlerMetadataObject
-	{
-		private:
-			
-			// private copy ctor
-			CParseHandlerMDCast(const CParseHandlerMDCast &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+XERCES_CPP_NAMESPACE_USE
 
-		public:
-			// ctor
-			CParseHandlerMDCast
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);			
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerMDCast
+//
+//	@doc:
+//		Parse handler for GPDB cast function metadata
+//
+//---------------------------------------------------------------------------
+class CParseHandlerMDCast : public CParseHandlerMetadataObject
+{
+private:
+	// private copy ctor
+	CParseHandlerMDCast(const CParseHandlerMDCast &);
 
-#endif // !GPDXL_CParseHandlerMDCast_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerMDCast(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerMDCast_H
 
 // EOF

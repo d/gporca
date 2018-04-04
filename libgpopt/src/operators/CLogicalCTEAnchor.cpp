@@ -26,13 +26,8 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalCTEAnchor::CLogicalCTEAnchor
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogical(pmp),
-	m_ulId(0)
+CLogicalCTEAnchor::CLogicalCTEAnchor(IMemoryPool *pmp)
+	: CLogical(pmp), m_ulId(0)
 {
 	m_fPattern = true;
 }
@@ -45,15 +40,10 @@ CLogicalCTEAnchor::CLogicalCTEAnchor
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalCTEAnchor::CLogicalCTEAnchor
-	(
-	IMemoryPool *pmp,
-	ULONG ulId
-	)
-	:
-	CLogical(pmp),
-	m_ulId(ulId)
-{}
+CLogicalCTEAnchor::CLogicalCTEAnchor(IMemoryPool *pmp, ULONG ulId)
+	: CLogical(pmp), m_ulId(ulId)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -64,11 +54,8 @@ CLogicalCTEAnchor::CLogicalCTEAnchor
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalCTEAnchor::PcrsDeriveOutput
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
+CLogicalCTEAnchor::PcrsDeriveOutput(IMemoryPool *,  // pmp
+									CExpressionHandle &exprhdl)
 {
 	return PcrsDeriveOutputPassThru(exprhdl);
 }
@@ -82,12 +69,8 @@ CLogicalCTEAnchor::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalCTEAnchor::PkcDeriveKeys
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalCTEAnchor::PkcDeriveKeys(IMemoryPool *,  // pmp
+								 CExpressionHandle &exprhdl) const
 {
 	return PkcDeriveKeysPassThru(exprhdl, 0 /* ulChild */);
 }
@@ -101,21 +84,20 @@ CLogicalCTEAnchor::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CLogicalCTEAnchor::PpartinfoDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalCTEAnchor::PpartinfoDerive(IMemoryPool *pmp,
+								   CExpressionHandle &exprhdl) const
 {
 	CPartInfo *ppartinfoChild = exprhdl.Pdprel(0 /*ulChildIndex*/)->Ppartinfo();
 	GPOS_ASSERT(NULL != ppartinfoChild);
 
-	CExpression *pexprProducer = COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
+	CExpression *pexprProducer =
+		COptCtxt::PoctxtFromTLS()->Pcteinfo()->PexprCTEProducer(m_ulId);
 	GPOS_ASSERT(NULL != pexprProducer);
-	CPartInfo *ppartinfoCTEProducer = CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->Ppartinfo();
+	CPartInfo *ppartinfoCTEProducer =
+		CDrvdPropRelational::Pdprel(pexprProducer->PdpDerive())->Ppartinfo();
 
-	return CPartInfo::PpartinfoCombine(pmp, ppartinfoChild, ppartinfoCTEProducer);
+	return CPartInfo::PpartinfoCombine(pmp, ppartinfoChild,
+									   ppartinfoCTEProducer);
 }
 
 //---------------------------------------------------------------------------
@@ -127,12 +109,8 @@ CLogicalCTEAnchor::PpartinfoDerive
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalCTEAnchor::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalCTEAnchor::Maxcard(IMemoryPool *,  // pmp
+						   CExpressionHandle &exprhdl) const
 {
 	// pass on max card of first child
 	return exprhdl.Pdprel(0)->Maxcard();
@@ -147,11 +125,7 @@ CLogicalCTEAnchor::Maxcard
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalCTEAnchor::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalCTEAnchor::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -186,11 +160,7 @@ CLogicalCTEAnchor::UlHash() const
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalCTEAnchor::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalCTEAnchor::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfCTEAnchor2Sequence);
@@ -207,11 +177,7 @@ CLogicalCTEAnchor::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalCTEAnchor::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalCTEAnchor::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << m_ulId;

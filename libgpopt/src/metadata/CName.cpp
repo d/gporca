@@ -8,7 +8,7 @@
 //	@doc:
 //		Metadata name of objects
 //		Encapsulates encoding etc. so optimizer logic does not have to
-//		deal with it. 
+//		deal with it.
 //		Only assumption, name string is NULL terminated;
 //---------------------------------------------------------------------------
 
@@ -27,13 +27,8 @@ using namespace gpopt;
 //		deep copy of the provided string
 //
 //---------------------------------------------------------------------------
-CName::CName
-	(
-	IMemoryPool *pmp,
-	const CWStringBase *pstr
-	)
-	:m_pstrName(NULL),
-	 m_fDeepCopy(true)
+CName::CName(IMemoryPool *pmp, const CWStringBase *pstr)
+	: m_pstrName(NULL), m_fDeepCopy(true)
 {
 	m_pstrName = GPOS_NEW(pmp) CWStringConst(pmp, pstr->Wsz());
 }
@@ -48,14 +43,8 @@ CName::CName
 //		specified by the fOwnsMemory argument
 //
 //---------------------------------------------------------------------------
-CName::CName
-	(
-	const CWStringConst *pstr,
-	BOOL fOwnsMemory
-	)
-	:
-	m_pstrName(pstr),
-	m_fDeepCopy(fOwnsMemory)
+CName::CName(const CWStringConst *pstr, BOOL fOwnsMemory)
+	: m_pstrName(pstr), m_fDeepCopy(fOwnsMemory)
 {
 	GPOS_ASSERT(NULL != m_pstrName);
 	GPOS_ASSERT(m_pstrName->FValid());
@@ -71,22 +60,16 @@ CName::CName
 //		names for canonical multi-part names
 //
 //---------------------------------------------------------------------------
-CName::CName
-	(
-	IMemoryPool *pmp,
-	const CName &nameFirst,
-	const CName &nameSecond
-	)
-	:
-	m_pstrName(NULL),
-	m_fDeepCopy(false)
+CName::CName(IMemoryPool *pmp, const CName &nameFirst, const CName &nameSecond)
+	: m_pstrName(NULL), m_fDeepCopy(false)
 {
-	CWStringDynamic *pstrTmp = GPOS_NEW(pmp) CWStringDynamic(pmp, (nameFirst.Pstr())->Wsz());
+	CWStringDynamic *pstrTmp =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, (nameFirst.Pstr())->Wsz());
 	pstrTmp->Append(nameSecond.Pstr());
-	
+
 	m_pstrName = GPOS_NEW(pmp) CWStringConst(pmp, pstrTmp->Wsz());
 	m_fDeepCopy = true;
-	
+
 	// release tmp string
 	GPOS_DELETE(pstrTmp);
 }
@@ -101,16 +84,10 @@ CName::CName
 //		shallow copy constructor
 //
 //---------------------------------------------------------------------------
-CName::CName
-	(
-	const CName &name
-	)
-	:
-	m_pstrName(name.Pstr()),
-	m_fDeepCopy(false)
+CName::CName(const CName &name) : m_pstrName(name.Pstr()), m_fDeepCopy(false)
 {
 	GPOS_ASSERT(NULL != m_pstrName->Wsz());
-	GPOS_ASSERT(m_pstrName->FValid());	
+	GPOS_ASSERT(m_pstrName->FValid());
 }
 
 
@@ -123,14 +100,8 @@ CName::CName
 //		deep copy constructor
 //
 //---------------------------------------------------------------------------
-CName::CName
-	(
-	IMemoryPool *pmp,
-	const CName &name
-	)
-	:
-	m_pstrName(NULL),
-	m_fDeepCopy(false)
+CName::CName(IMemoryPool *pmp, const CName &name)
+	: m_pstrName(NULL), m_fDeepCopy(false)
 {
 	DeepCopy(pmp, name.Pstr());
 }
@@ -165,11 +136,7 @@ CName::~CName()
 //
 //---------------------------------------------------------------------------
 void
-CName::DeepCopy
-	(
-	IMemoryPool *pmp,
-	const CWStringConst *pstr
-	)
+CName::DeepCopy(IMemoryPool *pmp, const CWStringConst *pstr)
 {
 	m_pstrName = GPOS_NEW(pmp) CWStringConst(pmp, pstr->Wsz());
 	m_fDeepCopy = true;
@@ -186,16 +153,12 @@ CName::DeepCopy
 //
 //---------------------------------------------------------------------------
 BOOL
-CName::FEquals
-	(
-	const CName &name
-	)
-	const 
+CName::FEquals(const CName &name) const
 {
 	return m_pstrName->FEquals((name.Pstr()));
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 //---------------------------------------------------------------------------
@@ -207,15 +170,10 @@ CName::FEquals
 //
 //---------------------------------------------------------------------------
 IOstream &
-CName::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CName::OsPrint(IOstream &os) const
 {
 	os << GPOPT_NAME_QUOTE_BEGIN << m_pstrName->Wsz() << GPOPT_NAME_QUOTE_END;
 	return os;
 }
 
 // EOF
-

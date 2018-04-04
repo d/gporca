@@ -17,47 +17,48 @@
 #include "gpos/string/CWStringConst.h"
 
 namespace gpmd
-{	
-	using namespace gpos;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CMDName
-	//
-	//	@doc:
-	//		Class for representing metadata names.
-	//
-	//---------------------------------------------------------------------------
-	class CMDName
+{
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CMDName
+//
+//	@doc:
+//		Class for representing metadata names.
+//
+//---------------------------------------------------------------------------
+class CMDName
+{
+private:
+	// the string holding the name
+	const CWStringConst *m_psc;
+
+	// keep track of copy status
+	BOOL m_fDeepCopy;
+
+public:
+	// ctor/dtor
+	CMDName(IMemoryPool *pmp, const CWStringBase *pstr);
+	CMDName(const CWStringConst *, BOOL fOwnsMemory = false);
+
+	// shallow copy ctor
+	CMDName(const CMDName &);
+
+	~CMDName();
+
+	// accessors
+	const CWStringConst *
+	Pstr() const
 	{
-		private:
-			// the string holding the name
-			const CWStringConst *m_psc;
-			
-			// keep track of copy status
-			BOOL m_fDeepCopy;
-		
-		public:
-			// ctor/dtor
-			CMDName(IMemoryPool *pmp, const CWStringBase *pstr);
-			CMDName(const CWStringConst *, BOOL fOwnsMemory = false);
-			
-			// shallow copy ctor
-			CMDName(const CMDName &);
-			
-			~CMDName();
+		return m_psc;
+	}
+};
 
-			// accessors
-			const CWStringConst *Pstr() const
-			{
-				return m_psc;
-			}
-	};
+// array of names
+typedef CDynamicPtrArray<CMDName, CleanupDelete> DrgPmdname;
+}  // namespace gpmd
 
-	// array of names
-	typedef CDynamicPtrArray<CMDName, CleanupDelete> DrgPmdname;
-}
-
-#endif // !GPMD_CMDName_H
+#endif  // !GPMD_CMDName_H
 
 // EOF

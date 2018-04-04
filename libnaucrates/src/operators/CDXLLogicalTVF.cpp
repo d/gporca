@@ -26,19 +26,14 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalTVF::CDXLLogicalTVF
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	CMDName *pmdname,
-	DrgPdxlcd *pdrgdxlcd
-	)
-	:CDXLLogical(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_pmdname(pmdname),
-	m_pdrgdxlcd(pdrgdxlcd)
+CDXLLogicalTVF::CDXLLogicalTVF(IMemoryPool *pmp, IMDId *pmdidFunc,
+							   IMDId *pmdidRetType, CMDName *pmdname,
+							   DrgPdxlcd *pdrgdxlcd)
+	: CDXLLogical(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_pmdname(pmdname),
+	  m_pdrgdxlcd(pdrgdxlcd)
 {
 	GPOS_ASSERT(m_pmdidFunc->FValid());
 	GPOS_ASSERT(m_pmdidRetType->FValid());
@@ -111,11 +106,7 @@ CDXLLogicalTVF::UlArity() const
 //
 //---------------------------------------------------------------------------
 const CDXLColDescr *
-CDXLLogicalTVF::Pdxlcd
-	(
-	ULONG ul
-	)
-	const
+CDXLLogicalTVF::Pdxlcd(ULONG ul) const
 {
 	return (*m_pdrgdxlcd)[ul];
 }
@@ -129,11 +120,7 @@ CDXLLogicalTVF::Pdxlcd
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLLogicalTVF::FDefinesColumn
-	(
-	ULONG ulColId
-	)
-	const
+CDXLLogicalTVF::FDefinesColumn(ULONG ulColId) const
 {
 	const ULONG ulSize = UlArity();
 	for (ULONG ulDescr = 0; ulDescr < ulSize; ulDescr++)
@@ -157,21 +144,20 @@ CDXLLogicalTVF::FDefinesColumn
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalTVF::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalTVF::SerializeToDXL(CXMLSerializer *pxmlser,
+							   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenFuncId));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 	m_pmdidRetType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
-	
+
 	// serialize columns
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumns));
 	GPOS_ASSERT(NULL != m_pdrgdxlcd);
 
 	for (ULONG ul = 0; ul < UlArity(); ul++)
@@ -180,12 +166,14 @@ CDXLLogicalTVF::SerializeToDXL
 		pdxlcd->SerializeToDXL(pxmlser);
 	}
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumns));
 
 	// serialize arguments
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -198,11 +186,7 @@ CDXLLogicalTVF::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalTVF::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLLogicalTVF::AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const
 {
 	// assert validity of function id and return type
 	GPOS_ASSERT(NULL != m_pmdidFunc);
@@ -221,7 +205,7 @@ CDXLLogicalTVF::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

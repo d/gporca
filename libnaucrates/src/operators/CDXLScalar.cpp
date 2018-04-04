@@ -21,12 +21,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalar::CDXLScalar
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLOperator(pmp)
+CDXLScalar::CDXLScalar(IMemoryPool *pmp) : CDXLOperator(pmp)
 {
 }
 

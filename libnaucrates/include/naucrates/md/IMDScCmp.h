@@ -21,47 +21,46 @@
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDScCmp
-	//
-	//	@doc:
-	//		Interface for scalar comparison operators in the MD cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDScCmp : public IMDCacheObject
-	{	
-		public:
 
-			// object type
-			virtual
-			Emdtype Emdt() const
-			{
-				return EmdtScCmp;
-			}
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDScCmp
+//
+//	@doc:
+//		Interface for scalar comparison operators in the MD cache
+//
+//---------------------------------------------------------------------------
+class IMDScCmp : public IMDCacheObject
+{
+public:
+	// object type
+	virtual Emdtype
+	Emdt() const
+	{
+		return EmdtScCmp;
+	}
 
-			// left type
-			virtual 
-			IMDId *PmdidLeft() const = 0;
+	// left type
+	virtual IMDId *
+	PmdidLeft() const = 0;
 
-			// right type
-			virtual
-			IMDId *PmdidRight() const = 0;
-			
-			// comparison type
-			virtual 
-			IMDType::ECmpType Ecmpt() const = 0;
+	// right type
+	virtual IMDId *
+	PmdidRight() const = 0;
 
-			// comparison operator id
-			virtual 
-			IMDId *PmdidOp() const = 0;
-	};
-		
-}
+	// comparison type
+	virtual IMDType::ECmpType
+	Ecmpt() const = 0;
 
-#endif // !GPMD_IMDScCmp_H
+	// comparison operator id
+	virtual IMDId *
+	PmdidOp() const = 0;
+};
+
+}  // namespace gpmd
+
+#endif  // !GPMD_IMDScCmp_H
 
 // EOF

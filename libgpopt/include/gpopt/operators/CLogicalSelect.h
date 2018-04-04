@@ -18,135 +18,112 @@
 
 namespace gpopt
 {
+typedef CHashMap<CExpression, CExpression, CExpression::UlHash, CUtils::FEqual,
+				 CleanupRelease<CExpression>, CleanupRelease<CExpression> >
+	HMPexprPartPred;
 
-	typedef CHashMap<CExpression, CExpression, CExpression::UlHash, CUtils::FEqual,
-		CleanupRelease<CExpression>, CleanupRelease<CExpression> > HMPexprPartPred;
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalSelect
+//
+//	@doc:
+//		Select operator
+//
+//---------------------------------------------------------------------------
+class CLogicalSelect : public CLogicalUnary
+{
+private:
+	// private copy ctor
+	CLogicalSelect(const CLogicalSelect &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalSelect
-	//
-	//	@doc:
-	//		Select operator
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalSelect : public CLogicalUnary
+	HMPexprPartPred *m_phmPexprPartPred;
+
+public:
+	// ctor
+	explicit CLogicalSelect(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CLogicalSelect();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopLogicalSelect;
+	}
 
-			// private copy ctor
-			CLogicalSelect(const CLogicalSelect &);
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalSelect";
+	}
 
-			HMPexprPartPred *m_phmPexprPartPred;
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-		public:
+	// derive output columns
+	virtual CColRefSet *
+	PcrsDeriveOutput(IMemoryPool *, CExpressionHandle &);
 
-			// ctor
-			explicit
-			CLogicalSelect(IMemoryPool *pmp);
+	// dervive keys
+	virtual CKeyCollection *
+	PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// dtor
-			virtual
-			~CLogicalSelect();
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// ident accessors
-			virtual 
-			EOperatorId Eopid() const
-			{
-				return EopLogicalSelect;
-			}
-			
-			virtual 
-			const CHAR *SzId() const
-			{
-				return "CLogicalSelect";
-			}
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *pmp, CExpressionHandle &exprhdl) const
+	{
+		return PpcDeriveConstraintFromPredicates(pmp, exprhdl);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// compute partition predicate to pass down to n-th child
+	virtual CExpression *
+	PexprPartPred(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				  CExpression *pexprInput, ULONG ulChildIndex) const;
 
-			// derive output columns
-			virtual
-			CColRefSet *PcrsDeriveOutput(IMemoryPool *,CExpressionHandle &);
-			
-			// dervive keys
-			virtual 
-			CKeyCollection *PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;		
-					
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PpcDeriveConstraintFromPredicates(pmp, exprhdl);
-			}
+	// candidate set of xforms
+	virtual CXformSet *
+	PxfsCandidates(IMemoryPool *) const;
 
-			// compute partition predicate to pass down to n-th child
-			virtual
-			CExpression *PexprPartPred
-							(
-							IMemoryPool *pmp,
-							CExpressionHandle &exprhdl,
-							CExpression *pexprInput,
-							ULONG ulChildIndex
-							)
-							const;
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+	// return true if operator can select a subset of input tuples based on some predicate,
+	virtual BOOL
+	FSelectionOp() const
+	{
+		return true;
+	}
 
-			// candidate set of xforms
-			virtual
-			CXformSet *PxfsCandidates(IMemoryPool *) const;
+	// conversion function
+	static CLogicalSelect *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalSelect == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
+		return reinterpret_cast<CLogicalSelect *>(pop);
+	}
 
-			// return true if operator can select a subset of input tuples based on some predicate,
-			virtual
-			BOOL FSelectionOp() const
-			{
-				return true;
-			}
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// conversion function
-			static
-			CLogicalSelect *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalSelect == pop->Eopid());
-				
-				return reinterpret_cast<CLogicalSelect*>(pop);
-			}
+};  // class CLogicalSelect
 
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-						(
-						IMemoryPool *pmp,
-						CExpressionHandle &exprhdl,
-						DrgPstat *pdrgpstatCtxt
-						)
-						const;
+}  // namespace gpopt
 
-	}; // class CLogicalSelect
-
-}
-
-#endif // !GPOS_CLogicalSelect_H
+#endif  // !GPOS_CLogicalSelect_H
 
 // EOF

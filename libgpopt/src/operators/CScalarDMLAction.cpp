@@ -32,11 +32,7 @@ using namespace gpmd;
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarDMLAction::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarDMLAction::FMatch(COperator *pop) const
 {
 	return pop->Eopid() == Eopid();
 }
@@ -56,4 +52,3 @@ CScalarDMLAction::PmdidType() const
 	return pmda->PtMDType<IMDTypeInt4>()->Pmdid();
 }
 // EOF
-

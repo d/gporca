@@ -22,68 +22,56 @@
 
 namespace gpdxl
 {
+using namespace gpmd;
 
-	using namespace gpmd;
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLScalarSubqueryAny
+//
+//	@doc:
+//		Class for representing ANY subqueries
+//
+//---------------------------------------------------------------------------
+class CDXLScalarSubqueryAny : public CDXLScalarSubqueryQuantified
+{
+private:
+	// private copy ctor
+	CDXLScalarSubqueryAny(CDXLScalarSubqueryAny &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLScalarSubqueryAny
-	//
-	//	@doc:
-	//		Class for representing ANY subqueries
-	//
-	//---------------------------------------------------------------------------
-	class CDXLScalarSubqueryAny : public CDXLScalarSubqueryQuantified
-	{			
+public:
+	// ctor
+	CDXLScalarSubqueryAny(IMemoryPool *pmp, IMDId *pmdidScalarOp,
+						  CMDName *pmdname, ULONG ulColId);
 
-		private:	
-			
-			// private copy ctor
-			CDXLScalarSubqueryAny(CDXLScalarSubqueryAny&);
-			
-		public:
-			// ctor
-			CDXLScalarSubqueryAny
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidScalarOp,
-				CMDName *pmdname,
-				ULONG ulColId
-				);
+	// ident accessors
+	Edxlopid
+	Edxlop() const;
 
-			// ident accessors
-			Edxlopid Edxlop() const;
-			
-			// name of the operator
-			const CWStringConst *PstrOpName() const;
-			
-			// conversion function
-			static
-			CDXLScalarSubqueryAny *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopScalarSubqueryAny == pdxlop->Edxlop());
+	// name of the operator
+	const CWStringConst *
+	PstrOpName() const;
 
-				return dynamic_cast<CDXLScalarSubqueryAny*>(pdxlop);
-			}
+	// conversion function
+	static CDXLScalarSubqueryAny *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopScalarSubqueryAny == pdxlop->Edxlop());
 
-			// does the operator return a boolean result
-			virtual
-			BOOL FBoolean
-					(
-					CMDAccessor *//pmda
-					)
-					const
-			{
-				return true;
-			}
-	};
-}
+		return dynamic_cast<CDXLScalarSubqueryAny *>(pdxlop);
+	}
+
+	// does the operator return a boolean result
+	virtual BOOL
+	FBoolean(CMDAccessor *  //pmda
+			 ) const
+	{
+		return true;
+	}
+};
+}  // namespace gpdxl
 
 
-#endif // !GPDXL_CDXLScalarSubqueryAny_H
+#endif  // !GPDXL_CDXLScalarSubqueryAny_H
 
 // EOF

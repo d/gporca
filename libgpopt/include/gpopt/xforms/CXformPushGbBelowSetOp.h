@@ -17,178 +17,173 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformPushGbBelowSetOp
-	//
-	//	@doc:
-	//		Push grouping below set operation
-	//
-	//---------------------------------------------------------------------------
-	template<class TSetOp>
-	class CXformPushGbBelowSetOp : public CXformExploration
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformPushGbBelowSetOp
+//
+//	@doc:
+//		Push grouping below set operation
+//
+//---------------------------------------------------------------------------
+template <class TSetOp>
+class CXformPushGbBelowSetOp : public CXformExploration
+{
+private:
+	// private copy ctor
+	CXformPushGbBelowSetOp(const CXformPushGbBelowSetOp &);
+
+public:
+	// ctor
+	explicit CXformPushGbBelowSetOp(IMemoryPool *pmp)
+		: CXformExploration(
+			  // pattern
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
+				  GPOS_NEW(pmp) CExpression  // left child is a set operation
+				  (pmp, GPOS_NEW(pmp) TSetOp(pmp),
+				   GPOS_NEW(pmp)
+					   CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))),
+				  GPOS_NEW(pmp)
+					  CExpression(pmp,
+								  GPOS_NEW(pmp) CPatternTree(
+									  pmp))  // project list of group-by
+				  ))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformPushGbBelowSetOp()
+	{
+	}
 
-			// private copy ctor
-			CXformPushGbBelowSetOp(const CXformPushGbBelowSetOp &);
+	// compute xform promise for a given expression handle
+	virtual EXformPromise
+	Exfp(CExpressionHandle &exprhdl) const
+	{
+		CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(exprhdl.Pop());
+		if (popGbAgg->FGlobal())
+		{
+			return ExfpHigh;
+		}
 
-		public:
+		return ExfpNone;
+	}
 
-			// ctor
-			explicit
-			CXformPushGbBelowSetOp(IMemoryPool *pmp)
-                :
-                CXformExploration
-                (
-                 // pattern
-                 GPOS_NEW(pmp) CExpression
-                        (
-                         pmp,
-                         GPOS_NEW(pmp) CLogicalGbAgg(pmp),
-                         GPOS_NEW(pmp) CExpression  // left child is a set operation
-                                (
-                                 pmp,
-                                 GPOS_NEW(pmp) TSetOp(pmp),
-                                 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-                                 ),
-                         GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)) // project list of group-by
-                         )
-                )
-            {}
+	// actual transform
+	virtual void
+	Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+			  CExpression *pexpr) const
+	{
+		GPOS_ASSERT(NULL != pxfctxt);
+		GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
+		GPOS_ASSERT(FCheckPattern(pexpr));
 
-			// dtor
-			virtual
-			~CXformPushGbBelowSetOp() {}
+		IMemoryPool *pmp = pxfctxt->Pmp();
 
-			// compute xform promise for a given expression handle
-			virtual
-			EXformPromise Exfp(CExpressionHandle &exprhdl) const
-            {
-                CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(exprhdl.Pop());
-                if (popGbAgg->FGlobal())
-                {
-                    return ExfpHigh;
-                }
+		CExpression *pexprSetOp = (*pexpr)[0];
+		CExpression *pexprPrjList = (*pexpr)[1];
+		if (0 < pexprPrjList->UlArity())
+		{
+			// bail-out if group-by has any aggregate functions
+			return;
+		}
 
-                return ExfpNone;
-            }
+		CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(pexpr->Pop());
+		CLogicalSetOp *popSetOp = CLogicalSetOp::PopConvert(pexprSetOp->Pop());
 
-			// actual transform
-			virtual
-			void Transform
-					(
-					CXformContext *pxfctxt,
-					CXformResult *pxfres,
-					CExpression *pexpr
-					)
-					const
-            {
-                GPOS_ASSERT(NULL != pxfctxt);
-                GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
-                GPOS_ASSERT(FCheckPattern(pexpr));
+		DrgPcr *pdrgpcrGb = popGbAgg->Pdrgpcr();
+		DrgPcr *pdrgpcrOutput = popSetOp->PdrgpcrOutput();
+		CColRefSet *pcrsOutput = GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrOutput);
+		DrgDrgPcr *pdrgpdrgpcrInput = popSetOp->PdrgpdrgpcrInput();
+		DrgPexpr *pdrgpexprNewChildren = GPOS_NEW(pmp) DrgPexpr(pmp);
+		DrgDrgPcr *pdrgpdrgpcrNewInput = GPOS_NEW(pmp) DrgDrgPcr(pmp);
+		const ULONG ulArity = pexprSetOp->UlArity();
 
-                IMemoryPool *pmp = pxfctxt->Pmp();
+		BOOL fNewChild = false;
 
-                CExpression *pexprSetOp = (*pexpr)[0];
-                CExpression *pexprPrjList = (*pexpr)[1];
-                if (0 < pexprPrjList->UlArity())
-                {
-                    // bail-out if group-by has any aggregate functions
-                    return;
-                }
+		for (ULONG ulChild = 0; ulChild < ulArity; ulChild++)
+		{
+			CExpression *pexprChild = (*pexprSetOp)[ulChild];
+			DrgPcr *pdrgpcrChild = (*pdrgpdrgpcrInput)[ulChild];
+			CColRefSet *pcrsChild = GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrChild);
 
-                CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(pexpr->Pop());
-                CLogicalSetOp *popSetOp = CLogicalSetOp::PopConvert(pexprSetOp->Pop());
+			DrgPcr *pdrgpcrChildGb = NULL;
+			if (!pcrsChild->FEqual(pcrsOutput))
+			{
+				// use column mapping in SetOp to set child grouping colums
+				HMUlCr *phmulcr =
+					CUtils::PhmulcrMapping(pmp, pdrgpcrOutput, pdrgpcrChild);
+				pdrgpcrChildGb = CUtils::PdrgpcrRemap(pmp, pdrgpcrGb, phmulcr,
+													  true /*fMustExist*/);
+				phmulcr->Release();
+			}
+			else
+			{
+				// use grouping columns directly as child grouping colums
+				pdrgpcrGb->AddRef();
+				pdrgpcrChildGb = pdrgpcrGb;
+			}
 
-                DrgPcr *pdrgpcrGb = popGbAgg->Pdrgpcr();
-                DrgPcr *pdrgpcrOutput = popSetOp->PdrgpcrOutput();
-                CColRefSet *pcrsOutput = GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrOutput);
-                DrgDrgPcr *pdrgpdrgpcrInput = popSetOp->PdrgpdrgpcrInput();
-                DrgPexpr *pdrgpexprNewChildren = GPOS_NEW(pmp) DrgPexpr(pmp);
-                DrgDrgPcr *pdrgpdrgpcrNewInput = GPOS_NEW(pmp) DrgDrgPcr(pmp);
-                const ULONG ulArity = pexprSetOp->UlArity();
+			pexprChild->AddRef();
+			pcrsChild->Release();
 
-                BOOL fNewChild = false;
+			// if child of setop is already an Agg with the same grouping columns
+			// that we want to use, there is no need to add another agg on top of it
+			COperator *popChild = pexprChild->Pop();
+			if (COperator::EopLogicalGbAgg == popChild->Eopid())
+			{
+				CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(popChild);
+				if (CColRef::FEqual(popGbAgg->Pdrgpcr(), pdrgpcrChildGb))
+				{
+					pdrgpexprNewChildren->Append(pexprChild);
+					pdrgpdrgpcrNewInput->Append(pdrgpcrChildGb);
 
-                for (ULONG ulChild = 0; ulChild < ulArity; ulChild++)
-                {
-                    CExpression *pexprChild = (*pexprSetOp)[ulChild];
-                    DrgPcr *pdrgpcrChild = (*pdrgpdrgpcrInput)[ulChild];
-                    CColRefSet *pcrsChild =  GPOS_NEW(pmp) CColRefSet(pmp, pdrgpcrChild);
+					continue;
+				}
+			}
 
-                    DrgPcr *pdrgpcrChildGb = NULL;
-                    if (!pcrsChild->FEqual(pcrsOutput))
-                    {
-                        // use column mapping in SetOp to set child grouping colums
-                        HMUlCr *phmulcr = CUtils::PhmulcrMapping(pmp, pdrgpcrOutput, pdrgpcrChild);
-                        pdrgpcrChildGb = CUtils::PdrgpcrRemap(pmp, pdrgpcrGb, phmulcr, true /*fMustExist*/);
-                        phmulcr->Release();
-                    }
-                    else
-                    {
-                        // use grouping columns directly as child grouping colums
-                        pdrgpcrGb->AddRef();
-                        pdrgpcrChildGb = pdrgpcrGb;
-                    }
+			fNewChild = true;
+			pexprPrjList->AddRef();
+			CExpression *pexprChildGb = CUtils::PexprLogicalGbAggGlobal(
+				pmp, pdrgpcrChildGb, pexprChild, pexprPrjList);
+			pdrgpexprNewChildren->Append(pexprChildGb);
 
-                    pexprChild->AddRef();
-                    pcrsChild->Release();
+			pdrgpcrChildGb->AddRef();
+			pdrgpdrgpcrNewInput->Append(pdrgpcrChildGb);
+		}
 
-                    // if child of setop is already an Agg with the same grouping columns
-                    // that we want to use, there is no need to add another agg on top of it
-                    COperator *popChild = pexprChild->Pop();
-                    if (COperator::EopLogicalGbAgg == popChild->Eopid())
-                    {
-                        CLogicalGbAgg *popGbAgg = CLogicalGbAgg::PopConvert(popChild);
-                        if (CColRef::FEqual(popGbAgg->Pdrgpcr(), pdrgpcrChildGb))
-                        {
-                            pdrgpexprNewChildren->Append(pexprChild);
-                            pdrgpdrgpcrNewInput->Append(pdrgpcrChildGb);
+		pcrsOutput->Release();
 
-                            continue;
-                        }
-                    }
+		if (!fNewChild)
+		{
+			// all children of the union were already Aggs with the same grouping
+			// columns that we would have created. No new alternative expressions
+			pdrgpdrgpcrNewInput->Release();
+			pdrgpexprNewChildren->Release();
 
-                    fNewChild = true;
-                    pexprPrjList->AddRef();
-                    CExpression *pexprChildGb = CUtils::PexprLogicalGbAggGlobal(pmp, pdrgpcrChildGb, pexprChild, pexprPrjList);
-                    pdrgpexprNewChildren->Append(pexprChildGb);
+			return;
+		}
 
-                    pdrgpcrChildGb->AddRef();
-                    pdrgpdrgpcrNewInput->Append(pdrgpcrChildGb);
-                }
+		pdrgpcrGb->AddRef();
+		TSetOp *popSetOpNew =
+			GPOS_NEW(pmp) TSetOp(pmp, pdrgpcrGb, pdrgpdrgpcrNewInput);
+		CExpression *pexprNewSetOp =
+			GPOS_NEW(pmp) CExpression(pmp, popSetOpNew, pdrgpexprNewChildren);
 
-                pcrsOutput->Release();
+		popGbAgg->AddRef();
+		pexprPrjList->AddRef();
+		CExpression *pexprResult = GPOS_NEW(pmp)
+			CExpression(pmp, popGbAgg, pexprNewSetOp, pexprPrjList);
 
-                if (!fNewChild)
-                {
-                    // all children of the union were already Aggs with the same grouping
-                    // columns that we would have created. No new alternative expressions
-                    pdrgpdrgpcrNewInput->Release();
-                    pdrgpexprNewChildren->Release();
+		pxfres->Add(pexprResult);
+	}
 
-                    return;
-                }
+};  // class CXformPushGbBelowSetOp
 
-                pdrgpcrGb->AddRef();
-                TSetOp *popSetOpNew = GPOS_NEW(pmp) TSetOp(pmp, pdrgpcrGb, pdrgpdrgpcrNewInput);
-                CExpression *pexprNewSetOp = GPOS_NEW(pmp) CExpression(pmp, popSetOpNew, pdrgpexprNewChildren);
+}  // namespace gpopt
 
-                popGbAgg->AddRef();
-                pexprPrjList->AddRef();
-                CExpression *pexprResult = GPOS_NEW(pmp) CExpression(pmp, popGbAgg, pexprNewSetOp, pexprPrjList); 
-
-                pxfres->Add(pexprResult);
-            }
-
-	}; // class CXformPushGbBelowSetOp
-
-}
-
-#endif // !GPOPT_CXformPushGbBelowSetOp_H
+#endif  // !GPOPT_CXformPushGbBelowSetOp_H
 
 // EOF

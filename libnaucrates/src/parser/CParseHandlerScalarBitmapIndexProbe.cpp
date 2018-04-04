@@ -33,14 +33,9 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarBitmapIndexProbe::CParseHandlerScalarBitmapIndexProbe
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarBitmapIndexProbe::CParseHandlerScalarBitmapIndexProbe(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -53,21 +48,19 @@ CParseHandlerScalarBitmapIndexProbe::CParseHandlerScalarBitmapIndexProbe
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarBitmapIndexProbe::StartElement
-	(
-	const XMLCh* const,  // xmlszUri
- 	const XMLCh* const xmlszLocalname,
-	const XMLCh* const,  // xmlszQname
-	const Attributes&  // attrs
-	)
+CParseHandlerScalarBitmapIndexProbe::StartElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const,  // xmlszQname
+	const Attributes &   // attrs
+)
 {
-	if (0 != XMLString::compareString
-					(
-					CDXLTokens::XmlstrToken(EdxltokenScalarBitmapIndexProbe),
-					xmlszLocalname
-					))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarBitmapIndexProbe),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -75,13 +68,14 @@ CParseHandlerScalarBitmapIndexProbe::StartElement
 	// order of their expected appearance
 
 	// parse handler for the index descriptor
-	CParseHandlerBase *pphIdxD =
-			CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenIndexDescr), m_pphm, this);
+	CParseHandlerBase *pphIdxD = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenIndexDescr), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphIdxD);
 
 	// parse handler for the index condition list
-	CParseHandlerBase *pphIdxCondList =
-			CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList), m_pphm, this);
+	CParseHandlerBase *pphIdxCondList = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarIndexCondList), m_pphm,
+		this);
 	m_pphm->ActivateParseHandler(pphIdxCondList);
 
 	// store parse handlers
@@ -98,31 +92,32 @@ CParseHandlerScalarBitmapIndexProbe::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarBitmapIndexProbe::EndElement
-	(
-	const XMLCh* const,  // xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const  // xmlszQname
-	)
+CParseHandlerScalarBitmapIndexProbe::EndElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString
-				(
-				CDXLTokens::XmlstrToken(EdxltokenScalarBitmapIndexProbe),
-				xmlszLocalname
-				))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarBitmapIndexProbe),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct node from the created child nodes
-	CParseHandlerIndexCondList *pphIdxCondList = dynamic_cast<CParseHandlerIndexCondList *>((*this)[0]);
-	CParseHandlerIndexDescr *pphIdxD = dynamic_cast<CParseHandlerIndexDescr *>((*this)[1]);
+	CParseHandlerIndexCondList *pphIdxCondList =
+		dynamic_cast<CParseHandlerIndexCondList *>((*this)[0]);
+	CParseHandlerIndexDescr *pphIdxD =
+		dynamic_cast<CParseHandlerIndexDescr *>((*this)[1]);
 
 	CDXLIndexDescr *pdxlid = pphIdxD->Pdxlid();
 	pdxlid->AddRef();
 
-	CDXLScalar *pdxlop = GPOS_NEW(m_pmp) CDXLScalarBitmapIndexProbe(m_pmp, pdxlid);
+	CDXLScalar *pdxlop =
+		GPOS_NEW(m_pmp) CDXLScalarBitmapIndexProbe(m_pmp, pdxlid);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 
 	// add children

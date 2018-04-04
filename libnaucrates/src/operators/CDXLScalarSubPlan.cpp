@@ -29,23 +29,20 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSubPlan::CDXLScalarSubPlan
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFirstColType,
-	DrgPdxlcr *pdrgdxlcr,
-	EdxlSubPlanType edxlsubplantype,
-	CDXLNode *pdxlnTestExpr
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidFirstColType(pmdidFirstColType),
-	m_pdrgdxlcr(pdrgdxlcr),
-	m_edxlsubplantype(edxlsubplantype),
-	m_pdxlnTestExpr(pdxlnTestExpr)
+CDXLScalarSubPlan::CDXLScalarSubPlan(IMemoryPool *pmp, IMDId *pmdidFirstColType,
+									 DrgPdxlcr *pdrgdxlcr,
+									 EdxlSubPlanType edxlsubplantype,
+									 CDXLNode *pdxlnTestExpr)
+	: CDXLScalar(pmp),
+	  m_pmdidFirstColType(pmdidFirstColType),
+	  m_pdrgdxlcr(pdrgdxlcr),
+	  m_edxlsubplantype(edxlsubplantype),
+	  m_pdxlnTestExpr(pdxlnTestExpr)
 {
 	GPOS_ASSERT(EdxlSubPlanTypeSentinel > edxlsubplantype);
-	GPOS_ASSERT_IMP(EdxlSubPlanTypeAny == edxlsubplantype || EdxlSubPlanTypeAll == edxlsubplantype, NULL != pdxlnTestExpr);
+	GPOS_ASSERT_IMP(EdxlSubPlanTypeAny == edxlsubplantype ||
+						EdxlSubPlanTypeAll == edxlsubplantype,
+					NULL != pdxlnTestExpr);
 }
 
 //---------------------------------------------------------------------------
@@ -100,11 +97,7 @@ CDXLScalarSubPlan::PmdidFirstColType() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarSubPlan::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarSubPlan::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidFirstColType)->Eti());
 }
@@ -154,77 +147,65 @@ CDXLScalarSubPlan::PstrSubplanType() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubPlan::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSubPlan::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	m_pmdidFirstColType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarSubPlanType), PstrSubplanType());
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	m_pmdidFirstColType->Serialize(pxmlser,
+								   CDXLTokens::PstrToken(EdxltokenTypeId));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarSubPlanType),
+						  PstrSubplanType());
 
 	// serialize test expression
-	pxmlser->OpenElement
-					(
-					CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-					CDXLTokens::PstrToken(EdxltokenScalarSubPlanTestExpr)
-					);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenScalarSubPlanTestExpr));
 
 	if (NULL != m_pdxlnTestExpr)
 	{
 		m_pdxlnTestExpr->SerializeToDXL(pxmlser);
 	}
 
-	pxmlser->CloseElement
-					(
-					CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-					CDXLTokens::PstrToken(EdxltokenScalarSubPlanTestExpr)
-					);
+	pxmlser->CloseElement(
+		CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+		CDXLTokens::PstrToken(EdxltokenScalarSubPlanTestExpr));
 
-	pxmlser->OpenElement
-				(
-				CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-				CDXLTokens::PstrToken(EdxltokenScalarSubPlanParamList)
-				);
+	pxmlser->OpenElement(
+		CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+		CDXLTokens::PstrToken(EdxltokenScalarSubPlanParamList));
 
 	for (ULONG ul = 0; ul < m_pdrgdxlcr->UlLength(); ul++)
 	{
-		pxmlser->OpenElement
-					(
-					CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-					CDXLTokens::PstrToken(EdxltokenScalarSubPlanParam)
-					);
+		pxmlser->OpenElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenScalarSubPlanParam));
 
 		ULONG ulid = (*m_pdrgdxlcr)[ul]->UlID();
 		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), ulid);
 
 		const CMDName *pmdname = (*m_pdrgdxlcr)[ul]->Pmdname();
 		const IMDId *pmdidType = (*m_pdrgdxlcr)[ul]->PmdidType();
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColName), pmdname->Pstr());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColName),
+							  pmdname->Pstr());
 		pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 
-		pxmlser->CloseElement
-					(
-					CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-					CDXLTokens::PstrToken(EdxltokenScalarSubPlanParam)
-					);
+		pxmlser->CloseElement(
+			CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+			CDXLTokens::PstrToken(EdxltokenScalarSubPlanParam));
 	}
 
-	pxmlser->CloseElement
-				(
-				CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-				CDXLTokens::PstrToken(EdxltokenScalarSubPlanParamList)
-				);
+	pxmlser->CloseElement(
+		CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+		CDXLTokens::PstrToken(EdxltokenScalarSubPlanParamList));
 
 	GPOS_ASSERT(1 == pdxln->PdrgpdxlnChildren()->UlLength());
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -238,12 +219,8 @@ CDXLScalarSubPlan::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSubPlan::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarSubPlan::AssertValid(const CDXLNode *pdxln,
+							   BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(EdxlSubPlanIndexSentinel == pdxln->UlArity());
 
@@ -252,13 +229,15 @@ CDXLScalarSubPlan::AssertValid
 	CDXLNode *pdxlnChild = (*pdxln)[EdxlSubPlanIndexChildPlan];
 	GPOS_ASSERT(NULL != pdxlnChild);
 	GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
-	GPOS_ASSERT_IMP(NULL != m_pdxlnTestExpr, EdxloptypeScalar == m_pdxlnTestExpr->Pdxlop()->Edxloperatortype());
+	GPOS_ASSERT_IMP(NULL != m_pdxlnTestExpr,
+					EdxloptypeScalar ==
+						m_pdxlnTestExpr->Pdxlop()->Edxloperatortype());
 
 	if (fValidateChildren)
 	{
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

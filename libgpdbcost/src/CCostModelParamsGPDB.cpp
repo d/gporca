@@ -85,7 +85,8 @@ const CDouble CCostModelParamsGPDB::DJoinFeedingTupWidthCostUnitVal = 6.09e-07;
 const CDouble CCostModelParamsGPDB::DJoinOutputTupCostUnitVal = 3.50e-06;
 
 // memory threshold for hash join spilling (in bytes)
-const CDouble CCostModelParamsGPDB::DHJSpillingMemThresholdVal = 50 * 1024 * 1024;
+const CDouble CCostModelParamsGPDB::DHJSpillingMemThresholdVal =
+	50 * 1024 * 1024;
 
 // initial cost for building hash table for hash join
 const CDouble CCostModelParamsGPDB::DHJHashTableInitCostFactorVal = 500.0;
@@ -100,22 +101,27 @@ const CDouble CCostModelParamsGPDB::DHJHashTableWidthCostUnitVal = 3.0e-06;
 const CDouble CCostModelParamsGPDB::DHJHashingTupWidthCostUnitVal = 1.97e-05;
 
 // feeding cost per tuple per column in hash join if spilling
-const CDouble CCostModelParamsGPDB::DHJFeedingTupColumnSpillingCostUnitVal = 1.97e-04;
+const CDouble CCostModelParamsGPDB::DHJFeedingTupColumnSpillingCostUnitVal =
+	1.97e-04;
 
 // feeding cost per tuple with unit width in hash join if spilling
-const CDouble CCostModelParamsGPDB::DHJFeedingTupWidthSpillingCostUnitVal = 3.0e-06;
+const CDouble CCostModelParamsGPDB::DHJFeedingTupWidthSpillingCostUnitVal =
+	3.0e-06;
 
 // hashing cost per tuple with unit width in hash join if spilling
-const CDouble CCostModelParamsGPDB::DHJHashingTupWidthSpillingCostUnitVal = 2.30e-05;
+const CDouble CCostModelParamsGPDB::DHJHashingTupWidthSpillingCostUnitVal =
+	2.30e-05;
 
 // cost for building hash table for per tuple per grouping column in hash aggregate
-const CDouble CCostModelParamsGPDB::DHashAggInputTupColumnCostUnitVal = 1.20e-04;
+const CDouble CCostModelParamsGPDB::DHashAggInputTupColumnCostUnitVal =
+	1.20e-04;
 
 // cost for building hash table for per tuple with unit width in hash aggregate
 const CDouble CCostModelParamsGPDB::DHashAggInputTupWidthCostUnitVal = 1.12e-07;
 
 // cost for outputting for per tuple with unit width in hash aggregate
-const CDouble CCostModelParamsGPDB::DHashAggOutputTupWidthCostUnitVal = 5.61e-07;
+const CDouble CCostModelParamsGPDB::DHashAggOutputTupWidthCostUnitVal =
+	5.61e-07;
 
 // sorting cost per tuple with unit width
 const CDouble CCostModelParamsGPDB::DSortTupWidthCostUnitVal = 5.67e-06;
@@ -165,62 +171,62 @@ const CDouble CCostModelParamsGPDB::DBitmapPageCostSmallNDV(204.3810);
 // default threshold of NDV for bitmap costing
 const CDouble CCostModelParamsGPDB::DBitmapNDVThreshold(200);
 
-#define GPOPT_COSTPARAM_NAME_MAX_LENGTH		80
+#define GPOPT_COSTPARAM_NAME_MAX_LENGTH 80
 
 // parameter names in the same order of param enumeration
-const CHAR rgszCostParamNames[CCostModelParamsGPDB::EcpSentinel][GPOPT_COSTPARAM_NAME_MAX_LENGTH] =
-	{
-	"SeqIOBandwidth",
-	"RandomIOBandwidth",
-	"TupProcBandwidth",
-	"OutputBandwidth",
-	"InitScanFacor",
-	"TableScanCostUnit",
-	"InitIndexScanFactor",
-	"IndexBlockCostUnit",
-	"IndexFilterCostUnit",
-	"IndexScanTupCostUnit",
-	"IndexScanTupRandomFactor",
-	"FilterColCostUnit",
-	"OutputTupCostUnit",
-	"GatherSendCostUnit",
-	"GatherRecvCostUnit",
-	"RedistributeSendCostUnit",
-	"RedistributeRecvCostUnit",
-	"BroadcastSendCostUnit",
-	"BroadcastRecvCostUnit",
-	"NoOpCostUnit",
-	"JoinFeedingTupColumnCostUnit",
-	"JoinFeedingTupWidthCostUnit",
-	"JoinOutputTupCostUnit",
-	"HJSpillingMemThreshold",
-	"HJHashTableInitCostFactor",
-	"HJHashTableColumnCostUnit",
-	"HJHashTableWidthCostUnit",
-	"HJHashingTupWidthCostUnit",
-	"HJFeedingTupColumnSpillingCostUnit",
-	"HJFeedingTupWidthSpillingCostUnit",
-	"HJHashingTupWidthSpillingCostUnit",
-	"HashAggInputTupColumnCostUnit",
-	"HashAggInputTupWidthCostUnit",
-	"HashAggOutputTupWidthCostUnit",
-	"SortTupWidthCostUnit",
-	"TupDefaultProcCostUnit",
-	"MaterializeCostUnit",
-	"TupUpdateBandwidth",
-	"NetworkBandwidth",
-	"Segments",
-	"NLJFactor",
-	"HJFactor",
-	"HashFactor",
-	"DefaultCost",
-	"IndexJoinAllowedRiskThreshold",
-	"BitmapIOLargerNDV",
-	"BitmapIOSmallerNDV",
-	"BitmapPageCostLargerNDV",
-	"BitmapPageCostSmallerNDV",
-	"BitmapNDVThreshold",
-	};
+const CHAR rgszCostParamNames[CCostModelParamsGPDB::EcpSentinel]
+							 [GPOPT_COSTPARAM_NAME_MAX_LENGTH] = {
+								 "SeqIOBandwidth",
+								 "RandomIOBandwidth",
+								 "TupProcBandwidth",
+								 "OutputBandwidth",
+								 "InitScanFacor",
+								 "TableScanCostUnit",
+								 "InitIndexScanFactor",
+								 "IndexBlockCostUnit",
+								 "IndexFilterCostUnit",
+								 "IndexScanTupCostUnit",
+								 "IndexScanTupRandomFactor",
+								 "FilterColCostUnit",
+								 "OutputTupCostUnit",
+								 "GatherSendCostUnit",
+								 "GatherRecvCostUnit",
+								 "RedistributeSendCostUnit",
+								 "RedistributeRecvCostUnit",
+								 "BroadcastSendCostUnit",
+								 "BroadcastRecvCostUnit",
+								 "NoOpCostUnit",
+								 "JoinFeedingTupColumnCostUnit",
+								 "JoinFeedingTupWidthCostUnit",
+								 "JoinOutputTupCostUnit",
+								 "HJSpillingMemThreshold",
+								 "HJHashTableInitCostFactor",
+								 "HJHashTableColumnCostUnit",
+								 "HJHashTableWidthCostUnit",
+								 "HJHashingTupWidthCostUnit",
+								 "HJFeedingTupColumnSpillingCostUnit",
+								 "HJFeedingTupWidthSpillingCostUnit",
+								 "HJHashingTupWidthSpillingCostUnit",
+								 "HashAggInputTupColumnCostUnit",
+								 "HashAggInputTupWidthCostUnit",
+								 "HashAggOutputTupWidthCostUnit",
+								 "SortTupWidthCostUnit",
+								 "TupDefaultProcCostUnit",
+								 "MaterializeCostUnit",
+								 "TupUpdateBandwidth",
+								 "NetworkBandwidth",
+								 "Segments",
+								 "NLJFactor",
+								 "HJFactor",
+								 "HashFactor",
+								 "DefaultCost",
+								 "IndexJoinAllowedRiskThreshold",
+								 "BitmapIOLargerNDV",
+								 "BitmapIOSmallerNDV",
+								 "BitmapPageCostLargerNDV",
+								 "BitmapPageCostSmallerNDV",
+								 "BitmapNDVThreshold",
+};
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -230,12 +236,7 @@ const CHAR rgszCostParamNames[CCostModelParamsGPDB::EcpSentinel][GPOPT_COSTPARAM
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CCostModelParamsGPDB::CCostModelParamsGPDB
-	(
-	IMemoryPool *pmp
-	)
-	:
-	m_pmp(pmp)
+CCostModelParamsGPDB::CCostModelParamsGPDB(IMemoryPool *pmp) : m_pmp(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 
@@ -245,56 +246,167 @@ CCostModelParamsGPDB::CCostModelParamsGPDB
 	}
 
 	// populate param array with default param values
-	m_rgpcp[EcpSeqIOBandwidth] = GPOS_NEW(pmp) SCostParam(EcpSeqIOBandwidth, DSeqIOBandwidthVal, DSeqIOBandwidthVal - 128.0, DSeqIOBandwidthVal + 128.0);
-	m_rgpcp[EcpRandomIOBandwidth] = GPOS_NEW(pmp) SCostParam(EcpRandomIOBandwidth, DRandomIOBandwidthVal, DRandomIOBandwidthVal - 8.0, DRandomIOBandwidthVal + 8.0);
-	m_rgpcp[EcpTupProcBandwidth] = GPOS_NEW(pmp) SCostParam(EcpTupProcBandwidth, DTupProcBandwidthVal, DTupProcBandwidthVal - 32.0, DTupProcBandwidthVal + 32.0);
-	m_rgpcp[EcpOutputBandwidth] = GPOS_NEW(pmp) SCostParam(EcpOutputBandwidth, DOutputBandwidthVal, DOutputBandwidthVal - 32.0, DOutputBandwidthVal + 32.0);
-	m_rgpcp[EcpInitScanFactor] = GPOS_NEW(pmp) SCostParam(EcpInitScanFactor, DInitScanFacorVal, DInitScanFacorVal - 2.0, DInitScanFacorVal + 2.0);
-	m_rgpcp[EcpTableScanCostUnit] = GPOS_NEW(pmp) SCostParam(EcpTableScanCostUnit, DTableScanCostUnitVal, DTableScanCostUnitVal - 1.0, DTableScanCostUnitVal + 1.0);
-	m_rgpcp[EcpInitIndexScanFactor] = GPOS_NEW(pmp) SCostParam(EcpInitIndexScanFactor, DInitIndexScanFactorVal, DInitIndexScanFactorVal - 1.0, DInitIndexScanFactorVal + 1.0);
-	m_rgpcp[EcpIndexBlockCostUnit] = GPOS_NEW(pmp) SCostParam(EcpIndexBlockCostUnit, DIndexBlockCostUnitVal, DIndexBlockCostUnitVal - 1.0, DIndexBlockCostUnitVal + 1.0);
-	m_rgpcp[EcpIndexFilterCostUnit] = GPOS_NEW(pmp) SCostParam(EcpIndexFilterCostUnit, DIndexFilterCostUnitVal, DIndexFilterCostUnitVal - 1.0, DIndexFilterCostUnitVal + 1.0);
-	m_rgpcp[EcpIndexScanTupCostUnit] = GPOS_NEW(pmp) SCostParam(EcpIndexScanTupCostUnit, DIndexScanTupCostUnitVal, DIndexScanTupCostUnitVal - 1.0, DIndexScanTupCostUnitVal + 1.0);
-	m_rgpcp[EcpIndexScanTupRandomFactor] = GPOS_NEW(pmp) SCostParam(EcpIndexScanTupRandomFactor, DIndexScanTupRandomFactorVal, DIndexScanTupRandomFactorVal - 1.0, DIndexScanTupRandomFactorVal + 1.0);
-	m_rgpcp[EcpFilterColCostUnit] = GPOS_NEW(pmp) SCostParam(EcpFilterColCostUnit, DFilterColCostUnitVal, DFilterColCostUnitVal - 1.0, DFilterColCostUnitVal + 1.0);
-	m_rgpcp[EcpOutputTupCostUnit] = GPOS_NEW(pmp) SCostParam(EcpOutputTupCostUnit, DOutputTupCostUnitVal, DOutputTupCostUnitVal - 1.0, DOutputTupCostUnitVal + 1.0);
-	m_rgpcp[EcpGatherSendCostUnit] = GPOS_NEW(pmp) SCostParam(EcpGatherSendCostUnit, DGatherSendCostUnitVal, DGatherSendCostUnitVal - 0.0, DGatherSendCostUnitVal + 0.0);
-	m_rgpcp[EcpGatherRecvCostUnit] = GPOS_NEW(pmp) SCostParam(EcpGatherRecvCostUnit, DGatherRecvCostUnitVal, DGatherRecvCostUnitVal - 0.0, DGatherRecvCostUnitVal + 0.0);
-	m_rgpcp[EcpRedistributeSendCostUnit] = GPOS_NEW(pmp) SCostParam(EcpRedistributeSendCostUnit, DRedistributeSendCostUnitVal, DRedistributeSendCostUnitVal - 0.0, DRedistributeSendCostUnitVal + 0.0);
-	m_rgpcp[EcpRedistributeRecvCostUnit] = GPOS_NEW(pmp) SCostParam(EcpRedistributeRecvCostUnit, DRedistributeRecvCostUnitVal, DRedistributeRecvCostUnitVal - 0.0, DRedistributeRecvCostUnitVal + 0.0);
-	m_rgpcp[EcpBroadcastSendCostUnit] = GPOS_NEW(pmp) SCostParam(EcpBroadcastSendCostUnit, DBroadcastSendCostUnitVal, DBroadcastSendCostUnitVal - 0.0, DBroadcastSendCostUnitVal + 0.0);
-	m_rgpcp[EcpBroadcastRecvCostUnit] = GPOS_NEW(pmp) SCostParam(EcpBroadcastRecvCostUnit, DBroadcastRecvCostUnitVal, DBroadcastRecvCostUnitVal - 0.0, DBroadcastRecvCostUnitVal + 0.0);
-	m_rgpcp[EcpNoOpCostUnit] = GPOS_NEW(pmp) SCostParam(EcpNoOpCostUnit, DNoOpCostUnitVal, DNoOpCostUnitVal - 0.0, DNoOpCostUnitVal + 0.0);
-	m_rgpcp[EcpJoinFeedingTupColumnCostUnit] = GPOS_NEW(pmp) SCostParam(EcpJoinFeedingTupColumnCostUnit, DJoinFeedingTupColumnCostUnitVal, DJoinFeedingTupColumnCostUnitVal - 0.0, DJoinFeedingTupColumnCostUnitVal + 0.0);
-	m_rgpcp[EcpJoinFeedingTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpJoinFeedingTupWidthCostUnit, DJoinFeedingTupWidthCostUnitVal, DJoinFeedingTupWidthCostUnitVal - 0.0, DJoinFeedingTupWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpJoinOutputTupCostUnit] = GPOS_NEW(pmp) SCostParam(EcpJoinOutputTupCostUnit, DJoinOutputTupCostUnitVal, DJoinOutputTupCostUnitVal - 0.0, DJoinOutputTupCostUnitVal + 0.0);
-	m_rgpcp[EcpHJSpillingMemThreshold] = GPOS_NEW(pmp) SCostParam(EcpHJSpillingMemThreshold, DHJSpillingMemThresholdVal, DHJSpillingMemThresholdVal - 0.0, DHJSpillingMemThresholdVal + 0.0);
-	m_rgpcp[EcpHJHashTableInitCostFactor] = GPOS_NEW(pmp) SCostParam(EcpHJHashTableInitCostFactor, DHJHashTableInitCostFactorVal, DHJHashTableInitCostFactorVal - 0.0, DHJHashTableInitCostFactorVal + 0.0);
-	m_rgpcp[EcpHJHashTableColumnCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJHashTableColumnCostUnit, DHJHashTableColumnCostUnitVal, DHJHashTableColumnCostUnitVal - 0.0, DHJHashTableColumnCostUnitVal + 0.0);
-	m_rgpcp[EcpHJHashTableWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJHashTableWidthCostUnit, DHJHashTableWidthCostUnitVal, DHJHashTableWidthCostUnitVal - 0.0, DHJHashTableWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpHJHashingTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJHashingTupWidthCostUnit, DHJHashingTupWidthCostUnitVal, DHJHashingTupWidthCostUnitVal - 0.0, DHJHashingTupWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpHJFeedingTupColumnSpillingCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJFeedingTupColumnSpillingCostUnit, DHJFeedingTupColumnSpillingCostUnitVal, DHJFeedingTupColumnSpillingCostUnitVal - 0.0, DHJFeedingTupColumnSpillingCostUnitVal + 0.0);
-	m_rgpcp[EcpHJFeedingTupWidthSpillingCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJFeedingTupWidthSpillingCostUnit, DHJFeedingTupWidthSpillingCostUnitVal, DHJFeedingTupWidthSpillingCostUnitVal - 0.0, DHJFeedingTupWidthSpillingCostUnitVal + 0.0);
-	m_rgpcp[EcpHJHashingTupWidthSpillingCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHJHashingTupWidthSpillingCostUnit, DHJHashingTupWidthSpillingCostUnitVal, DHJHashingTupWidthSpillingCostUnitVal - 0.0, DHJHashingTupWidthSpillingCostUnitVal + 0.0);
-	m_rgpcp[EcpHashAggInputTupColumnCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHashAggInputTupColumnCostUnit, DHashAggInputTupColumnCostUnitVal, DHashAggInputTupColumnCostUnitVal - 0.0, DHashAggInputTupColumnCostUnitVal + 0.0);
-	m_rgpcp[EcpHashAggInputTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHashAggInputTupWidthCostUnit, DHashAggInputTupWidthCostUnitVal, DHashAggInputTupWidthCostUnitVal - 0.0, DHashAggInputTupWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpHashAggOutputTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpHashAggOutputTupWidthCostUnit, DHashAggOutputTupWidthCostUnitVal, DHashAggOutputTupWidthCostUnitVal - 0.0, DHashAggOutputTupWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpSortTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(EcpSortTupWidthCostUnit, DSortTupWidthCostUnitVal, DSortTupWidthCostUnitVal - 0.0, DSortTupWidthCostUnitVal + 0.0);
-	m_rgpcp[EcpTupDefaultProcCostUnit] = GPOS_NEW(pmp) SCostParam(EcpTupDefaultProcCostUnit, DTupDefaultProcCostUnitVal, DTupDefaultProcCostUnitVal - 0.0, DTupDefaultProcCostUnitVal + 0.0);
-	m_rgpcp[EcpMaterializeCostUnit] = GPOS_NEW(pmp) SCostParam(EcpMaterializeCostUnit, DMaterializeCostUnitVal, DMaterializeCostUnitVal - 0.0, DMaterializeCostUnitVal + 0.0);
-	m_rgpcp[EcpTupUpdateBandwith] = GPOS_NEW(pmp) SCostParam(EcpTupUpdateBandwith, DTupUpdateBandwidthVal, DTupUpdateBandwidthVal - 32.0, DTupUpdateBandwidthVal + 32.0);
-	m_rgpcp[EcpNetBandwidth] = GPOS_NEW(pmp) SCostParam(EcpNetBandwidth, DNetBandwidthVal, DNetBandwidthVal - 128.0, DNetBandwidthVal + 128.0);
-	m_rgpcp[EcpSegments] = GPOS_NEW(pmp) SCostParam(EcpSegments, DSegmentsVal, DSegmentsVal - 2.0, DSegmentsVal + 2.0);
-	m_rgpcp[EcpNLJFactor] = GPOS_NEW(pmp) SCostParam(EcpNLJFactor, DNLJFactorVal, DNLJFactorVal - 0.5, DNLJFactorVal + 0.5);
-	m_rgpcp[EcpHJFactor] = GPOS_NEW(pmp) SCostParam(EcpHJFactor, DHJFactorVal, DHJFactorVal - 1.0, DHJFactorVal + 1.0);
-	m_rgpcp[EcpHashFactor] = GPOS_NEW(pmp) SCostParam(EcpHashFactor, DHashFactorVal, DHashFactorVal - 1.0, DHashFactorVal + 1.0);
-	m_rgpcp[EcpDefaultCost] = GPOS_NEW(pmp) SCostParam(EcpDefaultCost, DDefaultCostVal, DDefaultCostVal - 32.0, DDefaultCostVal + 32.0);
-	m_rgpcp[EcpIndexJoinAllowedRiskThreshold] = GPOS_NEW(pmp) SCostParam(EcpIndexJoinAllowedRiskThreshold, DIndexJoinAllowedRiskThreshold, 0, ULONG_MAX);
-	m_rgpcp[EcpBitmapIOCostLargeNDV] = GPOS_NEW(pmp) SCostParam(EcpBitmapIOCostLargeNDV, DBitmapIOCostLargeNDV, DBitmapIOCostLargeNDV - 0.0001, DBitmapIOCostLargeNDV + 0.0001);
-	m_rgpcp[EcpBitmapIOCostSmallNDV] = GPOS_NEW(pmp) SCostParam(EcpBitmapIOCostSmallNDV, DBitmapIOCostSmallNDV, DBitmapIOCostSmallNDV - 0.0001, DBitmapIOCostSmallNDV + 0.0001);
-	m_rgpcp[EcpBitmapPageCostLargeNDV] = GPOS_NEW(pmp) SCostParam(EcpBitmapPageCostLargeNDV, DBitmapPageCostLargeNDV, DBitmapPageCostLargeNDV - 1.0, DBitmapPageCostLargeNDV + 1.0);
-	m_rgpcp[EcpBitmapPageCostSmallNDV] = GPOS_NEW(pmp) SCostParam(EcpBitmapPageCostSmallNDV, DBitmapPageCostSmallNDV, DBitmapPageCostSmallNDV - 1.0, DBitmapPageCostSmallNDV + 1.0);
-	m_rgpcp[EcpBitmapNDVThreshold] = GPOS_NEW(pmp) SCostParam(EcpBitmapNDVThreshold, DBitmapNDVThreshold, DBitmapNDVThreshold - 1.0, DBitmapNDVThreshold + 1.0);
+	m_rgpcp[EcpSeqIOBandwidth] = GPOS_NEW(pmp)
+		SCostParam(EcpSeqIOBandwidth, DSeqIOBandwidthVal,
+				   DSeqIOBandwidthVal - 128.0, DSeqIOBandwidthVal + 128.0);
+	m_rgpcp[EcpRandomIOBandwidth] = GPOS_NEW(pmp)
+		SCostParam(EcpRandomIOBandwidth, DRandomIOBandwidthVal,
+				   DRandomIOBandwidthVal - 8.0, DRandomIOBandwidthVal + 8.0);
+	m_rgpcp[EcpTupProcBandwidth] = GPOS_NEW(pmp)
+		SCostParam(EcpTupProcBandwidth, DTupProcBandwidthVal,
+				   DTupProcBandwidthVal - 32.0, DTupProcBandwidthVal + 32.0);
+	m_rgpcp[EcpOutputBandwidth] = GPOS_NEW(pmp)
+		SCostParam(EcpOutputBandwidth, DOutputBandwidthVal,
+				   DOutputBandwidthVal - 32.0, DOutputBandwidthVal + 32.0);
+	m_rgpcp[EcpInitScanFactor] = GPOS_NEW(pmp)
+		SCostParam(EcpInitScanFactor, DInitScanFacorVal,
+				   DInitScanFacorVal - 2.0, DInitScanFacorVal + 2.0);
+	m_rgpcp[EcpTableScanCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpTableScanCostUnit, DTableScanCostUnitVal,
+				   DTableScanCostUnitVal - 1.0, DTableScanCostUnitVal + 1.0);
+	m_rgpcp[EcpInitIndexScanFactor] = GPOS_NEW(pmp) SCostParam(
+		EcpInitIndexScanFactor, DInitIndexScanFactorVal,
+		DInitIndexScanFactorVal - 1.0, DInitIndexScanFactorVal + 1.0);
+	m_rgpcp[EcpIndexBlockCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpIndexBlockCostUnit, DIndexBlockCostUnitVal,
+				   DIndexBlockCostUnitVal - 1.0, DIndexBlockCostUnitVal + 1.0);
+	m_rgpcp[EcpIndexFilterCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpIndexFilterCostUnit, DIndexFilterCostUnitVal,
+		DIndexFilterCostUnitVal - 1.0, DIndexFilterCostUnitVal + 1.0);
+	m_rgpcp[EcpIndexScanTupCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpIndexScanTupCostUnit, DIndexScanTupCostUnitVal,
+		DIndexScanTupCostUnitVal - 1.0, DIndexScanTupCostUnitVal + 1.0);
+	m_rgpcp[EcpIndexScanTupRandomFactor] = GPOS_NEW(pmp) SCostParam(
+		EcpIndexScanTupRandomFactor, DIndexScanTupRandomFactorVal,
+		DIndexScanTupRandomFactorVal - 1.0, DIndexScanTupRandomFactorVal + 1.0);
+	m_rgpcp[EcpFilterColCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpFilterColCostUnit, DFilterColCostUnitVal,
+				   DFilterColCostUnitVal - 1.0, DFilterColCostUnitVal + 1.0);
+	m_rgpcp[EcpOutputTupCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpOutputTupCostUnit, DOutputTupCostUnitVal,
+				   DOutputTupCostUnitVal - 1.0, DOutputTupCostUnitVal + 1.0);
+	m_rgpcp[EcpGatherSendCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpGatherSendCostUnit, DGatherSendCostUnitVal,
+				   DGatherSendCostUnitVal - 0.0, DGatherSendCostUnitVal + 0.0);
+	m_rgpcp[EcpGatherRecvCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpGatherRecvCostUnit, DGatherRecvCostUnitVal,
+				   DGatherRecvCostUnitVal - 0.0, DGatherRecvCostUnitVal + 0.0);
+	m_rgpcp[EcpRedistributeSendCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpRedistributeSendCostUnit, DRedistributeSendCostUnitVal,
+		DRedistributeSendCostUnitVal - 0.0, DRedistributeSendCostUnitVal + 0.0);
+	m_rgpcp[EcpRedistributeRecvCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpRedistributeRecvCostUnit, DRedistributeRecvCostUnitVal,
+		DRedistributeRecvCostUnitVal - 0.0, DRedistributeRecvCostUnitVal + 0.0);
+	m_rgpcp[EcpBroadcastSendCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpBroadcastSendCostUnit, DBroadcastSendCostUnitVal,
+		DBroadcastSendCostUnitVal - 0.0, DBroadcastSendCostUnitVal + 0.0);
+	m_rgpcp[EcpBroadcastRecvCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpBroadcastRecvCostUnit, DBroadcastRecvCostUnitVal,
+		DBroadcastRecvCostUnitVal - 0.0, DBroadcastRecvCostUnitVal + 0.0);
+	m_rgpcp[EcpNoOpCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpNoOpCostUnit, DNoOpCostUnitVal, DNoOpCostUnitVal - 0.0,
+				   DNoOpCostUnitVal + 0.0);
+	m_rgpcp[EcpJoinFeedingTupColumnCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpJoinFeedingTupColumnCostUnit, DJoinFeedingTupColumnCostUnitVal,
+		DJoinFeedingTupColumnCostUnitVal - 0.0,
+		DJoinFeedingTupColumnCostUnitVal + 0.0);
+	m_rgpcp[EcpJoinFeedingTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpJoinFeedingTupWidthCostUnit, DJoinFeedingTupWidthCostUnitVal,
+		DJoinFeedingTupWidthCostUnitVal - 0.0,
+		DJoinFeedingTupWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpJoinOutputTupCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpJoinOutputTupCostUnit, DJoinOutputTupCostUnitVal,
+		DJoinOutputTupCostUnitVal - 0.0, DJoinOutputTupCostUnitVal + 0.0);
+	m_rgpcp[EcpHJSpillingMemThreshold] = GPOS_NEW(pmp) SCostParam(
+		EcpHJSpillingMemThreshold, DHJSpillingMemThresholdVal,
+		DHJSpillingMemThresholdVal - 0.0, DHJSpillingMemThresholdVal + 0.0);
+	m_rgpcp[EcpHJHashTableInitCostFactor] = GPOS_NEW(pmp)
+		SCostParam(EcpHJHashTableInitCostFactor, DHJHashTableInitCostFactorVal,
+				   DHJHashTableInitCostFactorVal - 0.0,
+				   DHJHashTableInitCostFactorVal + 0.0);
+	m_rgpcp[EcpHJHashTableColumnCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpHJHashTableColumnCostUnit, DHJHashTableColumnCostUnitVal,
+				   DHJHashTableColumnCostUnitVal - 0.0,
+				   DHJHashTableColumnCostUnitVal + 0.0);
+	m_rgpcp[EcpHJHashTableWidthCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpHJHashTableWidthCostUnit, DHJHashTableWidthCostUnitVal,
+		DHJHashTableWidthCostUnitVal - 0.0, DHJHashTableWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpHJHashingTupWidthCostUnit] = GPOS_NEW(pmp)
+		SCostParam(EcpHJHashingTupWidthCostUnit, DHJHashingTupWidthCostUnitVal,
+				   DHJHashingTupWidthCostUnitVal - 0.0,
+				   DHJHashingTupWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpHJFeedingTupColumnSpillingCostUnit] =
+		GPOS_NEW(pmp) SCostParam(EcpHJFeedingTupColumnSpillingCostUnit,
+								 DHJFeedingTupColumnSpillingCostUnitVal,
+								 DHJFeedingTupColumnSpillingCostUnitVal - 0.0,
+								 DHJFeedingTupColumnSpillingCostUnitVal + 0.0);
+	m_rgpcp[EcpHJFeedingTupWidthSpillingCostUnit] =
+		GPOS_NEW(pmp) SCostParam(EcpHJFeedingTupWidthSpillingCostUnit,
+								 DHJFeedingTupWidthSpillingCostUnitVal,
+								 DHJFeedingTupWidthSpillingCostUnitVal - 0.0,
+								 DHJFeedingTupWidthSpillingCostUnitVal + 0.0);
+	m_rgpcp[EcpHJHashingTupWidthSpillingCostUnit] =
+		GPOS_NEW(pmp) SCostParam(EcpHJHashingTupWidthSpillingCostUnit,
+								 DHJHashingTupWidthSpillingCostUnitVal,
+								 DHJHashingTupWidthSpillingCostUnitVal - 0.0,
+								 DHJHashingTupWidthSpillingCostUnitVal + 0.0);
+	m_rgpcp[EcpHashAggInputTupColumnCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpHashAggInputTupColumnCostUnit, DHashAggInputTupColumnCostUnitVal,
+		DHashAggInputTupColumnCostUnitVal - 0.0,
+		DHashAggInputTupColumnCostUnitVal + 0.0);
+	m_rgpcp[EcpHashAggInputTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpHashAggInputTupWidthCostUnit, DHashAggInputTupWidthCostUnitVal,
+		DHashAggInputTupWidthCostUnitVal - 0.0,
+		DHashAggInputTupWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpHashAggOutputTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpHashAggOutputTupWidthCostUnit, DHashAggOutputTupWidthCostUnitVal,
+		DHashAggOutputTupWidthCostUnitVal - 0.0,
+		DHashAggOutputTupWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpSortTupWidthCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpSortTupWidthCostUnit, DSortTupWidthCostUnitVal,
+		DSortTupWidthCostUnitVal - 0.0, DSortTupWidthCostUnitVal + 0.0);
+	m_rgpcp[EcpTupDefaultProcCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpTupDefaultProcCostUnit, DTupDefaultProcCostUnitVal,
+		DTupDefaultProcCostUnitVal - 0.0, DTupDefaultProcCostUnitVal + 0.0);
+	m_rgpcp[EcpMaterializeCostUnit] = GPOS_NEW(pmp) SCostParam(
+		EcpMaterializeCostUnit, DMaterializeCostUnitVal,
+		DMaterializeCostUnitVal - 0.0, DMaterializeCostUnitVal + 0.0);
+	m_rgpcp[EcpTupUpdateBandwith] = GPOS_NEW(pmp) SCostParam(
+		EcpTupUpdateBandwith, DTupUpdateBandwidthVal,
+		DTupUpdateBandwidthVal - 32.0, DTupUpdateBandwidthVal + 32.0);
+	m_rgpcp[EcpNetBandwidth] = GPOS_NEW(pmp)
+		SCostParam(EcpNetBandwidth, DNetBandwidthVal, DNetBandwidthVal - 128.0,
+				   DNetBandwidthVal + 128.0);
+	m_rgpcp[EcpSegments] = GPOS_NEW(pmp) SCostParam(
+		EcpSegments, DSegmentsVal, DSegmentsVal - 2.0, DSegmentsVal + 2.0);
+	m_rgpcp[EcpNLJFactor] = GPOS_NEW(pmp) SCostParam(
+		EcpNLJFactor, DNLJFactorVal, DNLJFactorVal - 0.5, DNLJFactorVal + 0.5);
+	m_rgpcp[EcpHJFactor] = GPOS_NEW(pmp) SCostParam(
+		EcpHJFactor, DHJFactorVal, DHJFactorVal - 1.0, DHJFactorVal + 1.0);
+	m_rgpcp[EcpHashFactor] =
+		GPOS_NEW(pmp) SCostParam(EcpHashFactor, DHashFactorVal,
+								 DHashFactorVal - 1.0, DHashFactorVal + 1.0);
+	m_rgpcp[EcpDefaultCost] = GPOS_NEW(pmp)
+		SCostParam(EcpDefaultCost, DDefaultCostVal, DDefaultCostVal - 32.0,
+				   DDefaultCostVal + 32.0);
+	m_rgpcp[EcpIndexJoinAllowedRiskThreshold] =
+		GPOS_NEW(pmp) SCostParam(EcpIndexJoinAllowedRiskThreshold,
+								 DIndexJoinAllowedRiskThreshold, 0, ULONG_MAX);
+	m_rgpcp[EcpBitmapIOCostLargeNDV] = GPOS_NEW(pmp) SCostParam(
+		EcpBitmapIOCostLargeNDV, DBitmapIOCostLargeNDV,
+		DBitmapIOCostLargeNDV - 0.0001, DBitmapIOCostLargeNDV + 0.0001);
+	m_rgpcp[EcpBitmapIOCostSmallNDV] = GPOS_NEW(pmp) SCostParam(
+		EcpBitmapIOCostSmallNDV, DBitmapIOCostSmallNDV,
+		DBitmapIOCostSmallNDV - 0.0001, DBitmapIOCostSmallNDV + 0.0001);
+	m_rgpcp[EcpBitmapPageCostLargeNDV] = GPOS_NEW(pmp) SCostParam(
+		EcpBitmapPageCostLargeNDV, DBitmapPageCostLargeNDV,
+		DBitmapPageCostLargeNDV - 1.0, DBitmapPageCostLargeNDV + 1.0);
+	m_rgpcp[EcpBitmapPageCostSmallNDV] = GPOS_NEW(pmp) SCostParam(
+		EcpBitmapPageCostSmallNDV, DBitmapPageCostSmallNDV,
+		DBitmapPageCostSmallNDV - 1.0, DBitmapPageCostSmallNDV + 1.0);
+	m_rgpcp[EcpBitmapNDVThreshold] = GPOS_NEW(pmp)
+		SCostParam(EcpBitmapNDVThreshold, DBitmapNDVThreshold,
+				   DBitmapNDVThreshold - 1.0, DBitmapNDVThreshold + 1.0);
 }
 
 
@@ -326,11 +438,7 @@ CCostModelParamsGPDB::~CCostModelParamsGPDB()
 //
 //---------------------------------------------------------------------------
 CCostModelParamsGPDB::SCostParam *
-CCostModelParamsGPDB::PcpLookup
-	(
-	ULONG ulId
-	)
-	const
+CCostModelParamsGPDB::PcpLookup(ULONG ulId) const
 {
 	ECostParam ecp = (ECostParam) ulId;
 	GPOS_ASSERT(EcpSentinel > ecp);
@@ -349,11 +457,7 @@ CCostModelParamsGPDB::PcpLookup
 //
 //---------------------------------------------------------------------------
 CCostModelParamsGPDB::SCostParam *
-CCostModelParamsGPDB::PcpLookup
-	(
-	const CHAR *szName
-	)
-	const
+CCostModelParamsGPDB::PcpLookup(const CHAR *szName) const
 {
 	GPOS_ASSERT(NULL != szName);
 
@@ -378,20 +482,16 @@ CCostModelParamsGPDB::PcpLookup
 //
 //---------------------------------------------------------------------------
 void
-CCostModelParamsGPDB::SetParam
-	(
-	ULONG ulId,
-	CDouble dVal,
-	CDouble dLowerBound,
-	CDouble dUpperBound
-	)
+CCostModelParamsGPDB::SetParam(ULONG ulId, CDouble dVal, CDouble dLowerBound,
+							   CDouble dUpperBound)
 {
 	ECostParam ecp = (ECostParam) ulId;
 	GPOS_ASSERT(EcpSentinel > ecp);
 
 	GPOS_DELETE(m_rgpcp[ecp]);
 	m_rgpcp[ecp] = NULL;
-	m_rgpcp[ecp] =  GPOS_NEW(m_pmp) SCostParam(ecp, dVal, dLowerBound, dUpperBound);
+	m_rgpcp[ecp] =
+		GPOS_NEW(m_pmp) SCostParam(ecp, dVal, dLowerBound, dUpperBound);
 }
 
 
@@ -404,13 +504,8 @@ CCostModelParamsGPDB::SetParam
 //
 //---------------------------------------------------------------------------
 void
-CCostModelParamsGPDB::SetParam
-	(
-	const CHAR *szName,
-	CDouble dVal,
-	CDouble dLowerBound,
-	CDouble dUpperBound
-	)
+CCostModelParamsGPDB::SetParam(const CHAR *szName, CDouble dVal,
+							   CDouble dLowerBound, CDouble dUpperBound)
 {
 	GPOS_ASSERT(NULL != szName);
 
@@ -420,7 +515,8 @@ CCostModelParamsGPDB::SetParam
 		{
 			GPOS_DELETE(m_rgpcp[ul]);
 			m_rgpcp[ul] = NULL;
-			m_rgpcp[ul] = GPOS_NEW(m_pmp) SCostParam(ul, dVal, dLowerBound, dUpperBound);
+			m_rgpcp[ul] =
+				GPOS_NEW(m_pmp) SCostParam(ul, dVal, dLowerBound, dUpperBound);
 
 			return;
 		}
@@ -437,25 +533,20 @@ CCostModelParamsGPDB::SetParam
 //
 //---------------------------------------------------------------------------
 IOstream &
-CCostModelParamsGPDB::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CCostModelParamsGPDB::OsPrint(IOstream &os) const
 {
 	for (ULONG ul = 0; ul < EcpSentinel; ul++)
 	{
 		SCostParam *pcp = PcpLookup((ECostParam) ul);
-		os
-			<< rgszCostParamNames[ul] << " : "
-			<< pcp->DVal()
-			<< "  [" << pcp->DLowerBound() << "," << pcp->DUpperBound() <<"]"
-			<< std::endl;
+		os << rgszCostParamNames[ul] << " : " << pcp->DVal() << "  ["
+		   << pcp->DLowerBound() << "," << pcp->DUpperBound() << "]"
+		   << std::endl;
 	}
 	return os;
 }
 
-BOOL CCostModelParamsGPDB::FEquals(ICostModelParams *pcm) const
+BOOL
+CCostModelParamsGPDB::FEquals(ICostModelParams *pcm) const
 {
 	CCostModelParamsGPDB *pcmgOther = dynamic_cast<CCostModelParamsGPDB *>(pcm);
 	if (NULL == pcmgOther)

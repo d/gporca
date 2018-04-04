@@ -34,18 +34,14 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::GetTimeOfDay
-	(
-	TIMEVAL *ptv,
-	TIMEZONE *ptz
-	)
+gpos::syslib::GetTimeOfDay(TIMEVAL *ptv, TIMEZONE *ptz)
 {
 	GPOS_ASSERT(NULL != ptv);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	gettimeofday(ptv, ptz);
+#endif  // GPOS_DEBUG
+		gettimeofday(ptv, ptz);
 
 	GPOS_ASSERT(0 == iRes);
 }
@@ -60,17 +56,14 @@ gpos::syslib::GetTimeOfDay
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::GetRusage
-	(
-	RUSAGE *prusage
-	)
+gpos::syslib::GetRusage(RUSAGE *prusage)
 {
 	GPOS_ASSERT(NULL != prusage);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	getrusage(RUSAGE_SELF, prusage);
+#endif  // GPOS_DEBUG
+		getrusage(RUSAGE_SELF, prusage);
 
 	GPOS_ASSERT(0 == iRes);
 }
@@ -85,14 +78,12 @@ gpos::syslib::GetRusage
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::SchedYield
-	(
-	)
+gpos::syslib::SchedYield()
 {
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	sched_yield();
+#endif  // GPOS_DEBUG
+		sched_yield();
 
 	GPOS_ASSERT(0 == iRes && "Failed to yield");
 }
@@ -107,12 +98,7 @@ gpos::syslib::SchedYield
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::OpenLog
-	(
-	const CHAR *szIdent,
-	INT iOption,
-	INT iFacility
-	)
+gpos::syslib::OpenLog(const CHAR *szIdent, INT iOption, INT iFacility)
 {
 	openlog(szIdent, iOption, iFacility);
 }
@@ -127,11 +113,7 @@ gpos::syslib::OpenLog
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::SysLog
-	(
-	INT iPriority,
-	const CHAR *szMessage
-	)
+gpos::syslib::SysLog(INT iPriority, const CHAR *szMessage)
 {
 	syslog(iPriority, "%s", szMessage);
 }
@@ -146,12 +128,9 @@ gpos::syslib::SysLog
 //
 //---------------------------------------------------------------------------
 void
-gpos::syslib::CloseLog
-	(
-	)
+gpos::syslib::CloseLog()
 {
 	closelog();
 }
 
 // EOF
-

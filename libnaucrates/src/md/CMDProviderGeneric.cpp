@@ -34,10 +34,7 @@ using namespace gpmd;
 //		Constructs a file-based metadata provider
 //
 //---------------------------------------------------------------------------
-CMDProviderGeneric::CMDProviderGeneric
-	(
-	IMemoryPool *pmp
-	)
+CMDProviderGeneric::CMDProviderGeneric(IMemoryPool *pmp)
 {
 	// TODO:  - Jan 25, 2012; those should not be tied to a particular system
 	m_pmdidInt2 = GPOS_NEW(pmp) CMDIdGPDB(GPDB_INT2);
@@ -52,7 +49,7 @@ CMDProviderGeneric::CMDProviderGeneric
 //		CMDProviderGeneric::~CMDProviderGeneric
 //
 //	@doc:
-//		Destructor 
+//		Destructor
 //
 //---------------------------------------------------------------------------
 CMDProviderGeneric::~CMDProviderGeneric()
@@ -73,15 +70,11 @@ CMDProviderGeneric::~CMDProviderGeneric()
 //
 //---------------------------------------------------------------------------
 IMDId *
-CMDProviderGeneric::Pmdid
-	(
-	IMDType::ETypeInfo eti
-	) 
-	const
+CMDProviderGeneric::Pmdid(IMDType::ETypeInfo eti) const
 {
 	GPOS_ASSERT(IMDType::EtiGeneric > eti);
-	
-	switch(eti)
+
+	switch (eti)
 	{
 		case IMDType::EtiInt2:
 			return m_pmdidInt2;
@@ -101,7 +94,7 @@ CMDProviderGeneric::Pmdid
 		default:
 			return NULL;
 	}
-}	
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -111,7 +104,7 @@ CMDProviderGeneric::Pmdid
 //		Get the default system id of the MD provider
 //
 //---------------------------------------------------------------------------
-CSystemId 
+CSystemId
 CMDProviderGeneric::SysidDefault() const
 {
 	return CSystemId(IMDId::EmdidGPDB, GPMD_GPDB_SYSID);

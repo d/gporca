@@ -33,15 +33,8 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarIf::CScalarIf
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid
-	)
-	:
-	CScalar(pmp),
-	m_pmdidType(pmdid),
-	m_fBoolReturnType(false)
+CScalarIf::CScalarIf(IMemoryPool *pmp, IMDId *pmdid)
+	: CScalar(pmp), m_pmdidType(pmdid), m_fBoolReturnType(false)
 {
 	GPOS_ASSERT(pmdid->FValid());
 
@@ -74,13 +67,9 @@ CScalarIf::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarIf::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarIf::FMatch(COperator *pop) const
 {
-	if(pop->Eopid() == Eopid())
+	if (pop->Eopid() == Eopid())
 	{
 		CScalarIf *popScIf = CScalarIf::PopConvert(pop);
 
@@ -92,4 +81,3 @@ CScalarIf::FMatch
 }
 
 // EOF
-

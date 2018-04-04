@@ -24,12 +24,8 @@ using namespace gpdxl;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarIndexCondList::CDXLScalarIndexCondList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarIndexCondList::CDXLScalarIndexCondList(IMemoryPool *pmp)
+	: CDXLScalar(pmp)
 {
 }
 
@@ -71,17 +67,15 @@ CDXLScalarIndexCondList::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarIndexCondList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarIndexCondList::SerializeToDXL(CXMLSerializer *pxmlser,
+										const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -94,12 +88,8 @@ CDXLScalarIndexCondList::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarIndexCondList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarIndexCondList::AssertValid(const CDXLNode *pdxln,
+									 BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(NULL != pdxln);
 
@@ -109,11 +99,12 @@ CDXLScalarIndexCondList::AssertValid
 		for (ULONG ul = 0; ul < ulArity; ul++)
 		{
 			CDXLNode *pdxlnChild = (*pdxln)[ul];
-			GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
+			GPOS_ASSERT(EdxloptypeScalar ==
+						pdxlnChild->Pdxlop()->Edxloperatortype());
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

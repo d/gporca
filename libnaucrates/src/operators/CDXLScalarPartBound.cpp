@@ -28,18 +28,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarPartBound::CDXLScalarPartBound
-	(
-	IMemoryPool *pmp,
-	ULONG ulLevel,
-	IMDId *pmdidType,
-	BOOL fLower
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulLevel(ulLevel),
-	m_pmdidType(pmdidType),
-	m_fLower(fLower)
+CDXLScalarPartBound::CDXLScalarPartBound(IMemoryPool *pmp, ULONG ulLevel,
+										 IMDId *pmdidType, BOOL fLower)
+	: CDXLScalar(pmp),
+	  m_ulLevel(ulLevel),
+	  m_pmdidType(pmdidType),
+	  m_fLower(fLower)
 {
 	GPOS_ASSERT(pmdidType->FValid());
 }
@@ -108,20 +102,20 @@ CDXLScalarPartBound::FBoolean(CMDAccessor *pmda) const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBound::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * // pdxln
-	)
-	const
+CDXLScalarPartBound::SerializeToDXL(CXMLSerializer *pxmlser,
+									const CDXLNode *  // pdxln
+									) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartLevel), m_ulLevel);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMDType));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower), m_fLower);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarPartBoundLower),
+						  m_fLower);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -134,15 +128,12 @@ CDXLScalarPartBound::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarPartBound::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarPartBound::AssertValid(const CDXLNode *pdxln,
+								 BOOL  // fValidateChildren
+								 ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

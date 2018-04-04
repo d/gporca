@@ -26,12 +26,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalBroadcastMotion::CDXLPhysicalBroadcastMotion
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLPhysicalMotion(pmp)
+CDXLPhysicalBroadcastMotion::CDXLPhysicalBroadcastMotion(IMemoryPool *pmp)
+	: CDXLPhysicalMotion(pmp)
 {
 }
 
@@ -73,26 +69,24 @@ CDXLPhysicalBroadcastMotion::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalBroadcastMotion::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalBroadcastMotion::SerializeToDXL(CXMLSerializer *pxmlser,
+											const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
 	SerializeSegmentInfoToDXL(pxmlser);
 
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
-	
+
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);		
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -101,15 +95,12 @@ CDXLPhysicalBroadcastMotion::SerializeToDXL
 //		CDXLPhysicalBroadcastMotion::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalBroadcastMotion::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalBroadcastMotion::AssertValid(const CDXLNode *pdxln,
+										 BOOL fValidateChildren) const
 {
 	// assert proj list and filter are valid
 	CDXLPhysical::AssertValid(pdxln, fValidateChildren);
@@ -120,15 +111,15 @@ CDXLPhysicalBroadcastMotion::AssertValid
 	GPOS_ASSERT(0 < m_pdrgpiOutputSegIds->UlLength());
 
 	GPOS_ASSERT(EdxlbmIndexSentinel == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnChild = (*pdxln)[EdxlbmIndexChild];
 	GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
-	
+
 	if (fValidateChildren)
 	{
 		pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

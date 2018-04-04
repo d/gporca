@@ -29,16 +29,11 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::pthread::FValidMutexType
-	(
-	INT type
-	)
+gpos::pthread::FValidMutexType(INT type)
 {
-	return
-		PTHREAD_MUTEX_NORMAL == (type) ||
-		PTHREAD_MUTEX_ERRORCHECK == (type) ||
-		PTHREAD_MUTEX_RECURSIVE == (type) ||
-		PTHREAD_MUTEX_DEFAULT == (type) ;
+	return PTHREAD_MUTEX_NORMAL == (type) ||
+		   PTHREAD_MUTEX_ERRORCHECK == (type) ||
+		   PTHREAD_MUTEX_RECURSIVE == (type) || PTHREAD_MUTEX_DEFAULT == (type);
 }
 
 
@@ -51,14 +46,10 @@ gpos::pthread::FValidMutexType
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::pthread::FValidDetachedStat
-	(
-	INT state
-	)
+gpos::pthread::FValidDetachedStat(INT state)
 {
-	return
-		PTHREAD_CREATE_DETACHED == (state) ||
-		PTHREAD_CREATE_JOINABLE == (state);
+	return PTHREAD_CREATE_DETACHED == (state) ||
+		   PTHREAD_CREATE_JOINABLE == (state);
 }
 
 
@@ -71,21 +62,14 @@ gpos::pthread::FValidDetachedStat
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadAttrInit
-	(
-	PTHREAD_ATTR_T *pthrAttr
-	)
+gpos::pthread::IPthreadAttrInit(PTHREAD_ATTR_T *pthrAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pthrAttr);
 
 	INT iRes = pthread_attr_init(pthrAttr);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -100,21 +84,17 @@ gpos::pthread::IPthreadAttrInit
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadAttrDestroy
-	(
-	PTHREAD_ATTR_T *pthrAttr
-	)
+gpos::pthread::PthreadAttrDestroy(PTHREAD_ATTR_T *pthrAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pthrAttr);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_attr_destroy(pthrAttr);
+#endif  // GPOS_DEBUG
+		pthread_attr_destroy(pthrAttr);
 
 	GPOS_ASSERT(0 == iRes && "function pthread_attr_destroy() failed");
-
 }
 
 
@@ -127,11 +107,8 @@ gpos::pthread::PthreadAttrDestroy
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadAttrGetDetachState
-	(
-	const PTHREAD_ATTR_T *pthrAttr,
-	INT *piDetachstate
-	)
+gpos::pthread::IPthreadAttrGetDetachState(const PTHREAD_ATTR_T *pthrAttr,
+										  INT *piDetachstate)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pthrAttr);
@@ -139,11 +116,8 @@ gpos::pthread::IPthreadAttrGetDetachState
 
 	INT iRes = pthread_attr_getdetachstate(pthrAttr, piDetachstate);
 
-	GPOS_ASSERT
-	(
-		(0 == iRes && FValidDetachedStat(*piDetachstate)) ||
-		(0 != iRes && EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT((0 == iRes && FValidDetachedStat(*piDetachstate)) ||
+				(0 != iRes && EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -158,11 +132,8 @@ gpos::pthread::IPthreadAttrGetDetachState
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadAttrSetDetachState
-	(
-	PTHREAD_ATTR_T *pthrAttr,
-	INT iDetachstate
-	)
+gpos::pthread::IPthreadAttrSetDetachState(PTHREAD_ATTR_T *pthrAttr,
+										  INT iDetachstate)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pthrAttr);
@@ -170,11 +141,7 @@ gpos::pthread::IPthreadAttrSetDetachState
 
 	INT iRes = pthread_attr_setdetachstate(pthrAttr, iDetachstate);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -189,10 +156,7 @@ gpos::pthread::IPthreadAttrSetDetachState
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadMutexAttrInit
-	(
-	PTHREAD_MUTEXATTR_T *pmatAttr
-	)
+gpos::pthread::IPthreadMutexAttrInit(PTHREAD_MUTEXATTR_T *pmatAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pmatAttr);
@@ -214,18 +178,15 @@ gpos::pthread::IPthreadMutexAttrInit
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadMutexAttrDestroy
-	(
-	PTHREAD_MUTEXATTR_T *pmatAttr
-	)
+gpos::pthread::PthreadMutexAttrDestroy(PTHREAD_MUTEXATTR_T *pmatAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pmatAttr);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_mutexattr_destroy(pmatAttr);
+#endif  // GPOS_DEBUG
+		pthread_mutexattr_destroy(pmatAttr);
 
 	GPOS_ASSERT(0 == iRes && "function pthread_mutexattr_destroy() failed");
 }
@@ -240,11 +201,8 @@ gpos::pthread::PthreadMutexAttrDestroy
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadMutexAttrGettype
-	(
-	const PTHREAD_MUTEXATTR_T *pmatAttr,
-	INT *piType
-	)
+gpos::pthread::PthreadMutexAttrGettype(const PTHREAD_MUTEXATTR_T *pmatAttr,
+									   INT *piType)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pmatAttr);
@@ -252,15 +210,15 @@ gpos::pthread::PthreadMutexAttrGettype
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 #ifdef GPOS_FreeBSD
-	pthread_mutexattr_gettype(const_cast<PTHREAD_MUTEXATTR_T*>(pmatAttr), piType);
+		pthread_mutexattr_gettype(const_cast<PTHREAD_MUTEXATTR_T *>(pmatAttr),
+								  piType);
 #else  // !GPOS_FreeBSD
 	pthread_mutexattr_gettype(pmatAttr, piType);
 #endif
 
 	GPOS_ASSERT(0 == iRes && FValidMutexType(*piType));
-
 }
 
 
@@ -273,11 +231,7 @@ gpos::pthread::PthreadMutexAttrGettype
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadMutexAttrSettype
-	(
-	PTHREAD_MUTEXATTR_T *pmatAttr,
-	INT iType
-	)
+gpos::pthread::PthreadMutexAttrSettype(PTHREAD_MUTEXATTR_T *pmatAttr, INT iType)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pmatAttr);
@@ -285,8 +239,8 @@ gpos::pthread::PthreadMutexAttrSettype
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_mutexattr_settype(pmatAttr, iType);
+#endif  // GPOS_DEBUG
+		pthread_mutexattr_settype(pmatAttr, iType);
 
 	GPOS_ASSERT(0 == iRes);
 }
@@ -301,11 +255,8 @@ gpos::pthread::PthreadMutexAttrSettype
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadMutexInit
-	(
-	PTHREAD_MUTEX_T *ptmutex,
-	const PTHREAD_MUTEXATTR_T *pmatAttr
-	)
+gpos::pthread::IPthreadMutexInit(PTHREAD_MUTEX_T *ptmutex,
+								 const PTHREAD_MUTEXATTR_T *pmatAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pmatAttr);
@@ -313,13 +264,9 @@ gpos::pthread::IPthreadMutexInit
 
 	INT iRes = pthread_mutex_init(ptmutex, pmatAttr);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid mutex attr") ||
-		(EBUSY != iRes && "Attempt to reinitialize") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid mutex attr") ||
+				(EBUSY != iRes && "Attempt to reinitialize") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -334,18 +281,15 @@ gpos::pthread::IPthreadMutexInit
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadMutexDestroy
-	(
-	PTHREAD_MUTEX_T *ptmutex
-	)
+gpos::pthread::PthreadMutexDestroy(PTHREAD_MUTEX_T *ptmutex)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptmutex);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_mutex_destroy(ptmutex);
+#endif  // GPOS_DEBUG
+		pthread_mutex_destroy(ptmutex);
 
 	GPOS_ASSERT(0 == iRes && "function pthread_mutex_destroy() failed");
 }
@@ -360,23 +304,17 @@ gpos::pthread::PthreadMutexDestroy
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadMutexLock
-	(
-	PTHREAD_MUTEX_T *ptmutex
-	)
+gpos::pthread::IPthreadMutexLock(PTHREAD_MUTEX_T *ptmutex)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptmutex);
 
 	INT iRes = pthread_mutex_lock(ptmutex);
 
-	GPOS_ASSERT
-	(
-		iRes == 0 ||
-		(EINVAL != iRes && "Uninitialized mutex structure") ||
-		(EDEADLK != iRes && "The thread already owned the mutex") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(iRes == 0 ||
+				(EINVAL != iRes && "Uninitialized mutex structure") ||
+				(EDEADLK != iRes && "The thread already owned the mutex") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -391,22 +329,16 @@ gpos::pthread::IPthreadMutexLock
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadMutexTryLock
-	(
-	PTHREAD_MUTEX_T *ptmutex
-	)
+gpos::pthread::IPthreadMutexTryLock(PTHREAD_MUTEX_T *ptmutex)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptmutex);
 
 	INT iRes = pthread_mutex_trylock(ptmutex);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Uninitialized mutex structure") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes ||
+				(EINVAL != iRes && "Uninitialized mutex structure") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -421,23 +353,17 @@ gpos::pthread::IPthreadMutexTryLock
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadMutexUnlock
-	(
-	PTHREAD_MUTEX_T *ptmutex
-	)
+gpos::pthread::IPthreadMutexUnlock(PTHREAD_MUTEX_T *ptmutex)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptmutex);
 
 	INT iRes = pthread_mutex_unlock(ptmutex);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Uninitialized mutex structure") ||
-		(EPERM != iRes && "Mutex was not owned by thread") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes ||
+				(EINVAL != iRes && "Uninitialized mutex structure") ||
+				(EPERM != iRes && "Mutex was not owned by thread") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -453,22 +379,15 @@ gpos::pthread::IPthreadMutexUnlock
 //---------------------------------------------------------------------------
 #ifndef GPOS_Darwin
 INT
-gpos::pthread::IPthreadMutexTimedlock
-	(
-	PTHREAD_MUTEX_T *ptmutex,
-	const TIMESPEC *ptsTimeout
-	)
+gpos::pthread::IPthreadMutexTimedlock(PTHREAD_MUTEX_T *ptmutex,
+									  const TIMESPEC *ptsTimeout)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptmutex);
 
 	INT iRes = pthread_mutex_timedlock(ptmutex, ptsTimeout);
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid mutex structure") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid mutex structure") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -484,24 +403,17 @@ gpos::pthread::IPthreadMutexTimedlock
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCondInit
-	(
-	PTHREAD_COND_T *__restrict ptcond,
-	const PTHREAD_CONDATTR_T *__restrict pcatAttr
-	)
+gpos::pthread::IPthreadCondInit(PTHREAD_COND_T *__restrict ptcond,
+								const PTHREAD_CONDATTR_T *__restrict pcatAttr)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 	INT iRes = pthread_cond_init(ptcond, pcatAttr);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid condition attr") ||
-		(EBUSY != iRes && "Attempt to reinitialize") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid condition attr") ||
+				(EBUSY != iRes && "Attempt to reinitialize") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -516,18 +428,15 @@ gpos::pthread::IPthreadCondInit
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadCondDestroy
-	(
-	PTHREAD_COND_T *ptcond
-	)
+gpos::pthread::PthreadCondDestroy(PTHREAD_COND_T *ptcond)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_cond_destroy(ptcond);
+#endif  // GPOS_DEBUG
+		pthread_cond_destroy(ptcond);
 
 	GPOS_ASSERT(0 == iRes && "function pthread_attr_destroy() failed");
 }
@@ -542,22 +451,16 @@ gpos::pthread::PthreadCondDestroy
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCondBroadcast
-	(
-	PTHREAD_COND_T *ptcond
-	)
+gpos::pthread::IPthreadCondBroadcast(PTHREAD_COND_T *ptcond)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 	INT iRes = pthread_cond_broadcast(ptcond);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Uninitialized condition structure") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes ||
+				(EINVAL != iRes && "Uninitialized condition structure") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -572,22 +475,16 @@ gpos::pthread::IPthreadCondBroadcast
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCondSignal
-	(
-	PTHREAD_COND_T *ptcond
-	)
+gpos::pthread::IPthreadCondSignal(PTHREAD_COND_T *ptcond)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 	INT iRes = pthread_cond_signal(ptcond);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Uninitialized condition structure") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes ||
+				(EINVAL != iRes && "Uninitialized condition structure") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -602,25 +499,18 @@ gpos::pthread::IPthreadCondSignal
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCondTimedWait
-	(
-	PTHREAD_COND_T *__restrict ptcond,
-	PTHREAD_MUTEX_T *__restrict ptmutex,
-	const TIMESPEC *__restrict ptsAbsTime
-	)
+gpos::pthread::IPthreadCondTimedWait(PTHREAD_COND_T *__restrict ptcond,
+									 PTHREAD_MUTEX_T *__restrict ptmutex,
+									 const TIMESPEC *__restrict ptsAbsTime)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 	INT iRes = pthread_cond_timedwait(ptcond, ptmutex, ptsAbsTime);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid parameters") ||
-		(EPERM != iRes && "Mutex was not owned by thread") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid parameters") ||
+				(EPERM != iRes && "Mutex was not owned by thread") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -635,24 +525,17 @@ gpos::pthread::IPthreadCondTimedWait
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCondWait
-	(
-	PTHREAD_COND_T *__restrict ptcond,
-	PTHREAD_MUTEX_T *__restrict ptmutex
-	)
+gpos::pthread::IPthreadCondWait(PTHREAD_COND_T *__restrict ptcond,
+								PTHREAD_MUTEX_T *__restrict ptmutex)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != ptcond);
 
 	INT iRes = pthread_cond_wait(ptcond, ptmutex);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid parameters") ||
-		(EPERM != iRes && "Mutex was not owned by thread") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid parameters") ||
+				(EPERM != iRes && "Mutex was not owned by thread") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -667,25 +550,18 @@ gpos::pthread::IPthreadCondWait
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadCreate
-	(
-	PTHREAD_T *__restrict pthrdt,
-	const PTHREAD_ATTR_T *__restrict pthrAttr,
-	PFnPthreadExec fnPthreadFunx,
-	void *__restrict pvArg
-	)
+gpos::pthread::IPthreadCreate(PTHREAD_T *__restrict pthrdt,
+							  const PTHREAD_ATTR_T *__restrict pthrAttr,
+							  PFnPthreadExec fnPthreadFunx,
+							  void *__restrict pvArg)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 	GPOS_ASSERT(NULL != pthrdt);
 
 	INT iRes = pthread_create(pthrdt, pthrAttr, fnPthreadFunx, pvArg);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Invalid pthread attr") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Invalid pthread attr") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -700,23 +576,15 @@ gpos::pthread::IPthreadCreate
 //
 //---------------------------------------------------------------------------
 INT
-gpos::pthread::IPthreadJoin
-	(
-	PTHREAD_T thread,
-	void **ppvValue
-	)
+gpos::pthread::IPthreadJoin(PTHREAD_T thread, void **ppvValue)
 {
 	GPOS_ASSERT_NO_SPINLOCK;
 
 	INT iRes = pthread_join(thread, ppvValue);
 
-	GPOS_ASSERT
-	(
-		0 == iRes ||
-		(EINVAL != iRes && "Thread is not joinable") ||
-		(ESRCH != iRes && "No such thread") ||
-		(EINTR != iRes && "Unexpected Error")
-	);
+	GPOS_ASSERT(0 == iRes || (EINVAL != iRes && "Thread is not joinable") ||
+				(ESRCH != iRes && "No such thread") ||
+				(EINTR != iRes && "Unexpected Error"));
 
 	return iRes;
 }
@@ -731,11 +599,7 @@ gpos::pthread::IPthreadJoin
 //
 //---------------------------------------------------------------------------
 BOOL
-gpos::pthread::FPthreadEqual
-	(
-	PTHREAD_T pthrdtLhs,
-	PTHREAD_T pthrdtRhs
-	)
+gpos::pthread::FPthreadEqual(PTHREAD_T pthrdtLhs, PTHREAD_T pthrdtRhs)
 {
 	INT iRes = pthread_equal(pthrdtLhs, pthrdtRhs);
 
@@ -754,9 +618,7 @@ gpos::pthread::FPthreadEqual
 //
 //---------------------------------------------------------------------------
 PTHREAD_T
-gpos::pthread::PthrdtPthreadSelf
-	(
-	)
+gpos::pthread::PthrdtPthreadSelf()
 {
 	return pthread_self();
 }
@@ -771,17 +633,13 @@ gpos::pthread::PthrdtPthreadSelf
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::PthreadSigMask
-	(
-	INT iMode,
-	const SIGSET_T *pset,
-	SIGSET_T *psetOld
-	)
+gpos::pthread::PthreadSigMask(INT iMode, const SIGSET_T *pset,
+							  SIGSET_T *psetOld)
 {
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	pthread_sigmask(iMode, pset, psetOld);
+#endif  // GPOS_DEBUG
+		pthread_sigmask(iMode, pset, psetOld);
 
 	GPOS_ASSERT(0 == iRes);
 }
@@ -796,15 +654,12 @@ gpos::pthread::PthreadSigMask
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::SigEmptySet
-	(
-	SIGSET_T *pset
-	)
+gpos::pthread::SigEmptySet(SIGSET_T *pset)
 {
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	sigemptyset(pset);
+#endif  // GPOS_DEBUG
+		sigemptyset(pset);
 
 	GPOS_ASSERT(0 == iRes);
 }
@@ -819,20 +674,15 @@ gpos::pthread::SigEmptySet
 //
 //---------------------------------------------------------------------------
 void
-gpos::pthread::SigAddSet
-	(
-	SIGSET_T *pset,
-	INT iSignal
-	)
+gpos::pthread::SigAddSet(SIGSET_T *pset, INT iSignal)
 {
 #ifdef GPOS_DEBUG
 	INT iRes =
-#endif // GPOS_DEBUG
-	sigaddset(pset, iSignal);
+#endif  // GPOS_DEBUG
+		sigaddset(pset, iSignal);
 
 	GPOS_ASSERT(0 == iRes);
 }
 
 
 // EOF
-

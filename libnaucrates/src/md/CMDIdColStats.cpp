@@ -24,19 +24,14 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDIdColStats::CMDIdColStats
-	(
-	CMDIdGPDB *pmdidRel,
-	ULONG ulPos
-	)
-	:
-	m_pmdidRel(pmdidRel),
-	m_ulPos(ulPos),
-	m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
+CMDIdColStats::CMDIdColStats(CMDIdGPDB *pmdidRel, ULONG ulPos)
+	: m_pmdidRel(pmdidRel),
+	  m_ulPos(ulPos),
+	  m_str(m_wszBuffer, GPOS_ARRAY_SIZE(m_wszBuffer))
 {
 	GPOS_ASSERT(pmdidRel->FValid());
-	
-	// serialize mdid into static string 
+
+	// serialize mdid into static string
 	Serialize();
 }
 
@@ -65,15 +60,9 @@ void
 CMDIdColStats::Serialize()
 {
 	// serialize mdid as SystemType.Oid.Major.Minor.Attno
-	m_str.AppendFormat
-			(
-			GPOS_WSZ_LIT("%d.%d.%d.%d.%d"), 
-			Emdidt(), 
-			m_pmdidRel->OidObjectId(),
-			m_pmdidRel->UlVersionMajor(),
-			m_pmdidRel->UlVersionMinor(),
-			m_ulPos
-			);
+	m_str.AppendFormat(GPOS_WSZ_LIT("%d.%d.%d.%d.%d"), Emdidt(),
+					   m_pmdidRel->OidObjectId(), m_pmdidRel->UlVersionMajor(),
+					   m_pmdidRel->UlVersionMinor(), m_ulPos);
 }
 
 //---------------------------------------------------------------------------
@@ -127,21 +116,17 @@ CMDIdColStats::UlPos() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDIdColStats::FEquals
-	(
-	const IMDId *pmdid
-	) 
-	const
+CMDIdColStats::FEquals(const IMDId *pmdid) const
 {
 	if (NULL == pmdid || EmdidColStats != pmdid->Emdidt())
 	{
 		return false;
 	}
-	
+
 	const CMDIdColStats *pmdidColStats = CMDIdColStats::PmdidConvert(pmdid);
-	
-	return m_pmdidRel->FEquals(pmdidColStats->PmdidRel()) && 
-			m_ulPos == pmdidColStats->UlPos(); 
+
+	return m_pmdidRel->FEquals(pmdidColStats->PmdidRel()) &&
+		   m_ulPos == pmdidColStats->UlPos();
 }
 
 //---------------------------------------------------------------------------
@@ -153,12 +138,8 @@ CMDIdColStats::FEquals
 //
 //---------------------------------------------------------------------------
 void
-CMDIdColStats::Serialize
-	(
-	CXMLSerializer * pxmlser,
-	const CWStringConst *pstrAttribute
-	)
-	const
+CMDIdColStats::Serialize(CXMLSerializer *pxmlser,
+						 const CWStringConst *pstrAttribute) const
 {
 	pxmlser->AddAttribute(pstrAttribute, &m_str);
 }
@@ -172,11 +153,7 @@ CMDIdColStats::Serialize
 //
 //---------------------------------------------------------------------------
 IOstream &
-CMDIdColStats::OsPrint
-	(
-	IOstream &os
-	) 
-	const
+CMDIdColStats::OsPrint(IOstream &os) const
 {
 	os << "(" << m_str.Wsz() << ")";
 	return os;

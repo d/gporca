@@ -26,14 +26,9 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CFunctionalDependency::CFunctionalDependency
-	(
-	CColRefSet *pcrsKey,
-	CColRefSet *pcrsDetermined
-	)
-	:
-	m_pcrsKey(pcrsKey),
-	m_pcrsDetermined(pcrsDetermined)
+CFunctionalDependency::CFunctionalDependency(CColRefSet *pcrsKey,
+											 CColRefSet *pcrsDetermined)
+	: m_pcrsKey(pcrsKey), m_pcrsDetermined(pcrsDetermined)
 {
 	GPOS_ASSERT(0 < pcrsKey->CElements());
 	GPOS_ASSERT(0 < m_pcrsDetermined->CElements());
@@ -64,11 +59,7 @@ CFunctionalDependency::~CFunctionalDependency()
 //
 //---------------------------------------------------------------------------
 BOOL
-CFunctionalDependency::FIncluded
-	(
-	CColRefSet *pcrs
-	)
-	const
+CFunctionalDependency::FIncluded(CColRefSet *pcrs) const
 {
 	return pcrs->FSubset(m_pcrsKey) && pcrs->FSubset(m_pcrsDetermined);
 }
@@ -85,7 +76,8 @@ CFunctionalDependency::FIncluded
 ULONG
 CFunctionalDependency::UlHash() const
 {
-	return gpos::UlCombineHashes(m_pcrsKey->UlHash(), m_pcrsDetermined->UlHash());
+	return gpos::UlCombineHashes(m_pcrsKey->UlHash(),
+								 m_pcrsDetermined->UlHash());
 }
 
 
@@ -98,18 +90,15 @@ CFunctionalDependency::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CFunctionalDependency::FEqual
-	(
-	const CFunctionalDependency *pfd
-	)
-	const
+CFunctionalDependency::FEqual(const CFunctionalDependency *pfd) const
 {
 	if (NULL == pfd)
 	{
 		return false;
 	}
 
-	return m_pcrsKey->FEqual(pfd->PcrsKey()) && m_pcrsDetermined->FEqual(pfd->PcrsDetermined());
+	return m_pcrsKey->FEqual(pfd->PcrsKey()) &&
+		   m_pcrsDetermined->FEqual(pfd->PcrsDetermined());
 }
 
 
@@ -122,11 +111,7 @@ CFunctionalDependency::FEqual
 //
 //---------------------------------------------------------------------------
 IOstream &
-CFunctionalDependency::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CFunctionalDependency::OsPrint(IOstream &os) const
 {
 	os << "(" << *m_pcrsKey << ")";
 	os << " --> (" << *m_pcrsDetermined << ")";
@@ -143,10 +128,7 @@ CFunctionalDependency::OsPrint
 //
 //---------------------------------------------------------------------------
 ULONG
-CFunctionalDependency::UlHash
-	(
-	const DrgPfd *pdrgpfd
-	)
+CFunctionalDependency::UlHash(const DrgPfd *pdrgpfd)
 {
 	ULONG ulHash = 0;
 	if (NULL != pdrgpfd)
@@ -171,23 +153,20 @@ CFunctionalDependency::UlHash
 //
 //---------------------------------------------------------------------------
 BOOL
-CFunctionalDependency::FEqual
-	(
-	const DrgPfd *pdrgpfdFst,
-	const DrgPfd *pdrgpfdSnd
-	)
+CFunctionalDependency::FEqual(const DrgPfd *pdrgpfdFst,
+							  const DrgPfd *pdrgpfdSnd)
 {
 	if (NULL == pdrgpfdFst && NULL == pdrgpfdSnd)
-		return true;	/* both empty */
+		return true; /* both empty */
 
 	if (NULL == pdrgpfdFst || NULL == pdrgpfdSnd)
-		return false;	/* one is empty, the other is not */
+		return false; /* one is empty, the other is not */
 
 	const ULONG ulLenFst = pdrgpfdFst->UlLength();
 	const ULONG ulLenSnd = pdrgpfdSnd->UlLength();
 
 	if (ulLenFst != ulLenSnd)
-	  return false;
+		return false;
 
 	BOOL fEqual = true;
 	for (ULONG ulFst = 0; fEqual && ulFst < ulLenFst; ulFst++)
@@ -215,11 +194,7 @@ CFunctionalDependency::FEqual
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CFunctionalDependency::PcrsKeys
-	(
-	IMemoryPool *pmp,
-	const DrgPfd *pdrgpfd
-	)
+CFunctionalDependency::PcrsKeys(IMemoryPool *pmp, const DrgPfd *pdrgpfd)
 {
 	CColRefSet *pcrs = GPOS_NEW(pmp) CColRefSet(pmp);
 
@@ -245,11 +220,7 @@ CFunctionalDependency::PcrsKeys
 //
 //---------------------------------------------------------------------------
 DrgPcr *
-CFunctionalDependency::PdrgpcrKeys
-	(
-	IMemoryPool *pmp,
-	const DrgPfd *pdrgpfd
-	)
+CFunctionalDependency::PdrgpcrKeys(IMemoryPool *pmp, const DrgPfd *pdrgpfd)
 {
 	CColRefSet *pcrs = PcrsKeys(pmp, pdrgpfd);
 	DrgPcr *pdrgpcr = pcrs->Pdrgpcr(pmp);

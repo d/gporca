@@ -27,20 +27,15 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSortCol::CDXLScalarSortCol
-	(
-	IMemoryPool *pmp,
-	ULONG ulColId,
-	IMDId *pmdidSortOp,
-	CWStringConst *pstrSortOpName,
-	BOOL fSortNullsFirst
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulColId(ulColId),
-	m_pmdidSortOp(pmdidSortOp),
-	m_pstrSortOpName(pstrSortOpName),
-	m_fSortNullsFirst(fSortNullsFirst)
+CDXLScalarSortCol::CDXLScalarSortCol(IMemoryPool *pmp, ULONG ulColId,
+									 IMDId *pmdidSortOp,
+									 CWStringConst *pstrSortOpName,
+									 BOOL fSortNullsFirst)
+	: CDXLScalar(pmp),
+	  m_ulColId(ulColId),
+	  m_pmdidSortOp(pmdidSortOp),
+	  m_pstrSortOpName(pstrSortOpName),
+	  m_fSortNullsFirst(fSortNullsFirst)
 {
 	GPOS_ASSERT(m_pmdidSortOp->FValid());
 }
@@ -139,21 +134,22 @@ CDXLScalarSortCol::FSortNullsFirst() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSortCol::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *// pdxln
-	)
-	const
+CDXLScalarSortCol::SerializeToDXL(CXMLSerializer *pxmlser,
+								  const CDXLNode *  // pdxln
+								  ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulColId);
-	m_pmdidSortOp->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenSortOpId));	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSortOpName), m_pstrSortOpName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSortNullsFirst), m_fSortNullsFirst);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	m_pmdidSortOp->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenSortOpId));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSortOpName),
+						  m_pstrSortOpName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenSortNullsFirst),
+						  m_fSortNullsFirst);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -162,20 +158,17 @@ CDXLScalarSortCol::SerializeToDXL
 //		CDXLScalarSortCol::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSortCol::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	) 
-	const
+CDXLScalarSortCol::AssertValid(const CDXLNode *pdxln,
+							   BOOL  // fValidateChildren
+							   ) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

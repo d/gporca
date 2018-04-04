@@ -16,122 +16,112 @@
 
 namespace gpopt
 {
+using namespace gpos;
 
-	using namespace gpos;
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarNullIf
+//
+//	@doc:
+//		Scalar NullIf operator
+//
+//---------------------------------------------------------------------------
+class CScalarNullIf : public CScalar
+{
+private:
+	// operator id
+	IMDId *m_pmdidOp;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarNullIf
-	//
-	//	@doc:
-	//		Scalar NullIf operator
-	//
-	//---------------------------------------------------------------------------
-	class CScalarNullIf : public CScalar
+	// return type
+	IMDId *m_pmdidType;
+
+	// does operator return NULL on NULL input?
+	BOOL m_fReturnsNullOnNullInput;
+
+	// is operator return type BOOL?
+	BOOL m_fBoolReturnType;
+
+	// private copy ctor
+	CScalarNullIf(const CScalarNullIf &);
+
+public:
+	// ctor
+	CScalarNullIf(IMemoryPool *pmp, IMDId *pmdidOp, IMDId *pmdidType);
+
+	// dtor
+	virtual ~CScalarNullIf();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopScalarNullIf;
+	}
 
-		private:
+	// operator id
+	virtual IMDId *
+	PmdidOp() const
+	{
+		return m_pmdidOp;
+	}
 
-			// operator id
-			IMDId *m_pmdidOp;
+	// return type
+	virtual IMDId *
+	PmdidType() const
+	{
+		return m_pmdidType;
+	}
 
-			// return type
-			IMDId *m_pmdidType;
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarNullIf";
+	}
 
-			// does operator return NULL on NULL input?
-			BOOL m_fReturnsNullOnNullInput;
+	// operator specific hash function
+	virtual ULONG
+	UlHash() const;
 
-			// is operator return type BOOL?
-			BOOL m_fBoolReturnType;
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const;
 
-			// private copy ctor
-			CScalarNullIf(const CScalarNullIf &);
+	// sensitivity to order of inputs
+	virtual BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-		public:
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-			// ctor
-			CScalarNullIf(IMemoryPool *pmp, IMDId *pmdidOp, IMDId *pmdidType);
+	// boolean expression evaluation
+	virtual EBoolEvalResult
+	Eber(DrgPul *pdrgpulChildren) const;
 
-			// dtor
-			virtual
-			~CScalarNullIf();
+	// conversion function
+	static CScalarNullIf *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarNullIf == pop->Eopid());
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarNullIf;
-			}
+		return reinterpret_cast<CScalarNullIf *>(pop);
+	}
 
-			// operator id
-			virtual
-			IMDId *PmdidOp() const
-			{
-				return m_pmdidOp;
-			}
+};  // class CScalarNullIf
 
-			// return type
-			virtual
-			IMDId *PmdidType() const
-			{
-				return m_pmdidType;
-			}
+}  // namespace gpopt
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarNullIf";
-			}
-
-			// operator specific hash function
-			virtual
-			ULONG UlHash() const;
-
-			// match function
-			virtual
-			BOOL FMatch(COperator *pop) const;
-
-			// sensitivity to order of inputs
-			virtual
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
-
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
-
-			// boolean expression evaluation
-			virtual
-			EBoolEvalResult Eber(DrgPul *pdrgpulChildren) const;
-
-			// conversion function
-			static
-			CScalarNullIf *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarNullIf == pop->Eopid());
-
-				return reinterpret_cast<CScalarNullIf*>(pop);
-			}
-
-	}; // class CScalarNullIf
-
-}
-
-#endif // !GPOPT_CScalarNullIf_H
+#endif  // !GPOPT_CScalarNullIf_H
 
 // EOF

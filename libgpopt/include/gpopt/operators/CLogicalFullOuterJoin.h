@@ -16,130 +16,114 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalFullOuterJoin
-	//
-	//	@doc:
-	//		Full outer join operator
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalFullOuterJoin : public CLogicalJoin
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalFullOuterJoin
+//
+//	@doc:
+//		Full outer join operator
+//
+//---------------------------------------------------------------------------
+class CLogicalFullOuterJoin : public CLogicalJoin
+{
+private:
+	// private copy ctor
+	CLogicalFullOuterJoin(const CLogicalFullOuterJoin &);
+
+public:
+	// ctor
+	explicit CLogicalFullOuterJoin(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CLogicalFullOuterJoin()
 	{
-		private:
+	}
 
-			// private copy ctor
-			CLogicalFullOuterJoin(const CLogicalFullOuterJoin &);
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopLogicalFullOuterJoin;
+	}
 
-		public:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalFullOuterJoin";
+	}
 
-			// ctor
-			explicit
-			CLogicalFullOuterJoin(IMemoryPool *pmp);
+	// return true if we can pull projections up past this operator from its given child
+	virtual BOOL FCanPullProjectionsUp(ULONG  //ulChildIndex
+									   ) const
+	{
+		return false;
+	}
 
-			// dtor
-			virtual
-			~CLogicalFullOuterJoin()
-			{}
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalFullOuterJoin;
-			}
+	// derive not nullable output columns
+	virtual CColRefSet *
+	PcrsDeriveNotNull(IMemoryPool *pmp,
+					  CExpressionHandle &  //exprhdl
+					  ) const
+	{
+		// all output columns are nullable
+		return GPOS_NEW(pmp) CColRefSet(pmp);
+	}
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalFullOuterJoin";
-			}
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// return true if we can pull projections up past this operator from its given child
-			virtual
-			BOOL FCanPullProjectionsUp
-				(
-				ULONG //ulChildIndex
-				) const
-			{
-				return false;
-			}
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *pmp,
+						CExpressionHandle &  //exprhdl
+						) const
+	{
+		return GPOS_NEW(pmp)
+			CPropConstraint(pmp, GPOS_NEW(pmp) DrgPcrs(pmp), NULL /*pcnstr*/);
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// promise level for stat derivation
+	virtual EStatPromise
+	Esp(CExpressionHandle &  //exprhdl
+		) const
+	{
+		// Low to prefer the stats coming from the equivalent UNION expression
+		return EspLow;
+	}
 
-			// derive not nullable output columns
-			virtual
-			CColRefSet *PcrsDeriveNotNull
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle & //exprhdl
-				)
-				const
-			{
-				// all output columns are nullable
-				return GPOS_NEW(pmp) CColRefSet(pmp);
-			}
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	// candidate set of xforms
+	CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle & //exprhdl
-				)
-				const
-			{
-				return GPOS_NEW(pmp) CPropConstraint(pmp, GPOS_NEW(pmp) DrgPcrs(pmp), NULL /*pcnstr*/);
-			}
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// promise level for stat derivation
-			virtual
-			EStatPromise Esp
-				(
-				CExpressionHandle & //exprhdl
-				)
-				const
-			{
-				// Low to prefer the stats coming from the equivalent UNION expression
-				return EspLow;
-			}
+	// conversion function
+	static CLogicalFullOuterJoin *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalFullOuterJoin == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+		return dynamic_cast<CLogicalFullOuterJoin *>(pop);
+	}
 
-			// candidate set of xforms
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+};  // class CLogicalFullOuterJoin
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CLogicalFullOuterJoin *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalFullOuterJoin == pop->Eopid());
-
-				return dynamic_cast<CLogicalFullOuterJoin*>(pop);
-			}
-
-	}; // class CLogicalFullOuterJoin
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOS_CLogicalFullOuterJoin_H
+#endif  // !GPOS_CLogicalFullOuterJoin_H
 
 // EOF

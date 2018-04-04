@@ -42,10 +42,8 @@ using namespace gpdxl;
 GPOS_RESULT
 CParseHandlerManagerTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
-		GPOS_UNITTEST_FUNC(CParseHandlerManagerTest::EresUnittest_Basic)
-		};
+	CUnittest rgut[] = {
+		GPOS_UNITTEST_FUNC(CParseHandlerManagerTest::EresUnittest_Basic)};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -64,22 +62,25 @@ CParseHandlerManagerTest::EresUnittest_Basic()
 	// create memory pool
 	CAutoMemoryPool amp(CAutoMemoryPool::ElcNone);
 	IMemoryPool *pmp = amp.Pmp();
-		
+
 	// create XML reader and a parse handler manager for it
 	CDXLMemoryManager *pmm = GPOS_NEW(pmp) CDXLMemoryManager(pmp);
 
-	SAX2XMLReader* parser = NULL;
+	SAX2XMLReader *parser = NULL;
 	{
 		CAutoTraceFlag atf(EtraceSimulateOOM, false);
 		parser = XMLReaderFactory::createXMLReader(pmm);
 	}
 
-	CParseHandlerManager *pphm = GPOS_NEW(pmp) CParseHandlerManager(pmm, parser);
-	
+	CParseHandlerManager *pphm =
+		GPOS_NEW(pmp) CParseHandlerManager(pmm, parser);
+
 	// create some parse handlers
-	CParseHandlerPlan *pphPlan = GPOS_NEW(pmp) CParseHandlerPlan(pmp, pphm, NULL);
-	CParseHandlerHashJoin *pphHJ = GPOS_NEW(pmp) CParseHandlerHashJoin(pmp, pphm, pphPlan);
-	
+	CParseHandlerPlan *pphPlan =
+		GPOS_NEW(pmp) CParseHandlerPlan(pmp, pphm, NULL);
+	CParseHandlerHashJoin *pphHJ =
+		GPOS_NEW(pmp) CParseHandlerHashJoin(pmp, pphm, pphPlan);
+
 	pphm->ActivateParseHandler(pphPlan);
 	GPOS_ASSERT(pphPlan == pphm->PphCurrent());
 	GPOS_ASSERT(pphPlan == parser->getContentHandler());
@@ -92,7 +93,7 @@ CParseHandlerManagerTest::EresUnittest_Basic()
 	pphm->DeactivateHandler();
 	GPOS_ASSERT(pphPlan == pphm->PphCurrent());
 	GPOS_ASSERT(pphPlan == parser->getContentHandler());
-	
+
 	pphm->DeactivateHandler();
 	// no more parse handlers
 	GPOS_ASSERT(NULL == pphm->PphCurrent());
@@ -107,8 +108,6 @@ CParseHandlerManagerTest::EresUnittest_Basic()
 
 	return GPOS_OK;
 }
-
-
 
 
 

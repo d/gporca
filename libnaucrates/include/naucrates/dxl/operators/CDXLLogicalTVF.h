@@ -19,115 +19,112 @@
 
 namespace gpdxl
 {
-	using namespace gpmd;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalTVF
-	//
-	//	@doc:
-	//		Class for representing table-valued functions
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalTVF : public CDXLLogical
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalTVF
+//
+//	@doc:
+//		Class for representing table-valued functions
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalTVF : public CDXLLogical
+{
+private:
+	// catalog id of the function
+	IMDId *m_pmdidFunc;
+
+	// return type
+	IMDId *m_pmdidRetType;
+
+	// function name
+	CMDName *m_pmdname;
+
+	// list of column descriptors
+	DrgPdxlcd *m_pdrgdxlcd;
+
+	// private copy ctor
+	CDXLLogicalTVF(const CDXLLogicalTVF &);
+
+public:
+	// ctor/dtor
+	CDXLLogicalTVF(IMemoryPool *pmp, IMDId *pmdidFunc, IMDId *pmdidRetType,
+				   CMDName *pmdname, DrgPdxlcd *pdrgdxlcd);
+
+	virtual ~CDXLLogicalTVF();
+
+	// get operator type
+	Edxlopid
+	Edxlop() const;
+
+	// get operator name
+	const CWStringConst *
+	PstrOpName() const;
+
+	// get function name
+	CMDName *
+	Pmdname() const
 	{
-		private:
-			// catalog id of the function
-			IMDId *m_pmdidFunc;
+		return m_pmdname;
+	}
 
-			// return type
-			IMDId *m_pmdidRetType;
+	// get function id
+	IMDId *
+	PmdidFunc() const
+	{
+		return m_pmdidFunc;
+	}
 
-			// function name
-			CMDName *m_pmdname;
+	// get return type
+	IMDId *
+	PmdidRetType() const
+	{
+		return m_pmdidRetType;
+	}
 
-			// list of column descriptors		
-			DrgPdxlcd *m_pdrgdxlcd;
-			
-			// private copy ctor
-			CDXLLogicalTVF(const CDXLLogicalTVF &);
-			
-		public:
-			// ctor/dtor
-			CDXLLogicalTVF
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidFunc,
-				IMDId *pmdidRetType,
-				CMDName *pmdname,
-				DrgPdxlcd *pdrgdxlcd
-				);
-						
-			virtual
-			~CDXLLogicalTVF();
-		
-			// get operator type
-			Edxlopid Edxlop() const;
+	// get number of output columns
+	ULONG
+	UlArity() const;
 
-			// get operator name
-			const CWStringConst *PstrOpName() const;
+	// return the array of column descriptors
+	const DrgPdxlcd *
+	Pdrgpdxlcd() const
+	{
+		return m_pdrgdxlcd;
+	}
 
-			// get function name
-			CMDName *Pmdname() const
-			{
-				return m_pmdname;
-			}
+	// get the column descriptor at the given position
+	const CDXLColDescr *
+	Pdxlcd(ULONG ul) const;
 
-			// get function id
-			IMDId *PmdidFunc() const
-			{
-				return m_pmdidFunc;
-			}
+	// check if given column is defined by operator
+	virtual BOOL
+	FDefinesColumn(ULONG ulColId) const;
 
-			// get return type
-			IMDId *PmdidRetType() const
-			{
-				return m_pmdidRetType;
-			}
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// get number of output columns
-			ULONG UlArity() const;
-			
-			// return the array of column descriptors
-			const DrgPdxlcd *Pdrgpdxlcd() const
-			{
-				return m_pdrgdxlcd;
-			}
+	// conversion function
+	static CDXLLogicalTVF *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalTVF == pdxlop->Edxlop());
 
-			// get the column descriptor at the given position
-			const CDXLColDescr *Pdxlcd(ULONG ul) const;
-
-			// check if given column is defined by operator
-			virtual
-			BOOL FDefinesColumn(ULONG ulColId) const;
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLLogicalTVF *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalTVF == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLLogicalTVF*>(pdxlop);
-			}
+		return dynamic_cast<CDXLLogicalTVF *>(pdxlop);
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-	};
-}
-
-#endif // !GPDXL_CDXLLogicalTVF_H
+#endif  // !GPDXL_CDXLLogicalTVF_H
 
 // EOF
-

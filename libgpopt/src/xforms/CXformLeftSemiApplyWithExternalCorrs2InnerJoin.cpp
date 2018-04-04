@@ -30,16 +30,10 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 BOOL
-CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FSplitCorrelations
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprOuter,
-	CExpression *pexprInner,
-	DrgPexpr *pdrgpexprAllCorr,
-	DrgPexpr **ppdrgpexprExternal,
-	DrgPexpr **ppdrgpexprResidual,
-	CColRefSet **ppcrsInnerUsed
-	)
+CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FSplitCorrelations(
+	IMemoryPool *pmp, CExpression *pexprOuter, CExpression *pexprInner,
+	DrgPexpr *pdrgpexprAllCorr, DrgPexpr **ppdrgpexprExternal,
+	DrgPexpr **ppdrgpexprResidual, CColRefSet **ppcrsInnerUsed)
 {
 	GPOS_ASSERT(NULL != pexprOuter);
 	GPOS_ASSERT(NULL != pexprInner);
@@ -49,8 +43,10 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FSplitCorrelations
 	GPOS_ASSERT(NULL != ppcrsInnerUsed);
 
 	// collect output columns of all children
-	CColRefSet *pcrsOuterOuput = CDrvdPropRelational::Pdprel(pexprOuter->PdpDerive())->PcrsOutput();
-	CColRefSet *pcrsInnerOuput = CDrvdPropRelational::Pdprel(pexprInner->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsOuterOuput =
+		CDrvdPropRelational::Pdprel(pexprOuter->PdpDerive())->PcrsOutput();
+	CColRefSet *pcrsInnerOuput =
+		CDrvdPropRelational::Pdprel(pexprInner->PdpDerive())->PcrsOutput();
 	CColRefSet *pcrsChildren = GPOS_NEW(pmp) CColRefSet(pmp, *pcrsOuterOuput);
 	pcrsChildren->Union(pcrsInnerOuput);
 
@@ -58,13 +54,17 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FSplitCorrelations
 	DrgPexpr *pdrgpexprExternal = GPOS_NEW(pmp) DrgPexpr(pmp);
 	DrgPexpr *pdrgpexprResidual = GPOS_NEW(pmp) DrgPexpr(pmp);
 	const ULONG ulCorrs = pdrgpexprAllCorr->UlLength();
-	CColRefSet *pcrsUsed = GPOS_NEW(pmp) CColRefSet(pmp); // set of inner columns used in external correlations
+	CColRefSet *pcrsUsed = GPOS_NEW(pmp)
+		CColRefSet(pmp);  // set of inner columns used in external correlations
 	BOOL fSuccess = true;
 	for (ULONG ul = 0; fSuccess && ul < ulCorrs; ul++)
 	{
 		CExpression *pexprCurrent = (*pdrgpexprAllCorr)[ul];
-		CColRefSet *pcrsCurrent = GPOS_NEW(pmp) CColRefSet(pmp, *CDrvdPropScalar::Pdpscalar(pexprCurrent->PdpDerive())->PcrsUsed());
-		if (pcrsCurrent->FDisjoint(pcrsOuterOuput) || pcrsCurrent->FDisjoint(pcrsInnerOuput))
+		CColRefSet *pcrsCurrent = GPOS_NEW(pmp) CColRefSet(
+			pmp,
+			*CDrvdPropScalar::Pdpscalar(pexprCurrent->PdpDerive())->PcrsUsed());
+		if (pcrsCurrent->FDisjoint(pcrsOuterOuput) ||
+			pcrsCurrent->FDisjoint(pcrsInnerOuput))
 		{
 			// add current correlation to external correlation
 			pexprCurrent->AddRef();
@@ -116,17 +116,13 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FSplitCorrelations
 //
 //---------------------------------------------------------------------------
 BOOL
-CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FDecorrelate
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr,
-	CExpression **ppexprInnerNew,
-	DrgPexpr **ppdrgpexprCorr
-	)
+CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FDecorrelate(
+	IMemoryPool *pmp, CExpression *pexpr, CExpression **ppexprInnerNew,
+	DrgPexpr **ppdrgpexprCorr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(COperator::EopLogicalLeftSemiApply == pexpr->Pop()->Eopid() ||
-			COperator::EopLogicalLeftSemiApplyIn == pexpr->Pop()->Eopid());
+				COperator::EopLogicalLeftSemiApplyIn == pexpr->Pop()->Eopid());
 
 	GPOS_ASSERT(NULL != ppexprInnerNew);
 	GPOS_ASSERT(NULL != ppdrgpexprCorr);
@@ -138,7 +134,8 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FDecorrelate
 	// collect all correlations from inner child
 	pexprInner->ResetDerivedProperties();
 	DrgPexpr *pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
-	if (!CDecorrelator::FProcess(pmp, pexprInner, true /* fEqualityOnly */, ppexprInnerNew, pdrgpexpr))
+	if (!CDecorrelator::FProcess(pmp, pexprInner, true /* fEqualityOnly */,
+								 ppexprInnerNew, pdrgpexpr))
 	{
 		// decorrelation failed
 		pdrgpexpr->Release();
@@ -148,7 +145,8 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FDecorrelate
 	}
 
 	// add all original scalar conjuncts to correlations
-	DrgPexpr *pdrgpexprOriginal = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprScalar);
+	DrgPexpr *pdrgpexprOriginal =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprScalar);
 	CUtils::AddRefAppend<CExpression>(pdrgpexpr, pdrgpexprOriginal);
 	pdrgpexprOriginal->Release();
 
@@ -187,20 +185,18 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::FDecorrelate
 //
 //---------------------------------------------------------------------------
 CExpression *
-CXformLeftSemiApplyWithExternalCorrs2InnerJoin::PexprDecorrelate
-	(
-	IMemoryPool *pmp,
-	CExpression *pexpr
-	)
+CXformLeftSemiApplyWithExternalCorrs2InnerJoin::PexprDecorrelate(
+	IMemoryPool *pmp, CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(COperator::EopLogicalLeftSemiApply == pexpr->Pop()->Eopid() ||
-			COperator::EopLogicalLeftSemiApplyIn == pexpr->Pop()->Eopid());
+				COperator::EopLogicalLeftSemiApplyIn == pexpr->Pop()->Eopid());
 
 	CExpressionHandle exprhdl(pmp);
 	exprhdl.Attach(pexpr);
 
-	if (NULL == exprhdl.Pdprel(0 /*ulChildIndex*/)->Pkc() || !CUtils::FInnerUsesExternalCols(exprhdl))
+	if (NULL == exprhdl.Pdprel(0 /*ulChildIndex*/)->Pkc() ||
+		!CUtils::FInnerUsesExternalCols(exprhdl))
 	{
 		// outer child must have a key and inner child must have external correlations
 		return NULL;
@@ -218,7 +214,9 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::PexprDecorrelate
 	DrgPexpr *pdrgpexprExternal = NULL;
 	DrgPexpr *pdrgpexprResidual = NULL;
 	CColRefSet *pcrsInnerUsed = NULL;
-	if (!FSplitCorrelations(pmp, (*pexpr)[0], pexprInnerNew, pdrgpexprAllCorr, &pdrgpexprExternal, &pdrgpexprResidual, &pcrsInnerUsed))
+	if (!FSplitCorrelations(pmp, (*pexpr)[0], pexprInnerNew, pdrgpexprAllCorr,
+							&pdrgpexprExternal, &pdrgpexprResidual,
+							&pcrsInnerUsed))
 	{
 		// splitting correlations failed
 		pdrgpexprAllCorr->Release();
@@ -226,29 +224,37 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::PexprDecorrelate
 
 		return NULL;
 	}
-	GPOS_ASSERT(pdrgpexprExternal->UlLength() + pdrgpexprResidual->UlLength() == pdrgpexprAllCorr->UlLength());
+	GPOS_ASSERT(pdrgpexprExternal->UlLength() + pdrgpexprResidual->UlLength() ==
+				pdrgpexprAllCorr->UlLength());
 
 	pdrgpexprAllCorr->Release();
 
 	// create an inner join between outer child and decorrelated inner child
 	CExpression *pexprOuter = (*pexpr)[0];
 	pexprOuter->AddRef();
-	CExpression *pexprInnerJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp, pexprOuter, pexprInnerNew, CPredicateUtils::PexprConjunction(pmp, pdrgpexprResidual));
+	CExpression *pexprInnerJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+		pmp, pexprOuter, pexprInnerNew,
+		CPredicateUtils::PexprConjunction(pmp, pdrgpexprResidual));
 
 	// add a group by on outer columns + inner columns appearing in external correlations
 	DrgPcr *pdrgpcrUsed = pcrsInnerUsed->Pdrgpcr(pmp);
 	pcrsInnerUsed->Release();
 
 	DrgPcr *pdrgpcrKey = NULL;
-	DrgPcr *pdrgpcrGrpCols = CUtils::PdrgpcrGroupingKey(pmp, pexprOuter, &pdrgpcrKey);
+	DrgPcr *pdrgpcrGrpCols =
+		CUtils::PdrgpcrGroupingKey(pmp, pexprOuter, &pdrgpcrKey);
 	pdrgpcrKey->Release();  // key is not used here
 
 	pdrgpcrGrpCols->AppendArray(pdrgpcrUsed);
 	pdrgpcrUsed->Release();
-	CExpression *pexprGb = CUtils::PexprLogicalGbAggGlobal(pmp, pdrgpcrGrpCols, pexprInnerJoin,  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp)));
+	CExpression *pexprGb = CUtils::PexprLogicalGbAggGlobal(
+		pmp, pdrgpcrGrpCols, pexprInnerJoin,
+		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp)));
 
 	// add a top filter for external correlations
-	return CUtils::PexprLogicalSelect(pmp, pexprGb, CPredicateUtils::PexprConjunction(pmp, pdrgpexprExternal));
+	return CUtils::PexprLogicalSelect(
+		pmp, pexprGb,
+		CPredicateUtils::PexprConjunction(pmp, pdrgpexprExternal));
 }
 
 
@@ -261,14 +267,12 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::PexprDecorrelate
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Exfp(
+	CExpressionHandle &exprhdl) const
 {
 	// expression must have outer references with external correlations
-	if (exprhdl.FHasOuterRefs(1 /*ulChildIndex*/) && CUtils::FInnerUsesExternalCols(exprhdl))
+	if (exprhdl.FHasOuterRefs(1 /*ulChildIndex*/) &&
+		CUtils::FInnerUsesExternalCols(exprhdl))
 	{
 		return CXform::ExfpHigh;
 	}
@@ -287,13 +291,8 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Transform(
+	CXformContext *pxfctxt, CXformResult *pxfres, CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -308,4 +307,3 @@ CXformLeftSemiApplyWithExternalCorrs2InnerJoin::Transform
 }
 
 // EOF
-

@@ -24,20 +24,13 @@ using namespace gpdxl;
 //		Constructs a column reference
 //
 //---------------------------------------------------------------------------
-CDXLColRef::CDXLColRef
-	(
-	IMemoryPool *pmp,
-	CMDName *pmdname,
-	ULONG ulId,
-	IMDId *pmdidType,
-	INT iTypeModifier
-	)
-	:
-	m_pmp(pmp),
-	m_pmdname(pmdname),
-	m_ulId(ulId),
-	m_pmdidType(pmdidType),
-	m_iTypeModifer(iTypeModifier)
+CDXLColRef::CDXLColRef(IMemoryPool *pmp, CMDName *pmdname, ULONG ulId,
+					   IMDId *pmdidType, INT iTypeModifier)
+	: m_pmp(pmp),
+	  m_pmdname(pmdname),
+	  m_ulId(ulId),
+	  m_pmdidType(pmdidType),
+	  m_iTypeModifer(iTypeModifier)
 {
 	GPOS_ASSERT(m_pmdidType->FValid());
 }

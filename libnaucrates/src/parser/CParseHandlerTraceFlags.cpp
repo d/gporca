@@ -32,15 +32,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerTraceFlags::CParseHandlerTraceFlags
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pbs(NULL)
+CParseHandlerTraceFlags::CParseHandlerTraceFlags(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pbs(NULL)
 {
 	m_pbs = GPOS_NEW(pmp) CBitSet(pmp, EopttraceSentinel);
 }
@@ -67,42 +62,33 @@ CParseHandlerTraceFlags::~CParseHandlerTraceFlags()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerTraceFlags::StartElement
-	(
-	const XMLCh* const , //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , //xmlszQname,
-	const Attributes& attrs
-	)
-{	
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenTraceFlags), xmlszLocalname))
+CParseHandlerTraceFlags::StartElement(const XMLCh *const,  //xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const,  //xmlszQname,
+									  const Attributes &attrs)
+{
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenTraceFlags), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-	
+
 	// parse and tokenize traceflags
-	const XMLCh *xmlszTraceFlags = CDXLOperatorFactory::XmlstrFromAttrs
-															(
-															attrs,
-															EdxltokenValue,
-															EdxltokenTraceFlags
-															);
-	
-	DrgPul *pdrgpul = CDXLOperatorFactory::PdrgpulFromXMLCh
-												(
-												m_pphm->Pmm(),
-												xmlszTraceFlags, 
-												EdxltokenDistrColumns,
-												EdxltokenRelation
-												);
-	
+	const XMLCh *xmlszTraceFlags = CDXLOperatorFactory::XmlstrFromAttrs(
+		attrs, EdxltokenValue, EdxltokenTraceFlags);
+
+	DrgPul *pdrgpul = CDXLOperatorFactory::PdrgpulFromXMLCh(
+		m_pphm->Pmm(), xmlszTraceFlags, EdxltokenDistrColumns,
+		EdxltokenRelation);
+
 	for (ULONG ul = 0; ul < pdrgpul->UlLength(); ul++)
 	{
 		ULONG *pul = (*pdrgpul)[ul];
 		m_pbs->FExchangeSet(*pul);
 	}
-	
+
 	pdrgpul->Release();
 }
 
@@ -115,17 +101,17 @@ CParseHandlerTraceFlags::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerTraceFlags::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerTraceFlags::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenTraceFlags), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenTraceFlags), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// deactivate handler

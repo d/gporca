@@ -25,15 +25,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerOp::CParseHandlerOp
-	(
-	IMemoryPool *pmp, 
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdxln(NULL)
+CParseHandlerOp::CParseHandlerOp(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								 CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pdxln(NULL)
 {
 }
 
@@ -76,22 +70,18 @@ CParseHandlerOp::Pdxln() const
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerOp::AddChildFromParseHandler
-	(
-	const CParseHandlerOp *pph
-	)
+CParseHandlerOp::AddChildFromParseHandler(const CParseHandlerOp *pph)
 {
 	GPOS_ASSERT(NULL != m_pdxln);
 	GPOS_ASSERT(NULL != pph);
-	
+
 	// extract constructed element
 	CDXLNode *pdxlnChild = pph->Pdxln();
 	GPOS_ASSERT(NULL != pdxlnChild);
-	
+
 	pdxlnChild->AddRef();
 	m_pdxln->AddChild(pdxlnChild);
 }
 
 
 // EOF
-

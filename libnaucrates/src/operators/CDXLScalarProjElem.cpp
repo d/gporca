@@ -25,16 +25,9 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarProjElem::CDXLScalarProjElem
-	(
-	IMemoryPool *pmp,
-	ULONG ulId,
-	const CMDName *pmdname
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulId(ulId),
-	m_pmdname(pmdname)
+CDXLScalarProjElem::CDXLScalarProjElem(IMemoryPool *pmp, ULONG ulId,
+									   const CMDName *pmdname)
+	: CDXLScalar(pmp), m_ulId(ulId), m_pmdname(pmdname)
 {
 	GPOS_ASSERT(NULL != pmdname);
 }
@@ -119,26 +112,25 @@ CDXLScalarProjElem::PmdnameAlias() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarProjElem::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarProjElem::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-		
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
 	// serialize proj elem id
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColId), m_ulId);
-		
+
 	// serialize proj element alias
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAlias), m_pmdname->Pstr());
-	
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAlias),
+						  m_pmdname->Pstr());
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -151,16 +143,12 @@ CDXLScalarProjElem::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarProjElem::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren 
-	) 
-	const
+CDXLScalarProjElem::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 	CDXLNode *pdxlnChild = (*pdxln)[0];
-	
+
 	GPOS_ASSERT(EdxloptypeScalar == pdxlnChild->Pdxlop()->Edxloperatortype());
 
 	if (fValidateChildren)
@@ -169,7 +157,7 @@ CDXLScalarProjElem::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

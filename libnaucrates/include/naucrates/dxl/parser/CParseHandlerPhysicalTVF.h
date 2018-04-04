@@ -18,62 +18,57 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerPhysicalTVF
-	//
-	//	@doc:
-	//		Parse handler for parsing a Physical TVF
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerPhysicalTVF : public CParseHandlerPhysicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerPhysicalTVF
+//
+//	@doc:
+//		Parse handler for parsing a Physical TVF
+//
+//---------------------------------------------------------------------------
+class CParseHandlerPhysicalTVF : public CParseHandlerPhysicalOp
+{
+private:
+	// catalog id of the function
+	IMDId *m_pmdidFunc;
 
-			// catalog id of the function
-			IMDId *m_pmdidFunc;
+	// return type
+	IMDId *m_pmdidRetType;
 
-			// return type
-			IMDId *m_pmdidRetType;
+	// function name
+	CWStringConst *m_pstr;
 
-			// function name
-			CWStringConst *m_pstr;
+	// private copy ctor
+	CParseHandlerPhysicalTVF(const CParseHandlerPhysicalTVF &);
 
-			// private copy ctor
-			CParseHandlerPhysicalTVF(const CParseHandlerPhysicalTVF &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
+public:
+	// ctor
+	CParseHandlerPhysicalTVF(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							 CParseHandlerBase *pphRoot);
+};
 
-		public:
-			// ctor
-			CParseHandlerPhysicalTVF
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-	};
-
-}
-#endif // GPDXL_CParseHandlerPhysicalTVF_H
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerPhysicalTVF_H
 
 // EOF

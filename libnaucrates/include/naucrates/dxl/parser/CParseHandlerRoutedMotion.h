@@ -19,57 +19,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerRoutedMotion
-	//
-	//	@doc:
-	//		Parse handler for routed motion operators
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerRoutedMotion : public CParseHandlerPhysicalOp
-	{
-		private:
-			
-			// motion operator
-			CDXLPhysicalRoutedDistributeMotion *m_pdxlop;
-			
-			// private copy ctor
-			CParseHandlerRoutedMotion(const CParseHandlerRoutedMotion &);
-			
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
-	
-		public:
-			// ctor
-			CParseHandlerRoutedMotion
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-						
-	};
-}
+XERCES_CPP_NAMESPACE_USE
 
-#endif // !GPDXL_CParseHandlerRoutedMotion_H
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerRoutedMotion
+//
+//	@doc:
+//		Parse handler for routed motion operators
+//
+//---------------------------------------------------------------------------
+class CParseHandlerRoutedMotion : public CParseHandlerPhysicalOp
+{
+private:
+	// motion operator
+	CDXLPhysicalRoutedDistributeMotion *m_pdxlop;
+
+	// private copy ctor
+	CParseHandlerRoutedMotion(const CParseHandlerRoutedMotion &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerRoutedMotion(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerRoutedMotion_H
 
 // EOF

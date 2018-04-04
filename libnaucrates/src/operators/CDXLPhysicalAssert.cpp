@@ -26,13 +26,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalAssert::CDXLPhysicalAssert
-	(
-	IMemoryPool *pmp,
-	const CHAR *szSQLState
-	)
-	:
-	CDXLPhysical(pmp)
+CDXLPhysicalAssert::CDXLPhysicalAssert(IMemoryPool *pmp, const CHAR *szSQLState)
+	: CDXLPhysical(pmp)
 {
 	GPOS_ASSERT(NULL != szSQLState);
 	GPOS_ASSERT(GPOS_SQLSTATE_LENGTH == clib::UlStrLen(szSQLState));
@@ -91,22 +86,21 @@ CDXLPhysicalAssert::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAssert::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalAssert::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenErrorCode), m_szSQLState);
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenErrorCode),
+						  m_szSQLState);
+
 	pdxln->SerializePropertiesToDXL(pxmlser);
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -119,26 +113,23 @@ CDXLPhysicalAssert::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalAssert::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLPhysicalAssert::AssertValid(const CDXLNode *pdxln,
+								BOOL fValidateChildren) const
 {
-
 	GPOS_ASSERT(3 == pdxln->UlArity());
-	
+
 	CDXLNode *pdxlnProjList = (*pdxln)[EdxlassertIndexProjList];
 	GPOS_ASSERT(EdxlopScalarProjectList == pdxlnProjList->Pdxlop()->Edxlop());
 
 	CDXLNode *pdxlnPredicate = (*pdxln)[EdxlassertIndexFilter];
-	GPOS_ASSERT(EdxlopScalarAssertConstraintList == pdxlnPredicate->Pdxlop()->Edxlop());
+	GPOS_ASSERT(EdxlopScalarAssertConstraintList ==
+				pdxlnPredicate->Pdxlop()->Edxlop());
 
 	CDXLNode *pdxlnPhysicalChild = (*pdxln)[EdxlassertIndexChild];
-	GPOS_ASSERT(EdxloptypePhysical == pdxlnPhysicalChild->Pdxlop()->Edxloperatortype());
+	GPOS_ASSERT(EdxloptypePhysical ==
+				pdxlnPhysicalChild->Pdxlop()->Edxloperatortype());
 
-	
+
 	if (fValidateChildren)
 	{
 		for (ULONG ul = 0; ul < 3; ul++)
@@ -148,6 +139,6 @@ CDXLPhysicalAssert::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of the SAX parse handler class for parsing LimitCount
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/parser/CParseHandlerScalarLimitCount.h"
@@ -30,14 +30,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarLimitCount::CParseHandlerScalarLimitCount
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarLimitCount::CParseHandlerScalarLimitCount(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -50,30 +45,34 @@ CParseHandlerScalarLimitCount::CParseHandlerScalarLimitCount
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarLimitCount::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarLimitCount::StartElement(const XMLCh *const xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const xmlszQname,
+											const Attributes &attrs)
 {
-	if(0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarLimitCount), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarLimitCount), xmlszLocalname))
 	{
 		// parse and create scalar limit count
-		CDXLScalarLimitCount *pdxlop = (CDXLScalarLimitCount*) CDXLOperatorFactory::PdxlopLimitCount(m_pphm->Pmm(), attrs);
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode (m_pmp,pdxlop);
+		CDXLScalarLimitCount *pdxlop =
+			(CDXLScalarLimitCount *) CDXLOperatorFactory::PdxlopLimitCount(
+				m_pphm->Pmm(), attrs);
+		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 	}
 	else
 	{
 		// we must have seen a LIMITCOUNT already and initialized its corresponding node
 		if (NULL == m_pdxln)
 		{
-			CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+			CWStringDynamic *pstr =
+				CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag,
+					   pstr->Wsz());
 		}
 		// install a scalar element parser for parsing the limit count element
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handler
@@ -92,16 +91,17 @@ CParseHandlerScalarLimitCount::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarLimitCount::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarLimitCount::EndElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarLimitCount), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarLimitCount), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -110,7 +110,8 @@ CParseHandlerScalarLimitCount::EndElement
 	{
 		GPOS_ASSERT(1 == ulSize);
 		// limit count node was not empty
-		CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+		CParseHandlerScalarOp *pphChild =
+			dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
 
 		AddChildFromParseHandler(pphChild);
 	}

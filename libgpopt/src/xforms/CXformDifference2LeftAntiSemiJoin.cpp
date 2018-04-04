@@ -26,22 +26,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformDifference2LeftAntiSemiJoin::CXformDifference2LeftAntiSemiJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-		(
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalDifference(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))
-					)
-		)
-{}
+CXformDifference2LeftAntiSemiJoin::CXformDifference2LeftAntiSemiJoin(
+	IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalDifference(pmp),
+		  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -52,13 +44,9 @@ CXformDifference2LeftAntiSemiJoin::CXformDifference2LeftAntiSemiJoin
 //
 //---------------------------------------------------------------------------
 void
-CXformDifference2LeftAntiSemiJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformDifference2LeftAntiSemiJoin::Transform(CXformContext *pxfctxt,
+											 CXformResult *pxfres,
+											 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -74,7 +62,8 @@ CXformDifference2LeftAntiSemiJoin::Transform
 	CExpression *pexprLeftChild = (*pexpr)[0];
 	CExpression *pexprRightChild = (*pexpr)[1];
 
-	CLogicalDifference *popDifference = CLogicalDifference::PopConvert(pexpr->Pop());
+	CLogicalDifference *popDifference =
+		CLogicalDifference::PopConvert(pexpr->Pop());
 	DrgPcr *pdrgpcrOutput = popDifference->PdrgpcrOutput();
 	DrgDrgPcr *pdrgpdrgpcrInput = popDifference->PdrgpdrgpcrInput();
 
@@ -85,26 +74,19 @@ CXformDifference2LeftAntiSemiJoin::Transform
 	pexprRightChild->AddRef();
 
 	// assemble the new left anti-semi join logical operator
-	CExpression *pexprLASJ = GPOS_NEW(pmp) CExpression
-										(
-										pmp,
-										GPOS_NEW(pmp) CLogicalLeftAntiSemiJoin(pmp),
-										pexprLeftChild,
-										pexprRightChild,
-										pexprScCond
-										);
+	CExpression *pexprLASJ = GPOS_NEW(pmp)
+		CExpression(pmp, GPOS_NEW(pmp) CLogicalLeftAntiSemiJoin(pmp),
+					pexprLeftChild, pexprRightChild, pexprScCond);
 
 	// assemble the aggregate operator
 	pdrgpcrOutput->AddRef();
 
-	CExpression *pexprProjList = GPOS_NEW(pmp) CExpression
-											(
-											pmp,
-											GPOS_NEW(pmp) CScalarProjectList(pmp),
-											GPOS_NEW(pmp) DrgPexpr(pmp)
-											);
+	CExpression *pexprProjList =
+		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CScalarProjectList(pmp),
+								  GPOS_NEW(pmp) DrgPexpr(pmp));
 
-	CExpression *pexprAgg = CUtils::PexprLogicalGbAggGlobal(pmp, pdrgpcrOutput, pexprLASJ, pexprProjList);
+	CExpression *pexprAgg = CUtils::PexprLogicalGbAggGlobal(
+		pmp, pdrgpcrOutput, pexprLASJ, pexprProjList);
 
 	// add alternative to results
 	pxfres->Add(pexprAgg);

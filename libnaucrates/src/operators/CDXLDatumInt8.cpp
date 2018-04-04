@@ -7,9 +7,9 @@
 //
 //	@doc:
 //		Implementation of DXL datum of type long int
-//		
-//	@owner: 
-//		
+//
+//	@owner:
+//
 //
 //	@test:
 //
@@ -31,16 +31,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLDatumInt8::CDXLDatumInt8
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	BOOL fNull,
-	LINT lVal
-	)
-	:
-	CDXLDatum(pmp, pmdidType, IDefaultTypeModifier, fNull, 8 /*ulLength*/),
-	m_lVal(lVal)
+CDXLDatumInt8::CDXLDatumInt8(IMemoryPool *pmp, IMDId *pmdidType, BOOL fNull,
+							 LINT lVal)
+	: CDXLDatum(pmp, pmdidType, IDefaultTypeModifier, fNull, 8 /*ulLength*/),
+	  m_lVal(lVal)
 {
 	if (fNull)
 	{
@@ -71,15 +65,13 @@ CDXLDatumInt8::LValue() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLDatumInt8::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
+CDXLDatumInt8::Serialize(CXMLSerializer *pxmlser)
 {
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull), m_fNull);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue), FByValue());
-	
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue),
+						  FByValue());
+
 	if (!m_fNull)
 	{
 		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), m_lVal);

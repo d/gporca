@@ -28,31 +28,24 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDTriggerGPDB::CMDTriggerGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidRel,
-	IMDId *pmdidFunc,
-	INT iType,
-	BOOL fEnabled
-	)
-	:
-	m_pmp(pmp),
-	m_pmdid(pmdid),
-	m_pmdname(pmdname),
-	m_pmdidRel(pmdidRel),
-	m_pmdidFunc(pmdidFunc),
-	m_iType(iType),
-	m_fEnabled(fEnabled)
+CMDTriggerGPDB::CMDTriggerGPDB(IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname,
+							   IMDId *pmdidRel, IMDId *pmdidFunc, INT iType,
+							   BOOL fEnabled)
+	: m_pmp(pmp),
+	  m_pmdid(pmdid),
+	  m_pmdname(pmdname),
+	  m_pmdidRel(pmdidRel),
+	  m_pmdidFunc(pmdidFunc),
+	  m_iType(iType),
+	  m_fEnabled(fEnabled)
 {
 	GPOS_ASSERT(m_pmdid->FValid());
 	GPOS_ASSERT(m_pmdidRel->FValid());
 	GPOS_ASSERT(m_pmdidFunc->FValid());
 	GPOS_ASSERT(0 <= iType);
 
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -151,29 +144,33 @@ CMDTriggerGPDB::FUpdate() const
 //
 //---------------------------------------------------------------------------
 void
-CMDTriggerGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CMDTriggerGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenGPDBTrigger));
+						 CDXLTokens::PstrToken(EdxltokenGPDBTrigger));
 
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	m_pmdidRel->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenRelationMdid));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
+	m_pmdidRel->Serialize(pxmlser,
+						  CDXLTokens::PstrToken(EdxltokenRelationMdid));
 	m_pmdidFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenFuncId));
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerRow), FRow());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerBefore), FBefore());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerInsert), FInsert());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerDelete), FDelete());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerUpdate), FUpdate());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerEnabled), m_fEnabled);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerRow),
+						  FRow());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerBefore),
+						  FBefore());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerInsert),
+						  FInsert());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerDelete),
+						  FDelete());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerUpdate),
+						  FUpdate());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBTriggerEnabled),
+						  m_fEnabled);
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenGPDBTrigger));
+						  CDXLTokens::PstrToken(EdxltokenGPDBTrigger));
 }
 
 #ifdef GPOS_DEBUG
@@ -187,11 +184,7 @@ CMDTriggerGPDB::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CMDTriggerGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDTriggerGPDB::DebugPrint(IOstream &os) const
 {
 	os << "Trigger id: ";
 	m_pmdid->OsPrint(os);
@@ -252,6 +245,6 @@ CMDTriggerGPDB::DebugPrint
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

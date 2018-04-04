@@ -17,34 +17,38 @@
 
 namespace gpos
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CEventTest
-	//
-	//	@doc:
-	//		Static unit tests
-	//
-	//---------------------------------------------------------------------------
-	class CEventTest
-	{
-		public:
+//---------------------------------------------------------------------------
+//	@class:
+//		CEventTest
+//
+//	@doc:
+//		Static unit tests
+//
+//---------------------------------------------------------------------------
+class CEventTest
+{
+public:
+	static ULONG ulValue;
 
-			static ULONG ulValue;
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_ProducerConsumer();
+	static GPOS_RESULT
+	EresUnittest_TimedWait();
 
-			static GPOS_RESULT EresUnittest_ProducerConsumer();
-			static GPOS_RESULT EresUnittest_TimedWait();
+	static void *
+	PvUnittest_Producer(void *);
+	static void *
+	PvUnittest_Consumer(void *);
+	static void *
+	PvUnittest_TimedWait(void *);
 
-			static void *PvUnittest_Producer(void *);
-			static void *PvUnittest_Consumer(void *);
-			static void *PvUnittest_TimedWait(void *);
+};  // CEventTest
+}  // namespace gpos
 
-	}; // CEventTest
-}
-
-#endif // !GPOS_CEventTest_H
+#endif  // !GPOS_CEventTest_H
 
 // EOF
-

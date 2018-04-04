@@ -18,180 +18,177 @@
 
 namespace gpnaucrates
 {
-	// forward declarations
-	class IStatistics;
-}
+// forward declarations
+class IStatistics;
+}  // namespace gpnaucrates
 
 namespace gpopt
 {
+// forward declarations
+class CExpression;
 
-	// forward declarations
-	class CExpression;
-
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CPartFilterMap
+//
+//	@doc:
+//		Partitioned table filter map used in required and derived properties
+//
+//---------------------------------------------------------------------------
+class CPartFilterMap : public CRefCount
+{
+private:
+	//-------------------------------------------------------------------
 	//	@class:
-	//		CPartFilterMap
+	//		CPartFilter
 	//
 	//	@doc:
-	//		Partitioned table filter map used in required and derived properties
+	//		Single entry of CPartFilterMap
 	//
-	//---------------------------------------------------------------------------
-	class CPartFilterMap : public CRefCount
+	//-------------------------------------------------------------------
+	class CPartFilter : public CRefCount
 	{
-		private:
+	private:
+		// scan id
+		ULONG m_ulScanId;
 
-			//-------------------------------------------------------------------
-			//	@class:
-			//		CPartFilter
-			//
-			//	@doc:
-			//		Single entry of CPartFilterMap
-			//
-			//-------------------------------------------------------------------
-			class CPartFilter : public CRefCount
-			{
-				private:
+		// scalar expression
+		CExpression *m_pexpr;
 
-					// scan id
-					ULONG m_ulScanId;
+		// statistics of the plan below partition selector -- used only during plan property derivation
+		IStatistics *m_pstats;
 
-					// scalar expression
-					CExpression *m_pexpr;
+	public:
+		// ctor
+		CPartFilter(ULONG ulScanId, CExpression *pexpr,
+					IStatistics *pstats = NULL);
 
-					// statistics of the plan below partition selector -- used only during plan property derivation
-					IStatistics *m_pstats;
+		// dtor
+		virtual ~CPartFilter();
 
-				public:
+		// match function
+		BOOL
+		FMatch(const CPartFilter *ppf) const;
 
-					// ctor
-					CPartFilter
-						(
-						ULONG ulScanId,
-						CExpression *pexpr,
-						IStatistics *pstats = NULL
-						);
+		// return scan id
+		ULONG
+		UlScanId() const
+		{
+			return m_ulScanId;
+		}
 
-					// dtor
-					virtual
-					~CPartFilter();
+		// return scalar expression
+		CExpression *
+		Pexpr() const
+		{
+			return m_pexpr;
+		}
 
-					// match function
-					BOOL FMatch(const CPartFilter *ppf) const;
+		// return statistics of the plan below partition selector
+		IStatistics *
+		Pstats() const
+		{
+			return m_pstats;
+		}
 
-					// return scan id
-					ULONG UlScanId() const
-					{
-						return m_ulScanId;
-					}
+		// print function
+		IOstream &
+		OsPrint(IOstream &os) const;
 
-					// return scalar expression
-					CExpression *Pexpr() const
-					{
-						return m_pexpr;
-					}
+	};  // class CPartFilter
 
-					// return statistics of the plan below partition selector
-					IStatistics *Pstats() const
-					{
-						return m_pstats;
-					}
+	// map of partition index ids to filter expressions
+	typedef CHashMap<ULONG, CPartFilter, gpos::UlHash<ULONG>,
+					 gpos::FEqual<ULONG>, CleanupDelete<ULONG>,
+					 CleanupRelease<CPartFilter> >
+		HMULPartFilter;
 
-					// print function
-					IOstream &OsPrint(IOstream &os) const;
+	// map iterator
+	typedef CHashMapIter<ULONG, CPartFilter, gpos::UlHash<ULONG>,
+						 gpos::FEqual<ULONG>, CleanupDelete<ULONG>,
+						 CleanupRelease<CPartFilter> >
+		HMULPartFilterIter;
 
-			}; // class CPartFilter
+	// hash map from ScanId to CPartFilter
+	HMULPartFilter *m_phmulpf;
 
-			// map of partition index ids to filter expressions
-			typedef CHashMap<ULONG, CPartFilter, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-				CleanupDelete<ULONG>, CleanupRelease<CPartFilter> > HMULPartFilter;
+public:
+	// ctors
+	explicit CPartFilterMap(IMemoryPool *pmp);
 
-			// map iterator
-			typedef CHashMapIter<ULONG, CPartFilter, gpos::UlHash<ULONG>, gpos::FEqual<ULONG>,
-				CleanupDelete<ULONG>, CleanupRelease<CPartFilter> > HMULPartFilterIter;
+	CPartFilterMap(IMemoryPool *pmp, CPartFilterMap *ppfm);
 
-			// hash map from ScanId to CPartFilter
-			HMULPartFilter *m_phmulpf;
+	// dtor
+	virtual ~CPartFilterMap();
 
-		public:
+	// check whether map contains the given scan id
+	BOOL
+	FContainsScanId(ULONG ulScanId) const
+	{
+		return (NULL != m_phmulpf->PtLookup(&ulScanId));
+	}
 
-			// ctors
-			explicit
-			CPartFilterMap(IMemoryPool *pmp);
+	// the expression associated with the given scan id
+	CExpression *
+	Pexpr(ULONG ulScanId) const;
 
-			CPartFilterMap(IMemoryPool *pmp, CPartFilterMap *ppfm);
+	// stats associated with the given scan id
+	IStatistics *
+	Pstats(ULONG ulScanId) const;
 
-			// dtor
-			virtual
-			~CPartFilterMap();
+	// check whether the map is empty
+	BOOL
+	FEmpty() const
+	{
+		return 0 == m_phmulpf->UlEntries();
+	}
 
-			// check whether map contains the given scan id
-			BOOL FContainsScanId
-				(
-				ULONG ulScanId
-				)
-				const
-			{
-				return (NULL != m_phmulpf->PtLookup(&ulScanId));
-			}
+	// check whether current part filter map is a subset of the given one
+	BOOL
+	FSubset(CPartFilterMap *ppfm);
 
-			// the expression associated with the given scan id
-			CExpression *Pexpr(ULONG ulScanId) const;
+	// check equality of part filter maps
+	BOOL
+	FEqual(CPartFilterMap *ppfm)
+	{
+		GPOS_ASSERT(NULL != ppfm);
 
-			// stats associated with the given scan id
-			IStatistics *Pstats(ULONG ulScanId) const;
+		return (m_phmulpf->UlEntries() == ppfm->m_phmulpf->UlEntries()) &&
+			   this->FSubset(ppfm);
+	}
 
-			// check whether the map is empty
-			BOOL FEmpty() const
-			{
-				return 0 == m_phmulpf->UlEntries();
-			}
+	// extract part Scan id's in the given memory pool
+	DrgPul *
+	PdrgpulScanIds(IMemoryPool *pmp) const;
 
-			// check whether current part filter map is a subset of the given one
-			BOOL FSubset(CPartFilterMap *ppfm);
+	// add part filter to map
+	void
+	AddPartFilter(IMemoryPool *pmp, ULONG ulScanId, CExpression *pexpr,
+				  IStatistics *pstats);
 
-			// check equality of part filter maps
-			BOOL FEqual
-				(
-				CPartFilterMap *ppfm
-				)
-			{
-				GPOS_ASSERT(NULL != ppfm);
+	// look for given scan id in given map and, if found, copy the corresponding entry to current map
+	BOOL
+	FCopyPartFilter(IMemoryPool *pmp, ULONG ulScanId,
+					CPartFilterMap *ppfmSource);
 
-				return
-					(m_phmulpf->UlEntries() == ppfm->m_phmulpf->UlEntries()) &&
-					this->FSubset(ppfm);
-			}
+	// copy all part filters from source map to current map
+	void
+	CopyPartFilterMap(IMemoryPool *pmp, CPartFilterMap *ppfmSource);
 
-			// extract part Scan id's in the given memory pool
-			DrgPul *PdrgpulScanIds(IMemoryPool *pmp) const;
-
-			// add part filter to map
-			void AddPartFilter
-				(
-				IMemoryPool *pmp,
-				ULONG ulScanId,
-				CExpression *pexpr,
-				IStatistics *pstats
-				);
-
-			// look for given scan id in given map and, if found, copy the corresponding entry to current map
-			BOOL FCopyPartFilter(IMemoryPool *pmp, ULONG ulScanId, CPartFilterMap *ppfmSource);
-
-			// copy all part filters from source map to current map
-			void CopyPartFilterMap(IMemoryPool *pmp, CPartFilterMap *ppfmSource);
-
-			// print function
-			IOstream &OsPrint(IOstream &os) const;
+	// print function
+	IOstream &
+	OsPrint(IOstream &os) const;
 
 #ifdef GPOS_DEBUG
-			// debug print for interactive debugging sessions only
-			void DbgPrint() const;
-#endif // GPOS_DEBUG
+	// debug print for interactive debugging sessions only
+	void
+	DbgPrint() const;
+#endif  // GPOS_DEBUG
 
-	}; // class CPartFilterMap
+};  // class CPartFilterMap
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CPartFilterMap_H
+#endif  // !GPOPT_CPartFilterMap_H
 
 // EOF

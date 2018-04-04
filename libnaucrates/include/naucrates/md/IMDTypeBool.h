@@ -23,43 +23,44 @@
 // fwd decl
 namespace gpnaucrates
 {
-	class IDatumBool;
+class IDatumBool;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDTypeBool
-	//
-	//	@doc:
-	//		Interface for BOOL types in the metadata cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDTypeBool : public IMDType
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDTypeBool
+//
+//	@doc:
+//		Interface for BOOL types in the metadata cache
+//
+//---------------------------------------------------------------------------
+class IMDTypeBool : public IMDType
+{
+public:
+	// type id
+	static ETypeInfo
+	EtiType()
 	{
-		public:
-		
-			// type id
-			static ETypeInfo EtiType()
-			{
-				return EtiBool;
-			}
+		return EtiBool;
+	}
 
-			virtual ETypeInfo Eti() const
-			{
-				return IMDTypeBool::EtiType();
-			}
-			
-			// factory function for BOOL datums
-			virtual IDatumBool *PdatumBool(IMemoryPool *pmp, BOOL fValue, BOOL fNULL) const = 0;
-		
-	};
+	virtual ETypeInfo
+	Eti() const
+	{
+		return IMDTypeBool::EtiType();
+	}
 
-}
+	// factory function for BOOL datums
+	virtual IDatumBool *
+	PdatumBool(IMemoryPool *pmp, BOOL fValue, BOOL fNULL) const = 0;
+};
 
-#endif // !GPMD_IMDTypeBool_H
+}  // namespace gpmd
+
+#endif  // !GPMD_IMDTypeBool_H
 
 // EOF

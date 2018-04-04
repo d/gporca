@@ -16,58 +16,58 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CFileReader
+//
+//	@doc:
+//		Implementation of file handler for raw input;
+//		does not provide thread-safety
+//
+//---------------------------------------------------------------------------
+class CFileReader : public CFileDescriptor
+{
+private:
+	// file size
+	ULLONG m_ullSize;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CFileReader
-	//
-	//	@doc:
-	//		Implementation of file handler for raw input;
-	//		does not provide thread-safety
-	//
-	//---------------------------------------------------------------------------
-	class CFileReader : public CFileDescriptor
-	{
-		private:
+	// read size
+	ULLONG m_ullReadSize;
 
-			// file size
-			ULLONG m_ullSize;
+	// no copy ctor
+	CFileReader(const CFileReader &);
 
-			// read size
-			ULLONG m_ullReadSize;
+public:
+	// ctor
+	CFileReader();
 
-			// no copy ctor
-			CFileReader(const CFileReader &);
+	// dtor
+	virtual ~CFileReader();
 
-		public:
+	// get file size
+	ULLONG
+	UllSize() const;
 
-			// ctor
-			CFileReader();
+	// get file read size
+	ULLONG
+	UllReadSize() const;
 
-			// dtor
-			virtual
-			~CFileReader();
+	// open file for reading
+	void
+	Open(const CHAR *szPath, const ULONG ulPerms = S_IRUSR);
 
-			// get file size
-			ULLONG UllSize() const;
+	// close file
+	void
+	Close();
 
-			// get file read size
-			ULLONG UllReadSize() const;
+	// read bytes to buffer
+	ULONG_PTR
+	UlpRead(BYTE *pb, const ULONG_PTR ulpReadSize);
 
-			// open file for reading
-			void Open(const CHAR *szPath, const ULONG ulPerms =  S_IRUSR);
+};  // class CFileReader
 
-			// close file
-			void Close();
+}  // namespace gpos
 
-			// read bytes to buffer
-			ULONG_PTR UlpRead(BYTE *pb, const ULONG_PTR ulpReadSize);
-
-	};	// class CFileReader
-
-}
-
-#endif // !GPOS_CFileReader_H
+#endif  // !GPOS_CFileReader_H
 
 // EOF
-

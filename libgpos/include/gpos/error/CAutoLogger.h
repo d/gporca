@@ -16,78 +16,67 @@
 
 namespace gpos
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CAutoLogger
+//
+//	@doc:
+//		Auto object for replacing the logger for outpur/error.
+//
+//---------------------------------------------------------------------------
+class CAutoLogger : public CStackObject
+{
+private:
+	// old logger
+	ILogger *m_ploggerOld;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CAutoLogger
-	//
-	//	@doc:
-	//		Auto object for replacing the logger for outpur/error.
-	//
-	//---------------------------------------------------------------------------
-	class CAutoLogger : public CStackObject
+	// flag indicating if logger is used for error logging
+	BOOL m_fError;
+
+	// private copy ctor
+	CAutoLogger(const CAutoLogger &);
+
+public:
+	// ctor
+	CAutoLogger(ILogger *plogger, BOOL fError)
+		: m_ploggerOld(NULL), m_fError(fError)
 	{
+		GPOS_ASSERT(NULL != plogger);
 
-		private:
+		ITask *ptsk = ITask::PtskSelf();
+		GPOS_ASSERT(NULL != ptsk);
 
-			// old logger
-			ILogger *m_ploggerOld;
+		if (m_fError)
+		{
+			m_ploggerOld = ptsk->PlogErr();
+			ptsk->Ptskctxt()->SetLogErr(plogger);
+		}
+		else
+		{
+			m_ploggerOld = ptsk->PlogOut();
+			ptsk->Ptskctxt()->SetLogOut(plogger);
+		}
+	}
 
-			// flag indicating if logger is used for error logging
-			BOOL m_fError;
+	// dtor
+	~CAutoLogger()
+	{
+		ITask *ptsk = ITask::PtskSelf();
+		GPOS_ASSERT(NULL != ptsk);
 
-			// private copy ctor
-			CAutoLogger(const CAutoLogger &);
+		if (m_fError)
+		{
+			ptsk->Ptskctxt()->SetLogErr(m_ploggerOld);
+		}
+		else
+		{
+			ptsk->Ptskctxt()->SetLogOut(m_ploggerOld);
+		}
+	}
 
-		public:
+};  // class CAutoLogger
+}  // namespace gpos
 
-			// ctor
-			CAutoLogger
-				(
-				ILogger *plogger,
-				BOOL fError
-				)
-				:
-				m_ploggerOld(NULL),
-				m_fError(fError)
-			{
-				GPOS_ASSERT(NULL != plogger);
-
-				ITask *ptsk = ITask::PtskSelf();
-				GPOS_ASSERT(NULL != ptsk);
-
-				if (m_fError)
-				{
-					m_ploggerOld = ptsk->PlogErr();
-					ptsk->Ptskctxt()->SetLogErr(plogger);
-				}
-				else
-				{
-					m_ploggerOld = ptsk->PlogOut();
-					ptsk->Ptskctxt()->SetLogOut(plogger);
-				}
-			}
-
-			// dtor
-			~CAutoLogger()
-			{
-				ITask *ptsk = ITask::PtskSelf();
-				GPOS_ASSERT(NULL != ptsk);
-
-				if (m_fError)
-				{
-					ptsk->Ptskctxt()->SetLogErr(m_ploggerOld);
-				}
-				else
-				{
-					ptsk->Ptskctxt()->SetLogOut(m_ploggerOld);
-				}
-			}
-
-	}; // class CAutoLogger
-}
-
-#endif // !GPOS_CAutoLogger_H
+#endif  // !GPOS_CAutoLogger_H
 
 // EOF
-

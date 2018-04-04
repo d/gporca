@@ -17,92 +17,99 @@
 
 namespace gpopt
 {
-	class CMDAccessor;
+class CMDAccessor;
 }
 
 namespace gpnaucrates
 {
-	using namespace gpos;
-	using namespace gpmd;
-	using namespace gpopt;
+using namespace gpos;
+using namespace gpmd;
+using namespace gpopt;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPoint
-	//
-	//	@doc:
-	//		One dimensional point in the datum space
-	//---------------------------------------------------------------------------
-	class CPoint: public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		CPoint
+//
+//	@doc:
+//		One dimensional point in the datum space
+//---------------------------------------------------------------------------
+class CPoint : public CRefCount
+{
+private:
+	// private copy ctor
+	CPoint(const CPoint &);
+
+	// private assignment operator
+	CPoint &
+	operator=(CPoint &);
+
+	// datum corresponding to the point
+	IDatum *m_pdatum;
+
+public:
+	// c'tor
+	explicit CPoint(IDatum *);
+
+	// get underlying datum
+	IDatum *
+	Pdatum() const
 	{
-		private:
+		return m_pdatum;
+	}
 
-			// private copy ctor
-			CPoint(const CPoint &);
+	// is this point equal to another
+	BOOL
+	FEqual(const CPoint *) const;
 
-			// private assignment operator
-			CPoint& operator=(CPoint &);
+	// is this point not equal to another
+	BOOL
+	FNotEqual(const CPoint *) const;
 
-			// datum corresponding to the point
-			IDatum *m_pdatum;
+	// less than
+	BOOL
+	FLessThan(const CPoint *) const;
 
-		public:
+	// less than or equals
+	BOOL
+	FLessThanOrEqual(const CPoint *) const;
 
-			// c'tor
-			explicit 
-			CPoint(IDatum *);
+	// greater than
+	BOOL
+	FGreaterThan(const CPoint *) const;
 
-			// get underlying datum
-			IDatum *Pdatum() const
-			{
-				return m_pdatum;
-			}
+	// greater than or equals
+	BOOL
+	FGreaterThanOrEqual(const CPoint *) const;
 
-			// is this point equal to another
-			BOOL FEqual(const CPoint *) const;
+	// distance between two points
+	CDouble
+	DDistance(const CPoint *) const;
 
-			// is this point not equal to another
-			BOOL FNotEqual(const CPoint *) const;
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-			// less than
-			BOOL FLessThan(const CPoint *) const;
+	// d'tor
+	virtual ~CPoint()
+	{
+		m_pdatum->Release();
+	}
 
-			// less than or equals
-			BOOL FLessThanOrEqual(const CPoint *) const;
+	// translate the point into its DXL representation
+	CDXLDatum *
+	Pdxldatum(IMemoryPool *pmp, CMDAccessor *pmda) const;
 
-			// greater than
-			BOOL FGreaterThan(const CPoint *) const;
+	// minimum of two points using <=
+	static CPoint *
+	PpointMin(CPoint *ppoint1, CPoint *ppoint2);
 
-			// greater than or equals
-			BOOL FGreaterThanOrEqual(const CPoint *) const;
+	// maximum of two points using >=
+	static CPoint *
+	PpointMax(CPoint *ppoint1, CPoint *ppoint2);
+};  // class CPoint
 
-			// distance between two points
-			CDouble DDistance(const CPoint *) const;
+}  // namespace gpnaucrates
 
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
-
-			// d'tor
-			virtual ~CPoint()
-			{
-				m_pdatum->Release();
-			}
-
-			// translate the point into its DXL representation
-			CDXLDatum *Pdxldatum(IMemoryPool *pmp, CMDAccessor *pmda) const;
-
-			// minimum of two points using <=
-			static
-			CPoint *PpointMin(CPoint *ppoint1, CPoint *ppoint2);
-
-			// maximum of two points using >=
-			static
-			CPoint *PpointMax(CPoint *ppoint1, CPoint *ppoint2);
-	}; // class CPoint
-
-}
-
-#endif // !GPNAUCRATES_CPoint_H
+#endif  // !GPNAUCRATES_CPoint_H
 
 // EOF

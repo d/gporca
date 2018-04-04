@@ -21,87 +21,85 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	using namespace gpmd;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpmd;
+using namespace gpnaucrates;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerMetadata
-	//
-	//	@doc:
-	//		Parse handler for metadata.
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerMetadata : public CParseHandlerBase
-	{
-		private:
-			
-			// list of parsed metadata objects
-			DrgPimdobj *m_pdrgpmdobj;
-			
-			// list of parsed mdids
-			DrgPmdid *m_pdrgpmdid;
+XERCES_CPP_NAMESPACE_USE
 
-			// list of parsed metatadata source system ids
-			DrgPsysid *m_pdrgpsysid;
 
-			// private copy ctor
-			CParseHandlerMetadata(const CParseHandlerMetadata&);
-			
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerMetadata
+//
+//	@doc:
+//		Parse handler for metadata.
+//
+//---------------------------------------------------------------------------
+class CParseHandlerMetadata : public CParseHandlerBase
+{
+private:
+	// list of parsed metadata objects
+	DrgPimdobj *m_pdrgpmdobj;
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-			// parse an array of system ids from the XML attributes
-			DrgPsysid *PdrgpsysidParse
-						(	
-						const Attributes &attr,
-						Edxltoken edxltokenAttr,
-						Edxltoken edxltokenElement
-						);
+	// list of parsed mdids
+	DrgPmdid *m_pdrgpmdid;
 
-			
-		public:
-			// ctor
-			CParseHandlerMetadata(IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot);
-			
-			// dtor
-			virtual
-			~CParseHandlerMetadata();
-			
-			// parse hander type
-			virtual
-			EDxlParseHandlerType Edxlphtype() const;
-			
-			// return the list of parsed metadata objects
-			DrgPimdobj *Pdrgpmdobj();
-			
-			// return the list of parsed mdids
-			DrgPmdid *Pdrgpmdid();
-			
-			// return the list of parsed system ids
-			DrgPsysid *Pdrgpsysid();
+	// list of parsed metatadata source system ids
+	DrgPsysid *m_pdrgpsysid;
 
-	};
-}
+	// private copy ctor
+	CParseHandlerMetadata(const CParseHandlerMetadata &);
 
-#endif // !GPDXL_CParseHandlerMetadata_H
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+	// parse an array of system ids from the XML attributes
+	DrgPsysid *
+	PdrgpsysidParse(const Attributes &attr, Edxltoken edxltokenAttr,
+					Edxltoken edxltokenElement);
+
+
+public:
+	// ctor
+	CParseHandlerMetadata(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						  CParseHandlerBase *pphRoot);
+
+	// dtor
+	virtual ~CParseHandlerMetadata();
+
+	// parse hander type
+	virtual EDxlParseHandlerType
+	Edxlphtype() const;
+
+	// return the list of parsed metadata objects
+	DrgPimdobj *
+	Pdrgpmdobj();
+
+	// return the list of parsed mdids
+	DrgPmdid *
+	Pdrgpmdid();
+
+	// return the list of parsed system ids
+	DrgPsysid *
+	Pdrgpsysid();
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerMetadata_H
 
 // EOF

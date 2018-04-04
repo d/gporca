@@ -27,5 +27,5 @@ CPropSpec::DbgPrint() const
 	CAutoTrace at(pmp);
 	at.Os() << *this;
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 // EOF

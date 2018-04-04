@@ -16,68 +16,58 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformSubqNAryJoin2Apply
-	//
-	//	@doc:
-	//		Transform NAry Join with subquery predicates to Apply
-	//
-	//---------------------------------------------------------------------------
-	class CXformSubqNAryJoin2Apply : public CXformSubqJoin2Apply
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformSubqNAryJoin2Apply
+//
+//	@doc:
+//		Transform NAry Join with subquery predicates to Apply
+//
+//---------------------------------------------------------------------------
+class CXformSubqNAryJoin2Apply : public CXformSubqJoin2Apply
+{
+private:
+	// private copy ctor
+	CXformSubqNAryJoin2Apply(const CXformSubqNAryJoin2Apply &);
+
+public:
+	// ctor
+	explicit CXformSubqNAryJoin2Apply(IMemoryPool *pmp)
+		: CXformSubqJoin2Apply(
+			  // pattern
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
+				  GPOS_NEW(pmp)
+					  CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
+				  GPOS_NEW(pmp)
+					  CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformSubqNAryJoin2Apply()
+	{
+	}
 
-			// private copy ctor
-			CXformSubqNAryJoin2Apply(const CXformSubqNAryJoin2Apply &);
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfSubqNAryJoin2Apply;
+	}
 
-		public:
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformSubqNAryJoin2Apply";
+	}
 
-			// ctor
-			explicit
-			CXformSubqNAryJoin2Apply
-				(
-				IMemoryPool *pmp
-				)
-				:
-				CXformSubqJoin2Apply
-					(
-					 // pattern
-					GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))
-						)
-					)
-			{}
+};  // class CXformSubqNAryJoin2Apply
 
-			// dtor
-			virtual
-			~CXformSubqNAryJoin2Apply()
-			{}
+}  // namespace gpopt
 
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfSubqNAryJoin2Apply;
-			}
-
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformSubqNAryJoin2Apply";
-			}
-
-	}; // class CXformSubqNAryJoin2Apply
-
-}
-
-#endif // !GPOPT_CXformSubqNAryJoin2Apply_H
+#endif  // !GPOPT_CXformSubqNAryJoin2Apply_H
 
 // EOF

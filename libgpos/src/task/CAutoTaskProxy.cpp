@@ -26,23 +26,15 @@ using namespace gpos;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CAutoTaskProxy::CAutoTaskProxy
-	(
-	IMemoryPool *pmp,
-	CWorkerPoolManager *pwpm,
-	BOOL fPropagateError
-	)
-	:
-	m_pmp(pmp),
-	m_pwpm(pwpm),
-	m_fPropagateError(fPropagateError)
+CAutoTaskProxy::CAutoTaskProxy(IMemoryPool *pmp, CWorkerPoolManager *pwpm,
+							   BOOL fPropagateError)
+	: m_pmp(pmp), m_pwpm(pwpm), m_fPropagateError(fPropagateError)
 {
 	m_list.Init(GPOS_OFFSET(CTask, m_linkAtp));
 	m_event.Init(&m_mutex);
 
 	// register new ATP to worker pool
 	m_pwpm->AtpAddRef();
-
 }
 
 
@@ -98,10 +90,7 @@ CAutoTaskProxy::DestroyAll()
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::Destroy
-	(
-	CTask *ptsk
-	)
+CAutoTaskProxy::Destroy(CTask *ptsk)
 {
 	GPOS_ASSERT(FOwnerOf(ptsk) && "Task not owned by this ATP object");
 
@@ -134,12 +123,8 @@ CAutoTaskProxy::Destroy
 //
 //---------------------------------------------------------------------------
 CTask *
-CAutoTaskProxy::PtskCreate
-	(
-	void *(*pfunc)(void*),
-	void *pvArg,
-	volatile BOOL *pfCancel
-	)
+CAutoTaskProxy::PtskCreate(void *(*pfunc)(void *), void *pvArg,
+						   volatile BOOL *pfCancel)
 {
 	// create memory pool for task
 	CAutoMemoryPool amp(CAutoMemoryPool::ElcStrict);
@@ -209,10 +194,7 @@ CAutoTaskProxy::PtskCreate
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::Schedule
-	(
-	CTask *ptsk
-	)
+CAutoTaskProxy::Schedule(CTask *ptsk)
 {
 	GPOS_ASSERT(FOwnerOf(ptsk) && "Task not owned by this ATP object");
 	GPOS_ASSERT(CTask::EtsInit == ptsk->m_estatus && "Task already scheduled");
@@ -230,10 +212,7 @@ CAutoTaskProxy::Schedule
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::Wait
-	(
-	CTask *ptsk
-	)
+CAutoTaskProxy::Wait(CTask *ptsk)
 {
 	CAutoMutex am(m_mutex);
 	am.Lock();
@@ -266,11 +245,7 @@ CAutoTaskProxy::Wait
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CAutoTaskProxy::EresTimedWait
-	(
-	CTask *ptsk,
-	ULONG ulTimeoutMs
-	)
+CAutoTaskProxy::EresTimedWait(CTask *ptsk, ULONG ulTimeoutMs)
 {
 	CAutoMutex am(m_mutex);
 	am.Lock();
@@ -283,7 +258,8 @@ CAutoTaskProxy::EresTimedWait
 	ULONG ulElapsedMs = 0;
 
 	// wait until task finishes or timeout expires
-	while (!ptsk->FFinished() && (ulElapsedMs = clock.UlElapsedMS()) < ulTimeoutMs)
+	while (!ptsk->FFinished() &&
+		   (ulElapsedMs = clock.UlElapsedMS()) < ulTimeoutMs)
 	{
 		m_event.EresTimedWait(ulTimeoutMs - ulElapsedMs);
 	}
@@ -314,10 +290,7 @@ CAutoTaskProxy::EresTimedWait
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::WaitAny
-	(
-	CTask **pptsk
-	)
+CAutoTaskProxy::WaitAny(CTask **pptsk)
 {
 	GPOS_ASSERT(!m_list.FEmpty() && "ATP owns no task");
 
@@ -335,8 +308,8 @@ CAutoTaskProxy::WaitAny
 		// find completed task
 #ifdef GPOS_DEBUG
 		GPOS_RESULT eresFound =
-#endif // GPOS_DEBUG
-		EresFindFinished(pptsk);
+#endif  // GPOS_DEBUG
+			EresFindFinished(pptsk);
 
 		GPOS_ASSERT(GPOS_OK == eresFound);
 	}
@@ -358,11 +331,7 @@ CAutoTaskProxy::WaitAny
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CAutoTaskProxy::EresTimedWaitAny
-	(
-	CTask **pptsk,
-	ULONG ulTimeoutMs
-	)
+CAutoTaskProxy::EresTimedWaitAny(CTask **pptsk, ULONG ulTimeoutMs)
 {
 	GPOS_ASSERT(!m_list.FEmpty() && "ATP owns no task");
 
@@ -382,8 +351,8 @@ CAutoTaskProxy::EresTimedWaitAny
 		{
 #ifdef GPOS_DEBUG
 			GPOS_RESULT eresFound =
-#endif // GPOS_DEBUG
-			EresFindFinished(pptsk);
+#endif  // GPOS_DEBUG
+				EresFindFinished(pptsk);
 
 			GPOS_ASSERT(GPOS_OK == eresFound);
 		}
@@ -413,10 +382,7 @@ CAutoTaskProxy::EresTimedWaitAny
 //
 //---------------------------------------------------------------------------
 GPOS_RESULT
-CAutoTaskProxy::EresFindFinished
-	(
-	CTask **pptsk
-	)
+CAutoTaskProxy::EresFindFinished(CTask **pptsk)
 {
 	*pptsk = NULL;
 
@@ -426,11 +392,10 @@ CAutoTaskProxy::EresFindFinished
 
 	// check if all tasks have been reported as finished
 	BOOL fReportedAll = true;
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// iterate task list
-	for (CTask *ptsk = m_list.PtFirst();
-		 NULL != ptsk;
+	for (CTask *ptsk = m_list.PtFirst(); NULL != ptsk;
 		 ptsk = m_list.PtNext(ptsk))
 	{
 #ifdef GPOS_DEBUG
@@ -439,14 +404,14 @@ CAutoTaskProxy::EresFindFinished
 		{
 			fScheduled = true;
 		}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 		// check if task has been reported as finished
 		if (!ptsk->FReported())
 		{
 #ifdef GPOS_DEBUG
 			fReportedAll = false;
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 			// check if task is finished
 			if (ptsk->FFinished())
@@ -476,10 +441,7 @@ CAutoTaskProxy::EresFindFinished
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::Execute
-	(
-	CTask *ptsk
-	)
+CAutoTaskProxy::Execute(CTask *ptsk)
 {
 	GPOS_ASSERT(FOwnerOf(ptsk) && "Task not owned by this ATP object");
 	GPOS_ASSERT(CTask::EtsInit == ptsk->m_estatus && "Task already scheduled");
@@ -535,10 +497,7 @@ CAutoTaskProxy::Execute
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::Cancel
-	(
-	CTask *ptsk
-	)
+CAutoTaskProxy::Cancel(CTask *ptsk)
 {
 	if (!ptsk->FFinished())
 	{
@@ -556,10 +515,7 @@ CAutoTaskProxy::Cancel
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::CheckError
-	(
-	CTask *ptskSub
-	)
+CAutoTaskProxy::CheckError(CTask *ptskSub)
 {
 	// sub-task has a pending error
 	if (ptskSub->FPendingExc())
@@ -585,7 +541,7 @@ CAutoTaskProxy::CheckError
 		// sub-task was canceled without a pending error
 		GPOS_ASSERT(!ptskSub->FPendingExc() && ptskSub->FCanceled());
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 }
 
 
@@ -598,10 +554,7 @@ CAutoTaskProxy::CheckError
 //
 //---------------------------------------------------------------------------
 void
-CAutoTaskProxy::PropagateError
-	(
-		CTask *ptskSub
-	)
+CAutoTaskProxy::PropagateError(CTask *ptskSub)
 {
 	GPOS_ASSERT(m_fPropagateError);
 
@@ -643,11 +596,10 @@ CAutoTaskProxy::FOwnerOf(CTask *ptsk)
 	CWorkerId wid;
 	GPOS_ASSERT(NULL != ptsk);
 	GPOS_ASSERT(wid == m_widParent &&
-			   "Only ATP owner can schedule and wait for task");
+				"Only ATP owner can schedule and wait for task");
 	return (GPOS_OK == m_list.EresFind(ptsk));
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

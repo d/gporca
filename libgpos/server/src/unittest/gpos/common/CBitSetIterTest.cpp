@@ -30,15 +30,14 @@ using namespace gpos;
 GPOS_RESULT
 CBitSetIterTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CBitSetIterTest::EresUnittest_Basics),
 
 #ifdef GPOS_DEBUG
 		GPOS_UNITTEST_FUNC_ASSERT(CBitSetIterTest::EresUnittest_Uninitialized),
 		GPOS_UNITTEST_FUNC_ASSERT(CBitSetIterTest::EresUnittest_Overrun)
-#endif // GPOS_DEBUG
-		};
+#endif  // GPOS_DEBUG
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -62,7 +61,7 @@ CBitSetIterTest::EresUnittest_Basics()
 	CBitSet *pbs = GPOS_NEW(pmp) CBitSet(pmp, cSizeBits);
 
 	ULONG cInserts = 10;
-	for (ULONG i = 0; i < cInserts; i ++)
+	for (ULONG i = 0; i < cInserts; i++)
 	{
 		// forces addition of new link
 		pbs->FExchangeSet(i * cSizeBits);
@@ -70,16 +69,16 @@ CBitSetIterTest::EresUnittest_Basics()
 
 	ULONG cCount = 0;
 	CBitSetIter bsi(*pbs);
-	while(bsi.FAdvance())
+	while (bsi.FAdvance())
 	{
 		GPOS_ASSERT(bsi.UlBit() == (bsi.UlBit() / cSizeBits) * cSizeBits);
-		GPOS_ASSERT((BOOL)bsi);
+		GPOS_ASSERT((BOOL) bsi);
 
 		cCount++;
 	}
 	GPOS_ASSERT(cInserts == cCount);
 
-	GPOS_ASSERT(!((BOOL)bsi));
+	GPOS_ASSERT(!((BOOL) bsi));
 
 	pbs->Release();
 
@@ -141,7 +140,9 @@ CBitSetIterTest::EresUnittest_Overrun()
 
 	CBitSetIter bsi(*pbs);
 
-	while (bsi.FAdvance()) {}
+	while (bsi.FAdvance())
+	{
+	}
 
 	// this throws
 	bsi.FAdvance();
@@ -149,7 +150,6 @@ CBitSetIterTest::EresUnittest_Overrun()
 	return GPOS_FAILED;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

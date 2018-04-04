@@ -7,9 +7,9 @@
 //
 //	@doc:
 //		Implementation of DXL logical set operator
-//		
-//	@owner: 
-//		
+//
+//	@owner:
+//
 //
 //	@test:
 //
@@ -34,26 +34,22 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalSetOp::CDXLLogicalSetOp
-	(
-	IMemoryPool *pmp,
-	EdxlSetOpType edxlsetoptype,
-	DrgPdxlcd *pdrgdxlcd,
-	DrgPdrgPul *pdrgpdrgpul,
-	BOOL fCastAcrossInputs
-	)
-	:
-	CDXLLogical(pmp),
-	m_edxlsetoptype(edxlsetoptype),
-	m_pdrgpdxlcd(pdrgdxlcd),
-	m_pdrgpdrgpul(pdrgpdrgpul),
-	m_fCastAcrossInputs(fCastAcrossInputs)
+CDXLLogicalSetOp::CDXLLogicalSetOp(IMemoryPool *pmp,
+								   EdxlSetOpType edxlsetoptype,
+								   DrgPdxlcd *pdrgdxlcd,
+								   DrgPdrgPul *pdrgpdrgpul,
+								   BOOL fCastAcrossInputs)
+	: CDXLLogical(pmp),
+	  m_edxlsetoptype(edxlsetoptype),
+	  m_pdrgpdxlcd(pdrgdxlcd),
+	  m_pdrgpdrgpul(pdrgpdrgpul),
+	  m_fCastAcrossInputs(fCastAcrossInputs)
 {
 	GPOS_ASSERT(NULL != m_pdrgpdxlcd);
 	GPOS_ASSERT(NULL != m_pdrgpdrgpul);
 	GPOS_ASSERT(EdxlsetopSentinel > edxlsetoptype);
-	
-#ifdef GPOS_DEBUG	
+
+#ifdef GPOS_DEBUG
 	const ULONG ulCols = m_pdrgpdxlcd->UlLength();
 	const ULONG ulLen = m_pdrgpdrgpul->UlLength();
 	for (ULONG ul = 0; ul < ulLen; ul++)
@@ -62,7 +58,7 @@ CDXLLogicalSetOp::CDXLLogicalSetOp
 		GPOS_ASSERT(ulCols == pdrgpulInput->UlLength());
 	}
 
-#endif	
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -107,22 +103,22 @@ CDXLLogicalSetOp::PstrOpName() const
 	switch (m_edxlsetoptype)
 	{
 		case EdxlsetopUnion:
-				return CDXLTokens::PstrToken(EdxltokenLogicalUnion);
+			return CDXLTokens::PstrToken(EdxltokenLogicalUnion);
 
 		case EdxlsetopUnionAll:
-				return CDXLTokens::PstrToken(EdxltokenLogicalUnionAll);
+			return CDXLTokens::PstrToken(EdxltokenLogicalUnionAll);
 
 		case EdxlsetopIntersect:
-				return CDXLTokens::PstrToken(EdxltokenLogicalIntersect);
+			return CDXLTokens::PstrToken(EdxltokenLogicalIntersect);
 
 		case EdxlsetopIntersectAll:
-				return CDXLTokens::PstrToken(EdxltokenLogicalIntersectAll);
+			return CDXLTokens::PstrToken(EdxltokenLogicalIntersectAll);
 
 		case EdxlsetopDifference:
-				return CDXLTokens::PstrToken(EdxltokenLogicalDifference);
+			return CDXLTokens::PstrToken(EdxltokenLogicalDifference);
 
 		case EdxlsetopDifferenceAll:
-				return CDXLTokens::PstrToken(EdxltokenLogicalDifferenceAll);
+			return CDXLTokens::PstrToken(EdxltokenLogicalDifferenceAll);
 
 		default:
 			GPOS_ASSERT(!"Unrecognized set operator type");
@@ -139,25 +135,26 @@ CDXLLogicalSetOp::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalSetOp::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLLogicalSetOp::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize the array of input colid arrays
-	CWStringDynamic *pstrInputColIds = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpdrgpul);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInputCols), pstrInputColIds);
+	CWStringDynamic *pstrInputColIds =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpdrgpul);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenInputCols),
+						  pstrInputColIds);
 	GPOS_DELETE(pstrInputColIds);
-	
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCastAcrossInputs), m_fCastAcrossInputs);
+
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCastAcrossInputs),
+						  m_fCastAcrossInputs);
 
 	// serialize output columns
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumns));
 	GPOS_ASSERT(NULL != m_pdrgpdxlcd);
 
 	const ULONG ulLen = m_pdrgpdxlcd->UlLength();
@@ -166,12 +163,14 @@ CDXLLogicalSetOp::SerializeToDXL
 		CDXLColDescr *pdxlcd = (*m_pdrgpdxlcd)[ul];
 		pdxlcd->SerializeToDXL(pxmlser);
 	}
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumns));
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -183,11 +182,7 @@ CDXLLogicalSetOp::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLLogicalSetOp::FDefinesColumn
-	(
-	ULONG ulColId
-	)
-	const
+CDXLLogicalSetOp::FDefinesColumn(ULONG ulColId) const
 {
 	const ULONG ulSize = UlArity();
 	for (ULONG ulDescr = 0; ulDescr < ulSize; ulDescr++)
@@ -212,11 +207,8 @@ CDXLLogicalSetOp::FDefinesColumn
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalSetOp::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLLogicalSetOp::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(2 <= pdxln->UlArity());
 	GPOS_ASSERT(NULL != m_pdrgpdxlcd);
@@ -230,7 +222,8 @@ CDXLLogicalSetOp::AssertValid
 	for (ULONG ul = 0; ul < ulChildren; ++ul)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeLogical == pdxlnChild->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypeLogical ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
@@ -239,6 +232,6 @@ CDXLLogicalSetOp::AssertValid
 	}
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

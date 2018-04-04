@@ -29,16 +29,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarWindowFrameEdge::CParseHandlerScalarWindowFrameEdge
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot,
-	BOOL fLeading
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_fLeading(fLeading)
+CParseHandlerScalarWindowFrameEdge::CParseHandlerScalarWindowFrameEdge(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot,
+	BOOL fLeading)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_fLeading(fLeading)
 {
 }
 
@@ -51,37 +45,47 @@ CParseHandlerScalarWindowFrameEdge::CParseHandlerScalarWindowFrameEdge
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarWindowFrameEdge::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerScalarWindowFrameEdge::StartElement(
+	const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+	const XMLCh *const xmlszQname, const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameLeadingEdge), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameLeadingEdge),
+				 xmlszLocalname))
 	{
 		GPOS_ASSERT(NULL == m_pdxln);
-		EdxlFrameBoundary edxlfb = CDXLOperatorFactory::Edxlfb(attrs, EdxltokenWindowLeadingBoundary);
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarWindowFrameEdge(m_pmp, true /*fLeading*/, edxlfb));
+		EdxlFrameBoundary edxlfb =
+			CDXLOperatorFactory::Edxlfb(attrs, EdxltokenWindowLeadingBoundary);
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarWindowFrameEdge(
+								m_pmp, true /*fLeading*/, edxlfb));
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameTrailingEdge), xmlszLocalname))
+	else if (0 == XMLString::compareString(
+					  CDXLTokens::XmlstrToken(
+						  EdxltokenScalarWindowFrameTrailingEdge),
+					  xmlszLocalname))
 	{
 		GPOS_ASSERT(NULL == m_pdxln);
-		EdxlFrameBoundary edxlfb = CDXLOperatorFactory::Edxlfb(attrs, EdxltokenWindowTrailingBoundary);
-		m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarWindowFrameEdge(m_pmp, false /*fLeading*/, edxlfb));
+		EdxlFrameBoundary edxlfb =
+			CDXLOperatorFactory::Edxlfb(attrs, EdxltokenWindowTrailingBoundary);
+		m_pdxln = GPOS_NEW(m_pmp)
+			CDXLNode(m_pmp, GPOS_NEW(m_pmp) CDXLScalarWindowFrameEdge(
+								m_pmp, false /*fLeading*/, edxlfb));
 	}
 	else
 	{
 		// we must have seen a Window Frame Edge already and initialized its corresponding node
 		if (NULL == m_pdxln)
 		{
-			CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+			CWStringDynamic *pstr =
+				CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag,
+					   pstr->Wsz());
 		}
 
 		// install a scalar element parser for parsing the frame edge value
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handler
@@ -100,23 +104,27 @@ CParseHandlerScalarWindowFrameEdge::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarWindowFrameEdge::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarWindowFrameEdge::EndElement(
+	const XMLCh *const,  // xmlszUri,
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameLeadingEdge), xmlszLocalname) ||
-	    0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameTrailingEdge), xmlszLocalname)
-	)
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameLeadingEdge),
+				 xmlszLocalname) ||
+		0 ==
+			XMLString::compareString(
+				CDXLTokens::XmlstrToken(EdxltokenScalarWindowFrameTrailingEdge),
+				xmlszLocalname))
 	{
 		const ULONG ulSize = this->UlLength();
 		if (0 < ulSize)
 		{
 			GPOS_ASSERT(1 == ulSize);
 			// limit count node was not empty
-			CParseHandlerScalarOp *pphChild = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+			CParseHandlerScalarOp *pphChild =
+				dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
 
 			AddChildFromParseHandler(pphChild);
 		}
@@ -126,7 +134,8 @@ CParseHandlerScalarWindowFrameEdge::EndElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }

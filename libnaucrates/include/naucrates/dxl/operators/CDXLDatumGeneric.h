@@ -8,8 +8,8 @@
 //	@doc:
 //		Class for representing DXL datum of type generic
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -24,121 +24,110 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd decl
-	class CXMLSerializer;
+// fwd decl
+class CXMLSerializer;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLDatumGeneric
-	//
-	//	@doc:
-	//		Class for representing DXL datum of type generic
-	//
-	//---------------------------------------------------------------------------
-	class CDXLDatumGeneric: public CDXLDatum
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLDatumGeneric
+//
+//	@doc:
+//		Class for representing DXL datum of type generic
+//
+//---------------------------------------------------------------------------
+class CDXLDatumGeneric : public CDXLDatum
+{
+private:
+	// private copy ctor
+	CDXLDatumGeneric(const CDXLDatumGeneric &);
+
+protected:
+	// is datum passed by value or by reference
+	BOOL m_fByVal;
+
+	// datum byte array
+	BYTE *m_pba;
+
+public:
+	// ctor
+	CDXLDatumGeneric(IMemoryPool *pmp, IMDId *pmdidType, INT iTypeModifier,
+					 BOOL fByVal, BOOL fNull, BYTE *pba, ULONG ulLength);
+
+	// dtor
+	virtual ~CDXLDatumGeneric();
+
+	// byte array
+	const BYTE *
+	Pba() const;
+
+	// serialize the datum as the given element
+	virtual void
+	Serialize(CXMLSerializer *pxmlser);
+
+	// is type passed by value
+	virtual BOOL
+	FByValue() const
 	{
-		private:
+		return m_fByVal;
+	}
 
-			// private copy ctor
-			CDXLDatumGeneric(const CDXLDatumGeneric &);
+	// datum type
+	virtual EdxldatumType
+	Edxldt() const
+	{
+		return CDXLDatum::EdxldatumGeneric;
+	}
 
-		protected:
+	// conversion function
+	static CDXLDatumGeneric *
+	PdxldatumConvert(CDXLDatum *pdxldatum)
+	{
+		GPOS_ASSERT(NULL != pdxldatum);
+		GPOS_ASSERT(
+			CDXLDatum::EdxldatumGeneric == pdxldatum->Edxldt() ||
+			CDXLDatum::EdxldatumStatsDoubleMappable == pdxldatum->Edxldt() ||
+			CDXLDatum::EdxldatumStatsLintMappable == pdxldatum->Edxldt());
 
-			// is datum passed by value or by reference
-			BOOL m_fByVal;
+		return dynamic_cast<CDXLDatumGeneric *>(pdxldatum);
+	}
 
-			// datum byte array
-			BYTE *m_pba;
+	// statistics related APIs
 
-		public:
-			// ctor
-			CDXLDatumGeneric
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidType,
-				INT iTypeModifier,
-				BOOL fByVal,
-				BOOL fNull,
-				BYTE *pba,
-				ULONG ulLength
-				);
+	// can datum be mapped to LINT
+	virtual BOOL
+	FHasStatsLINTMapping() const
+	{
+		return false;
+	}
 
-			// dtor
-			virtual
-			~CDXLDatumGeneric();
+	// return the lint mapping needed for statistics computation
+	virtual LINT
+	LStatsMapping() const
+	{
+		GPOS_ASSERT(FHasStatsLINTMapping());
 
-			// byte array
-			const BYTE *Pba() const;
+		return 0;
+	}
 
-			// serialize the datum as the given element
-			virtual
-			void Serialize(CXMLSerializer *pxmlser);
+	// can datum be mapped to a double
+	virtual BOOL
+	FHasStatsDoubleMapping() const
+	{
+		return false;
+	}
 
-			// is type passed by value
-			virtual BOOL FByValue() const
-			{
-				return m_fByVal;
-			}
+	// return the double mapping needed for statistics computation
+	virtual CDouble
+	DStatsMapping() const
+	{
+		GPOS_ASSERT(FHasStatsDoubleMapping());
+		return 0;
+	}
+};
+}  // namespace gpdxl
 
-			// datum type
-			virtual
-			EdxldatumType Edxldt() const
-			{
-				return CDXLDatum::EdxldatumGeneric;
-			}
-
-			// conversion function
-			static
-			CDXLDatumGeneric *PdxldatumConvert
-				(
-				CDXLDatum *pdxldatum
-				)
-			{
-				GPOS_ASSERT(NULL != pdxldatum);
-				GPOS_ASSERT(CDXLDatum::EdxldatumGeneric == pdxldatum->Edxldt()
-						|| CDXLDatum::EdxldatumStatsDoubleMappable == pdxldatum->Edxldt()
-						|| CDXLDatum::EdxldatumStatsLintMappable == pdxldatum->Edxldt());
-
-				return dynamic_cast<CDXLDatumGeneric*>(pdxldatum);
-			}
-
-			// statistics related APIs
-
-			// can datum be mapped to LINT
-			virtual
-			BOOL FHasStatsLINTMapping() const
-			{
-				return false;
-			}
-
-			// return the lint mapping needed for statistics computation
-			virtual
-			LINT LStatsMapping() const
-			{
-				GPOS_ASSERT(FHasStatsLINTMapping());
-
-				return 0;
-			}
-
-			// can datum be mapped to a double
-			virtual
-			BOOL FHasStatsDoubleMapping() const
-			{
-				return false;
-			}
-
-			// return the double mapping needed for statistics computation
-			virtual
-			CDouble DStatsMapping() const
-			{
-				GPOS_ASSERT(FHasStatsDoubleMapping());
-				return 0;
-			}
-	};
-}
-
-#endif // !GPDXL_CDXLDatumGeneric_H
+#endif  // !GPDXL_CDXLDatumGeneric_H
 
 // EOF

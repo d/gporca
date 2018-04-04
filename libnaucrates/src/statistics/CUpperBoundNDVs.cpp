@@ -27,39 +27,34 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CUpperBoundNDVs *
-CUpperBoundNDVs::PubndvCopyWithRemap
-        (
-        IMemoryPool *pmp,
-        HMUlCr *phmulcr
-        )
-        const
+CUpperBoundNDVs::PubndvCopyWithRemap(IMemoryPool *pmp, HMUlCr *phmulcr) const
 {
-        BOOL fMappingNotFound = false;
+	BOOL fMappingNotFound = false;
 
-        CColRefSet *pcrsCopy = GPOS_NEW(pmp) CColRefSet(pmp);
-        CColRefSetIter crsi(*m_pcrs);
-        while (crsi.FAdvance() && !fMappingNotFound)
-        {
-                ULONG ulColId = crsi.Pcr()->UlId();
-                CColRef *pcrNew = phmulcr->PtLookup(&ulColId);
-                if (NULL != pcrNew)
-                {
-                        pcrsCopy->Include(pcrNew);
-                }
-               else
-                {
-                        fMappingNotFound = true;
-                }
-        }
+	CColRefSet *pcrsCopy = GPOS_NEW(pmp) CColRefSet(pmp);
+	CColRefSetIter crsi(*m_pcrs);
+	while (crsi.FAdvance() && !fMappingNotFound)
+	{
+		ULONG ulColId = crsi.Pcr()->UlId();
+		CColRef *pcrNew = phmulcr->PtLookup(&ulColId);
+		if (NULL != pcrNew)
+		{
+			pcrsCopy->Include(pcrNew);
+		}
+		else
+		{
+			fMappingNotFound = true;
+		}
+	}
 
-        if (0 < pcrsCopy->CElements() && !fMappingNotFound)
-        {
-                return GPOS_NEW(pmp) CUpperBoundNDVs(pcrsCopy, DUpperBoundNDVs());
-        }
+	if (0 < pcrsCopy->CElements() && !fMappingNotFound)
+	{
+		return GPOS_NEW(pmp) CUpperBoundNDVs(pcrsCopy, DUpperBoundNDVs());
+	}
 
-        pcrsCopy->Release();
+	pcrsCopy->Release();
 
-        return NULL;
+	return NULL;
 }
 
 
@@ -72,17 +67,13 @@ CUpperBoundNDVs::PubndvCopyWithRemap
 //
 //---------------------------------------------------------------------------
 CUpperBoundNDVs *
-CUpperBoundNDVs::PubndvCopy
-        (
-        IMemoryPool *pmp,
-        CDouble dUpperBoundNDVs
-       )
-        const
+CUpperBoundNDVs::PubndvCopy(IMemoryPool *pmp, CDouble dUpperBoundNDVs) const
 {
-        m_pcrs->AddRef();
-        CUpperBoundNDVs *pndvCopy = GPOS_NEW(pmp) CUpperBoundNDVs(m_pcrs, dUpperBoundNDVs);
+	m_pcrs->AddRef();
+	CUpperBoundNDVs *pndvCopy =
+		GPOS_NEW(pmp) CUpperBoundNDVs(m_pcrs, dUpperBoundNDVs);
 
-        return pndvCopy;
+	return pndvCopy;
 }
 
 //---------------------------------------------------------------------------
@@ -94,13 +85,9 @@ CUpperBoundNDVs::PubndvCopy
 //
 //---------------------------------------------------------------------------
 CUpperBoundNDVs *
-CUpperBoundNDVs::PubndvCopy
-        (
-        IMemoryPool *pmp
-        )
-        const
+CUpperBoundNDVs::PubndvCopy(IMemoryPool *pmp) const
 {
-        return PubndvCopy(pmp, m_dUpperBoundNDVs);
+	return PubndvCopy(pmp, m_dUpperBoundNDVs);
 }
 
 
@@ -113,20 +100,14 @@ CUpperBoundNDVs::PubndvCopy
 //
 //---------------------------------------------------------------------------
 IOstream &
-CUpperBoundNDVs::OsPrint
-        (
-        IOstream &os
-        )
-        const
+CUpperBoundNDVs::OsPrint(IOstream &os) const
 {
-        os << "{" << std::endl;
-        m_pcrs->OsPrint(os);
-        os << " Upper Bound of NDVs" << DUpperBoundNDVs() << std::endl;
-        os << "}" << std::endl;
+	os << "{" << std::endl;
+	m_pcrs->OsPrint(os);
+	os << " Upper Bound of NDVs" << DUpperBoundNDVs() << std::endl;
+	os << "}" << std::endl;
 
-        return os;
+	return os;
 }
 
 // EOF
-
-

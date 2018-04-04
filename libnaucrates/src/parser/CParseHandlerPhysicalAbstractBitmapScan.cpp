@@ -34,46 +34,47 @@ using namespace gpdxl;
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalAbstractBitmapScan::StartElementHelper
-	(
- 	const XMLCh* const xmlszLocalname,
-	Edxltoken edxltoken
-	)
+CParseHandlerPhysicalAbstractBitmapScan::StartElementHelper(
+	const XMLCh *const xmlszLocalname, Edxltoken edxltoken)
 {
-	if (0 != XMLString::compareString
-				(
-				CDXLTokens::XmlstrToken(edxltoken),
-				xmlszLocalname
-				))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// create child node parsers in reverse order of their expected occurrence
 	// parse handler for table descriptor
-	CParseHandlerBase *pphTD = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
+	CParseHandlerBase *pphTD = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenTableDescr), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphTD);
 
 	// parse handler for the bitmap access path
-	CParseHandlerBase *pphBitmap = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pphBitmap = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphBitmap);
 
 	// parse handler for the recheck condition
-	CParseHandlerBase *pphRecheckCond =
-			CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter), m_pphm, this);
+	CParseHandlerBase *pphRecheckCond = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarRecheckCondFilter),
+		m_pphm, this);
 	m_pphm->ActivateParseHandler(pphRecheckCond);
 
 	// parse handler for the filter
-	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
+	CParseHandlerBase *pphFilter = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarFilter), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphFilter);
 
 	// parse handler for the proj list
-	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+	CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphPrL);
 
 	//parse handler for the properties of the operator
-	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+	CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphProp);
 
 	// store child parse handlers in array
@@ -94,32 +95,31 @@ CParseHandlerPhysicalAbstractBitmapScan::StartElementHelper
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalAbstractBitmapScan::EndElementHelper
-	(
-	const XMLCh* const xmlszLocalname,
-	Edxltoken edxltoken,
-	ULONG ulPartIndexId,
-	ULONG ulPartIndexIdPrintable
-	)
+CParseHandlerPhysicalAbstractBitmapScan::EndElementHelper(
+	const XMLCh *const xmlszLocalname, Edxltoken edxltoken, ULONG ulPartIndexId,
+	ULONG ulPartIndexIdPrintable)
 {
-	if (0 != XMLString::compareString
-				(
-				CDXLTokens::XmlstrToken(edxltoken),
-				xmlszLocalname
-				))
+	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(edxltoken),
+									  xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct nodes from the created child nodes
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
-	CParseHandlerFilter *pphFilter = dynamic_cast<CParseHandlerFilter *>((*this)[2]);
-	CParseHandlerFilter *pphRecheckCond = dynamic_cast<CParseHandlerFilter *>((*this)[3]);
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
+	CParseHandlerFilter *pphFilter =
+		dynamic_cast<CParseHandlerFilter *>((*this)[2]);
+	CParseHandlerFilter *pphRecheckCond =
+		dynamic_cast<CParseHandlerFilter *>((*this)[3]);
 	CParseHandlerScalarOp *pphBitmap =
-			dynamic_cast<CParseHandlerScalarOp*>((*this)[4]);
-	CParseHandlerTableDescr *pphTD = dynamic_cast<CParseHandlerTableDescr*>((*this)[5]);
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[4]);
+	CParseHandlerTableDescr *pphTD =
+		dynamic_cast<CParseHandlerTableDescr *>((*this)[5]);
 
 	GPOS_ASSERT(NULL != pphTD->Pdxltabdesc());
 
@@ -130,12 +130,14 @@ CParseHandlerPhysicalAbstractBitmapScan::EndElementHelper
 
 	if (EdxltokenPhysicalBitmapTableScan == edxltoken)
 	{
-		pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalBitmapTableScan(m_pmp, pdxltabdesc);
+		pdxlop =
+			GPOS_NEW(m_pmp) CDXLPhysicalBitmapTableScan(m_pmp, pdxltabdesc);
 	}
 	else
 	{
 		GPOS_ASSERT(EdxltokenPhysicalDynamicBitmapTableScan == edxltoken);
-		pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalDynamicBitmapTableScan(m_pmp, pdxltabdesc, ulPartIndexId, ulPartIndexIdPrintable);
+		pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalDynamicBitmapTableScan(
+			m_pmp, pdxltabdesc, ulPartIndexId, ulPartIndexIdPrintable);
 	}
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 
@@ -151,7 +153,7 @@ CParseHandlerPhysicalAbstractBitmapScan::EndElementHelper
 
 #ifdef GPOS_DEBUG
 	pdxlop->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

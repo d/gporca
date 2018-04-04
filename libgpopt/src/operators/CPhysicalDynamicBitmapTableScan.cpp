@@ -9,7 +9,7 @@
 //		Dynamic bitmap table scan physical operator
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -38,23 +38,16 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalDynamicBitmapTableScan::CPhysicalDynamicBitmapTableScan
-	(
-		IMemoryPool *pmp,
-		BOOL fPartial,
-		CTableDescriptor *ptabdesc,
-		ULONG ulOriginOpId,
-		const CName *pnameAlias,
-		ULONG ulScanId,
-		DrgPcr *pdrgpcrOutput,
-		DrgDrgPcr *pdrgpdrgpcrParts,
-		ULONG ulSecondaryScanId,
-		CPartConstraint *ppartcnstr,
-		CPartConstraint *ppartcnstrRel
-	)
-	:
-	CPhysicalDynamicScan(pmp, fPartial, ptabdesc, ulOriginOpId, pnameAlias, ulScanId, pdrgpcrOutput, pdrgpdrgpcrParts, ulSecondaryScanId, ppartcnstr, ppartcnstrRel)
-{}
+CPhysicalDynamicBitmapTableScan::CPhysicalDynamicBitmapTableScan(
+	IMemoryPool *pmp, BOOL fPartial, CTableDescriptor *ptabdesc,
+	ULONG ulOriginOpId, const CName *pnameAlias, ULONG ulScanId,
+	DrgPcr *pdrgpcrOutput, DrgDrgPcr *pdrgpdrgpcrParts, ULONG ulSecondaryScanId,
+	CPartConstraint *ppartcnstr, CPartConstraint *ppartcnstrRel)
+	: CPhysicalDynamicScan(pmp, fPartial, ptabdesc, ulOriginOpId, pnameAlias,
+						   ulScanId, pdrgpcrOutput, pdrgpdrgpcrParts,
+						   ulSecondaryScanId, ppartcnstr, ppartcnstrRel)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -65,11 +58,7 @@ CPhysicalDynamicBitmapTableScan::CPhysicalDynamicBitmapTableScan
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalDynamicBitmapTableScan::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalDynamicBitmapTableScan::FMatch(COperator *pop) const
 {
 	return CUtils::FMatchDynamicBitmapScan(this, pop);
 }
@@ -83,24 +72,15 @@ CPhysicalDynamicBitmapTableScan::FMatch
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CPhysicalDynamicBitmapTableScan::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CReqdPropPlan *prpplan,
-	DrgPstat *pdrgpstatCtxt
-	)
-	const
+CPhysicalDynamicBitmapTableScan::PstatsDerive(IMemoryPool *pmp,
+											  CExpressionHandle &exprhdl,
+											  CReqdPropPlan *prpplan,
+											  DrgPstat *pdrgpstatCtxt) const
 {
 	GPOS_ASSERT(NULL != prpplan);
 
-	IStatistics *pstatsBaseTable = CStatisticsUtils::PstatsDynamicScan
-									(
-									pmp,
-									exprhdl,
-									UlScanId(),
-									prpplan->Pepp()->PpfmDerived()
-									);
+	IStatistics *pstatsBaseTable = CStatisticsUtils::PstatsDynamicScan(
+		pmp, exprhdl, UlScanId(), prpplan->Pepp()->PpfmDerived());
 
 	CExpression *pexprCondChild = exprhdl.PexprScalarChild(0 /*ulChidIndex*/);
 	CExpression *pexprLocal = NULL;
@@ -109,17 +89,12 @@ CPhysicalDynamicBitmapTableScan::PstatsDerive
 	// get outer references from expression handle
 	CColRefSet *pcrsOuter = exprhdl.Pdprel()->PcrsOuter();
 
-	CPredicateUtils::SeparateOuterRefs(pmp, pexprCondChild, pcrsOuter, &pexprLocal, &pexprOuterRefs);
+	CPredicateUtils::SeparateOuterRefs(pmp, pexprCondChild, pcrsOuter,
+									   &pexprLocal, &pexprOuterRefs);
 
-	IStatistics *pstats = CFilterStatsProcessor::PstatsFilterForScalarExpr
-							(
-							pmp,
-							exprhdl,
-							pstatsBaseTable,
-							pexprLocal,
-							pexprOuterRefs,
-							pdrgpstatCtxt
-							);
+	IStatistics *pstats = CFilterStatsProcessor::PstatsFilterForScalarExpr(
+		pmp, exprhdl, pstatsBaseTable, pexprLocal, pexprOuterRefs,
+		pdrgpstatCtxt);
 
 	pstatsBaseTable->Release();
 	pexprLocal->Release();

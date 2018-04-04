@@ -17,57 +17,54 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	// fwd decl
-	class CDXLPhysicalDynamicTableScan;
+// fwd decl
+class CDXLPhysicalDynamicTableScan;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerSequence
-	//
-	//	@doc:
-	//		Parse handler for parsing a sequence operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerSequence : public CParseHandlerPhysicalOp
-	{
-		private:
-			
-			// are we already inside a sequence operator
-			BOOL m_fInsideSequence;
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerSequence
+//
+//	@doc:
+//		Parse handler for parsing a sequence operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerSequence : public CParseHandlerPhysicalOp
+{
+private:
+	// are we already inside a sequence operator
+	BOOL m_fInsideSequence;
 
-			// private copy ctor
-			CParseHandlerSequence(const CParseHandlerSequence &);
+	// private copy ctor
+	CParseHandlerSequence(const CParseHandlerSequence &);
 
-			// process the start of an element
-			virtual
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			virtual
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			
-			// ctor
-			CParseHandlerSequence(IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pph);
-	};
-}
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-#endif // !GPDXL_CParseHandlerSequence_H
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerSequence(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						  CParseHandlerBase *pph);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerSequence_H
 
 // EOF

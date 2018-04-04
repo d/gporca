@@ -20,143 +20,144 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// forward declarations
-	class CSearchStage;
-	class CExpression;
+// forward declarations
+class CSearchStage;
+class CExpression;
 
-	// definition of array of search stages
-	typedef CDynamicPtrArray<CSearchStage, CleanupDelete> DrgPss;
+// definition of array of search stages
+typedef CDynamicPtrArray<CSearchStage, CleanupDelete> DrgPss;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CSearchStage
-	//
-	//	@doc:
-	//		Search stage
-	//
-	//---------------------------------------------------------------------------
-	class CSearchStage
+//---------------------------------------------------------------------------
+//	@class:
+//		CSearchStage
+//
+//	@doc:
+//		Search stage
+//
+//---------------------------------------------------------------------------
+class CSearchStage
+{
+private:
+	// set of xforms to be applied during stage
+	CXformSet *m_pxfs;
+
+	// time threshold in milliseconds
+	ULONG m_ulTimeThreshold;
+
+	// cost threshold
+	CCost m_costThreshold;
+
+	// best plan found at the end of search stage
+	CExpression *m_pexprBest;
+
+	// cost of best plan found
+	CCost m_costBest;
+
+	// elapsed time
+	CTimerUser m_timer;
+
+public:
+	// ctor
+	CSearchStage(CXformSet *pxfs, ULONG ulTimeThreshold = ULONG_MAX,
+				 CCost costThreshold = CCost(0.0));
+
+	// dtor
+	virtual ~CSearchStage();
+
+	// restart timer if time threshold is not default indicating don't timeout
+	// Restart() is a costly method, so avoid calling unnecessarily
+	void
+	RestartTimer()
 	{
-
-		private:
-
-			// set of xforms to be applied during stage
-			CXformSet *m_pxfs;
-
-			// time threshold in milliseconds
-			ULONG m_ulTimeThreshold;
-
-			// cost threshold
-			CCost m_costThreshold;
-
-			// best plan found at the end of search stage
-			CExpression *m_pexprBest;
-
-			// cost of best plan found
-			CCost m_costBest;
-
-			// elapsed time
-			CTimerUser m_timer;
-
-		public:
-
-			// ctor
-			CSearchStage
-				(
-				CXformSet *pxfs,
-				ULONG ulTimeThreshold = ULONG_MAX,
-				CCost costThreshold = CCost(0.0)
-				);
-
-			// dtor
-			virtual
-			~CSearchStage();
-
-			// restart timer if time threshold is not default indicating don't timeout
-			// Restart() is a costly method, so avoid calling unnecessarily
-			void RestartTimer()
-			{
-				if (m_ulTimeThreshold != ULONG_MAX)
-					m_timer.Restart();
-			}
-
-			// is search stage timed-out?
-			// if threshold is ULONG_MAX, its the default and we need not time out
-			// UlElapsedMS() is a costly method, so avoid calling unnecesarily
-			BOOL FTimedOut() const
-			{
-				if (m_ulTimeThreshold == ULONG_MAX)
-					return false;
-				return m_timer.UlElapsedMS() > m_ulTimeThreshold;
-			}
-
-			// return elapsed time (in millseconds) since timer was last restarted
-			ULONG UlElapsedTime() const
-			{
-				return m_timer.UlElapsedMS();
-			}
-
-			BOOL FAchievedReqdCost() const
-			{
-				return (NULL != m_pexprBest && m_costBest <= m_costThreshold);
-			}
-
-			// xforms set accessor
-			CXformSet *Pxfs() const
-			{
-				return m_pxfs;
-			}
-
-			// time threshold accessor
-			ULONG UlTimeThreshold() const
-			{
-				return m_ulTimeThreshold;
-			}
-
-			// cost threshold accessor
-			CCost CostThreshold() const
-			{
-				return m_costThreshold;
-			}
-
-			// set best plan found at the end of search stage
-			void SetBestExpr(CExpression *pexpr);
-
-			// best plan found accessor
-			CExpression *PexprBest() const
-			{
-				return m_pexprBest;
-			}
-
-			// best plan cost accessor
-			CCost CostBest() const
-			{
-				return m_costBest;
-			}
-
-			// print function
-			virtual
-			IOstream &OsPrint(IOstream &);
-
-			// generate default search strategy
-			static
-			DrgPss *PdrgpssDefault(IMemoryPool *pmp);
-
-	};
-
-	// shorthand for printing
-	inline
-	IOstream &operator << (IOstream &os, CSearchStage &ss)
-	{
-		return ss.OsPrint(os);
+		if (m_ulTimeThreshold != ULONG_MAX)
+			m_timer.Restart();
 	}
 
+	// is search stage timed-out?
+	// if threshold is ULONG_MAX, its the default and we need not time out
+	// UlElapsedMS() is a costly method, so avoid calling unnecesarily
+	BOOL
+	FTimedOut() const
+	{
+		if (m_ulTimeThreshold == ULONG_MAX)
+			return false;
+		return m_timer.UlElapsedMS() > m_ulTimeThreshold;
+	}
+
+	// return elapsed time (in millseconds) since timer was last restarted
+	ULONG
+	UlElapsedTime() const
+	{
+		return m_timer.UlElapsedMS();
+	}
+
+	BOOL
+	FAchievedReqdCost() const
+	{
+		return (NULL != m_pexprBest && m_costBest <= m_costThreshold);
+	}
+
+	// xforms set accessor
+	CXformSet *
+	Pxfs() const
+	{
+		return m_pxfs;
+	}
+
+	// time threshold accessor
+	ULONG
+	UlTimeThreshold() const
+	{
+		return m_ulTimeThreshold;
+	}
+
+	// cost threshold accessor
+	CCost
+	CostThreshold() const
+	{
+		return m_costThreshold;
+	}
+
+	// set best plan found at the end of search stage
+	void
+	SetBestExpr(CExpression *pexpr);
+
+	// best plan found accessor
+	CExpression *
+	PexprBest() const
+	{
+		return m_pexprBest;
+	}
+
+	// best plan cost accessor
+	CCost
+	CostBest() const
+	{
+		return m_costBest;
+	}
+
+	// print function
+	virtual IOstream &
+	OsPrint(IOstream &);
+
+	// generate default search strategy
+	static DrgPss *
+	PdrgpssDefault(IMemoryPool *pmp);
+};
+
+// shorthand for printing
+inline IOstream &
+operator<<(IOstream &os, CSearchStage &ss)
+{
+	return ss.OsPrint(os);
 }
 
-#endif // !GPOPT_CSearchStage_H
+}  // namespace gpopt
+
+#endif  // !GPOPT_CSearchStage_H
 
 
 // EOF

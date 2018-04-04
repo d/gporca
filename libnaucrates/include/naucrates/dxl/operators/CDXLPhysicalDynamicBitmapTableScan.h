@@ -18,96 +18,92 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	// fwd declarations
-	class CDXLTableDescr;
-	class CXMLSerializer;
+// fwd declarations
+class CDXLTableDescr;
+class CXMLSerializer;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalDynamicBitmapTableScan
-	//
-	//	@doc:
-	//		Class for representing DXL bitmap table scan operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalDynamicBitmapTableScan : public CDXLPhysicalAbstractBitmapScan
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalDynamicBitmapTableScan
+//
+//	@doc:
+//		Class for representing DXL bitmap table scan operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalDynamicBitmapTableScan : public CDXLPhysicalAbstractBitmapScan
+{
+private:
+	// id of partition index structure
+	ULONG m_ulPartIndexId;
+
+	// printable partition index id
+	ULONG m_ulPartIndexIdPrintable;
+
+	// private copy ctor
+	CDXLPhysicalDynamicBitmapTableScan(
+		const CDXLPhysicalDynamicBitmapTableScan &);
+
+public:
+	// ctor
+	CDXLPhysicalDynamicBitmapTableScan(IMemoryPool *pmp,
+									   CDXLTableDescr *pdxltabdesc,
+									   ULONG ulPartIndexId,
+									   ULONG ulPartIndexIdPrintable)
+		: CDXLPhysicalAbstractBitmapScan(pmp, pdxltabdesc),
+		  m_ulPartIndexId(ulPartIndexId),
+		  m_ulPartIndexIdPrintable(ulPartIndexIdPrintable)
 	{
-		private:
-			// id of partition index structure
-			ULONG m_ulPartIndexId;
+		GPOS_ASSERT(NULL != pdxltabdesc);
+	}
 
-			// printable partition index id
-			ULONG m_ulPartIndexIdPrintable;
+	// dtor
+	virtual ~CDXLPhysicalDynamicBitmapTableScan()
+	{
+	}
 
-			// private copy ctor
-			CDXLPhysicalDynamicBitmapTableScan(const CDXLPhysicalDynamicBitmapTableScan &);
+	// operator type
+	virtual Edxlopid
+	Edxlop() const
+	{
+		return EdxlopPhysicalDynamicBitmapTableScan;
+	}
 
-		public:
-			// ctor
-			CDXLPhysicalDynamicBitmapTableScan
-				(
-				IMemoryPool *pmp,
-				CDXLTableDescr *pdxltabdesc,
-				ULONG ulPartIndexId,
-				ULONG ulPartIndexIdPrintable
-				)
-				:
-				CDXLPhysicalAbstractBitmapScan(pmp, pdxltabdesc),
-				m_ulPartIndexId(ulPartIndexId),
-				m_ulPartIndexIdPrintable(ulPartIndexIdPrintable)
-			{
-				GPOS_ASSERT(NULL != pdxltabdesc);
-			}
+	// operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
 
-			// dtor
-			virtual
-			~CDXLPhysicalDynamicBitmapTableScan()
-			{}
+	// partition index id
+	ULONG
+	UlPartIndexId() const
+	{
+		return m_ulPartIndexId;
+	}
 
-			// operator type
-			virtual
-			Edxlopid Edxlop() const
-			{
-				return EdxlopPhysicalDynamicBitmapTableScan;
-			}
+	// printable partition index id
+	ULONG
+	UlPartIndexIdPrintable() const
+	{
+		return m_ulPartIndexIdPrintable;
+	}
 
-			// operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// partition index id
-			ULONG UlPartIndexId() const
-			{
-				return m_ulPartIndexId;
-			}
+	// conversion function
+	static CDXLPhysicalDynamicBitmapTableScan *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopPhysicalDynamicBitmapTableScan == pdxlop->Edxlop());
 
-			// printable partition index id
-			ULONG UlPartIndexIdPrintable() const
-			{
-				return m_ulPartIndexIdPrintable;
-			}
+		return dynamic_cast<CDXLPhysicalDynamicBitmapTableScan *>(pdxlop);
+	}
 
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// conversion function
-			static
-			CDXLPhysicalDynamicBitmapTableScan *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopPhysicalDynamicBitmapTableScan == pdxlop->Edxlop());
-
- 	 	 		return dynamic_cast<CDXLPhysicalDynamicBitmapTableScan *>(pdxlop);
-			}
-
-	};  // class CDXLPhysicalDynamicBitmapTableScan
-}
+};  // class CDXLPhysicalDynamicBitmapTableScan
+}  // namespace gpdxl
 
 #endif  // !GPDXL_CDXLPhysicalDynamicBitmapTableScan_H
 

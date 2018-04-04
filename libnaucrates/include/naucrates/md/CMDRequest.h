@@ -24,109 +24,99 @@
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
-	
-	//--------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------
+//	@class:
+//		CMDRequest
+//
+//	@doc:
+//		Class for representing MD requests
+//
+//--------------------------------------------------------------------------
+class CMDRequest : public CRefCount
+{
+public:
+	// fwd decl
+	struct SMDTypeRequest;
+	struct SMDFuncRequest;
+
+	// array of type requests
+	typedef CDynamicPtrArray<SMDTypeRequest, CleanupDelete> DrgPtr;
+
+	//---------------------------------------------------------------------------
 	//	@class:
-	//		CMDRequest
+	//		SMDTypeRequest
 	//
 	//	@doc:
-	//		Class for representing MD requests
+	//		Struct for representing requests for types metadata
 	//
-	//--------------------------------------------------------------------------
-	class CMDRequest : public CRefCount
+	//---------------------------------------------------------------------------
+	struct SMDTypeRequest
 	{
-		
-		public:
-		
-			// fwd decl
-			struct SMDTypeRequest;
-			struct SMDFuncRequest;
-			
-			// array of type requests
-			typedef CDynamicPtrArray<SMDTypeRequest, CleanupDelete> DrgPtr;
-			
-			//---------------------------------------------------------------------------
-			//	@class:
-			//		SMDTypeRequest
-			//
-			//	@doc:
-			//		Struct for representing requests for types metadata
-			//
-			//---------------------------------------------------------------------------
-			struct SMDTypeRequest
-			{
-	
-				// system id
-				CSystemId m_sysid;
-				
-				// type info
-				IMDType::ETypeInfo m_eti;
-				
-				// ctor
-				SMDTypeRequest
-					(
-					CSystemId sysid,
-					IMDType::ETypeInfo eti
-					)
-					:
-					m_sysid(sysid),
-					m_eti(eti)
-				{}
-	
-			};
-			
-		private:
-			
-			// memory pool
-			IMemoryPool *m_pmp;
-			
-			// array of mdids
-			DrgPmdid *m_pdrgpmdid;
-			
-			// type info requests
-			DrgPtr *m_pdrgptr;
-			
-			// serialize system id
-			CWStringDynamic *Pstr(CSystemId sysid);
+		// system id
+		CSystemId m_sysid;
 
-			// private copy ctor
-			CMDRequest(const CMDRequest &);
-			
-		public:
-			
-			// ctor
-			CMDRequest(IMemoryPool *pmp, DrgPmdid *pdrgpmdid, DrgPtr *pdrgptr);
-			
-			// ctor: type request only
-			CMDRequest(IMemoryPool *pmp, SMDTypeRequest *pmdtr);
-			
-			// dtor
-			virtual
-			~CMDRequest();
-			
-			// accessors
-			
-			// array of mdids
-			DrgPmdid *Pdrgpmdid() const
-			{
-				return m_pdrgpmdid;
-			}
-			
-			// array of type info requests
-			DrgPtr *Pdrgptr() const
-			{
-				return m_pdrgptr;
-			}
+		// type info
+		IMDType::ETypeInfo m_eti;
 
-			// serialize request in DXL format
-			virtual
-			void Serialize(gpdxl::CXMLSerializer *pxmlser);
-				
+		// ctor
+		SMDTypeRequest(CSystemId sysid, IMDType::ETypeInfo eti)
+			: m_sysid(sysid), m_eti(eti)
+		{
+		}
 	};
-}
 
-#endif // !GPMD_CMDRequest_H
+private:
+	// memory pool
+	IMemoryPool *m_pmp;
+
+	// array of mdids
+	DrgPmdid *m_pdrgpmdid;
+
+	// type info requests
+	DrgPtr *m_pdrgptr;
+
+	// serialize system id
+	CWStringDynamic *
+	Pstr(CSystemId sysid);
+
+	// private copy ctor
+	CMDRequest(const CMDRequest &);
+
+public:
+	// ctor
+	CMDRequest(IMemoryPool *pmp, DrgPmdid *pdrgpmdid, DrgPtr *pdrgptr);
+
+	// ctor: type request only
+	CMDRequest(IMemoryPool *pmp, SMDTypeRequest *pmdtr);
+
+	// dtor
+	virtual ~CMDRequest();
+
+	// accessors
+
+	// array of mdids
+	DrgPmdid *
+	Pdrgpmdid() const
+	{
+		return m_pdrgpmdid;
+	}
+
+	// array of type info requests
+	DrgPtr *
+	Pdrgptr() const
+	{
+		return m_pdrgptr;
+	}
+
+	// serialize request in DXL format
+	virtual void
+	Serialize(gpdxl::CXMLSerializer *pxmlser);
+};
+}  // namespace gpmd
+
+#endif  // !GPMD_CMDRequest_H
 
 // EOF

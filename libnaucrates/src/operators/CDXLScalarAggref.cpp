@@ -30,23 +30,18 @@ using namespace gpdxl;
 //		Constructs an AggRef node
 //
 //---------------------------------------------------------------------------
-CDXLScalarAggref::CDXLScalarAggref
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidAggOid,
-	IMDId *pmdidResolvedRetType,
-	BOOL fDistinct,
-	EdxlAggrefStage edxlaggstage
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidAgg(pmdidAggOid),
-	m_pmdidResolvedRetType(pmdidResolvedRetType),
-	m_fDistinct(fDistinct),
-	m_edxlaggstage(edxlaggstage)
+CDXLScalarAggref::CDXLScalarAggref(IMemoryPool *pmp, IMDId *pmdidAggOid,
+								   IMDId *pmdidResolvedRetType, BOOL fDistinct,
+								   EdxlAggrefStage edxlaggstage)
+	: CDXLScalar(pmp),
+	  m_pmdidAgg(pmdidAggOid),
+	  m_pmdidResolvedRetType(pmdidResolvedRetType),
+	  m_fDistinct(fDistinct),
+	  m_edxlaggstage(edxlaggstage)
 {
 	GPOS_ASSERT(NULL != pmdidAggOid);
-	GPOS_ASSERT_IMP(NULL != pmdidResolvedRetType, pmdidResolvedRetType->FValid());
+	GPOS_ASSERT_IMP(NULL != pmdidResolvedRetType,
+					pmdidResolvedRetType->FValid());
 	GPOS_ASSERT(m_pmdidAgg->FValid());
 }
 
@@ -186,26 +181,27 @@ CDXLScalarAggref::FDistinct() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAggref::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarAggref::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidAgg->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenAggrefOid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggrefDistinct),m_fDistinct);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggrefStage), PstrAggStage());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggrefDistinct),
+						  m_fDistinct);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenAggrefStage),
+						  PstrAggStage());
 	if (NULL != m_pmdidResolvedRetType)
 	{
-		m_pmdidResolvedRetType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
+		m_pmdidResolvedRetType->Serialize(
+			pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	}
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -217,14 +213,11 @@ CDXLScalarAggref::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarAggref::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarAggref::FBoolean(CMDAccessor *pmda) const
 {
 	const IMDAggregate *pmdagg = pmda->Pmdagg(m_pmdidAgg);
-	return (IMDType::EtiBool == pmda->Pmdtype(pmdagg->PmdidTypeResult())->Eti());
+	return (IMDType::EtiBool ==
+			pmda->Pmdtype(pmdagg->PmdidTypeResult())->Eti());
 }
 
 #ifdef GPOS_DEBUG
@@ -237,29 +230,29 @@ CDXLScalarAggref::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarAggref::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarAggref::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
-	EdxlAggrefStage edxlaggrefstage = ((CDXLScalarAggref*) pdxln->Pdxlop())->Edxlaggstage();
+	EdxlAggrefStage edxlaggrefstage =
+		((CDXLScalarAggref *) pdxln->Pdxlop())->Edxlaggstage();
 
-	GPOS_ASSERT((EdxlaggstageFinal >= edxlaggrefstage) && (EdxlaggstageNormal <= edxlaggrefstage));
+	GPOS_ASSERT((EdxlaggstageFinal >= edxlaggrefstage) &&
+				(EdxlaggstageNormal <= edxlaggrefstage));
 
 	const ULONG ulArity = pdxln->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnAggrefArg = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnAggrefArg->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnAggrefArg->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
-			pdxlnAggrefArg->Pdxlop()->AssertValid(pdxlnAggrefArg, fValidateChildren);
+			pdxlnAggrefArg->Pdxlop()->AssertValid(pdxlnAggrefArg,
+												  fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

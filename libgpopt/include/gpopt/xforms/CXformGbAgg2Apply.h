@@ -16,66 +16,62 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformGbAgg2Apply
-	//
-	//	@doc:
-	//		Transform GbAgg to Apply; this transformation is only applicable
-	//		to GbAgg expression with aggregate functions that have subquery
-	//		arguments
-	//
-	//---------------------------------------------------------------------------
-	class CXformGbAgg2Apply : public CXformSubqueryUnnest
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformGbAgg2Apply
+//
+//	@doc:
+//		Transform GbAgg to Apply; this transformation is only applicable
+//		to GbAgg expression with aggregate functions that have subquery
+//		arguments
+//
+//---------------------------------------------------------------------------
+class CXformGbAgg2Apply : public CXformSubqueryUnnest
+{
+private:
+	// private copy ctor
+	CXformGbAgg2Apply(const CXformGbAgg2Apply &);
+
+public:
+	// ctor
+	explicit CXformGbAgg2Apply(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CXformGbAgg2Apply()
 	{
+	}
 
-		private:
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfGbAgg2Apply;
+	}
 
-			// private copy ctor
-			CXformGbAgg2Apply(const CXformGbAgg2Apply &);
+	// return a string for xform name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformGbAgg2Apply";
+	}
 
-		public:
+	// compute xform promise for a given expression handle
+	virtual EXformPromise
+	Exfp(CExpressionHandle &exprhdl) const;
 
-			// ctor
-			explicit
-			CXformGbAgg2Apply(IMemoryPool *pmp);
+	// is transformation a subquery unnesting (Subquery To Apply) xform?
+	virtual BOOL
+	FSubqueryUnnesting() const
+	{
+		return true;
+	}
 
-			// dtor
-			virtual
-			~CXformGbAgg2Apply()
-			{}
+};  // class CXformGbAgg2Apply
 
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfGbAgg2Apply;
-			}
+}  // namespace gpopt
 
-			// return a string for xform name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformGbAgg2Apply";
-			}
-
-			// compute xform promise for a given expression handle
-			virtual
-			EXformPromise Exfp(CExpressionHandle &exprhdl) const;
-
-			// is transformation a subquery unnesting (Subquery To Apply) xform?
-			virtual
-			BOOL FSubqueryUnnesting() const
-			{
-				return true;
-			}
-
-	}; // class CXformGbAgg2Apply
-
-}
-
-#endif // !GPOPT_CXformGbAgg2Apply_H
+#endif  // !GPOPT_CXformGbAgg2Apply_H
 
 // EOF

@@ -26,24 +26,20 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformJoinCommutativity::CXformJoinCommutativity
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))
-					) // predicate
-		)
-{}
+CXformJoinCommutativity::CXformJoinCommutativity(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalInnerJoin(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)))  // predicate
+	  )
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -81,12 +77,8 @@ CXformJoinCommutativity::FCompatible(CXform::EXformId exfid)
 //
 //---------------------------------------------------------------------------
 void
-CXformJoinCommutativity::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	) const
+CXformJoinCommutativity::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								   CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -105,8 +97,8 @@ CXformJoinCommutativity::Transform
 	pexprScalar->AddRef();
 
 	// assemble transformed expression
-	CExpression *pexprAlt =
-		CUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp, pexprRight, pexprLeft, pexprScalar);
+	CExpression *pexprAlt = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+		pmp, pexprRight, pexprLeft, pexprScalar);
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);

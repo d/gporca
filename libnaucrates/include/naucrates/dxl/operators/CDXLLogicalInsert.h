@@ -17,85 +17,83 @@
 
 namespace gpdxl
 {
-	using namespace gpmd;
+using namespace gpmd;
 
-	// fwd decl
-	class CDXLTableDescr;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalInsert
-	//
-	//	@doc:
-	//		Class for representing logical insert operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalInsert : public CDXLLogical
+// fwd decl
+class CDXLTableDescr;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalInsert
+//
+//	@doc:
+//		Class for representing logical insert operators
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalInsert : public CDXLLogical
+{
+private:
+	// target table descriptor
+	CDXLTableDescr *m_pdxltabdesc;
+
+	// list of source column ids
+	DrgPul *m_pdrgpul;
+
+	// private copy ctor
+	CDXLLogicalInsert(const CDXLLogicalInsert &);
+
+public:
+	// ctor/dtor
+	CDXLLogicalInsert(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc,
+					  DrgPul *pdrgpul);
+
+	virtual ~CDXLLogicalInsert();
+
+	// operator type
+	Edxlopid
+	Edxlop() const;
+
+	// operator name
+	const CWStringConst *
+	PstrOpName() const;
+
+	// target table descriptor
+	CDXLTableDescr *
+	Pdxltabdesc() const
 	{
-		private:
+		return m_pdxltabdesc;
+	}
 
-			// target table descriptor
-			CDXLTableDescr *m_pdxltabdesc;
+	// source column ids
+	DrgPul *
+	Pdrgpul() const
+	{
+		return m_pdrgpul;
+	}
 
-			// list of source column ids		
-			DrgPul *m_pdrgpul;
-			
-			// private copy ctor
-			CDXLLogicalInsert(const CDXLLogicalInsert &);
-			
-		public:
-			
-			// ctor/dtor
-			CDXLLogicalInsert(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc, DrgPul *pdrgpul);
-						
-			virtual
-			~CDXLLogicalInsert();
-		
-			// operator type
-			Edxlopid Edxlop() const;
-
-			// operator name
-			const CWStringConst *PstrOpName() const;
-
-			// target table descriptor 
-			CDXLTableDescr *Pdxltabdesc() const
-			{
-				return m_pdxltabdesc;
-			}
-			
-			// source column ids
-			DrgPul *Pdrgpul() const
-			{
-				return m_pdrgpul;
-			}
-			
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
 
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// conversion function
-			static
-			CDXLLogicalInsert *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalInsert == pdxlop->Edxlop());
+	// conversion function
+	static CDXLLogicalInsert *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalInsert == pdxlop->Edxlop());
 
-				return dynamic_cast<CDXLLogicalInsert*>(pdxlop);
-			}
+		return dynamic_cast<CDXLLogicalInsert *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
 
-	};
-}
-
-#endif // !GPDXL_CDXLLogicalInsert_H
+#endif  // !GPDXL_CDXLLogicalInsert_H
 
 // EOF
-

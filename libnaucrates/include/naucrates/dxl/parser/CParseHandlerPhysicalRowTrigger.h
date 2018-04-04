@@ -17,55 +17,51 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerPhysicalRowTrigger
-	//
-	//	@doc:
-	//		Parse handler for parsing a physical row trigger operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerPhysicalRowTrigger : public CParseHandlerPhysicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerPhysicalRowTrigger
+//
+//	@doc:
+//		Parse handler for parsing a physical row trigger operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerPhysicalRowTrigger : public CParseHandlerPhysicalOp
+{
+private:
+	CDXLPhysicalRowTrigger *m_pdxlop;
 
-			CDXLPhysicalRowTrigger *m_pdxlop;
+	// private copy ctor
+	CParseHandlerPhysicalRowTrigger(const CParseHandlerPhysicalRowTrigger &);
 
-			// private copy ctor
-			CParseHandlerPhysicalRowTrigger(const CParseHandlerPhysicalRowTrigger &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerPhysicalRowTrigger(IMemoryPool *pmp,
+									CParseHandlerManager *pphm,
+									CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerPhysicalRowTrigger
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerPhysicalRowTrigger_H
+#endif  // !GPDXL_CParseHandlerPhysicalRowTrigger_H
 
 // EOF

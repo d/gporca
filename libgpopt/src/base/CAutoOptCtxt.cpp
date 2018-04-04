@@ -26,13 +26,9 @@ using namespace gpopt;
 //		Create and install default optimizer context
 //
 //---------------------------------------------------------------------------
-CAutoOptCtxt::CAutoOptCtxt
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	IConstExprEvaluator *pceeval,
-	COptimizerConfig *poconf
-	)
+CAutoOptCtxt::CAutoOptCtxt(IMemoryPool *pmp, CMDAccessor *pmda,
+						   IConstExprEvaluator *pceeval,
+						   COptimizerConfig *poconf)
 {
 	if (NULL == poconf)
 	{
@@ -58,19 +54,14 @@ CAutoOptCtxt::CAutoOptCtxt
 //		Create and install default optimizer context with the given cost model
 //
 //---------------------------------------------------------------------------
-CAutoOptCtxt::CAutoOptCtxt
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	IConstExprEvaluator *pceeval,
-	ICostModel *pcm
-	)
+CAutoOptCtxt::CAutoOptCtxt(IMemoryPool *pmp, CMDAccessor *pmda,
+						   IConstExprEvaluator *pceeval, ICostModel *pcm)
 {
 	GPOS_ASSERT(NULL != pcm);
-	
+
 	// create default statistics configuration
 	COptimizerConfig *poconf = COptimizerConfig::PoconfDefault(pmp, pcm);
-	
+
 	if (NULL == pceeval)
 	{
 		// use the default constant expression evaluator which cannot evaluate any expression
@@ -92,11 +83,11 @@ CAutoOptCtxt::CAutoOptCtxt
 //---------------------------------------------------------------------------
 CAutoOptCtxt::~CAutoOptCtxt()
 {
-	CTaskLocalStorageObject *ptlsobj = ITask::PtskSelf()->Tls().Ptlsobj(CTaskLocalStorage::EtlsidxOptCtxt);
+	CTaskLocalStorageObject *ptlsobj =
+		ITask::PtskSelf()->Tls().Ptlsobj(CTaskLocalStorage::EtlsidxOptCtxt);
 	ITask::PtskSelf()->Tls().Remove(ptlsobj);
-	
+
 	GPOS_DELETE(ptlsobj);
 }
 
 // EOF
-

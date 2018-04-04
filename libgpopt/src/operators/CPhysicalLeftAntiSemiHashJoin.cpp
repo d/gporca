@@ -26,14 +26,10 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalLeftAntiSemiHashJoin::CPhysicalLeftAntiSemiHashJoin
-	(
-	IMemoryPool *pmp,
-	DrgPexpr *pdrgpexprOuterKeys,
-	DrgPexpr *pdrgpexprInnerKeys
-	)
-	:
-	CPhysicalHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
+CPhysicalLeftAntiSemiHashJoin::CPhysicalLeftAntiSemiHashJoin(
+	IMemoryPool *pmp, DrgPexpr *pdrgpexprOuterKeys,
+	DrgPexpr *pdrgpexprInnerKeys)
+	: CPhysicalHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
 {
 }
 
@@ -60,13 +56,10 @@ CPhysicalLeftAntiSemiHashJoin::~CPhysicalLeftAntiSemiHashJoin()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalLeftAntiSemiHashJoin::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalLeftAntiSemiHashJoin::FProvidesReqdCols(CExpressionHandle &exprhdl,
+												 CColRefSet *pcrsRequired,
+												 ULONG  // ulOptReq
+												 ) const
 {
 	// left anti semi join only propagates columns from left child
 	return FOuterProvidesReqdCols(exprhdl, pcrsRequired);
@@ -81,19 +74,16 @@ CPhysicalLeftAntiSemiHashJoin::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalLeftAntiSemiHashJoin::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt,
-	ULONG // ulOptReq
-	)
+CPhysicalLeftAntiSemiHashJoin::PppsRequired(
+	IMemoryPool *pmp, CExpressionHandle &exprhdl,
+	CPartitionPropagationSpec *pppsRequired, ULONG ulChildIndex,
+	DrgPdp *,  // pdrgpdpCtxt,
+	ULONG	  // ulOptReq
+)
 {
 	// no partition elimination for LASJ: push request to the respective child
-	return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired, ulChildIndex);
+	return CPhysical::PppsRequiredPushThruNAry(pmp, exprhdl, pppsRequired,
+											   ulChildIndex);
 }
 
 // EOF
-

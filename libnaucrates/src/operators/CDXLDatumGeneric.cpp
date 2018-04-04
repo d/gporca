@@ -7,9 +7,9 @@
 //
 //	@doc:
 //		Implementation of DXL datum of type generic
-//		
-//	@owner: 
-//		
+//
+//	@owner:
+//
 //
 //	@test:
 //
@@ -30,20 +30,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLDatumGeneric::CDXLDatumGeneric
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	BOOL fByVal,
-	BOOL fNull,
-	BYTE *pba,
-	ULONG ulLength
-	)
-	:
-	CDXLDatum(pmp, pmdidType, iTypeModifier, fNull, ulLength),
-	m_fByVal(fByVal),
-	m_pba(pba)
+CDXLDatumGeneric::CDXLDatumGeneric(IMemoryPool *pmp, IMDId *pmdidType,
+								   INT iTypeModifier, BOOL fByVal, BOOL fNull,
+								   BYTE *pba, ULONG ulLength)
+	: CDXLDatum(pmp, pmdidType, iTypeModifier, fNull, ulLength),
+	  m_fByVal(fByVal),
+	  m_pba(pba)
 {
 	GPOS_ASSERT_IMP(m_fNull, (m_pba == NULL) && (m_ulLength == 0));
 }
@@ -84,19 +76,18 @@ CDXLDatumGeneric::Pba() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLDatumGeneric::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
+CDXLDatumGeneric::Serialize(CXMLSerializer *pxmlser)
 {
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	if (IDefaultTypeModifier != ITypeModifier())
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod), m_iTypeModifier);
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod),
+							  m_iTypeModifier);
 	}
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull), m_fNull);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue), m_fByVal);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), m_fNull, Pba(), UlLength());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), m_fNull, Pba(),
+						  UlLength());
 }
 
 // EOF

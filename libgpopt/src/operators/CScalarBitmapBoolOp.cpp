@@ -9,7 +9,7 @@
 //		Bitmap index probe scalar operator
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -28,10 +28,7 @@
 using namespace gpopt;
 
 const WCHAR CScalarBitmapBoolOp::m_rgwszBitmapOpType[EbitmapboolSentinel][30] =
-{
-	GPOS_WSZ_LIT("BitmapAnd"),
-	GPOS_WSZ_LIT("BitmapOr")
-};
+	{GPOS_WSZ_LIT("BitmapAnd"), GPOS_WSZ_LIT("BitmapOr")};
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -42,16 +39,12 @@ const WCHAR CScalarBitmapBoolOp::m_rgwszBitmapOpType[EbitmapboolSentinel][30] =
 //		Takes ownership of the bitmap type id.
 //
 //---------------------------------------------------------------------------
-CScalarBitmapBoolOp::CScalarBitmapBoolOp
-	(
-	IMemoryPool *pmp,
-	EBitmapBoolOp ebitmapboolop,
-	IMDId *pmdidBitmapType
-	)
-	:
-	CScalar(pmp),
-	m_ebitmapboolop(ebitmapboolop),
-	m_pmdidBitmapType(pmdidBitmapType)
+CScalarBitmapBoolOp::CScalarBitmapBoolOp(IMemoryPool *pmp,
+										 EBitmapBoolOp ebitmapboolop,
+										 IMDId *pmdidBitmapType)
+	: CScalar(pmp),
+	  m_ebitmapboolop(ebitmapboolop),
+	  m_pmdidBitmapType(pmdidBitmapType)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(EbitmapboolSentinel > ebitmapboolop);
@@ -83,7 +76,8 @@ ULONG
 CScalarBitmapBoolOp::UlHash() const
 {
 	ULONG ulBoolop = (ULONG) Ebitmapboolop();
-	return gpos::UlCombineHashes(COperator::UlHash(), gpos::UlHash<ULONG>(&ulBoolop));
+	return gpos::UlCombineHashes(COperator::UlHash(),
+								 gpos::UlHash<ULONG>(&ulBoolop));
 }
 
 
@@ -96,11 +90,7 @@ CScalarBitmapBoolOp::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarBitmapBoolOp::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarBitmapBoolOp::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -109,7 +99,7 @@ CScalarBitmapBoolOp::FMatch
 	CScalarBitmapBoolOp *popBitmapBoolOp = PopConvert(pop);
 
 	return popBitmapBoolOp->Ebitmapboolop() == Ebitmapboolop() &&
-		popBitmapBoolOp->PmdidType()->FEquals(m_pmdidBitmapType);
+		   popBitmapBoolOp->PmdidType()->FEquals(m_pmdidBitmapType);
 }
 
 //---------------------------------------------------------------------------
@@ -121,16 +111,12 @@ CScalarBitmapBoolOp::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarBitmapBoolOp::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarBitmapBoolOp::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 	os << m_rgwszBitmapOpType[m_ebitmapboolop];
 	os << ")";
-	
+
 	return os;
 }
 

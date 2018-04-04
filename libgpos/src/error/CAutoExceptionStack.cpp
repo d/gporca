@@ -28,17 +28,14 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CAutoExceptionStack::CAutoExceptionStack
-	(
-	void **ppvExceptionStack,
-	void **ppvErrorContextStack
-	)
-	:
-	m_ppvExceptionStack(ppvExceptionStack),
-	m_pvExceptionStack(*ppvExceptionStack),
-	m_ppvErrorContextStack(ppvErrorContextStack),
-	m_pvErrorContextStack(*ppvErrorContextStack)
-{}
+CAutoExceptionStack::CAutoExceptionStack(void **ppvExceptionStack,
+										 void **ppvErrorContextStack)
+	: m_ppvExceptionStack(ppvExceptionStack),
+	  m_pvExceptionStack(*ppvExceptionStack),
+	  m_ppvErrorContextStack(ppvErrorContextStack),
+	  m_pvErrorContextStack(*ppvErrorContextStack)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -63,13 +60,9 @@ CAutoExceptionStack::~CAutoExceptionStack()
 //
 //---------------------------------------------------------------------------
 void
-CAutoExceptionStack::SetLocalJmp
-	(
-	void *pvLocalJmp
-	)
+CAutoExceptionStack::SetLocalJmp(void *pvLocalJmp)
 {
 	*m_ppvExceptionStack = pvLocalJmp;
 }
 
 // EOF
-

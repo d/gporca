@@ -27,15 +27,8 @@ using namespace gpos;
 //		Ctor - initializes with empty string
 //
 //---------------------------------------------------------------------------
-CStringStatic::CStringStatic
-	(
-	CHAR szBuffer[],
-	ULONG ulCapacity
-	)
-	:
-	m_szBuf(szBuffer),
-	m_ulLength(0),
-	m_ulCapacity(ulCapacity)
+CStringStatic::CStringStatic(CHAR szBuffer[], ULONG ulCapacity)
+	: m_szBuf(szBuffer), m_ulLength(0), m_ulCapacity(ulCapacity)
 {
 	GPOS_ASSERT(NULL != szBuffer);
 	GPOS_ASSERT(0 < m_ulCapacity);
@@ -52,16 +45,9 @@ CStringStatic::CStringStatic
 //		Ctor with string initialization
 //
 //---------------------------------------------------------------------------
-CStringStatic::CStringStatic
-	(
-	CHAR szBuffer[],
-	ULONG ulCapacity,
-	const CHAR szInit[]
-	)
-	:
-	m_szBuf(szBuffer),
-	m_ulLength(0),
-	m_ulCapacity(ulCapacity)
+CStringStatic::CStringStatic(CHAR szBuffer[], ULONG ulCapacity,
+							 const CHAR szInit[])
+	: m_szBuf(szBuffer), m_ulLength(0), m_ulCapacity(ulCapacity)
 {
 	GPOS_ASSERT(NULL != szBuffer);
 	GPOS_ASSERT(0 < m_ulCapacity);
@@ -79,16 +65,13 @@ CStringStatic::CStringStatic
 //
 //---------------------------------------------------------------------------
 BOOL
-CStringStatic::FEquals
-	(
-	const CHAR *szBuf
-	)
-	const
+CStringStatic::FEquals(const CHAR *szBuf) const
 {
 	GPOS_ASSERT(NULL != szBuf);
 
 	ULONG ulLength = clib::UlStrLen(szBuf);
-	return (m_ulLength == ulLength && 0 == clib::IStrNCmp(m_szBuf, szBuf, ulLength));
+	return (m_ulLength == ulLength &&
+			0 == clib::IStrNCmp(m_szBuf, szBuf, ulLength));
 }
 
 
@@ -101,10 +84,7 @@ CStringStatic::FEquals
 //
 //---------------------------------------------------------------------------
 void
-CStringStatic::Append
-	(
-	const CStringStatic *pstr
-	)
+CStringStatic::Append(const CStringStatic *pstr)
 {
 	AppendBuffer(pstr->Sz());
 }
@@ -119,10 +99,7 @@ CStringStatic::Append
 //
 //---------------------------------------------------------------------------
 void
-CStringStatic::AppendBuffer
-	(
-	const CHAR *szBuf
-	)
+CStringStatic::AppendBuffer(const CHAR *szBuf)
 {
 	GPOS_ASSERT(NULL != szBuf);
 	ULONG ulLength = clib::UlStrLen(szBuf);
@@ -159,13 +136,9 @@ CStringStatic::AppendBuffer
 //
 //---------------------------------------------------------------------------
 void
-CStringStatic::AppendFormat
-	(
-	const CHAR *szFormat,
-	...
-	)
+CStringStatic::AppendFormat(const CHAR *szFormat, ...)
 {
-	VA_LIST	vaArgs;
+	VA_LIST vaArgs;
 
 	// get arguments
 	VA_START(vaArgs, szFormat);
@@ -186,11 +159,7 @@ CStringStatic::AppendFormat
 //
 //---------------------------------------------------------------------------
 void
-CStringStatic::AppendFormatVA
-	(
-	const CHAR *szFormat,
-	VA_LIST vaArgs
-	)
+CStringStatic::AppendFormatVA(const CHAR *szFormat, VA_LIST vaArgs)
 {
 	GPOS_ASSERT(NULL != szFormat);
 
@@ -198,7 +167,8 @@ CStringStatic::AppendFormatVA
 	ULONG ulAvailable = m_ulCapacity - m_ulLength;
 
 	// format string
-	(void) clib::IVsnPrintf(m_szBuf + m_ulLength, ulAvailable, szFormat, vaArgs);
+	(void) clib::IVsnPrintf(m_szBuf + m_ulLength, ulAvailable, szFormat,
+							vaArgs);
 
 	// terminate string
 	m_szBuf[m_ulCapacity - 1] = CHAR_EOS;
@@ -219,10 +189,7 @@ CStringStatic::AppendFormatVA
 //
 //---------------------------------------------------------------------------
 void
-CStringStatic::AppendConvert
-	(
-	const WCHAR *wsz
-	)
+CStringStatic::AppendConvert(const WCHAR *wsz)
 {
 	ULONG ulLengthEntry = GPOS_WSZ_LENGTH(wsz);
 
@@ -290,8 +257,7 @@ CStringStatic::FValid() const
 	return (m_ulLength == clib::UlStrLen(m_szBuf));
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF
-

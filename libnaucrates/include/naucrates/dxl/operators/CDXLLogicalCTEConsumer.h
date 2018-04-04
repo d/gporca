@@ -16,83 +16,79 @@
 
 namespace gpdxl
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalCTEConsumer
+//
+//	@doc:
+//		Class for representing DXL logical CTE Consumers
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalCTEConsumer : public CDXLLogical
+{
+private:
+	// cte id
+	ULONG m_ulId;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalCTEConsumer
-	//
-	//	@doc:
-	//		Class for representing DXL logical CTE Consumers
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalCTEConsumer : public CDXLLogical
+	// output column ids
+	DrgPul *m_pdrgpulColIds;
+
+	// private copy ctor
+	CDXLLogicalCTEConsumer(CDXLLogicalCTEConsumer &);
+
+public:
+	// ctor
+	CDXLLogicalCTEConsumer(IMemoryPool *pmp, ULONG ulId, DrgPul *pdrgpulColIds);
+
+	// dtor
+	virtual ~CDXLLogicalCTEConsumer();
+
+	// operator type
+	virtual Edxlopid
+	Edxlop() const;
+
+	// operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
+
+	// cte identifier
+	ULONG
+	UlId() const
 	{
-		private:
+		return m_ulId;
+	}
 
-			// cte id
-			ULONG m_ulId;
+	DrgPul *
+	PdrgpulColIds() const
+	{
+		return m_pdrgpulColIds;
+	}
 
-			// output column ids
-			DrgPul *m_pdrgpulColIds;
-			
-			// private copy ctor
-			CDXLLogicalCTEConsumer(CDXLLogicalCTEConsumer&);
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-		public:
-			// ctor
-			CDXLLogicalCTEConsumer(IMemoryPool *pmp, ULONG ulId, DrgPul *pdrgpulColIds);
-			
-			// dtor
-			virtual
-			~CDXLLogicalCTEConsumer();
-
-			// operator type
-			virtual
-			Edxlopid Edxlop() const;
-
-			// operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
-
-			// cte identifier
-			ULONG UlId() const
-			{
-				return m_ulId;
-			}
-			
-			DrgPul *PdrgpulColIds() const
-			{
-				return m_pdrgpulColIds;
-			}
-
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
-
-			// check if given column is defined by operator
-			virtual
-			BOOL FDefinesColumn(ULONG ulColId) const;
+	// check if given column is defined by operator
+	virtual BOOL
+	FDefinesColumn(ULONG ulColId) const;
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-			
-			// conversion function
-			static
-			CDXLLogicalCTEConsumer *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalCTEConsumer == pdxlop->Edxlop());
-				return dynamic_cast<CDXLLogicalCTEConsumer*>(pdxlop);
-			}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
 
-	};
-}
-#endif // !GPDXL_CDXLLogicalCTEConsumer_H
+	// conversion function
+	static CDXLLogicalCTEConsumer *
+	PdxlopConvert(CDXLOperator *pdxlop)
+	{
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalCTEConsumer == pdxlop->Edxlop());
+		return dynamic_cast<CDXLLogicalCTEConsumer *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLLogicalCTEConsumer_H
 
 // EOF

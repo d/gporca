@@ -26,12 +26,7 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalSequence::CDXLPhysicalSequence
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLPhysical(pmp)
+CDXLPhysicalSequence::CDXLPhysicalSequence(IMemoryPool *pmp) : CDXLPhysical(pmp)
 {
 }
 
@@ -85,24 +80,22 @@ CDXLPhysicalSequence::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalSequence::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalSequence::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-		
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
 	// serialize properties
 	pdxln->SerializePropertiesToDXL(pxmlser);
 
 	// serialize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -115,29 +108,24 @@ CDXLPhysicalSequence::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalSequence::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLPhysicalSequence::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
-
-	const ULONG ulArity = pdxln->UlArity();  
+	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(1 < ulArity);
 
 	for (ULONG ul = 1; ul < ulArity; ul++)
 	{
 		CDXLNode *pdxlnChild = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypePhysical == pdxlnChild->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypePhysical ==
+					pdxlnChild->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
 			pdxlnChild->Pdxlop()->AssertValid(pdxlnChild, fValidateChildren);
 		}
 	}
-
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -21,49 +21,48 @@
 // fwd decl
 namespace gpdxl
 {
-	class CDXLNode;
+class CDXLNode;
 }
 
 namespace gpopt
 {
-	class CExpression;
-	class CMDAccessor;
-}
+class CExpression;
+class CMDAccessor;
+}  // namespace gpopt
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpopt;
+using namespace gpos;
+using namespace gpopt;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDCheckConstraint
-	//
-	//	@doc:
-	//		Interface class for check constraint in a metadata cache relation
-	//
-	//---------------------------------------------------------------------------
-	class IMDCheckConstraint : public IMDCacheObject
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDCheckConstraint
+//
+//	@doc:
+//		Interface class for check constraint in a metadata cache relation
+//
+//---------------------------------------------------------------------------
+class IMDCheckConstraint : public IMDCacheObject
+{
+public:
+	// object type
+	virtual Emdtype
+	Emdt() const
 	{
-		public:
+		return EmdtCheckConstraint;
+	}
 
-	 		// object type
-	 	 	virtual
-	 	 	Emdtype Emdt() const
-	 	 	{
-	 	 		return EmdtCheckConstraint;
-	 	 	}
+	// mdid of the relation
+	virtual IMDId *
+	PmdidRel() const = 0;
 
-			// mdid of the relation
-			virtual
-			IMDId *PmdidRel() const = 0;
+	// the scalar expression of the check constraint
+	virtual CExpression *
+	Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const = 0;
+};
+}  // namespace gpmd
 
-			// the scalar expression of the check constraint
-			virtual
-			CExpression *Pexpr(IMemoryPool *pmp, CMDAccessor *pmda, DrgPcr *pdrgpcr) const = 0;
-	};
-}
-
-#endif // !GPMD_IMDCheckConstraint_H
+#endif  // !GPMD_IMDCheckConstraint_H
 
 // EOF

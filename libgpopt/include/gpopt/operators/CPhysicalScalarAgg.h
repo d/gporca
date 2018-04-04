@@ -16,117 +16,94 @@
 
 namespace gpopt
 {
-	// fwd declaration
-	class CDistributionSpec;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalScalarAgg
-	//
-	//	@doc:
-	//		scalar aggregate operator
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalScalarAgg : public CPhysicalAgg
+// fwd declaration
+class CDistributionSpec;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalScalarAgg
+//
+//	@doc:
+//		scalar aggregate operator
+//
+//---------------------------------------------------------------------------
+class CPhysicalScalarAgg : public CPhysicalAgg
+{
+private:
+	// private copy ctor
+	CPhysicalScalarAgg(const CPhysicalScalarAgg &);
+
+public:
+	// ctor
+	CPhysicalScalarAgg(
+		IMemoryPool *pmp, DrgPcr *pdrgpcr,
+		DrgPcr *pdrgpcrMinimal,  // minimal grouping columns based on FD's
+		COperator::EGbAggType egbaggtype, BOOL fGeneratesDuplicates,
+		DrgPcr *pdrgpcrArgDQA, BOOL fMultiStage);
+
+	// dtor
+	virtual ~CPhysicalScalarAgg();
+
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
-		private:
+		return EopPhysicalScalarAgg;
+	}
 
-			// private copy ctor
-			CPhysicalScalarAgg(const CPhysicalScalarAgg &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalScalarAgg";
+	}
 
-		public:
+	//-------------------------------------------------------------------------------------
+	// Required Plan Properties
+	//-------------------------------------------------------------------------------------
 
-			// ctor
-			CPhysicalScalarAgg
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcr,
-				DrgPcr *pdrgpcrMinimal, // minimal grouping columns based on FD's
-				COperator::EGbAggType egbaggtype,
-				BOOL fGeneratesDuplicates,
-				DrgPcr *pdrgpcrArgDQA,
-				BOOL fMultiStage
-				);
+	// compute required sort columns of the n-th child
+	virtual COrderSpec *
+	PosRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				COrderSpec *posRequired, ULONG ulChildIndex,
+				DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const;
 
-			// dtor
-			virtual
-			~CPhysicalScalarAgg();
+	//-------------------------------------------------------------------------------------
+	// Derived Plan Properties
+	//-------------------------------------------------------------------------------------
 
+	// derive sort order
+	virtual COrderSpec *
+	PosDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// ident accessors
-			virtual 
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalScalarAgg;
-			}
+	//-------------------------------------------------------------------------------------
+	// Enforced Properties
+	//-------------------------------------------------------------------------------------
 
-			// return a string for operator name
-			virtual 
-			const CHAR *SzId() const
-			{
-				return "CPhysicalScalarAgg";
-			}
-	
-			//-------------------------------------------------------------------------------------
-			// Required Plan Properties
-			//-------------------------------------------------------------------------------------
+	// return order property enforcing type for this operator
+	virtual CEnfdProp::EPropEnforcingType
+	EpetOrder(CExpressionHandle &exprhdl, const CEnfdOrder *peo) const;
 
-			// compute required sort columns of the n-th child
-			virtual
-			COrderSpec *PosRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				COrderSpec *posRequired,
-				ULONG ulChildIndex,
-				DrgPdp *pdrgpdpCtxt,
-				ULONG ulOptReq
-				)
-				const;
-		
-			//-------------------------------------------------------------------------------------
-			// Derived Plan Properties
-			//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// derive sort order
-			virtual
-			COrderSpec *PosDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	// conversion function
+	static CPhysicalScalarAgg *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalScalarAgg == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			// Enforced Properties
-			//-------------------------------------------------------------------------------------
+		return reinterpret_cast<CPhysicalScalarAgg *>(pop);
+	}
 
-			// return order property enforcing type for this operator
-			virtual
-			CEnfdProp::EPropEnforcingType EpetOrder
-				(
-				CExpressionHandle &exprhdl,
-				const CEnfdOrder *peo
-				) 
-				const;
+};  // class CPhysicalScalarAgg
 
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CPhysicalScalarAgg *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalScalarAgg == pop->Eopid());
-
-				return reinterpret_cast<CPhysicalScalarAgg*>(pop);
-			}
-		
-	}; // class CPhysicalScalarAgg
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOS_CPhysicalScalarAgg_H
+#endif  // !GPOS_CPhysicalScalarAgg_H
 
 // EOF

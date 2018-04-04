@@ -6,7 +6,7 @@
 //		CParseHandlerScalarBoolExpr.h
 //
 //	@doc:
-//		
+//
 //		SAX parse handler class for parsing scalar BoolExpr.
 //---------------------------------------------------------------------------
 
@@ -21,60 +21,54 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarBoolExpr
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar op expression
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarBoolExpr : public CParseHandlerScalarOp
-	{
-		private:
-	
-			EdxlBoolExprType m_edxlBoolType;
-	
-			// private copy ctor
-			CParseHandlerScalarBoolExpr(const CParseHandlerScalarBoolExpr &);
-	
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
-	
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
-	
-			// parse the bool type from the Xerces xml string
-			static
-			EdxlBoolExprType EdxlBoolType(const XMLCh *xmlszBoolType);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarBoolExpr
+//
+//	@doc:
+//		Parse handler for parsing a scalar op expression
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarBoolExpr : public CParseHandlerScalarOp
+{
+private:
+	EdxlBoolExprType m_edxlBoolType;
 
-		public:
-			// ctor
-			CParseHandlerScalarBoolExpr
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
+	// private copy ctor
+	CParseHandlerScalarBoolExpr(const CParseHandlerScalarBoolExpr &);
 
-	};
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-}
-#endif // GPDXL_CParseHandlerScalarBoolExpr_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+	// parse the bool type from the Xerces xml string
+	static EdxlBoolExprType
+	EdxlBoolType(const XMLCh *xmlszBoolType);
+
+public:
+	// ctor
+	CParseHandlerScalarBoolExpr(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								CParseHandlerBase *pphRoot);
+};
+
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerScalarBoolExpr_H
 
 //EOF

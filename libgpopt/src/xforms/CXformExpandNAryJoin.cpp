@@ -32,23 +32,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformExpandNAryJoin::CXformExpandNAryJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))
-					)
-		)
-{}
+CXformExpandNAryJoin::CXformExpandNAryJoin(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
+			  GPOS_NEW(pmp)
+				  CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -60,11 +53,7 @@ CXformExpandNAryJoin::CXformExpandNAryJoin
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformExpandNAryJoin::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformExpandNAryJoin::Exfp(CExpressionHandle &exprhdl) const
 {
 	if (exprhdl.Pdpscalar(exprhdl.UlArity() - 1)->FHasSubquery())
 	{
@@ -74,8 +63,8 @@ CXformExpandNAryJoin::Exfp
 #ifdef GPOS_DEBUG
 	CAutoMemoryPool amp;
 	GPOS_ASSERT(!CXformUtils::FJoinPredOnSingleChild(amp.Pmp(), exprhdl) &&
-			"join predicates are not pushed down");
-#endif // GPOS_DEBUG
+				"join predicates are not pushed down");
+#endif  // GPOS_DEBUG
 
 	return CXform::ExfpHigh;
 }
@@ -105,13 +94,8 @@ CXformExpandNAryJoin::Exfp
 //			 |--CScalarIdent "a" (0)
 //			 +--CScalarIdent "a" (18)
 void
-CXformExpandNAryJoin::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	) 
-	const
+CXformExpandNAryJoin::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(NULL != pxfres);
@@ -134,21 +118,27 @@ CXformExpandNAryJoin::Transform
 	//	   +--CScalarConst (1)
 	(*pexpr)[0]->AddRef();
 	(*pexpr)[1]->AddRef();
-	CExpression *pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp, (*pexpr)[0], (*pexpr)[1], CPredicateUtils::PexprConjunction(pmp, NULL));
+	CExpression *pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+		pmp, (*pexpr)[0], (*pexpr)[1],
+		CPredicateUtils::PexprConjunction(pmp, NULL));
 	for (ULONG ul = 2; ul < ulArity - 1; ul++)
 	{
 		(*pexpr)[ul]->AddRef();
-		pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(pmp, pexprJoin, (*pexpr)[ul], CPredicateUtils::PexprConjunction(pmp, NULL));
+		pexprJoin = CUtils::PexprLogicalJoin<CLogicalInnerJoin>(
+			pmp, pexprJoin, (*pexpr)[ul],
+			CPredicateUtils::PexprConjunction(pmp, NULL));
 	}
 
 	CExpression *pexprScalar = (*pexpr)[ulArity - 1];
 	pexprScalar->AddRef();
 
 	// create a logical select with the join expression and scalar condition child
-	CExpression *pexprSelect = CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprScalar);
+	CExpression *pexprSelect =
+		CUtils::PexprLogicalSelect(pmp, pexprJoin, pexprScalar);
 
 	// normalize the tree and push down the predicates
-	CExpression *pexprNormalized = CNormalizer::PexprNormalize(pmp, pexprSelect);
+	CExpression *pexprNormalized =
+		CNormalizer::PexprNormalize(pmp, pexprSelect);
 	pexprSelect->Release();
 	pxfres->Add(pexprNormalized);
 }

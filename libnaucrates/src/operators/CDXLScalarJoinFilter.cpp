@@ -27,12 +27,8 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLScalarJoinFilter::CDXLScalarJoinFilter
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalarFilter(pmp)
+CDXLScalarJoinFilter::CDXLScalarJoinFilter(IMemoryPool *pmp)
+	: CDXLScalarFilter(pmp)
 {
 }
 
@@ -76,21 +72,19 @@ CDXLScalarJoinFilter::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarJoinFilter::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * pdxln
-	)
-	const
+CDXLScalarJoinFilter::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
-	
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	
+
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+
 	// serilize children
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);	
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 
@@ -100,32 +94,28 @@ CDXLScalarJoinFilter::SerializeToDXL
 //		CDXLScalarJoinFilter::AssertValid
 //
 //	@doc:
-//		Checks whether operator node is well-structured 
+//		Checks whether operator node is well-structured
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarJoinFilter::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarJoinFilter::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 >= pdxln->UlArity());
-	
+
 	if (1 == pdxln->UlArity())
 	{
 		CDXLNode *pdxlnCond = (*pdxln)[0];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnCond->Pdxlop()->Edxloperatortype());
-		
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnCond->Pdxlop()->Edxloperatortype());
+
 		if (fValidateChildren)
 		{
 			pdxlnCond->Pdxlop()->AssertValid(pdxlnCond, fValidateChildren);
 		}
 	}
-	
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

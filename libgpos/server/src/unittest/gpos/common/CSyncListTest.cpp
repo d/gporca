@@ -36,11 +36,10 @@ using namespace gpos;
 GPOS_RESULT
 CSyncListTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CSyncListTest::EresUnittest_Basics),
 		GPOS_UNITTEST_FUNC(CSyncListTest::EresUnittest_Concurrency),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -82,14 +81,14 @@ CSyncListTest::EresUnittest_Basics()
 		os << GPOS_WSZ_LIT("Sync list contents:") << std::endl;
 		list.OsPrint(os);
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// pop elements until empty
 	for (ULONG i = 0; i < GPOS_ARRAY_SIZE(rgelem); i++)
 	{
 #ifdef GPOS_DEBUG
 		SElem *pe =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 			list.Pop();
 
 		GPOS_ASSERT(pe == &rgelem[GPOS_ARRAY_SIZE(rgelem) - i - 1]);
@@ -109,7 +108,7 @@ CSyncListTest::EresUnittest_Basics()
 	{
 #ifdef GPOS_DEBUG
 		SElem *pe =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 			list.Pop();
 
 		GPOS_ASSERT(pe == &rgelem[i]);
@@ -133,10 +132,10 @@ CSyncListTest::EresUnittest_Concurrency()
 {
 #ifdef GPOS_DEBUG
 	if (IWorker::m_fEnforceTimeSlices)
- 	{
- 		return GPOS_OK;
+	{
+		return GPOS_OK;
 	}
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// create memory pool
 	CAutoMemoryPool amp;
@@ -170,7 +169,7 @@ CSyncListTest::EresUnittest_Concurrency()
 	{
 #ifdef GPOS_DEBUG
 		SElem *pe =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 			list.Pop();
 
 		GPOS_ASSERT(NULL != pe);
@@ -189,11 +188,7 @@ CSyncListTest::EresUnittest_Concurrency()
 //
 //---------------------------------------------------------------------------
 void
-CSyncListTest::ConcurrentPush
-	(
-	IMemoryPool *pmp,
-	SArg *parg
-	)
+CSyncListTest::ConcurrentPush(IMemoryPool *pmp, SArg *parg)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != parg);
@@ -225,11 +220,7 @@ CSyncListTest::ConcurrentPush
 //
 //---------------------------------------------------------------------------
 void
-CSyncListTest::ConcurrentPushPop
-	(
-	IMemoryPool *pmp,
-	SArg *parg
-	)
+CSyncListTest::ConcurrentPushPop(IMemoryPool *pmp, SArg *parg)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != parg);
@@ -244,7 +235,8 @@ CSyncListTest::ConcurrentPushPop
 		for (ULONG i = 0; i < GPOS_ARRAY_SIZE(rgptsk) / 2; i++)
 		{
 			rgptsk[i] = atp.PtskCreate(RunPush, parg);
-			rgptsk[i + GPOS_ARRAY_SIZE(rgptsk) / 2] = atp.PtskCreate(RunPop, parg);
+			rgptsk[i + GPOS_ARRAY_SIZE(rgptsk) / 2] =
+				atp.PtskCreate(RunPop, parg);
 		}
 
 		RunTasks(&atp, rgptsk, GPOS_ARRAY_SIZE(rgptsk));
@@ -261,11 +253,7 @@ CSyncListTest::ConcurrentPushPop
 //
 //---------------------------------------------------------------------------
 void
-CSyncListTest::ConcurrentPop
-	(
-	IMemoryPool *pmp,
-	SArg *parg
-	)
+CSyncListTest::ConcurrentPop(IMemoryPool *pmp, SArg *parg)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != parg);
@@ -296,12 +284,7 @@ CSyncListTest::ConcurrentPop
 //
 //---------------------------------------------------------------------------
 void
-CSyncListTest::RunTasks
-	(
-	CAutoTaskProxy *patp,
-	CTask **rgptsk,
-	ULONG ulTasks
-	)
+CSyncListTest::RunTasks(CAutoTaskProxy *patp, CTask **rgptsk, ULONG ulTasks)
 {
 	GPOS_ASSERT(NULL != patp);
 	GPOS_ASSERT(NULL != rgptsk);
@@ -331,16 +314,13 @@ CSyncListTest::RunTasks
 //
 //---------------------------------------------------------------------------
 void *
-CSyncListTest::RunPush
-	(
-	void *pv
-	)
+CSyncListTest::RunPush(void *pv)
 {
 	GPOS_ASSERT(NULL != pv);
 
 	SArg *parg = reinterpret_cast<SArg *>(pv);
 
-	for(ULONG i = 0; i < GPOS_SLIST_STRESS_ITER; i++)
+	for (ULONG i = 0; i < GPOS_SLIST_STRESS_ITER; i++)
 	{
 		if (0 == i % GPOS_SLIST_STRESS_CFA)
 		{
@@ -367,16 +347,13 @@ CSyncListTest::RunPush
 //
 //---------------------------------------------------------------------------
 void *
-CSyncListTest::RunPop
-	(
-	void *pv
-	)
+CSyncListTest::RunPop(void *pv)
 {
 	GPOS_ASSERT(NULL != pv);
 
 	SArg *parg = reinterpret_cast<SArg *>(pv);
 
-	for(ULONG i = 0; i < GPOS_SLIST_STRESS_ITER; i++)
+	for (ULONG i = 0; i < GPOS_SLIST_STRESS_ITER; i++)
 	{
 		if (0 == i % GPOS_SLIST_STRESS_CFA)
 		{

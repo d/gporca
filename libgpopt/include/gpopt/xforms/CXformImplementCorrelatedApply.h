@@ -17,100 +17,92 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformImplementCorrelatedApply
-	//
-	//	@doc:
-	//		Implement correlated Apply
-	//
-	//---------------------------------------------------------------------------
-	template<class TLogicalApply, class TPhysicalJoin>
-	class CXformImplementCorrelatedApply : public CXformImplementation
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformImplementCorrelatedApply
+//
+//	@doc:
+//		Implement correlated Apply
+//
+//---------------------------------------------------------------------------
+template <class TLogicalApply, class TPhysicalJoin>
+class CXformImplementCorrelatedApply : public CXformImplementation
+{
+private:
+	// private copy ctor
+	CXformImplementCorrelatedApply(const CXformImplementCorrelatedApply &);
+
+
+public:
+	// ctor
+	explicit CXformImplementCorrelatedApply(IMemoryPool *pmp)
+		:  // pattern
+		  CXformImplementation(GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) TLogicalApply(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // right child
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))  // predicate
+			  ))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformImplementCorrelatedApply()
+	{
+	}
 
-			// private copy ctor
-			CXformImplementCorrelatedApply(const CXformImplementCorrelatedApply &);
-		
+	// compute xform promise for a given expression handle
+	virtual EXformPromise
+	Exfp(CExpressionHandle &) const
+	{
+		return CXform::ExfpHigh;
+	}
 
-		public:
+	// actual transform
+	void
+	Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+			  CExpression *pexpr) const
+	{
+		GPOS_ASSERT(NULL != pxfctxt);
+		GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
+		GPOS_ASSERT(FCheckPattern(pexpr));
 
-			// ctor
-			explicit
-			CXformImplementCorrelatedApply(IMemoryPool *pmp)
-                :
-                // pattern
-                CXformImplementation
-                (
-                 GPOS_NEW(pmp) CExpression
-                 (
-                  pmp,
-                  GPOS_NEW(pmp) TLogicalApply(pmp),
-                  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-                  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // right child
-                  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)) // predicate
-                  )
-                 )
-            {}
+		IMemoryPool *pmp = pxfctxt->Pmp();
 
-			// dtor
-			virtual
-			~CXformImplementCorrelatedApply()
-			{}
+		// extract components
+		CExpression *pexprLeft = (*pexpr)[0];
+		CExpression *pexprRight = (*pexpr)[1];
+		CExpression *pexprScalar = (*pexpr)[2];
+		TLogicalApply *popApply = TLogicalApply::PopConvert(pexpr->Pop());
+		DrgPcr *pdrgpcr = popApply->PdrgPcrInner();
 
-			// compute xform promise for a given expression handle
-			virtual
-			EXformPromise Exfp(CExpressionHandle &) const
-            {
-                return CXform::ExfpHigh;
-            }
+		pdrgpcr->AddRef();
 
-			// actual transform
-			void Transform(CXformContext *pxfctxt, CXformResult *pxfres, CExpression *pexpr) const
-            {
-                GPOS_ASSERT(NULL != pxfctxt);
-                GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
-                GPOS_ASSERT(FCheckPattern(pexpr));
+		// addref all children
+		pexprLeft->AddRef();
+		pexprRight->AddRef();
+		pexprScalar->AddRef();
 
-                IMemoryPool *pmp = pxfctxt->Pmp();
+		// assemble physical operator
+		CExpression *pexprPhysicalApply = GPOS_NEW(pmp) CExpression(
+			pmp,
+			GPOS_NEW(pmp)
+				TPhysicalJoin(pmp, pdrgpcr, popApply->EopidOriginSubq()),
+			pexprLeft, pexprRight, pexprScalar);
 
-                // extract components
-                CExpression *pexprLeft = (*pexpr)[0];
-                CExpression *pexprRight = (*pexpr)[1];
-                CExpression *pexprScalar = (*pexpr)[2];
-                TLogicalApply *popApply = TLogicalApply::PopConvert(pexpr->Pop());
-                DrgPcr *pdrgpcr = popApply->PdrgPcrInner();
+		// add alternative to results
+		pxfres->Add(pexprPhysicalApply);
+	}
 
-                pdrgpcr->AddRef();
+};  // class CXformImplementCorrelatedApply
 
-                // addref all children
-                pexprLeft->AddRef();
-                pexprRight->AddRef();
-                pexprScalar->AddRef();
+}  // namespace gpopt
 
-                // assemble physical operator
-                CExpression *pexprPhysicalApply =
-                GPOS_NEW(pmp) CExpression
-                (
-                 pmp,
-                 GPOS_NEW(pmp) TPhysicalJoin(pmp, pdrgpcr, popApply->EopidOriginSubq()),
-                 pexprLeft,
-                 pexprRight,
-                 pexprScalar
-                 );
-
-                // add alternative to results
-                pxfres->Add(pexprPhysicalApply);
-            }
-
-	}; // class CXformImplementCorrelatedApply
-
-}
-
-#endif // !GPOPT_CXformImplementCorrelatedApply_H
+#endif  // !GPOPT_CXformImplementCorrelatedApply_H
 
 // EOF

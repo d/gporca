@@ -19,57 +19,44 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarCoalesce
-	//
-	//	@doc:
-	//		Parse handler for parsing a coalesce operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarCoalesce : public CParseHandlerScalarOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarCoalesce
+//
+//	@doc:
+//		Parse handler for parsing a coalesce operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarCoalesce : public CParseHandlerScalarOp
+{
+private:
+	// return type
+	IMDId *m_pmdidType;
 
-			// return type
-			IMDId *m_pmdidType;
+	// private copy ctor
+	CParseHandlerScalarCoalesce(const CParseHandlerScalarCoalesce &);
 
-			// private copy ctor
-			CParseHandlerScalarCoalesce(const CParseHandlerScalarCoalesce &);
+	// process the start of an element
+	void
+	StartElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+				 const XMLCh *const xmlszQname, const Attributes &attr);
 
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname,
-					const Attributes& attr
-					);
+	// process the end of an element
+	void
+	EndElement(const XMLCh *const xmlszUri, const XMLCh *const xmlszLocalname,
+			   const XMLCh *const xmlszQname);
 
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri,
-					const XMLCh* const xmlszLocalname,
-					const XMLCh* const xmlszQname
-					);
+public:
+	// ctor
+	CParseHandlerScalarCoalesce(IMemoryPool *pmp, CParseHandlerManager *pphm,
+								CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerScalarCoalesce
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-
-		};
-}
-
-#endif // !GPDXL_CParseHandlerScalarCoalesce_H
+#endif  // !GPDXL_CParseHandlerScalarCoalesce_H
 
 //EOF

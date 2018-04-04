@@ -22,59 +22,63 @@
 
 namespace gpmd
 {
-	using namespace gpos;
+using namespace gpos;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CSystemId
-	//
-	//	@doc:
-	//		Class for representing the system id of a metadata provider
-	//
-	//---------------------------------------------------------------------------
-	class CSystemId
+//---------------------------------------------------------------------------
+//	@class:
+//		CSystemId
+//
+//	@doc:
+//		Class for representing the system id of a metadata provider
+//
+//---------------------------------------------------------------------------
+class CSystemId
+{
+private:
+	// system id type
+	IMDId::EMDIdType m_emdidt;
+
+	// system id
+	WCHAR m_wsz[GPDXL_SYSID_LENGTH + 1];
+
+public:
+	// ctor
+	CSystemId(IMDId::EMDIdType emdidt, const WCHAR *wsz,
+			  ULONG ulLength = GPDXL_SYSID_LENGTH);
+
+	// copy ctor
+	CSystemId(const CSystemId &);
+
+	// type of system id
+	IMDId::EMDIdType
+	Emdidt() const
 	{
-		private:
-		
-			// system id type
-			IMDId::EMDIdType m_emdidt;
-					
-			// system id
-			WCHAR m_wsz[GPDXL_SYSID_LENGTH + 1];
+		return m_emdidt;
+	}
 
-		public:
-			// ctor
-			CSystemId(IMDId::EMDIdType emdidt, const WCHAR *wsz, ULONG ulLength = GPDXL_SYSID_LENGTH);
-			
-			// copy ctor
-			CSystemId(const CSystemId &);
-			
-			// type of system id
-			IMDId::EMDIdType Emdidt() const
-			{
-				return m_emdidt;
-			}
-			
-			// system id string
-			const WCHAR *Wsz() const
-			{
-				return m_wsz;
-			}
-			
-			// equality
-			BOOL FEquals(const CSystemId &sysid) const;
-			
-			// hash function
-			ULONG UlHash() const;
-	};
+	// system id string
+	const WCHAR *
+	Wsz() const
+	{
+		return m_wsz;
+	}
 
-	// dynamic arrays over md system id elements
-	typedef CDynamicPtrArray<CSystemId, CleanupDelete> DrgPsysid;
-}
+	// equality
+	BOOL
+	FEquals(const CSystemId &sysid) const;
+
+	// hash function
+	ULONG
+	UlHash() const;
+};
+
+// dynamic arrays over md system id elements
+typedef CDynamicPtrArray<CSystemId, CleanupDelete> DrgPsysid;
+}  // namespace gpmd
 
 
 
-#endif // !GPMD_CSystemId_H
+#endif  // !GPMD_CSystemId_H
 
 // EOF

@@ -19,94 +19,89 @@
 
 namespace gpopt
 {
-	using namespace gpos;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CConstraintDisjunction
-	//
-	//	@doc:
-	//		Representation of a disjunction constraint
-	//
-	//---------------------------------------------------------------------------
-	class CConstraintDisjunction : public CConstraint
+//---------------------------------------------------------------------------
+//	@class:
+//		CConstraintDisjunction
+//
+//	@doc:
+//		Representation of a disjunction constraint
+//
+//---------------------------------------------------------------------------
+class CConstraintDisjunction : public CConstraint
+{
+private:
+	// array of constraints
+	DrgPcnstr *m_pdrgpcnstr;
+
+	// mapping colref -> array of child constraints
+	HMColConstr *m_phmcolconstr;
+
+	// hidden copy ctor
+	CConstraintDisjunction(const CConstraintDisjunction &);
+
+public:
+	// ctor
+	CConstraintDisjunction(IMemoryPool *pmp, DrgPcnstr *pdrgpcnstr);
+
+	// dtor
+	virtual ~CConstraintDisjunction();
+
+	// constraint type accessor
+	virtual EConstraintType
+	Ect() const
 	{
-		private:
+		return CConstraint::EctDisjunction;
+	}
 
-			// array of constraints
-			DrgPcnstr *m_pdrgpcnstr;
+	// all constraints in disjunction
+	DrgPcnstr *
+	Pdrgpcnstr() const
+	{
+		return m_pdrgpcnstr;
+	}
 
-			// mapping colref -> array of child constraints
-			HMColConstr *m_phmcolconstr;
+	// is this constraint a contradiction
+	virtual BOOL
+	FContradiction() const;
 
-			// hidden copy ctor
-			CConstraintDisjunction(const CConstraintDisjunction&);
+	// return a copy of the constraint with remapped columns
+	virtual CConstraint *
+	PcnstrCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+								  BOOL fMustExist);
 
-		public:
+	// scalar expression
+	virtual CExpression *
+	PexprScalar(IMemoryPool *pmp);
 
-			// ctor
-			CConstraintDisjunction(IMemoryPool *pmp, DrgPcnstr *pdrgpcnstr);
+	// check if there is a constraint on the given column
+	virtual BOOL
+	FConstraint(const CColRef *pcr) const;
 
-			// dtor
-			virtual
-			~CConstraintDisjunction();
+	// return constraint on a given column
+	virtual CConstraint *
+	Pcnstr(IMemoryPool *pmp, const CColRef *pcr);
 
-			// constraint type accessor
-			virtual
-			EConstraintType Ect() const
-			{
-				return CConstraint::EctDisjunction;
-			}
+	// return constraint on a given column set
+	virtual CConstraint *
+	Pcnstr(IMemoryPool *pmp, CColRefSet *pcrs);
 
-			// all constraints in disjunction
-			DrgPcnstr *Pdrgpcnstr() const
-			{
-				return m_pdrgpcnstr;
-			}
+	// return a clone of the constraint for a different column
+	virtual CConstraint *
+	PcnstrRemapForColumn(IMemoryPool *pmp, CColRef *pcr) const;
 
-			// is this constraint a contradiction
-			virtual
-			BOOL FContradiction() const;
+	// print
+	virtual IOstream &
+	OsPrint(IOstream &os) const
+	{
+		return PrintConjunctionDisjunction(os, m_pdrgpcnstr);
+	}
 
-			// return a copy of the constraint with remapped columns
-			virtual
-			CConstraint *PcnstrCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+};  // class CConstraintDisjunction
+}  // namespace gpopt
 
-			// scalar expression
-			virtual
-			CExpression *PexprScalar(IMemoryPool *pmp);
-
-			// check if there is a constraint on the given column
-			virtual
-			BOOL FConstraint(const CColRef *pcr) const;
-
-			// return constraint on a given column
-			virtual
-			CConstraint *Pcnstr(IMemoryPool *pmp, const CColRef *pcr);
-
-			// return constraint on a given column set
-			virtual
-			CConstraint *Pcnstr(IMemoryPool *pmp, CColRefSet *pcrs);
-
-			// return a clone of the constraint for a different column
-			virtual
-			CConstraint *PcnstrRemapForColumn(IMemoryPool *pmp, CColRef *pcr) const;
-
-			// print
-			virtual
-			IOstream &OsPrint
-						(
-						IOstream &os
-						)
-						const
-			{
-				return PrintConjunctionDisjunction(os, m_pdrgpcnstr);
-			}
-
-	}; // class CConstraintDisjunction
-}
-
-#endif // !GPOPT_CConstraintDisjunction_H
+#endif  // !GPOPT_CConstraintDisjunction_H
 
 // EOF

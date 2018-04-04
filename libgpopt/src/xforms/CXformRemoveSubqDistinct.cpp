@@ -18,30 +18,20 @@
 
 using namespace gpopt;
 
-CXformRemoveSubqDistinct::CXformRemoveSubqDistinct
-	(
-	IMemoryPool *pmp
-	)
-	:
-	// pattern
-	CXformExploration
-	(
-	GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CLogicalSelect(pmp),
-			GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // relational child
-			GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))	// predicate tree
-			)
-	)
-{}
+CXformRemoveSubqDistinct::CXformRemoveSubqDistinct(IMemoryPool *pmp)
+	:  // pattern
+	  CXformExploration(GPOS_NEW(pmp) CExpression(
+		  pmp, GPOS_NEW(pmp) CLogicalSelect(pmp),
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate tree
+		  ))
+{
+}
 
 CXform::EXformPromise
-CXformRemoveSubqDistinct::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformRemoveSubqDistinct::Exfp(CExpressionHandle &exprhdl) const
 {
 	// consider this transformation only if subqueries exist
 	if (!exprhdl.Pdpscalar(1)->FHasSubquery())
@@ -92,13 +82,9 @@ CXformRemoveSubqDistinct::Exfp
 //    +--CLogicalGet "bar"
 //
 void
-CXformRemoveSubqDistinct::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformRemoveSubqDistinct::Transform(CXformContext *pxfctxt,
+									CXformResult *pxfres,
+									CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(NULL != pxfres);
@@ -124,21 +110,24 @@ CXformRemoveSubqDistinct::Transform
 			if (CUtils::FExistentialSubquery(pop))
 			{
 				// EXIST/NOT EXIST scalar subquery
-				pexprNewScalar = GPOS_NEW(pmp) CExpression(pmp, pop, pexprRelChild);
+				pexprNewScalar =
+					GPOS_NEW(pmp) CExpression(pmp, pop, pexprRelChild);
 			}
 			else
 			{
 				// IN/NOT IN scalar subquery
 				CExpression *pexprScalarIdent = (*pexprScalar)[1];
 				pexprScalarIdent->AddRef();
-				pexprNewScalar = GPOS_NEW(pmp) CExpression(pmp, pop, pexprRelChild, pexprScalarIdent);
+				pexprNewScalar = GPOS_NEW(pmp)
+					CExpression(pmp, pop, pexprRelChild, pexprScalarIdent);
 			}
 
-			pexpr->Pop()->AddRef(); // logical select operator
-			(*pexpr)[0]->AddRef(); // relational child of logical select
+			pexpr->Pop()->AddRef();  // logical select operator
+			(*pexpr)[0]->AddRef();   // relational child of logical select
 
 			// new logical select expression
-			CExpression *ppexprNew = GPOS_NEW(pmp) CExpression(pmp, pexpr->Pop(), (*pexpr)[0], pexprNewScalar);
+			CExpression *ppexprNew = GPOS_NEW(pmp)
+				CExpression(pmp, pexpr->Pop(), (*pexpr)[0], pexprNewScalar);
 			pxfres->Add(ppexprNew);
 		}
 	}

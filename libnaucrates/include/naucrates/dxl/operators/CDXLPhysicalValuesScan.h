@@ -17,54 +17,52 @@
 
 namespace gpdxl
 {
-	enum EdxlnVal
-	{
-		EdxlValIndexProjList = 0,
-		EdxlValIndexConstStart,
-		EdxlValIndexSentinel
-	};
+enum EdxlnVal
+{
+	EdxlValIndexProjList = 0,
+	EdxlValIndexConstStart,
+	EdxlValIndexSentinel
+};
 
-	// class for representing DXL physical Values scan
-	class CDXLPhysicalValuesScan : public CDXLPhysical
-	{
-		private:
-			// private copy ctor
-			CDXLPhysicalValuesScan(CDXLPhysicalValuesScan&);
+// class for representing DXL physical Values scan
+class CDXLPhysicalValuesScan : public CDXLPhysical
+{
+private:
+	// private copy ctor
+	CDXLPhysicalValuesScan(CDXLPhysicalValuesScan &);
 
-		public:
-			// ctor
-			CDXLPhysicalValuesScan
-				(
-					IMemoryPool *pmp
-				);
+public:
+	// ctor
+	CDXLPhysicalValuesScan(IMemoryPool *pmp);
 
-			// dtor
-			virtual
-			~CDXLPhysicalValuesScan();
+	// dtor
+	virtual ~CDXLPhysicalValuesScan();
 
-			// get operator type
-			Edxlopid Edxlop() const;
+	// get operator type
+	Edxlopid
+	Edxlop() const;
 
-			// get operator name
-			const CWStringConst *PstrOpName() const;
+	// get operator name
+	const CWStringConst *
+	PstrOpName() const;
 
-			// serialize operator in DXL format
-			virtual
-			void SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
+	// serialize operator in DXL format
+	virtual void
+	SerializeToDXL(CXMLSerializer *pxmlser, const CDXLNode *pdxln) const;
 
-			// conversion function
-			static
-			CDXLPhysicalValuesScan *PdxlopConvert(CDXLOperator *pdxlop);
+	// conversion function
+	static CDXLPhysicalValuesScan *
+	PdxlopConvert(CDXLOperator *pdxlop);
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			void AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	void
+	AssertValid(const CDXLNode *, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};
+}  // namespace gpdxl
 
-	};
-}
-
-#endif // !GPDXL_CDXLPhysicalValuesScan_H
+#endif  // !GPDXL_CDXLPhysicalValuesScan_H
 
 // EOF

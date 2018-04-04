@@ -19,71 +19,64 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
-	//
-	//	@doc:
-	//		Transform Apply into Join by decorrelating the inner side
-	//
-	//---------------------------------------------------------------------------
-	class CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations : public CXformLeftSemiApply2LeftSemiJoinNoCorrelations
+//---------------------------------------------------------------------------
+//	@class:
+//		CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
+//
+//	@doc:
+//		Transform Apply into Join by decorrelating the inner side
+//
+//---------------------------------------------------------------------------
+class CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
+	: public CXformLeftSemiApply2LeftSemiJoinNoCorrelations
+{
+private:
+	// private copy ctor
+	CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations(
+		const CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations &);
+
+public:
+	// ctor
+	explicit CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations(IMemoryPool *pmp)
+		: CXformLeftSemiApply2LeftSemiJoinNoCorrelations(
+			  pmp,
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CLogicalLeftSemiApplyIn(pmp),
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // left child
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternTree(pmp)),  // right child
+				  GPOS_NEW(pmp) CExpression(
+					  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // predicate
+				  ))
 	{
+	}
 
-		private:
+	// dtor
+	virtual ~CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations()
+	{
+	}
 
-			// private copy ctor
-			CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations(const CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations &);
+	// ident accessors
+	virtual EXformId
+	Exfid() const
+	{
+		return ExfLeftSemiApplyIn2LeftSemiJoinNoCorrelations;
+	}
 
-		public:
-
-			// ctor
-			explicit
-			CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
-				(
-				IMemoryPool *pmp
-				)
-				:
-				CXformLeftSemiApply2LeftSemiJoinNoCorrelations
-					(
-						pmp,
-						GPOS_NEW(pmp) CExpression
-							(
-							pmp,
-							GPOS_NEW(pmp) CLogicalLeftSemiApplyIn(pmp),
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)), // left child
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)), // right child
-							GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp)) // predicate
-							)
-					)
-			{}
-
-			// dtor
-			virtual
-			~CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations()
-			{}
-
-			// ident accessors
-			virtual
-			EXformId Exfid() const
-			{
-				return ExfLeftSemiApplyIn2LeftSemiJoinNoCorrelations;
-			}
-
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations";
-			}
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations";
+	}
 
 
-	}; // class CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
+};  // class CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations
 
-}
+}  // namespace gpopt
 
-#endif // !GPOPT_CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations_H
+#endif  // !GPOPT_CXformLeftSemiApplyIn2LeftSemiJoinNoCorrelations_H
 
 // EOF
-

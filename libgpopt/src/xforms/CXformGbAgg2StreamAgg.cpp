@@ -27,19 +27,15 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
-							 GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)))
-		)
-{}
+CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalGbAgg(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -50,13 +46,10 @@ CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg
-	(
-	CExpression *pexprPattern
-	)
-	:
-	CXformImplementation(pexprPattern)
-{}
+CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg(CExpression *pexprPattern)
+	: CXformImplementation(pexprPattern)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -68,11 +61,7 @@ CXformGbAgg2StreamAgg::CXformGbAgg2StreamAgg
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformGbAgg2StreamAgg::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformGbAgg2StreamAgg::Exfp(CExpressionHandle &exprhdl) const
 {
 	CLogicalGbAgg *popAgg = CLogicalGbAgg::PopConvert(exprhdl.Pop());
 	if (0 == popAgg->Pdrgpcr()->UlLength() ||
@@ -97,13 +86,8 @@ CXformGbAgg2StreamAgg::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformGbAgg2StreamAgg::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformGbAgg2StreamAgg::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -112,7 +96,7 @@ CXformGbAgg2StreamAgg::Transform
 	IMemoryPool *pmp = pxfctxt->Pmp();
 	DrgPcr *pdrgpcr = popAgg->Pdrgpcr();
 	pdrgpcr->AddRef();
-	
+
 	// extract components
 	CExpression *pexprRel = (*pexpr)[0];
 	CExpression *pexprScalar = (*pexpr)[1];
@@ -128,23 +112,13 @@ CXformGbAgg2StreamAgg::Transform
 	}
 
 	// create alternative expression
-	CExpression *pexprAlt = 
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalStreamAgg
-						(
-						pmp,
-						pdrgpcr,
-						popAgg->PdrgpcrMinimal(),
-						popAgg->Egbaggtype(),
-						popAgg->FGeneratesDuplicates(),
-						pdrgpcrArgDQA,
-						CXformUtils::FMultiStageAgg(pexpr)
-						),
-			pexprRel,
-			pexprScalar
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp)
+		CExpression(pmp,
+					GPOS_NEW(pmp) CPhysicalStreamAgg(
+						pmp, pdrgpcr, popAgg->PdrgpcrMinimal(),
+						popAgg->Egbaggtype(), popAgg->FGeneratesDuplicates(),
+						pdrgpcrArgDQA, CXformUtils::FMultiStageAgg(pexpr)),
+					pexprRel, pexprScalar);
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
@@ -152,4 +126,3 @@ CXformGbAgg2StreamAgg::Transform
 
 
 // EOF
-

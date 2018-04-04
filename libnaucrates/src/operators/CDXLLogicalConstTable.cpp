@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of DXL logical constant tables
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "naucrates/dxl/operators/CDXLLogicalConstTable.h"
@@ -28,16 +28,12 @@ using namespace gpdxl;
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CDXLLogicalConstTable::CDXLLogicalConstTable
-	(
-	IMemoryPool *pmp,		
-	DrgPdxlcd *pdrgpdxlcd,
-	DrgPdrgPdxldatum *pdrgpdrgpdxldatum
-	)
-	:
-	CDXLLogical(pmp),
-	m_pdrgpdxlcd(pdrgpdxlcd),
-	m_pdrgpdrgpdxldatum(pdrgpdrgpdxldatum)
+CDXLLogicalConstTable::CDXLLogicalConstTable(
+	IMemoryPool *pmp, DrgPdxlcd *pdrgpdxlcd,
+	DrgPdrgPdxldatum *pdrgpdrgpdxldatum)
+	: CDXLLogical(pmp),
+	  m_pdrgpdxlcd(pdrgpdxlcd),
+	  m_pdrgpdrgpdxldatum(pdrgpdrgpdxldatum)
 {
 	GPOS_ASSERT(NULL != pdrgpdxlcd);
 	GPOS_ASSERT(NULL != pdrgpdrgpdxldatum);
@@ -103,11 +99,7 @@ CDXLLogicalConstTable::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 CDXLColDescr *
-CDXLLogicalConstTable::Pdxlcd
-	(
-	ULONG ul
-	) 
-	const
+CDXLLogicalConstTable::Pdxlcd(ULONG ul) const
 {
 	GPOS_ASSERT(m_pdrgpdxlcd->UlLength() > ul);
 	return (*m_pdrgpdxlcd)[ul];
@@ -137,36 +129,39 @@ CDXLLogicalConstTable::UlArity() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalConstTable::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *//pdxln
-	)
-	const
+CDXLLogicalConstTable::SerializeToDXL(CXMLSerializer *pxmlser,
+									  const CDXLNode *  //pdxln
+									  ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 
 	// serialize columns
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
-	
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenColumns));
+
 	for (ULONG i = 0; i < UlArity(); i++)
 	{
 		CDXLColDescr *pdxlcd = (*m_pdrgpdxlcd)[i];
 		pdxlcd->SerializeToDXL(pxmlser);
 	}
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), CDXLTokens::PstrToken(EdxltokenColumns));
-	
-	const CWStringConst *pstrElemNameConstTuple = CDXLTokens::PstrToken(EdxltokenConstTuple);
-	const CWStringConst *pstrElemNameDatum = CDXLTokens::PstrToken(EdxltokenDatum);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenColumns));
+
+	const CWStringConst *pstrElemNameConstTuple =
+		CDXLTokens::PstrToken(EdxltokenConstTuple);
+	const CWStringConst *pstrElemNameDatum =
+		CDXLTokens::PstrToken(EdxltokenDatum);
 
 	const ULONG ulTuples = m_pdrgpdrgpdxldatum->UlLength();
 	for (ULONG ulTuplePos = 0; ulTuplePos < ulTuples; ulTuplePos++)
 	{
 		// serialize a const tuple
-		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemNameConstTuple);
+		pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							 pstrElemNameConstTuple);
 		DrgPdxldatum *pdrgpdxldatum = (*m_pdrgpdrgpdxldatum)[ulTuplePos];
 
 		const ULONG ulCols = pdrgpdxldatum->UlLength();
@@ -176,10 +171,12 @@ CDXLLogicalConstTable::SerializeToDXL
 			pdxldatum->Serialize(pxmlser, pstrElemNameDatum);
 		}
 
-		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemNameConstTuple);
+		pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+							  pstrElemNameConstTuple);
 	}
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -191,11 +188,7 @@ CDXLLogicalConstTable::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLLogicalConstTable::FDefinesColumn
-	(
-	ULONG ulColId
-	)
-	const
+CDXLLogicalConstTable::FDefinesColumn(ULONG ulColId) const
 {
 	const ULONG ulSize = UlArity();
 	for (ULONG ulDescr = 0; ulDescr < ulSize; ulDescr++)
@@ -220,17 +213,15 @@ CDXLLogicalConstTable::FDefinesColumn
 //
 //---------------------------------------------------------------------------
 void
-CDXLLogicalConstTable::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL //fValidateChildren
-	) const
+CDXLLogicalConstTable::AssertValid(const CDXLNode *pdxln,
+								   BOOL  //fValidateChildren
+								   ) const
 {
 	// assert validity of col descr
 	GPOS_ASSERT(m_pdrgpdxlcd != NULL);
 	GPOS_ASSERT(0 < m_pdrgpdxlcd->UlLength());
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -30,12 +30,9 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CSchedulerContext::CSchedulerContext()
-	:
-	m_pmpGlobal(NULL),
-	m_pmpLocal(NULL),
-	m_psched(NULL),
-	m_fInit(false)
-{}
+	: m_pmpGlobal(NULL), m_pmpLocal(NULL), m_psched(NULL), m_fInit(false)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -69,13 +66,8 @@ CSchedulerContext::~CSchedulerContext()
 //
 //---------------------------------------------------------------------------
 void
-CSchedulerContext::Init
-	(
-	IMemoryPool *pmpGlobal,
-	CJobFactory *pjf,
-	CScheduler *psched,
-	CEngine *peng
-	)
+CSchedulerContext::Init(IMemoryPool *pmpGlobal, CJobFactory *pjf,
+						CScheduler *psched, CEngine *peng)
 {
 	GPOS_ASSERT(NULL != pmpGlobal);
 	GPOS_ASSERT(NULL != pjf);
@@ -84,20 +76,15 @@ CSchedulerContext::Init
 
 	GPOS_ASSERT(!FInit() && "Scheduling context is already initialized");
 
-	m_pmpLocal = CMemoryPoolManager::Pmpm()->PmpCreate
-					(
-					CMemoryPoolManager::EatStack,
-					false /*fThreadSafe*/,
-					ULLONG_MAX
-					);
+	m_pmpLocal = CMemoryPoolManager::Pmpm()->PmpCreate(
+		CMemoryPoolManager::EatStack, false /*fThreadSafe*/, ULLONG_MAX);
 
 	m_pmpGlobal = pmpGlobal;
 	m_pjf = pjf;
 	m_psched = psched;
-	m_peng= peng;
+	m_peng = peng;
 	m_fInit = true;
 }
 
 
 // EOF
-

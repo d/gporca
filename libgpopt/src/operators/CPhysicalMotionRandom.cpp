@@ -25,14 +25,9 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalMotionRandom::CPhysicalMotionRandom
-	(
-	IMemoryPool *pmp,
-	CDistributionSpecRandom *pdsRandom
-	)
-	:
-	CPhysicalMotion(pmp),
-	m_pdsRandom(pdsRandom)
+CPhysicalMotionRandom::CPhysicalMotionRandom(IMemoryPool *pmp,
+											 CDistributionSpecRandom *pdsRandom)
+	: CPhysicalMotion(pmp), m_pdsRandom(pdsRandom)
 {
 	GPOS_ASSERT(NULL != pdsRandom);
 }
@@ -60,11 +55,7 @@ CPhysicalMotionRandom::~CPhysicalMotionRandom()
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionRandom::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalMotionRandom::FMatch(COperator *pop) const
 {
 	return Eopid() == pop->Eopid();
 }
@@ -78,15 +69,13 @@ CPhysicalMotionRandom::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalMotionRandom::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalMotionRandom::PcrsRequired(IMemoryPool *pmp,
+									CExpressionHandle &exprhdl,
+									CColRefSet *pcrsRequired,
+									ULONG ulChildIndex,
+									DrgPdp *,  // pdrgpdpCtxt
+									ULONG	  // ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -102,13 +91,10 @@ CPhysicalMotionRandom::PcrsRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalMotionRandom::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalMotionRandom::FProvidesReqdCols(CExpressionHandle &exprhdl,
+										 CColRefSet *pcrsRequired,
+										 ULONG  // ulOptReq
+										 ) const
 {
 	return FUnaryProvidesReqdCols(exprhdl, pcrsRequired);
 }
@@ -122,15 +108,12 @@ CPhysicalMotionRandom::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalMotionRandom::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *
+CPhysicalMotionRandom::EpetOrder(CExpressionHandle &,  // exprhdl
+								 const CEnfdOrder *
 #ifdef GPOS_DEBUG
-	peo
-#endif // GPOS_DEBUG
-	)
-	const
+									 peo
+#endif  // GPOS_DEBUG
+								 ) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -148,20 +131,17 @@ CPhysicalMotionRandom::EpetOrder
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionRandom::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, //exprhdl,
-	COrderSpec *,//posInput,
-	ULONG
+CPhysicalMotionRandom::PosRequired(IMemoryPool *pmp,
+								   CExpressionHandle &,  //exprhdl,
+								   COrderSpec *,		 //posInput,
+								   ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+									   ulChildIndex
+#endif  // GPOS_DEBUG
+								   ,
+								   DrgPdp *,  // pdrgpdpCtxt
+								   ULONG	  // ulOptReq
+								   ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -177,12 +157,9 @@ CPhysicalMotionRandom::PosRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalMotionRandom::PosDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalMotionRandom::PosDerive(IMemoryPool *pmp,
+								 CExpressionHandle &  // exprhdl
+								 ) const
 {
 	return GPOS_NEW(pmp) COrderSpec(pmp);
 }
@@ -197,14 +174,10 @@ CPhysicalMotionRandom::PosDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalMotionRandom::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalMotionRandom::OsPrint(IOstream &os) const
 {
-	os	<< SzId();
-		
+	os << SzId();
+
 	return os;
 }
 
@@ -218,16 +191,12 @@ CPhysicalMotionRandom::OsPrint
 //
 //---------------------------------------------------------------------------
 CPhysicalMotionRandom *
-CPhysicalMotionRandom::PopConvert
-	(
-	COperator *pop
-	)
+CPhysicalMotionRandom::PopConvert(COperator *pop)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(EopPhysicalMotionRandom == pop->Eopid());
-	
-	return dynamic_cast<CPhysicalMotionRandom*>(pop);
-}			
+
+	return dynamic_cast<CPhysicalMotionRandom *>(pop);
+}
 
 // EOF
-

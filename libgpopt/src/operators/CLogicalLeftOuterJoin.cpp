@@ -28,12 +28,8 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CLogicalLeftOuterJoin::CLogicalLeftOuterJoin
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalJoin(pmp)
+CLogicalLeftOuterJoin::CLogicalLeftOuterJoin(IMemoryPool *pmp)
+	: CLogicalJoin(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -48,14 +44,11 @@ CLogicalLeftOuterJoin::CLogicalLeftOuterJoin
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalLeftOuterJoin::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalLeftOuterJoin::Maxcard(IMemoryPool *,  // pmp
+							   CExpressionHandle &exprhdl) const
 {
-	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/, exprhdl.Pdprel(0)->Maxcard());
+	return CLogical::Maxcard(exprhdl, 2 /*ulScalarIndex*/,
+							 exprhdl.Pdprel(0)->Maxcard());
 }
 
 //---------------------------------------------------------------------------
@@ -67,11 +60,7 @@ CLogicalLeftOuterJoin::Maxcard
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftOuterJoin::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	) 
-	const
+CLogicalLeftOuterJoin::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
@@ -81,9 +70,12 @@ CLogicalLeftOuterJoin::PxfsCandidates
 	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterJoin2IndexGetApply);
 	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterJoin2NLJoin);
 	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterJoin2HashJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftOuter2InnerUnionAllLeftAntiSemiJoin);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterJoinWithInnerSelect2BitmapIndexGetApply);
-	(void) pxfs->FExchangeSet(CXform::ExfLeftOuterJoinWithInnerSelect2IndexGetApply);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftOuter2InnerUnionAllLeftAntiSemiJoin);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftOuterJoinWithInnerSelect2BitmapIndexGetApply);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfLeftOuterJoinWithInnerSelect2IndexGetApply);
 
 	return pxfs;
 }
@@ -91,4 +83,3 @@ CLogicalLeftOuterJoin::PxfsCandidates
 
 
 // EOF
-

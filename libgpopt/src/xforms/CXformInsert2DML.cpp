@@ -27,22 +27,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformInsert2DML::CXformInsert2DML
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalInsert(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))
-				)
-		)
-{}
+CXformInsert2DML::CXformInsert2DML(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalInsert(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -53,11 +45,8 @@ CXformInsert2DML::CXformInsert2DML
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformInsert2DML::Exfp
-	(
-	CExpressionHandle & // exprhdl
-	)
-	const
+CXformInsert2DML::Exfp(CExpressionHandle &  // exprhdl
+					   ) const
 {
 	return CXform::ExfpHigh;
 }
@@ -71,13 +60,8 @@ CXformInsert2DML::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformInsert2DML::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformInsert2DML::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+							CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -99,17 +83,11 @@ CXformInsert2DML::Transform
 	pexprChild->AddRef();
 
 	// create logical DML
-	CExpression *pexprAlt =
-		CXformUtils::PexprLogicalDMLOverProject
-						(
-						pmp,
-						pexprChild,
-						CLogicalDML::EdmlInsert,
-						ptabdesc,
-						pdrgpcrSource,
-						NULL, //pcrCtid
-						NULL //pcrSegmentId
-						);
+	CExpression *pexprAlt = CXformUtils::PexprLogicalDMLOverProject(
+		pmp, pexprChild, CLogicalDML::EdmlInsert, ptabdesc, pdrgpcrSource,
+		NULL,  //pcrCtid
+		NULL   //pcrSegmentId
+	);
 
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);

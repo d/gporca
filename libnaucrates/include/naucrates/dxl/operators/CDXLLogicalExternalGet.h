@@ -18,48 +18,43 @@
 
 namespace gpdxl
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLLogicalExternalGet
-	//
-	//	@doc:
-	//		Class for representing DXL logical external get operator
-	//
-	//---------------------------------------------------------------------------
-	class CDXLLogicalExternalGet : public CDXLLogicalGet
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLLogicalExternalGet
+//
+//	@doc:
+//		Class for representing DXL logical external get operator
+//
+//---------------------------------------------------------------------------
+class CDXLLogicalExternalGet : public CDXLLogicalGet
+{
+private:
+	// private copy ctor
+	CDXLLogicalExternalGet(CDXLLogicalExternalGet &);
+
+public:
+	// ctor
+	CDXLLogicalExternalGet(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc);
+
+	// operator type
+	virtual Edxlopid
+	Edxlop() const;
+
+	// operator name
+	virtual const CWStringConst *
+	PstrOpName() const;
+
+	// conversion function
+	static CDXLLogicalExternalGet *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopLogicalExternalGet == pdxlop->Edxlop());
 
-			// private copy ctor
-			CDXLLogicalExternalGet(CDXLLogicalExternalGet&);
-
-		public:
-			// ctor
-			CDXLLogicalExternalGet(IMemoryPool *pmp, CDXLTableDescr *pdxltabdesc);
-
-			// operator type
-			virtual
-			Edxlopid Edxlop() const;
-
-			// operator name
-			virtual
-			const CWStringConst *PstrOpName() const;
-
-			// conversion function
-			static
-			CDXLLogicalExternalGet *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopLogicalExternalGet == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLLogicalExternalGet*>(pdxlop);
-			}
-
-	};
-}
-#endif // !GPDXL_CDXLLogicalExternalGet_H
+		return dynamic_cast<CDXLLogicalExternalGet *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLLogicalExternalGet_H
 
 // EOF

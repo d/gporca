@@ -18,133 +18,115 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalIntersect
-	//
-	//	@doc:
-	//		Intersect operators
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalIntersect : public CLogicalSetOp
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalIntersect
+//
+//	@doc:
+//		Intersect operators
+//
+//---------------------------------------------------------------------------
+class CLogicalIntersect : public CLogicalSetOp
+{
+private:
+	// private copy ctor
+	CLogicalIntersect(const CLogicalIntersect &);
+
+public:
+	// ctor
+	explicit CLogicalIntersect(IMemoryPool *pmp);
+
+	CLogicalIntersect(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput,
+					  DrgDrgPcr *pdrgpdrgpcrInput);
+
+	// dtor
+	virtual ~CLogicalIntersect();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopLogicalIntersect;
+	}
 
-		private:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalIntersect";
+	}
 
-			// private copy ctor
-			CLogicalIntersect(const CLogicalIntersect &);
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-		public:
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// ctor
-			explicit
-			CLogicalIntersect(IMemoryPool *pmp);
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			CLogicalIntersect
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcrOutput,
-				DrgDrgPcr *pdrgpdrgpcrInput
-				);
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// dtor
-			virtual
-			~CLogicalIntersect();
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *pmp, CExpressionHandle &exprhdl) const
+	{
+		return PpcDeriveConstraintIntersectUnion(pmp, exprhdl,
+												 true /*fIntersect*/);
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalIntersect;
-			}
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalIntersect";
-			}
+	// candidate set of xforms
+	CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
+	//-------------------------------------------------------------------------------------
+	// Derived Stats
+	//-------------------------------------------------------------------------------------
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+	// stat promise
+	virtual EStatPromise
+	Esp(CExpressionHandle &) const
+	{
+		return CLogical::EspHigh;
+	}
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PpcDeriveConstraintIntersectUnion(pmp, exprhdl, true /*fIntersect*/);
-			}
+	// conversion function
+	static CLogicalIntersect *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalIntersect == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+		return reinterpret_cast<CLogicalIntersect *>(pop);
+	}
 
-			// candidate set of xforms
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+};  // class CLogicalIntersect
 
-			//-------------------------------------------------------------------------------------
-			// Derived Stats
-			//-------------------------------------------------------------------------------------
-
-			// stat promise
-			virtual
-			EStatPromise Esp(CExpressionHandle &) const
-			{
-				return CLogical::EspHigh;
-			}
-
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				DrgPstat *pdrgpstatCtxt
-				)
-				const;
-
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-
-			// conversion function
-			static
-			CLogicalIntersect *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalIntersect == pop->Eopid());
-
-				return reinterpret_cast<CLogicalIntersect*>(pop);
-			}
-
-	}; // class CLogicalIntersect
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CLogicalIntersect_H
+#endif  // !GPOPT_CLogicalIntersect_H
 
 // EOF

@@ -30,7 +30,8 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 ILogger::ILogger()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -42,7 +43,8 @@ ILogger::ILogger()
 //
 //---------------------------------------------------------------------------
 ILogger::~ILogger()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -54,14 +56,8 @@ ILogger::~ILogger()
 //
 //---------------------------------------------------------------------------
 void
-ILogger::Warning
-	(
-	const CHAR *szFilename,
-	ULONG ulLine,
-	ULONG ulMajor,
-	ULONG ulMinor
-	...
-	)
+ILogger::Warning(const CHAR *szFilename, ULONG ulLine, ULONG ulMajor,
+				 ULONG ulMinor...)
 {
 	GPOS_CHECK_ABORT;
 
@@ -96,7 +92,8 @@ ILogger::Warning
 		VA_END(vaArgs);
 	}
 
-	LogTask(str.Wsz(), CException::ExsevWarning, true /*fErr*/, szFilename, ulLine);
+	LogTask(str.Wsz(), CException::ExsevWarning, true /*fErr*/, szFilename,
+			ulLine);
 }
 
 
@@ -109,13 +106,8 @@ ILogger::Warning
 //
 //---------------------------------------------------------------------------
 void
-ILogger::Trace
-	(
-	const CHAR *szFilename,
-	ULONG ulLine,
-	BOOL fErr,
-	const WCHAR *wszMsg
-	)
+ILogger::Trace(const CHAR *szFilename, ULONG ulLine, BOOL fErr,
+			   const WCHAR *wszMsg)
 {
 	GPOS_CHECK_ABORT;
 
@@ -132,14 +124,8 @@ ILogger::Trace
 //
 //---------------------------------------------------------------------------
 void
-ILogger::TraceFormat
-	(
-	const CHAR *szFilename,
-	ULONG ulLine,
-	BOOL fErr,
-	const WCHAR *wszFormat,
-	...
-	)
+ILogger::TraceFormat(const CHAR *szFilename, ULONG ulLine, BOOL fErr,
+					 const WCHAR *wszFormat, ...)
 {
 	GPOS_CHECK_ABORT;
 
@@ -170,14 +156,8 @@ ILogger::TraceFormat
 //
 //---------------------------------------------------------------------------
 void
-ILogger::LogTask
-	(
-	const WCHAR *wszMsg,
-	ULONG ulSeverity,
-	BOOL fErr,
-	const CHAR *szFilename,
-	ULONG ulLine
-	)
+ILogger::LogTask(const WCHAR *wszMsg, ULONG ulSeverity, BOOL fErr,
+				 const CHAR *szFilename, ULONG ulLine)
 {
 	CLogger *plog = NULL;
 
@@ -195,11 +175,11 @@ ILogger::LogTask
 	{
 		if (fErr)
 		{
-			plog = dynamic_cast<CLogger*>(ptsk->PlogErr());
+			plog = dynamic_cast<CLogger *>(ptsk->PlogErr());
 		}
 		else
 		{
-			plog = dynamic_cast<CLogger*>(ptsk->PlogOut());
+			plog = dynamic_cast<CLogger *>(ptsk->PlogOut());
 		}
 	}
 
@@ -209,4 +189,3 @@ ILogger::LogTask
 }
 
 // EOF
-

@@ -33,13 +33,9 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalExternalGet::CLogicalExternalGet
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalGet(pmp)
-{}
+CLogicalExternalGet::CLogicalExternalGet(IMemoryPool *pmp) : CLogicalGet(pmp)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -49,15 +45,12 @@ CLogicalExternalGet::CLogicalExternalGet
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalExternalGet::CLogicalExternalGet
-	(
-	IMemoryPool *pmp,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc
-	)
-	:
-	CLogicalGet(pmp, pnameAlias, ptabdesc)
-{}
+CLogicalExternalGet::CLogicalExternalGet(IMemoryPool *pmp,
+										 const CName *pnameAlias,
+										 CTableDescriptor *ptabdesc)
+	: CLogicalGet(pmp, pnameAlias, ptabdesc)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -67,16 +60,13 @@ CLogicalExternalGet::CLogicalExternalGet
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalExternalGet::CLogicalExternalGet
-	(
-	IMemoryPool *pmp,
-	const CName *pnameAlias,
-	CTableDescriptor *ptabdesc,
-	DrgPcr *pdrgpcrOutput
-	)
-	:
-	CLogicalGet(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
-{}
+CLogicalExternalGet::CLogicalExternalGet(IMemoryPool *pmp,
+										 const CName *pnameAlias,
+										 CTableDescriptor *ptabdesc,
+										 DrgPcr *pdrgpcrOutput)
+	: CLogicalGet(pmp, pnameAlias, ptabdesc, pdrgpcrOutput)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -87,11 +77,7 @@ CLogicalExternalGet::CLogicalExternalGet
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalExternalGet::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalExternalGet::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -100,7 +86,7 @@ CLogicalExternalGet::FMatch
 	CLogicalExternalGet *popGet = CLogicalExternalGet::PopConvert(pop);
 
 	return Ptabdesc() == popGet->Ptabdesc() &&
-			PdrgpcrOutput()->FEqual(popGet->PdrgpcrOutput());
+		   PdrgpcrOutput()->FEqual(popGet->PdrgpcrOutput());
 }
 
 //---------------------------------------------------------------------------
@@ -112,28 +98,28 @@ CLogicalExternalGet::FMatch
 //
 //---------------------------------------------------------------------------
 COperator *
-CLogicalExternalGet::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CLogicalExternalGet::PopCopyWithRemappedColumns(IMemoryPool *pmp,
+												HMUlCr *phmulcr,
+												BOOL fMustExist)
 {
 	DrgPcr *pdrgpcrOutput = NULL;
 	if (fMustExist)
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemapAndCreate(pmp, PdrgpcrOutput(), phmulcr);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemapAndCreate(pmp, PdrgpcrOutput(), phmulcr);
 	}
 	else
 	{
-		pdrgpcrOutput = CUtils::PdrgpcrRemap(pmp, PdrgpcrOutput(), phmulcr, fMustExist);
+		pdrgpcrOutput =
+			CUtils::PdrgpcrRemap(pmp, PdrgpcrOutput(), phmulcr, fMustExist);
 	}
 	CName *pnameAlias = GPOS_NEW(pmp) CName(pmp, Name());
 
 	CTableDescriptor *ptabdesc = Ptabdesc();
 	ptabdesc->AddRef();
 
-	return GPOS_NEW(pmp) CLogicalExternalGet(pmp, pnameAlias, ptabdesc, pdrgpcrOutput);
+	return GPOS_NEW(pmp)
+		CLogicalExternalGet(pmp, pnameAlias, ptabdesc, pdrgpcrOutput);
 }
 
 //---------------------------------------------------------------------------
@@ -145,11 +131,7 @@ CLogicalExternalGet::PopCopyWithRemappedColumns
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalExternalGet::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalExternalGet::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfExternalGet2ExternalScan);
@@ -158,4 +140,3 @@ CLogicalExternalGet::PxfsCandidates
 }
 
 // EOF
-

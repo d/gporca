@@ -9,7 +9,7 @@
 //		Unit tests for CConstExprEvaluatorDXL
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -47,16 +47,17 @@ const INT CConstExprEvaluatorDXLTest::m_iDefaultEvalValue = 300;
 //
 //---------------------------------------------------------------------------
 gpdxl::CDXLNode *
-CConstExprEvaluatorDXLTest::CDummyConstDXLNodeEvaluator::PdxlnEvaluateExpr
-	(
+CConstExprEvaluatorDXLTest::CDummyConstDXLNodeEvaluator::PdxlnEvaluateExpr(
 	const gpdxl::CDXLNode * /*pdxlnExpr*/
-	)
+)
 {
 	const IMDTypeInt4 *pmdtypeint4 = m_pmda->PtMDType<IMDTypeInt4>();
 	pmdtypeint4->Pmdid()->AddRef();
 
-	CDXLDatumInt4 *pdxldatum = GPOS_NEW(m_pmp) CDXLDatumInt4(m_pmp, pmdtypeint4->Pmdid(), false /*fConstNull*/, m_iVal);
-	CDXLScalarConstValue *pdxlnConst = GPOS_NEW(m_pmp) CDXLScalarConstValue(m_pmp, pdxldatum);
+	CDXLDatumInt4 *pdxldatum = GPOS_NEW(m_pmp) CDXLDatumInt4(
+		m_pmp, pmdtypeint4->Pmdid(), false /*fConstNull*/, m_iVal);
+	CDXLScalarConstValue *pdxlnConst =
+		GPOS_NEW(m_pmp) CDXLScalarConstValue(m_pmp, pdxldatum);
 
 	return GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlnConst);
 }
@@ -73,32 +74,23 @@ GPOS_RESULT
 CConstExprEvaluatorDXLTest::EresUnittest()
 {
 	{
-		CUnittest rgut[] =
-			{
-			GPOS_UNITTEST_FUNC(CConstExprEvaluatorDXLTest::EresUnittest_Constants),
-			GPOS_UNITTEST_FUNC_THROW
-				(
+		CUnittest rgut[] = {
+			GPOS_UNITTEST_FUNC(
+				CConstExprEvaluatorDXLTest::EresUnittest_Constants),
+			GPOS_UNITTEST_FUNC_THROW(
 				CConstExprEvaluatorDXLTest::EresUnittest_NonScalar,
-				gpdxl::ExmaGPOPT,
-				gpdxl::ExmiEvalUnsupportedScalarExpr
-				),
-			GPOS_UNITTEST_FUNC_THROW
-				(
+				gpdxl::ExmaGPOPT, gpdxl::ExmiEvalUnsupportedScalarExpr),
+			GPOS_UNITTEST_FUNC_THROW(
 				CConstExprEvaluatorDXLTest::EresUnittest_NestedSubquery,
-				gpdxl::ExmaGPOPT,
-				gpdxl::ExmiEvalUnsupportedScalarExpr
-				),
-			GPOS_UNITTEST_FUNC_THROW
-				(
-				CConstExprEvaluatorDXLTest::EresUnittest_ScalarContainingVariables,
-				gpdxl::ExmaGPOPT,
-				gpdxl::ExmiEvalUnsupportedScalarExpr
-				),
-			};
+				gpdxl::ExmaGPOPT, gpdxl::ExmiEvalUnsupportedScalarExpr),
+			GPOS_UNITTEST_FUNC_THROW(CConstExprEvaluatorDXLTest::
+										 EresUnittest_ScalarContainingVariables,
+									 gpdxl::ExmaGPOPT,
+									 gpdxl::ExmiEvalUnsupportedScalarExpr),
+		};
 
 		return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 	}
-
 }
 
 
@@ -115,18 +107,22 @@ CConstExprEvaluatorDXLTest::EresUnittest_Constants()
 {
 	CTestUtils::CTestSetup testsetup;
 	IMemoryPool *pmp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(), m_iDefaultEvalValue);
-	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
+	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(),
+										  m_iDefaultEvalValue);
+	CConstExprEvaluatorDXL *pceeval =
+		GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
 
 	// Test that evaluation works for an integer constant
-	CExpression *pexprConstInput = CUtils::PexprScalarConstInt4(testsetup.Pmp(), m_iDefaultEvalValue);
+	CExpression *pexprConstInput =
+		CUtils::PexprScalarConstInt4(testsetup.Pmp(), m_iDefaultEvalValue);
 	CExpression *pexprConstResult = pceeval->PexprEval(pexprConstInput);
 #ifdef GPOS_DEBUG
-	CScalarConst *popScConstInput = CScalarConst::PopConvert(pexprConstInput->Pop());
-	CScalarConst *popScConstResult = CScalarConst::PopConvert(pexprConstResult->Pop());
+	CScalarConst *popScConstInput =
+		CScalarConst::PopConvert(pexprConstInput->Pop());
+	CScalarConst *popScConstResult =
+		CScalarConst::PopConvert(pexprConstResult->Pop());
 	GPOS_ASSERT(popScConstResult->FMatch(popScConstInput));
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 	pexprConstInput->Release();
 	pexprConstResult->Release();
 	pceeval->Release();
@@ -147,9 +143,10 @@ CConstExprEvaluatorDXLTest::EresUnittest_NonScalar()
 {
 	CTestUtils::CTestSetup testsetup;
 	IMemoryPool *pmp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(), m_iDefaultEvalValue);
-	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
+	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(),
+										  m_iDefaultEvalValue);
+	CConstExprEvaluatorDXL *pceeval =
+		GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
 
 	CExpression *pexprGet = CTestUtils::PexprLogicalGet(testsetup.Pmp());
 
@@ -175,13 +172,16 @@ CConstExprEvaluatorDXLTest::EresUnittest_NestedSubquery()
 {
 	CTestUtils::CTestSetup testsetup;
 	IMemoryPool *pmp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(), m_iDefaultEvalValue);
-	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
+	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(),
+										  m_iDefaultEvalValue);
+	CConstExprEvaluatorDXL *pceeval =
+		GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
 
-	CExpression *pexprSelect = CTestUtils::PexprLogicalSelectWithConstAnySubquery(testsetup.Pmp());
+	CExpression *pexprSelect =
+		CTestUtils::PexprLogicalSelectWithConstAnySubquery(testsetup.Pmp());
 	CExpression *pexprPredicate = (*pexprSelect)[1];
-	GPOS_ASSERT(COperator::EopScalarSubqueryAny == pexprPredicate->Pop()->Eopid());
+	GPOS_ASSERT(COperator::EopScalarSubqueryAny ==
+				pexprPredicate->Pop()->Eopid());
 
 	// this call should raise an exception
 	CExpression *pexprResult = pceeval->PexprEval(pexprPredicate);
@@ -200,25 +200,25 @@ CConstExprEvaluatorDXLTest::EresUnittest_NestedSubquery()
 //		Test that an error is raised for a scalar containing variables.
 //
 //---------------------------------------------------------------------------
-GPOS_RESULT CConstExprEvaluatorDXLTest::EresUnittest_ScalarContainingVariables()
+GPOS_RESULT
+CConstExprEvaluatorDXLTest::EresUnittest_ScalarContainingVariables()
 {
 	CTestUtils::CTestSetup testsetup;
 	IMemoryPool *pmp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(), m_iDefaultEvalValue);
-	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
+	CDummyConstDXLNodeEvaluator consteval(pmp, testsetup.Pmda(),
+										  m_iDefaultEvalValue);
+	CConstExprEvaluatorDXL *pceeval =
+		GPOS_NEW(pmp) CConstExprEvaluatorDXL(pmp, testsetup.Pmda(), &consteval);
 
 	const IMDTypeInt4 *pmdtypeint4 = testsetup.Pmda()->PtMDType<IMDTypeInt4>();
 	CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
 	CColRef *pcrComputed = pcf->PcrCreate(pmdtypeint4, IDefaultTypeModifier);
 
 	// create a comparison, where one of the children is a variable
-	CExpression *pexprFunCall = CUtils::PexprScalarEqCmp
-			(
-			testsetup.Pmp(),
-			CUtils::PexprScalarConstInt4(testsetup.Pmp(), 200 /*iVal*/),
-			CUtils::PexprScalarIdent(testsetup.Pmp(), pcrComputed)
-			);
+	CExpression *pexprFunCall = CUtils::PexprScalarEqCmp(
+		testsetup.Pmp(),
+		CUtils::PexprScalarConstInt4(testsetup.Pmp(), 200 /*iVal*/),
+		CUtils::PexprScalarIdent(testsetup.Pmp(), pcrComputed));
 
 	// this call should raise an exception
 	CExpression *pexprResult = pceeval->PexprEval(pexprFunCall);

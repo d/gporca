@@ -33,17 +33,12 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarMinMax::CScalarMinMax
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	EScalarMinMaxType esmmt
-	)
-	:
-	CScalar(pmp),
-	m_pmdidType(pmdidType),
-	m_esmmt(esmmt),
-	m_fBoolReturnType(false)
+CScalarMinMax::CScalarMinMax(IMemoryPool *pmp, IMDId *pmdidType,
+							 EScalarMinMaxType esmmt)
+	: CScalar(pmp),
+	  m_pmdidType(pmdidType),
+	  m_esmmt(esmmt),
+	  m_fBoolReturnType(false)
 {
 	GPOS_ASSERT(pmdidType->FValid());
 	GPOS_ASSERT(EsmmtSentinel > esmmt);
@@ -79,11 +74,10 @@ CScalarMinMax::UlHash() const
 {
 	ULONG ulminmax = (ULONG) this->Esmmt();
 
-	return gpos::UlCombineHashes
-					(
-						m_pmdidType->UlHash(),
-						gpos::UlCombineHashes(COperator::UlHash(), gpos::UlHash<ULONG>(&ulminmax))
-					);
+	return gpos::UlCombineHashes(
+		m_pmdidType->UlHash(),
+		gpos::UlCombineHashes(COperator::UlHash(),
+							  gpos::UlHash<ULONG>(&ulminmax)));
 }
 
 //---------------------------------------------------------------------------
@@ -95,11 +89,7 @@ CScalarMinMax::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarMinMax::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarMinMax::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
@@ -110,7 +100,7 @@ CScalarMinMax::FMatch
 
 	// match if return types are identical
 	return popScMinMax->Esmmt() == m_esmmt &&
-			popScMinMax->PmdidType()->FEquals(m_pmdidType);
+		   popScMinMax->PmdidType()->FEquals(m_pmdidType);
 }
 
 //---------------------------------------------------------------------------
@@ -122,11 +112,7 @@ CScalarMinMax::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarMinMax::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarMinMax::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (";
 
@@ -144,4 +130,3 @@ CScalarMinMax::OsPrint
 }
 
 // EOF
-

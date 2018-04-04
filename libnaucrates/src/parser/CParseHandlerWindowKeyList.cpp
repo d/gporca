@@ -28,15 +28,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerWindowKeyList::CParseHandlerWindowKeyList
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pdrgpdxlwk(NULL)
+CParseHandlerWindowKeyList::CParseHandlerWindowKeyList(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pdrgpdxlwk(NULL)
 {
 }
 
@@ -49,25 +43,26 @@ CParseHandlerWindowKeyList::CParseHandlerWindowKeyList
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerWindowKeyList::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerWindowKeyList::StartElement(const XMLCh *const xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const xmlszQname,
+										 const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), xmlszLocalname))
 	{
 		m_pdrgpdxlwk = GPOS_NEW(m_pmp) DrgPdxlwk(m_pmp);
 	}
-	else if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenWindowKey), xmlszLocalname))
+	else if (0 ==
+			 XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenWindowKey), xmlszLocalname))
 	{
 		// we must have seen a window key list already
 		GPOS_ASSERT(NULL != m_pdrgpdxlwk);
 		// start new window key element
-		CParseHandlerBase *pphWk =
-				CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenWindowKey), m_pphm, this);
+		CParseHandlerBase *pphWk = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenWindowKey), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphWk);
 
 		// store parse handler
@@ -77,7 +72,8 @@ CParseHandlerWindowKeyList::StartElement
 	}
 	else
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 }
@@ -91,16 +87,17 @@ CParseHandlerWindowKeyList::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerWindowKeyList::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerWindowKeyList::EndElement(const XMLCh *const,  // xmlszUri,
+									   const XMLCh *const xmlszLocalname,
+									   const XMLCh *const  // xmlszQname
+)
 {
-	if ( 0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenWindowKeyList), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 	GPOS_ASSERT(NULL != m_pdrgpdxlwk);
@@ -109,7 +106,8 @@ CParseHandlerWindowKeyList::EndElement
 	// add the window keys to the list
 	for (ULONG ul = 0; ul < ulSize; ul++)
 	{
-		CParseHandlerWindowKey *pphWk = dynamic_cast<CParseHandlerWindowKey *>((*this)[ul]);
+		CParseHandlerWindowKey *pphWk =
+			dynamic_cast<CParseHandlerWindowKey *>((*this)[ul]);
 		m_pdrgpdxlwk->Append(pphWk->Pdxlwk());
 	}
 

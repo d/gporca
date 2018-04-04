@@ -21,142 +21,133 @@
 
 namespace gpopt
 {
+using namespace gpos;
+using namespace gpmd;
 
-	using namespace gpos;
-	using namespace gpmd;
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarOp
+//
+//	@doc:
+//		general scalar operation such as arithmetic and string evaluations
+//
+//---------------------------------------------------------------------------
+class CScalarOp : public CScalar
+{
+private:
+	// metadata id in the catalog
+	IMDId *m_pmdidOp;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarOp
-	//
-	//	@doc:
-	//		general scalar operation such as arithmetic and string evaluations
-	//
-	//---------------------------------------------------------------------------
-	class CScalarOp : public CScalar
+	// return type id or NULL if it can be inferred from the metadata
+	IMDId *m_pmdidReturnType;
+
+	// scalar operator name
+	const CWStringConst *m_pstrOp;
+
+	// does operator return NULL on NULL input?
+	BOOL m_fReturnsNullOnNullInput;
+
+	// is operator return type BOOL?
+	BOOL m_fBoolReturnType;
+
+	// is operator commutative
+	BOOL m_fCommutative;
+
+	// private copy ctor
+	CScalarOp(const CScalarOp &);
+
+public:
+	// ctor
+	CScalarOp(IMemoryPool *pmp, IMDId *pmdidOp, IMDId *pmdidReturnType,
+			  const CWStringConst *pstrOp);
+
+	// dtor
+	virtual ~CScalarOp()
 	{
-
-		private:
-
-			// metadata id in the catalog
-			IMDId *m_pmdidOp;
-
-			// return type id or NULL if it can be inferred from the metadata
-			IMDId *m_pmdidReturnType;
-			
-			// scalar operator name
-			const CWStringConst *m_pstrOp;
-
-			// does operator return NULL on NULL input?
-			BOOL m_fReturnsNullOnNullInput;
-
-			// is operator return type BOOL?
-			BOOL m_fBoolReturnType;
-
-			// is operator commutative
-			BOOL m_fCommutative;
-
-			// private copy ctor
-			CScalarOp(const CScalarOp &);
-
-		public:
-
-			// ctor
-			CScalarOp
-				(
-				IMemoryPool *pmp,
-				IMDId *pmdidOp,
-				IMDId *pmdidReturnType,
-				const CWStringConst *pstrOp
-				);
-
-			// dtor
-			virtual
-			~CScalarOp()
-			{
-				m_pmdidOp->Release();
-				CRefCount::SafeRelease(m_pmdidReturnType);
-				GPOS_DELETE(m_pstrOp);
-			}
+		m_pmdidOp->Release();
+		CRefCount::SafeRelease(m_pmdidReturnType);
+		GPOS_DELETE(m_pstrOp);
+	}
 
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopScalarOp;
-			}
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopScalarOp;
+	}
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CScalarOp";
-			}
-			
-			// accessor to the return type field
-			IMDId *PmdidReturnType() const;
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CScalarOp";
+	}
 
-			// the type of the scalar expression
-			virtual 
-			IMDId *PmdidType() const;
+	// accessor to the return type field
+	IMDId *
+	PmdidReturnType() const;
 
-			// operator specific hash function
-			ULONG UlHash() const;
+	// the type of the scalar expression
+	virtual IMDId *
+	PmdidType() const;
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
+	// operator specific hash function
+	ULONG
+	UlHash() const;
 
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const;
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const;
 
-			// conversion function
-			static
-			CScalarOp *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarOp == pop->Eopid());
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-				return reinterpret_cast<CScalarOp*>(pop);
-			}
+	// conversion function
+	static CScalarOp *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarOp == pop->Eopid());
 
-			// helper function
-			static 
-			BOOL FCommutative(const IMDId *pcmdidOtherOp);
+		return reinterpret_cast<CScalarOp *>(pop);
+	}
 
-			// boolean expression evaluation
-			virtual
-			EBoolEvalResult Eber(DrgPul *pdrgpulChildren) const;
+	// helper function
+	static BOOL
+	FCommutative(const IMDId *pcmdidOtherOp);
 
-			// name of the scalar operator
-			const CWStringConst *Pstr() const;
+	// boolean expression evaluation
+	virtual EBoolEvalResult
+	Eber(DrgPul *pdrgpulChildren) const;
 
-			// metadata id
-			IMDId *PmdidOp() const;
+	// name of the scalar operator
+	const CWStringConst *
+	Pstr() const;
 
-			// print
-			virtual
-			IOstream &OsPrint(IOstream &os) const;
+	// metadata id
+	IMDId *
+	PmdidOp() const;
 
-	}; // class CScalarOp
+	// print
+	virtual IOstream &
+	OsPrint(IOstream &os) const;
 
-}
+};  // class CScalarOp
 
-#endif // !GPOPT_CScalarOp_H
+}  // namespace gpopt
+
+#endif  // !GPOPT_CScalarOp_H
 
 // EOF

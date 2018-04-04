@@ -26,22 +26,14 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementDML::CXformImplementDML
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementation
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalDML(pmp),
-				GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))
-				)
-		)
-{}
+CXformImplementDML::CXformImplementDML(IMemoryPool *pmp)
+	: CXformImplementation(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalDML(pmp),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp))))
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -51,12 +43,9 @@ CXformImplementDML::CXformImplementDML
 //		Compute promise of xform
 //
 //---------------------------------------------------------------------------
-CXform::EXformPromise 
-CXformImplementDML::Exfp
-	(
-	CExpressionHandle & // exprhdl
-	)
-	const
+CXform::EXformPromise
+CXformImplementDML::Exfp(CExpressionHandle &  // exprhdl
+						 ) const
 {
 	return CXform::ExfpHigh;
 }
@@ -71,13 +60,8 @@ CXformImplementDML::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformImplementDML::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformImplementDML::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+							  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(FPromising(pxfctxt->Pmp(), this, pexpr));
@@ -92,7 +76,7 @@ CXformImplementDML::Transform
 
 	CTableDescriptor *ptabdesc = popDML->Ptabdesc();
 	ptabdesc->AddRef();
-	
+
 	DrgPcr *pdrgpcrSource = popDML->PdrgpcrSource();
 	pdrgpcrSource->AddRef();
 	CBitSet *pbsModified = popDML->PbsModified();
@@ -109,13 +93,12 @@ CXformImplementDML::Transform
 	pexprChild->AddRef();
 
 	// create physical DML
-	CExpression *pexprAlt = 
-		GPOS_NEW(pmp) CExpression
-			(
-			pmp,
-			GPOS_NEW(pmp) CPhysicalDML(pmp, edmlop, ptabdesc, pdrgpcrSource, pbsModified, pcrAction, pcrTableOid, pcrCtid, pcrSegmentId, pcrTupleOid),
-			pexprChild
-			);
+	CExpression *pexprAlt = GPOS_NEW(pmp) CExpression(
+		pmp,
+		GPOS_NEW(pmp) CPhysicalDML(pmp, edmlop, ptabdesc, pdrgpcrSource,
+								   pbsModified, pcrAction, pcrTableOid, pcrCtid,
+								   pcrSegmentId, pcrTupleOid),
+		pexprChild);
 	// add alternative to transformation result
 	pxfres->Add(pexprAlt);
 }

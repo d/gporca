@@ -28,27 +28,24 @@ using namespace gpos;
 //
 //---------------------------------------------------------------------------
 void
-CErrorHandlerStandard::Process
-	(
-	CException exc
-	)
+CErrorHandlerStandard::Process(CException exc)
 {
 	CTask *ptsk = CTask::PtskSelf();
 
 	GPOS_ASSERT(NULL != ptsk && "No task in current context");
 
 	IErrorContext *perrctxt = ptsk->Perrctxt();
-	CLogger *plog = dynamic_cast<CLogger*>(ptsk->PlogErr());
-	
+	CLogger *plog = dynamic_cast<CLogger *>(ptsk->PlogErr());
+
 	GPOS_ASSERT(perrctxt->FPending() && "No error to process");
-	GPOS_ASSERT(perrctxt->Exc() == exc && 
-			"Exception processed different from pending");
+	GPOS_ASSERT(perrctxt->Exc() == exc &&
+				"Exception processed different from pending");
 
 	// print error stack trace
 	if (CException::ExmaSystem == exc.UlMajor() && !perrctxt->FRethrow())
 	{
 		if ((CException::ExmiIOError == exc.UlMinor() ||
-		    CException::ExmiNetError == exc.UlMinor() ) &&
+			 CException::ExmiNetError == exc.UlMinor()) &&
 			0 < errno)
 		{
 			perrctxt->AppendErrnoMsg();
@@ -71,4 +68,3 @@ CErrorHandlerStandard::Process
 }
 
 // EOF
-

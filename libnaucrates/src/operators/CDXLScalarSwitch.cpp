@@ -27,14 +27,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarSwitch::CDXLScalarSwitch
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidType(pmdidType)
+CDXLScalarSwitch::CDXLScalarSwitch(IMemoryPool *pmp, IMDId *pmdidType)
+	: CDXLScalar(pmp), m_pmdidType(pmdidType)
 {
 	GPOS_ASSERT(m_pmdidType->FValid());
 }
@@ -103,19 +97,17 @@ CDXLScalarSwitch::PmdidType() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSwitch::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarSwitch::SerializeToDXL(CXMLSerializer *pxmlser,
+								 const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -127,11 +119,7 @@ CDXLScalarSwitch::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarSwitch::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarSwitch::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -146,12 +134,8 @@ CDXLScalarSwitch::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarSwitch::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarSwitch::AssertValid(const CDXLNode *pdxln,
+							  BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(1 < ulArity);
@@ -167,6 +151,6 @@ CDXLScalarSwitch::AssertValid
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

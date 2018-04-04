@@ -21,29 +21,20 @@ using namespace gpmd;
 using namespace gpdxl;
 
 // ctor
-CMDArrayCoerceCastGPDB::CMDArrayCoerceCastGPDB
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	CMDName *pmdname,
-	IMDId *pmdidSrc,
-	IMDId *pmdidDest,
-	BOOL fBinaryCoercible,
-	IMDId *pmdidCastFunc,
-	EmdCoercepathType emdPathType,
-	INT iTypeModifier,
-	BOOL fIsExplicit,
-	EdxlCoercionForm edxlcf,
-	INT iLoc
-	)
-	:
-	CMDCastGPDB(pmp, pmdid, pmdname, pmdidSrc, pmdidDest, fBinaryCoercible, pmdidCastFunc, emdPathType),
-	m_iTypeModifier(iTypeModifier),
-	m_fIsExplicit(fIsExplicit),
-	m_edxlcf(edxlcf),
-	m_iLoc(iLoc)
+CMDArrayCoerceCastGPDB::CMDArrayCoerceCastGPDB(
+	IMemoryPool *pmp, IMDId *pmdid, CMDName *pmdname, IMDId *pmdidSrc,
+	IMDId *pmdidDest, BOOL fBinaryCoercible, IMDId *pmdidCastFunc,
+	EmdCoercepathType emdPathType, INT iTypeModifier, BOOL fIsExplicit,
+	EdxlCoercionForm edxlcf, INT iLoc)
+	: CMDCastGPDB(pmp, pmdid, pmdname, pmdidSrc, pmdidDest, fBinaryCoercible,
+				  pmdidCastFunc, emdPathType),
+	  m_iTypeModifier(iTypeModifier),
+	  m_fIsExplicit(fIsExplicit),
+	  m_edxlcf(edxlcf),
+	  m_iLoc(iLoc)
 {
-	m_pstr = CDXLUtils::PstrSerializeMDObj(pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 // dtor
@@ -82,37 +73,43 @@ CMDArrayCoerceCastGPDB::ILoc() const
 
 // serialize function metadata in DXL format
 void
-CMDArrayCoerceCastGPDB::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
-	const
+CMDArrayCoerceCastGPDB::Serialize(CXMLSerializer *pxmlser) const
 {
 	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenGPDBArrayCoerceCast));
+						 CDXLTokens::PstrToken(EdxltokenGPDBArrayCoerceCast));
 
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBCastCoercePathType), m_emdPathType);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenGPDBCastBinaryCoercible), m_fBinaryCoercible);
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenGPDBCastCoercePathType), m_emdPathType);
+	pxmlser->AddAttribute(
+		CDXLTokens::PstrToken(EdxltokenGPDBCastBinaryCoercible),
+		m_fBinaryCoercible);
 
-	m_pmdidSrc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastSrcType));
-	m_pmdidDest->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastDestType));
-	m_pmdidCastFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenGPDBCastFuncId));
+	m_pmdidSrc->Serialize(pxmlser,
+						  CDXLTokens::PstrToken(EdxltokenGPDBCastSrcType));
+	m_pmdidDest->Serialize(pxmlser,
+						   CDXLTokens::PstrToken(EdxltokenGPDBCastDestType));
+	m_pmdidCastFunc->Serialize(pxmlser,
+							   CDXLTokens::PstrToken(EdxltokenGPDBCastFuncId));
 
 	if (IDefaultTypeModifier != ITypeModifier())
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod), ITypeModifier());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod),
+							  ITypeModifier());
 	}
 
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsExplicit), m_fIsExplicit);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCoercionForm), (ULONG) m_edxlcf);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsExplicit),
+						  m_fIsExplicit);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCoercionForm),
+						  (ULONG) m_edxlcf);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenLocation), m_iLoc);
 
 	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
-						CDXLTokens::PstrToken(EdxltokenGPDBArrayCoerceCast));
+						  CDXLTokens::PstrToken(EdxltokenGPDBArrayCoerceCast));
 }
 
 
@@ -120,11 +117,7 @@ CMDArrayCoerceCastGPDB::Serialize
 
 // prints a metadata cache relation to the provided output
 void
-CMDArrayCoerceCastGPDB::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CMDArrayCoerceCastGPDB::DebugPrint(IOstream &os) const
 {
 	CMDCastGPDB::DebugPrint(os);
 	os << ", Result Type Mod: ";
@@ -137,6 +130,6 @@ CMDArrayCoerceCastGPDB::DebugPrint
 	os << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

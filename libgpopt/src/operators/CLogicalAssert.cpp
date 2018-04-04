@@ -31,13 +31,8 @@ using namespace gpopt;
 //		Ctor - for pattern
 //
 //---------------------------------------------------------------------------
-CLogicalAssert::CLogicalAssert
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalUnary(pmp),
-	m_pexc(NULL)
+CLogicalAssert::CLogicalAssert(IMemoryPool *pmp)
+	: CLogicalUnary(pmp), m_pexc(NULL)
 {
 	m_fPattern = true;
 }
@@ -50,14 +45,8 @@ CLogicalAssert::CLogicalAssert
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CLogicalAssert::CLogicalAssert
-	(
-	IMemoryPool *pmp,
-	CException *pexc
-	)
-	:
-	CLogicalUnary(pmp),
-	m_pexc(pexc)
+CLogicalAssert::CLogicalAssert(IMemoryPool *pmp, CException *pexc)
+	: CLogicalUnary(pmp), m_pexc(pexc)
 {
 	GPOS_ASSERT(NULL != pexc);
 }
@@ -71,18 +60,14 @@ CLogicalAssert::CLogicalAssert
 //
 //---------------------------------------------------------------------------
 BOOL
-CLogicalAssert::FMatch
-	(
-	COperator *pop
-	)
-	const
+CLogicalAssert::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
 		return false;
 	}
-	
-	CLogicalAssert *popAssert = CLogicalAssert::PopConvert(pop); 
+
+	CLogicalAssert *popAssert = CLogicalAssert::PopConvert(pop);
 	return CException::FEqual(*(popAssert->Pexc()), *m_pexc);
 }
 
@@ -95,11 +80,8 @@ CLogicalAssert::FMatch
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CLogicalAssert::PcrsDeriveOutput
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
+CLogicalAssert::PcrsDeriveOutput(IMemoryPool *,  // pmp
+								 CExpressionHandle &exprhdl)
 {
 	return PcrsDeriveOutputPassThru(exprhdl);
 }
@@ -114,12 +96,8 @@ CLogicalAssert::PcrsDeriveOutput
 //
 //---------------------------------------------------------------------------
 CKeyCollection *
-CLogicalAssert::PkcDeriveKeys
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalAssert::PkcDeriveKeys(IMemoryPool *,  // pmp
+							  CExpressionHandle &exprhdl) const
 {
 	return PkcDeriveKeysPassThru(exprhdl, 0 /* ulChild */);
 }
@@ -134,11 +112,7 @@ CLogicalAssert::PkcDeriveKeys
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalAssert::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	) 
-	const
+CLogicalAssert::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	(void) pxfs->FExchangeSet(CXform::ExfImplementAssert);
@@ -154,12 +128,8 @@ CLogicalAssert::PxfsCandidates
 //
 //---------------------------------------------------------------------------
 CMaxCard
-CLogicalAssert::Maxcard
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CLogicalAssert::Maxcard(IMemoryPool *,  // pmp
+						CExpressionHandle &exprhdl) const
 {
 	// in case of a false condition or a contradiction, maxcard should be 1
 	CExpression *pexprScalar = exprhdl.PexprScalarChild(1);
@@ -193,20 +163,17 @@ CLogicalAssert::Maxcard
 //
 //---------------------------------------------------------------------------
 IStatistics *
-CLogicalAssert::PstatsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	DrgPstat * // not used
-	)
-	const
+CLogicalAssert::PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 DrgPstat *  // not used
+							 ) const
 {
-	CMaxCard maxcard = CLogicalAssert::PopConvert(exprhdl.Pop())->Maxcard(pmp, exprhdl);
+	CMaxCard maxcard =
+		CLogicalAssert::PopConvert(exprhdl.Pop())->Maxcard(pmp, exprhdl);
 	if (1 == maxcard.Ull())
 	{
 		// a max card of one requires re-scaling stats
 		IStatistics *pstats = exprhdl.Pstats(0);
-		return  pstats->PstatsScale(pmp, CDouble(1.0 / pstats->DRows()));
+		return pstats->PstatsScale(pmp, CDouble(1.0 / pstats->DRows()));
 	}
 
 	return PstatsPassThruOuter(exprhdl);
@@ -221,20 +188,15 @@ CLogicalAssert::PstatsDerive
 //
 //---------------------------------------------------------------------------
 IOstream &
-CLogicalAssert::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CLogicalAssert::OsPrint(IOstream &os) const
 {
 	if (m_fPattern)
 	{
 		return COperator::OsPrint(os);
 	}
-	
+
 	os << SzId() << " (Error code: " << m_pexc->SzSQLState() << ")";
 	return os;
 }
 
 // EOF
-

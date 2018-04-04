@@ -19,44 +19,46 @@
 // fwd decl
 namespace gpnaucrates
 {
-	class IDatumInt8;
+class IDatumInt8;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpnaucrates;
 
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDTypeInt8
-	//
-	//	@doc:
-	//		Interface for INT8 types in the metadata cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDTypeInt8 : public IMDType
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDTypeInt8
+//
+//	@doc:
+//		Interface for INT8 types in the metadata cache
+//
+//---------------------------------------------------------------------------
+class IMDTypeInt8 : public IMDType
+{
+public:
+	// type id
+	static ETypeInfo
+	EtiType()
 	{
-		public:
-			// type id
-			static ETypeInfo EtiType()
-			{
-				return EtiInt8;
-			}
+		return EtiInt8;
+	}
 
-			virtual ETypeInfo Eti() const
-			{
-				return IMDTypeInt8::EtiType();
-			}
+	virtual ETypeInfo
+	Eti() const
+	{
+		return IMDTypeInt8::EtiType();
+	}
 
-			// factory function for INT8 datums
-			virtual IDatumInt8 *PdatumInt8(IMemoryPool *pmp, LINT ulValue, BOOL fNULL) const = 0;
+	// factory function for INT8 datums
+	virtual IDatumInt8 *
+	PdatumInt8(IMemoryPool *pmp, LINT ulValue, BOOL fNULL) const = 0;
+};
 
-	};
+}  // namespace gpmd
 
-}
-
-#endif // !GPMD_IMDTypeInt8_H
+#endif  // !GPMD_IMDTypeInt8_H
 
 // EOF

@@ -28,12 +28,8 @@ using namespace gpopt;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CLogicalLeftAntiSemiJoinNotIn::CLogicalLeftAntiSemiJoinNotIn
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CLogicalLeftAntiSemiJoin(pmp)
+CLogicalLeftAntiSemiJoinNotIn::CLogicalLeftAntiSemiJoinNotIn(IMemoryPool *pmp)
+	: CLogicalLeftAntiSemiJoin(pmp)
 {
 	GPOS_ASSERT(NULL != pmp);
 }
@@ -47,15 +43,12 @@ CLogicalLeftAntiSemiJoinNotIn::CLogicalLeftAntiSemiJoinNotIn
 //
 //---------------------------------------------------------------------------
 CXformSet *
-CLogicalLeftAntiSemiJoinNotIn::PxfsCandidates
-	(
-	IMemoryPool *pmp
-	)
-	const
+CLogicalLeftAntiSemiJoinNotIn::PxfsCandidates(IMemoryPool *pmp) const
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 
-	(void) pxfs->FExchangeSet(CXform::ExfAntiSemiJoinNotInAntiSemiJoinNotInSwap);
+	(void) pxfs->FExchangeSet(
+		CXform::ExfAntiSemiJoinNotInAntiSemiJoinNotInSwap);
 	(void) pxfs->FExchangeSet(CXform::ExfAntiSemiJoinNotInAntiSemiJoinSwap);
 	(void) pxfs->FExchangeSet(CXform::ExfAntiSemiJoinNotInSemiJoinSwap);
 	(void) pxfs->FExchangeSet(CXform::ExfAntiSemiJoinNotInInnerJoinSwap);

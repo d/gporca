@@ -6,7 +6,7 @@
 //		CParseHandlerScalarCast.h
 //
 //	@doc:
-//		
+//
 //		SAX parse handler class for parsing relabel node to a CDXLScalarCast operator.
 //---------------------------------------------------------------------------
 
@@ -21,57 +21,50 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerScalarCast
-	//
-	//	@doc:
-	//		Parse handler for parsing a scalar relabeltype expression
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerScalarCast : public CParseHandlerScalarOp
-	{
-		private:
-	
-			// private copy ctor
-			CParseHandlerScalarCast(const CParseHandlerScalarCast &);
-	
-			// process the start of an element
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
-	
-			// process the end of an element
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
-	
-		public:
-			// ctor/dtor
-			CParseHandlerScalarCast
-					(
-					IMemoryPool *pmp,
-					CParseHandlerManager *pphm,
-					CParseHandlerBase *pphRoot
-					);
-	
-			virtual
-			~CParseHandlerScalarCast(){};
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerScalarCast
+//
+//	@doc:
+//		Parse handler for parsing a scalar relabeltype expression
+//
+//---------------------------------------------------------------------------
+class CParseHandlerScalarCast : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerScalarCast(const CParseHandlerScalarCast &);
 
-	};
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-}
-#endif // GPDXL_CParseHandlerScalarCast_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerScalarCast(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							CParseHandlerBase *pphRoot);
+
+	virtual ~CParseHandlerScalarCast(){};
+};
+
+}  // namespace gpdxl
+#endif  // GPDXL_CParseHandlerScalarCast_H
 
 //EOF

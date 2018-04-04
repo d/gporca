@@ -34,23 +34,16 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformExpandNAryJoinDP::CXformExpandNAryJoinDP
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))
-					)
-		)
-{}
+CXformExpandNAryJoinDP::CXformExpandNAryJoinDP(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalNAryJoin(pmp),
+			  GPOS_NEW(pmp)
+				  CExpression(pmp, GPOS_NEW(pmp) CPatternMultiLeaf(pmp)),
+			  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))))
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -62,11 +55,7 @@ CXformExpandNAryJoinDP::CXformExpandNAryJoinDP
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformExpandNAryJoinDP::Exfp
-	(
-	CExpressionHandle &exprhdl
-	)
-	const
+CXformExpandNAryJoinDP::Exfp(CExpressionHandle &exprhdl) const
 {
 	COptimizerConfig *poconf = COptCtxt::PoctxtFromTLS()->Poconf();
 	const CHint *phint = poconf->Phint();
@@ -96,13 +85,8 @@ CXformExpandNAryJoinDP::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformExpandNAryJoinDP::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformExpandNAryJoinDP::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								  CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(NULL != pxfres);
@@ -123,7 +107,8 @@ CXformExpandNAryJoinDP::Transform
 	}
 
 	CExpression *pexprScalar = (*pexpr)[ulArity - 1];
-	DrgPexpr *pdrgpexprPreds = CPredicateUtils::PdrgpexprConjuncts(pmp, pexprScalar);
+	DrgPexpr *pdrgpexprPreds =
+		CPredicateUtils::PdrgpexprConjuncts(pmp, pexprScalar);
 
 	// create join order using dynamic programming
 	CJoinOrderDP jodp(pmp, pdrgpexpr, pdrgpexprPreds);
@@ -132,7 +117,8 @@ CXformExpandNAryJoinDP::Transform
 	if (NULL != pexprResult)
 	{
 		// normalize resulting expression
-		CExpression *pexprNormalized = CNormalizer::PexprNormalize(pmp, pexprResult);
+		CExpression *pexprNormalized =
+			CNormalizer::PexprNormalize(pmp, pexprResult);
 		pexprResult->Release();
 		pxfres->Add(pexprNormalized);
 

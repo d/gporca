@@ -29,13 +29,10 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarSubqueryExistential::CScalarSubqueryExistential
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CScalar(pmp)
-{}
+CScalarSubqueryExistential::CScalarSubqueryExistential(IMemoryPool *pmp)
+	: CScalar(pmp)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -46,7 +43,8 @@ CScalarSubqueryExistential::CScalarSubqueryExistential
 //
 //---------------------------------------------------------------------------
 CScalarSubqueryExistential::~CScalarSubqueryExistential()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -74,11 +72,7 @@ CScalarSubqueryExistential::PmdidType() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarSubqueryExistential::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarSubqueryExistential::FMatch(COperator *pop) const
 {
 	GPOS_ASSERT(NULL != pop);
 
@@ -95,12 +89,8 @@ CScalarSubqueryExistential::FMatch
 //
 //---------------------------------------------------------------------------
 CPartInfo *
-CScalarSubqueryExistential::PpartinfoDerive
-	(
-	IMemoryPool *, // pmp, 
-	CExpressionHandle &exprhdl
-	)
-	const
+CScalarSubqueryExistential::PpartinfoDerive(IMemoryPool *,  // pmp,
+											CExpressionHandle &exprhdl) const
 {
 	CPartInfo *ppartinfoChild = exprhdl.Pdprel(0 /*ulChildIndex*/)->Ppartinfo();
 	GPOS_ASSERT(NULL != ppartinfoChild);
@@ -109,4 +99,3 @@ CScalarSubqueryExistential::PpartinfoDerive
 }
 
 // EOF
-

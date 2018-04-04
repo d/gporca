@@ -18,146 +18,123 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CLogicalIntersectAll
-	//
-	//	@doc:
-	//		Intersect all operators
-	//
-	//---------------------------------------------------------------------------
-	class CLogicalIntersectAll : public CLogicalSetOp
+//---------------------------------------------------------------------------
+//	@class:
+//		CLogicalIntersectAll
+//
+//	@doc:
+//		Intersect all operators
+//
+//---------------------------------------------------------------------------
+class CLogicalIntersectAll : public CLogicalSetOp
+{
+private:
+	// private copy ctor
+	CLogicalIntersectAll(const CLogicalIntersectAll &);
+
+public:
+	// ctor
+	explicit CLogicalIntersectAll(IMemoryPool *pmp);
+
+	CLogicalIntersectAll(IMemoryPool *pmp, DrgPcr *pdrgpcrOutput,
+						 DrgDrgPcr *pdrgpdrgpcrInput);
+
+	// dtor
+	virtual ~CLogicalIntersectAll();
+
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
 	{
+		return EopLogicalIntersectAll;
+	}
 
-		private:
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CLogicalIntersectAll";
+	}
 
-			// private copy ctor
-			CLogicalIntersectAll(const CLogicalIntersectAll &);
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const
+	{
+		return true;
+	}
 
-		public:
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+							   BOOL fMustExist);
 
-			// ctor
-			explicit
-			CLogicalIntersectAll(IMemoryPool *pmp);
+	//-------------------------------------------------------------------------------------
+	// Derived Relational Properties
+	//-------------------------------------------------------------------------------------
 
-			CLogicalIntersectAll
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcrOutput,
-				DrgDrgPcr *pdrgpdrgpcrInput
-				);
+	// derive max card
+	virtual CMaxCard
+	Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// dtor
-			virtual
-			~CLogicalIntersectAll();
+	// derive key collections
+	virtual CKeyCollection *
+	PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopLogicalIntersectAll;
-			}
+	// derive constraint property
+	virtual CPropConstraint *
+	PpcDeriveConstraint(IMemoryPool *pmp, CExpressionHandle &exprhdl) const
+	{
+		return PpcDeriveConstraintIntersectUnion(pmp, exprhdl,
+												 true /*fIntersect*/);
+	}
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CLogicalIntersectAll";
-			}
+	//-------------------------------------------------------------------------------------
+	// Transformations
+	//-------------------------------------------------------------------------------------
 
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
+	// candidate set of xforms
+	CXformSet *
+	PxfsCandidates(IMemoryPool *pmp) const;
 
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr, BOOL fMustExist);
+	//-------------------------------------------------------------------------------------
+	// Derived Stats
+	//-------------------------------------------------------------------------------------
 
-			//-------------------------------------------------------------------------------------
-			// Derived Relational Properties
-			//-------------------------------------------------------------------------------------
+	// stat promise
+	virtual EStatPromise
+	Esp(CExpressionHandle &) const
+	{
+		return CLogical::EspHigh;
+	}
 
-			// derive max card
-			virtual
-			CMaxCard Maxcard(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	// derive statistics
+	virtual IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgPstat *pdrgpstatCtxt) const;
 
-			// derive key collections
-			virtual
-			CKeyCollection *PkcDeriveKeys(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
 
-			// derive constraint property
-			virtual
-			CPropConstraint *PpcDeriveConstraint
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl
-				)
-				const
-			{
-				return PpcDeriveConstraintIntersectUnion(pmp, exprhdl, true /*fIntersect*/);
-			}
+	// conversion function
+	static CLogicalIntersectAll *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopLogicalIntersectAll == pop->Eopid());
 
-			//-------------------------------------------------------------------------------------
-			// Transformations
-			//-------------------------------------------------------------------------------------
+		return reinterpret_cast<CLogicalIntersectAll *>(pop);
+	}
 
-			// candidate set of xforms
-			CXformSet *PxfsCandidates(IMemoryPool *pmp) const;
+	// derive statistics
+	static IStatistics *
+	PstatsDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				 DrgDrgPcr *pdrgpdrgpcrInput, DrgPcrs *pdrgpcrsOutput);
 
-			//-------------------------------------------------------------------------------------
-			// Derived Stats
-			//-------------------------------------------------------------------------------------
+};  // class CLogicalIntersectAll
 
-			// stat promise
-			virtual
-			EStatPromise Esp(CExpressionHandle &) const
-			{
-				return CLogical::EspHigh;
-			}
+}  // namespace gpopt
 
-			// derive statistics
-			virtual
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				DrgPstat *pdrgpstatCtxt
-				)
-				const;
-
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			//-------------------------------------------------------------------------------------
-			
-			// conversion function
-			static
-			CLogicalIntersectAll *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopLogicalIntersectAll == pop->Eopid());
-
-				return reinterpret_cast<CLogicalIntersectAll*>(pop);
-			}
-
-			// derive statistics
-			static
-			IStatistics *PstatsDerive
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				DrgDrgPcr *pdrgpdrgpcrInput,
-				DrgPcrs *pdrgpcrsOutput
-				);
-
-	}; // class CLogicalIntersectAll
-
-}
-
-#endif // !GPOPT_CLogicalIntersectAll_H
+#endif  // !GPOPT_CLogicalIntersectAll_H
 
 // EOF

@@ -6,7 +6,7 @@
 //		CParseHandlerCondList.h
 //
 //	@doc:
-//		SAX parse handler class for parsing the list of conditions in a 
+//		SAX parse handler class for parsing the list of conditions in a
 //		hash join or merge join node.
 //---------------------------------------------------------------------------
 
@@ -18,56 +18,49 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerCondList
-	//
-	//	@doc:
-	//		SAX parse handler class for parsing the list of conditions in a 
-	//		hash join or merge join node.
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerCondList : public CParseHandlerScalarOp
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-		
-			// private copy ctor
-			CParseHandlerCondList(const CParseHandlerCondList&); 
-		
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerCondList
+//
+//	@doc:
+//		SAX parse handler class for parsing the list of conditions in a
+//		hash join or merge join node.
+//
+//---------------------------------------------------------------------------
+class CParseHandlerCondList : public CParseHandlerScalarOp
+{
+private:
+	// private copy ctor
+	CParseHandlerCondList(const CParseHandlerCondList &);
 
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor
-			CParseHandlerCondList
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-	};
-}
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-#endif // !GPDXL_CParseHandlerCondList_H
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor
+	CParseHandlerCondList(IMemoryPool *pmp, CParseHandlerManager *pphm,
+						  CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerCondList_H
 
 // EOF

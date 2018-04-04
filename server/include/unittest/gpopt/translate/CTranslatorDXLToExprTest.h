@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Tests translating DXL trees into Expr tree
-//		
+//
 //---------------------------------------------------------------------------
 
 
@@ -27,67 +27,77 @@
 
 namespace gpopt
 {
-	using namespace gpos;
+using namespace gpos;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CTranslatorDXLToExprTest
-	//
-	//	@doc:
-	//		Static unit tests
-	//
-	//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//	@class:
+//		CTranslatorDXLToExprTest
+//
+//	@doc:
+//		Static unit tests
+//
+//---------------------------------------------------------------------------
 
-	class CTranslatorDXLToExprTest
-	{
-		private:
+class CTranslatorDXLToExprTest
+{
+private:
+	// translate a dxl document and check against the expected Expr tree's string representation
+	static GPOS_RESULT
+	EresTranslateAndCheck(
+		IMemoryPool *pmp,
+		const CHAR
+			*szDXLFileName,  // DXL document representing the DXL logical tree
+		const CWStringDynamic
+			*pstrExpQuery  // string representation of the expected query
+	);
 
-			// translate a dxl document and check against the expected Expr tree's string representation
-			static GPOS_RESULT EresTranslateAndCheck
-						(
-						IMemoryPool *pmp,
-						const CHAR *szDXLFileName, // DXL document representing the DXL logical tree
-						const CWStringDynamic *pstrExpQuery // string representation of the expected query
-						);
+	// translate a dxl document into Expr Tree
+	static CExpression *
+	Pexpr(IMemoryPool *pmp,  // memory pool
+		  const CHAR
+			  *szDXLFileName  // DXL document representing the DXL logical tree
+	);
 
-			// translate a dxl document into Expr Tree
-			static CExpression* Pexpr
-						(
-						IMemoryPool *pmp, // memory pool
-						const CHAR *szDXLFileName // DXL document representing the DXL logical tree
-						);
+	// generate a string representation of a given Expr tree
+	static CWStringDynamic *
+	Pstr(IMemoryPool *pmp, CExpression *pexpr);
 
-			// generate a string representation of a given Expr tree
-			static CWStringDynamic *Pstr
-					(
-					IMemoryPool *pmp,
-					CExpression *pexpr
-					);
+	// create a get expression for a table (r) with two integer columns
+	static CExpression *
+	PexprGet(IMemoryPool *pmp);
 
-			// create a get expression for a table (r) with two integer columns
-			static CExpression *PexprGet(IMemoryPool *pmp);
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
 
-		public:
+	// tests for supported operators
+	static GPOS_RESULT
+	EresUnittest_MetadataColumnMapping();
+	static GPOS_RESULT
+	EresUnittest_SingleTableQuery();
+	static GPOS_RESULT
+	EresUnittest_SelectQuery();
+	static GPOS_RESULT
+	EresUnittest_SelectQueryWithConst();
+	static GPOS_RESULT
+	EresUnittest_SelectQueryWithBoolExpr();
+	static GPOS_RESULT
+	EresUnittest_SelectQueryWithScalarOp();
+	static GPOS_RESULT
+	EresUnittest_Limit();
+	static GPOS_RESULT
+	EresUnittest_LimitNoOffset();
+	static GPOS_RESULT
+	EresUnittest_ScalarSubquery();
+	static GPOS_RESULT
+	EresUnittest_TVF();
+	static GPOS_RESULT
+	EresUnittest_SelectQueryWithConstInList();
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
+};  // class CTranslatorDXLToExprTest
+}  // namespace gpopt
 
-			// tests for supported operators
-			static GPOS_RESULT EresUnittest_MetadataColumnMapping();
-			static GPOS_RESULT EresUnittest_SingleTableQuery();
-			static GPOS_RESULT EresUnittest_SelectQuery();
-			static GPOS_RESULT EresUnittest_SelectQueryWithConst();
-			static GPOS_RESULT EresUnittest_SelectQueryWithBoolExpr();
-			static GPOS_RESULT EresUnittest_SelectQueryWithScalarOp();
-			static GPOS_RESULT EresUnittest_Limit();
-			static GPOS_RESULT EresUnittest_LimitNoOffset();
-			static GPOS_RESULT EresUnittest_ScalarSubquery();
-			static GPOS_RESULT EresUnittest_TVF();
-			static GPOS_RESULT EresUnittest_SelectQueryWithConstInList();
-			
-	}; // class CTranslatorDXLToExprTest
-}
-
-#endif // !GPOPT_CTranslatorDXLToExprTest_H
+#endif  // !GPOPT_CTranslatorDXLToExprTest_H
 
 // EOF

@@ -24,16 +24,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarCoerceToDomain::CDXLScalarCoerceToDomain
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	EdxlCoercionForm edxlcf,
-	INT iLoc
-	)
-	:
-	CDXLScalarCoerceBase(pmp, pmdidType, iTypeModifier, edxlcf, iLoc)
+CDXLScalarCoerceToDomain::CDXLScalarCoerceToDomain(IMemoryPool *pmp,
+												   IMDId *pmdidType,
+												   INT iTypeModifier,
+												   EdxlCoercionForm edxlcf,
+												   INT iLoc)
+	: CDXLScalarCoerceBase(pmp, pmdidType, iTypeModifier, edxlcf, iLoc)
 {
 }
 

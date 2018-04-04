@@ -31,15 +31,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerEnumeratorConfig::CParseHandlerEnumeratorConfig
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerBase(pmp, pphm, pphRoot),
-	m_pec(NULL)
+CParseHandlerEnumeratorConfig::CParseHandlerEnumeratorConfig(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerBase(pmp, pphm, pphRoot), m_pec(NULL)
 {
 }
 
@@ -65,26 +59,30 @@ CParseHandlerEnumeratorConfig::~CParseHandlerEnumeratorConfig()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerEnumeratorConfig::StartElement
-	(
-	const XMLCh* const , //xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const , //xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerEnumeratorConfig::StartElement(const XMLCh *const,  //xmlszUri,
+											const XMLCh *const xmlszLocalname,
+											const XMLCh *const,  //xmlszQname,
+											const Attributes &attrs)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenEnumeratorConfig), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenEnumeratorConfig), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse enumerator config options
-	ULLONG ullPlanId = CDXLOperatorFactory::UllValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenPlanId, EdxltokenOptimizerConfig);
-	ULLONG ullPlanSamples = CDXLOperatorFactory::UllValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenPlanSamples, EdxltokenOptimizerConfig);
-	CDouble dCostThreshold = CDXLOperatorFactory::DValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCostThreshold, EdxltokenOptimizerConfig);
+	ULLONG ullPlanId = CDXLOperatorFactory::UllValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenPlanId, EdxltokenOptimizerConfig);
+	ULLONG ullPlanSamples = CDXLOperatorFactory::UllValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenPlanSamples, EdxltokenOptimizerConfig);
+	CDouble dCostThreshold = CDXLOperatorFactory::DValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenCostThreshold, EdxltokenOptimizerConfig);
 
-	m_pec = GPOS_NEW(m_pmp) CEnumeratorConfig(m_pmp, ullPlanId, ullPlanSamples, dCostThreshold);
+	m_pec = GPOS_NEW(m_pmp)
+		CEnumeratorConfig(m_pmp, ullPlanId, ullPlanSamples, dCostThreshold);
 }
 
 //---------------------------------------------------------------------------
@@ -96,17 +94,18 @@ CParseHandlerEnumeratorConfig::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerEnumeratorConfig::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerEnumeratorConfig::EndElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenEnumeratorConfig), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenEnumeratorConfig), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
-		GPOS_RAISE( gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(NULL != m_pec);

@@ -25,14 +25,10 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalLeftAntiSemiHashJoinNotIn::CPhysicalLeftAntiSemiHashJoinNotIn
-	(
-	IMemoryPool *pmp,
-	DrgPexpr *pdrgpexprOuterKeys,
-	DrgPexpr *pdrgpexprInnerKeys
-	)
-	:
-	CPhysicalLeftAntiSemiHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
+CPhysicalLeftAntiSemiHashJoinNotIn::CPhysicalLeftAntiSemiHashJoinNotIn(
+	IMemoryPool *pmp, DrgPexpr *pdrgpexprOuterKeys,
+	DrgPexpr *pdrgpexprInnerKeys)
+	: CPhysicalLeftAntiSemiHashJoin(pmp, pdrgpexprOuterKeys, pdrgpexprInnerKeys)
 {
 }
 
@@ -45,23 +41,19 @@ CPhysicalLeftAntiSemiHashJoinNotIn::CPhysicalLeftAntiSemiHashJoinNotIn
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalLeftAntiSemiHashJoinNotIn::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsInput,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq // identifies which optimization request should be created
-	)
-	const
+CPhysicalLeftAntiSemiHashJoinNotIn::PdsRequired(
+	IMemoryPool *pmp, CExpressionHandle &exprhdl, CDistributionSpec *pdsInput,
+	ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+	ULONG ulOptReq  // identifies which optimization request should be created
+	) const
 {
 	GPOS_ASSERT(2 > ulChildIndex);
 	GPOS_ASSERT(ulOptReq < UlDistrRequests());
 
 	if (0 == ulOptReq && 1 == ulChildIndex &&
-			(FNullableHashKeys(exprhdl.Pdprel(0)->PcrsNotNull(), false /*fInner*/) ||
-			FNullableHashKeys(exprhdl.Pdprel(1)->PcrsNotNull(), true /*fInner*/)) )
+		(FNullableHashKeys(exprhdl.Pdprel(0)->PcrsNotNull(),
+						   false /*fInner*/) ||
+		 FNullableHashKeys(exprhdl.Pdprel(1)->PcrsNotNull(), true /*fInner*/)))
 	{
 		// we need to replicate the inner if any of the following is true:
 		// a. if the outer hash keys are nullable, because the executor needs to detect
@@ -71,8 +63,8 @@ CPhysicalLeftAntiSemiHashJoinNotIn::PdsRequired
 		return GPOS_NEW(pmp) CDistributionSpecReplicated();
 	}
 
-	return CPhysicalHashJoin::PdsRequired(pmp, exprhdl, pdsInput, ulChildIndex, pdrgpdpCtxt, ulOptReq);
+	return CPhysicalHashJoin::PdsRequired(pmp, exprhdl, pdsInput, ulChildIndex,
+										  pdrgpdpCtxt, ulOptReq);
 }
 
 // EOF
-

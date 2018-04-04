@@ -30,16 +30,11 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalPartitionSelectorDML::CPhysicalPartitionSelectorDML
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	HMUlExpr *phmulexprEqPredicates,
-	CColRef *pcrOid
-	)
-	:
-	CPhysicalPartitionSelector(pmp, pmdid, phmulexprEqPredicates),
-	m_pcrOid(pcrOid)
+CPhysicalPartitionSelectorDML::CPhysicalPartitionSelectorDML(
+	IMemoryPool *pmp, IMDId *pmdid, HMUlExpr *phmulexprEqPredicates,
+	CColRef *pcrOid)
+	: CPhysicalPartitionSelector(pmp, pmdid, phmulexprEqPredicates),
+	  m_pcrOid(pcrOid)
 {
 	GPOS_ASSERT(NULL != pcrOid);
 }
@@ -53,22 +48,20 @@ CPhysicalPartitionSelectorDML::CPhysicalPartitionSelectorDML
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalPartitionSelectorDML::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalPartitionSelectorDML::FMatch(COperator *pop) const
 {
 	if (Eopid() != pop->Eopid())
 	{
 		return false;
 	}
 
-	CPhysicalPartitionSelectorDML *popPartSelector = CPhysicalPartitionSelectorDML::PopConvert(pop);
+	CPhysicalPartitionSelectorDML *popPartSelector =
+		CPhysicalPartitionSelectorDML::PopConvert(pop);
 
 	return popPartSelector->Pmdid()->FEquals(m_pmdid) &&
-			popPartSelector->PcrOid() == m_pcrOid &&
-			FMatchExprMaps(popPartSelector->m_phmulexprEqPredicates, m_phmulexprEqPredicates);
+		   popPartSelector->PcrOid() == m_pcrOid &&
+		   FMatchExprMaps(popPartSelector->m_phmulexprEqPredicates,
+						  m_phmulexprEqPredicates);
 }
 
 //---------------------------------------------------------------------------
@@ -94,12 +87,8 @@ CPhysicalPartitionSelectorDML::UlHash() const
 //
 //---------------------------------------------------------------------------
 CPartFilterMap *
-CPhysicalPartitionSelectorDML::PpfmDerive
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalPartitionSelectorDML::PpfmDerive(IMemoryPool *,  //pmp,
+										  CExpressionHandle &exprhdl) const
 {
 	return PpfmPassThruOuter(exprhdl);
 }
@@ -113,16 +102,13 @@ CPhysicalPartitionSelectorDML::PpfmDerive
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalPartitionSelectorDML::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsInput,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalPartitionSelectorDML::PdsRequired(IMemoryPool *pmp,
+										   CExpressionHandle &exprhdl,
+										   CDistributionSpec *pdsInput,
+										   ULONG ulChildIndex,
+										   DrgPdp *,  // pdrgpdpCtxt
+										   ULONG	  // ulOptReq
+										   ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -132,13 +118,15 @@ CPhysicalPartitionSelectorDML::PdsRequired
 	CDistributionSpec::EDistributionType edtRequired = pdsInput->Edt();
 	if (CDistributionSpec::EdtHashed == edtRequired)
 	{
-		CDistributionSpecHashed *pdshashed = CDistributionSpecHashed::PdsConvert(pdsInput);
+		CDistributionSpecHashed *pdshashed =
+			CDistributionSpecHashed::PdsConvert(pdsInput);
 		pcrs = pdshashed->PcrsUsed(m_pmp);
 	}
 
 	if (CDistributionSpec::EdtRouted == edtRequired)
 	{
-		CDistributionSpecRouted *pdsrouted = CDistributionSpecRouted::PdsConvert(pdsInput);
+		CDistributionSpecRouted *pdsrouted =
+			CDistributionSpecRouted::PdsConvert(pdsInput);
 		pcrs = GPOS_NEW(m_pmp) CColRefSet(m_pmp);
 		pcrs->Include(pdsrouted->Pcr());
 	}
@@ -162,16 +150,13 @@ CPhysicalPartitionSelectorDML::PdsRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalPartitionSelectorDML::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	COrderSpec *posRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalPartitionSelectorDML::PosRequired(IMemoryPool *pmp,
+										   CExpressionHandle &exprhdl,
+										   COrderSpec *posRequired,
+										   ULONG ulChildIndex,
+										   DrgPdp *,  // pdrgpdpCtxt
+										   ULONG	  // ulOptReq
+										   ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -201,13 +186,10 @@ CPhysicalPartitionSelectorDML::PosRequired
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalPartitionSelectorDML::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalPartitionSelectorDML::FProvidesReqdCols(CExpressionHandle &exprhdl,
+												 CColRefSet *pcrsRequired,
+												 ULONG  // ulOptReq
+												 ) const
 {
 	GPOS_ASSERT(NULL != pcrsRequired);
 	GPOS_ASSERT(1 == exprhdl.UlArity());
@@ -234,20 +216,18 @@ CPhysicalPartitionSelectorDML::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalPartitionSelectorDML::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, //pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
+CPhysicalPartitionSelectorDML::PppsRequired(
+	IMemoryPool *pmp, CExpressionHandle &exprhdl,
+	CPartitionPropagationSpec *pppsRequired, ULONG ulChildIndex,
+	DrgPdp *,  //pdrgpdpCtxt,
+	ULONG	  //ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 	GPOS_ASSERT(NULL != pppsRequired);
 
-	return CPhysical::PppsRequiredPushThru(pmp, exprhdl, pppsRequired, ulChildIndex);
+	return CPhysical::PppsRequiredPushThru(pmp, exprhdl, pppsRequired,
+										   ulChildIndex);
 }
 
 //---------------------------------------------------------------------------
@@ -259,13 +239,10 @@ CPhysicalPartitionSelectorDML::PppsRequired
 //
 //---------------------------------------------------------------------------
 CPartIndexMap *
-CPhysicalPartitionSelectorDML::PpimDerive
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle &exprhdl,
-	CDrvdPropCtxt * //pdpctxt
-	)
-	const
+CPhysicalPartitionSelectorDML::PpimDerive(IMemoryPool *,  //pmp,
+										  CExpressionHandle &exprhdl,
+										  CDrvdPropCtxt *  //pdpctxt
+										  ) const
 {
 	return PpimPassThruOuter(exprhdl);
 }
@@ -279,12 +256,8 @@ CPhysicalPartitionSelectorDML::PpimDerive
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalPartitionSelectorDML::EpetOrder
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdOrder *peo
-	)
-	const
+CPhysicalPartitionSelectorDML::EpetOrder(CExpressionHandle &exprhdl,
+										 const CEnfdOrder *peo) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -292,7 +265,7 @@ CPhysicalPartitionSelectorDML::EpetOrder
 	COrderSpec *pos = CDrvdPropPlan::Pdpplan(exprhdl.Pdp())->Pos();
 	if (peo->FCompatible(pos))
 	{
-		return  CEnfdProp::EpetUnnecessary;
+		return CEnfdProp::EpetUnnecessary;
 	}
 
 	// Sort has to go above if sort columns use any column
@@ -317,12 +290,8 @@ CPhysicalPartitionSelectorDML::EpetOrder
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalPartitionSelectorDML::EpetDistribution
-	(
-	CExpressionHandle &exprhdl,
-	const CEnfdDistribution *ped
-	)
-	const
+CPhysicalPartitionSelectorDML::EpetDistribution(
+	CExpressionHandle &exprhdl, const CEnfdDistribution *ped) const
 {
 	GPOS_ASSERT(NULL != ped);
 
@@ -330,8 +299,8 @@ CPhysicalPartitionSelectorDML::EpetDistribution
 	CDistributionSpec *pds = CDrvdPropPlan::Pdpplan(exprhdl.Pdp())->Pds();
 	if (ped->FCompatible(pds))
 	{
-		 // required distribution is already provided
-		 return CEnfdProp::EpetUnnecessary;
+		// required distribution is already provided
+		return CEnfdProp::EpetUnnecessary;
 	}
 
 	if (exprhdl.FHasOuterRefs())
@@ -351,15 +320,9 @@ CPhysicalPartitionSelectorDML::EpetDistribution
 //
 //---------------------------------------------------------------------------
 IOstream &
-CPhysicalPartitionSelectorDML::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CPhysicalPartitionSelectorDML::OsPrint(IOstream &os) const
 {
-
-	os	<< SzId()
-		<< ", Part Table: ";
+	os << SzId() << ", Part Table: ";
 	m_pmdid->OsPrint(os);
 
 	return os;

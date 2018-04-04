@@ -17,186 +17,154 @@
 
 namespace gpopt
 {
+//---------------------------------------------------------------------------
+//	@class:
+//		CPhysicalCorrelatedLeftSemiNLJoin
+//
+//	@doc:
+//		Physical left semi NLJ operator capturing correlated execution for
+//		EXISTS subqueries
+//
+//---------------------------------------------------------------------------
+class CPhysicalCorrelatedLeftSemiNLJoin : public CPhysicalLeftSemiNLJoin
+{
+private:
+	// columns from inner child used in correlated execution
+	DrgPcr *m_pdrgpcrInner;
 
+	// origin subquery id
+	EOperatorId m_eopidOriginSubq;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPhysicalCorrelatedLeftSemiNLJoin
-	//
-	//	@doc:
-	//		Physical left semi NLJ operator capturing correlated execution for
-	//		EXISTS subqueries
-	//
-	//---------------------------------------------------------------------------
-	class CPhysicalCorrelatedLeftSemiNLJoin : public CPhysicalLeftSemiNLJoin
+	// private copy ctor
+	CPhysicalCorrelatedLeftSemiNLJoin(
+		const CPhysicalCorrelatedLeftSemiNLJoin &);
+
+public:
+	// ctor
+	CPhysicalCorrelatedLeftSemiNLJoin(IMemoryPool *pmp, DrgPcr *pdrgpcrInner,
+									  EOperatorId eopidOriginSubq)
+		: CPhysicalLeftSemiNLJoin(pmp),
+		  m_pdrgpcrInner(pdrgpcrInner),
+		  m_eopidOriginSubq(eopidOriginSubq)
 	{
+		GPOS_ASSERT(NULL != pdrgpcrInner);
 
-		private:
+		SetDistrRequests(UlDistrRequestsForCorrelatedJoin());
+		GPOS_ASSERT(0 < UlDistrRequests());
+	}
 
-			// columns from inner child used in correlated execution
-			DrgPcr *m_pdrgpcrInner;
+	// dtor
+	virtual ~CPhysicalCorrelatedLeftSemiNLJoin()
+	{
+		m_pdrgpcrInner->Release();
+	}
 
-			// origin subquery id
-			EOperatorId m_eopidOriginSubq;
+	// ident accessors
+	virtual EOperatorId
+	Eopid() const
+	{
+		return EopPhysicalCorrelatedLeftSemiNLJoin;
+	}
 
-			// private copy ctor
-			CPhysicalCorrelatedLeftSemiNLJoin(const CPhysicalCorrelatedLeftSemiNLJoin &);
+	// return a string for operator name
+	virtual const CHAR *
+	SzId() const
+	{
+		return "CPhysicalCorrelatedLeftSemiNLJoin";
+	}
 
-		public:
+	// match function
+	virtual BOOL
+	FMatch(COperator *pop) const
+	{
+		if (pop->Eopid() == Eopid())
+		{
+			return m_pdrgpcrInner->FEqual(
+				CPhysicalCorrelatedLeftSemiNLJoin::PopConvert(pop)
+					->PdrgPcrInner());
+		}
 
-			// ctor
-			CPhysicalCorrelatedLeftSemiNLJoin
-				(
-				IMemoryPool *pmp,
-				DrgPcr *pdrgpcrInner,
-				EOperatorId eopidOriginSubq
-				)
-				:
-				CPhysicalLeftSemiNLJoin(pmp),
-				m_pdrgpcrInner(pdrgpcrInner),
-				m_eopidOriginSubq(eopidOriginSubq)
-			{
-				GPOS_ASSERT(NULL != pdrgpcrInner);
+		return false;
+	}
 
-				SetDistrRequests(UlDistrRequestsForCorrelatedJoin());
-				GPOS_ASSERT(0 < UlDistrRequests());
-			}
+	// distribution matching type
+	virtual CEnfdDistribution::EDistributionMatching
+	Edm(CReqdPropPlan *,  // prppInput
+		ULONG,			  // ulChildIndex
+		DrgPdp *,		  //pdrgpdpCtxt
+		ULONG			  // ulOptReq
+	)
+	{
+		return CEnfdDistribution::EdmSatisfy;
+	}
 
-			// dtor
-			virtual
-			~CPhysicalCorrelatedLeftSemiNLJoin()
-			{
-				m_pdrgpcrInner->Release();
-			}
+	// compute required distribution of the n-th child
+	virtual CDistributionSpec *
+	PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				CDistributionSpec *pdsRequired, ULONG ulChildIndex,
+				DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const
+	{
+		return PdsRequiredCorrelatedJoin(pmp, exprhdl, pdsRequired,
+										 ulChildIndex, pdrgpdpCtxt, ulOptReq);
+	}
 
-			// ident accessors
-			virtual
-			EOperatorId Eopid() const
-			{
-				return EopPhysicalCorrelatedLeftSemiNLJoin;
-			}
+	// compute required rewindability of the n-th child
+	virtual CRewindabilitySpec *
+	PrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+				CRewindabilitySpec *prsRequired, ULONG ulChildIndex,
+				DrgPdp *pdrgpdpCtxt, ULONG ulOptReq) const
+	{
+		return PrsRequiredCorrelatedJoin(pmp, exprhdl, prsRequired,
+										 ulChildIndex, pdrgpdpCtxt, ulOptReq);
+	}
 
-			// return a string for operator name
-			virtual
-			const CHAR *SzId() const
-			{
-				return "CPhysicalCorrelatedLeftSemiNLJoin";
-			}
+	// return true if operator is a correlated NL Join
+	virtual BOOL
+	FCorrelated() const
+	{
+		return true;
+	}
 
-			// match function
-			virtual
-			BOOL FMatch
-				(
-				COperator *pop
-				)
-				const
-			{
-				if (pop->Eopid() == Eopid())
-				{
-					return m_pdrgpcrInner->FEqual(CPhysicalCorrelatedLeftSemiNLJoin::PopConvert(pop)->PdrgPcrInner());
-				}
+	// return required inner columns
+	virtual DrgPcr *
+	PdrgPcrInner() const
+	{
+		return m_pdrgpcrInner;
+	}
 
-				return false;
-			}
+	// origin subquery id
+	EOperatorId
+	EopidOriginSubq() const
+	{
+		return m_eopidOriginSubq;
+	}
 
-			// distribution matching type
-			virtual
-			CEnfdDistribution::EDistributionMatching Edm
-				(
-				CReqdPropPlan *, // prppInput
-				ULONG,  // ulChildIndex
-				DrgPdp *, //pdrgpdpCtxt
-				ULONG // ulOptReq
-				)
-			{
-				return CEnfdDistribution::EdmSatisfy;
-			}
+	// print
+	virtual IOstream &
+	OsPrint(IOstream &os) const
+	{
+		os << this->SzId() << "(";
+		(void) CUtils::OsPrintDrgPcr(os, m_pdrgpcrInner);
+		os << ")";
 
-			// compute required distribution of the n-th child
-			virtual
-			CDistributionSpec *PdsRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CDistributionSpec *pdsRequired,
-				ULONG ulChildIndex,
-				DrgPdp *pdrgpdpCtxt,
-				ULONG  ulOptReq
-				)
-				const
-			{
-				return PdsRequiredCorrelatedJoin(pmp, exprhdl, pdsRequired, ulChildIndex, pdrgpdpCtxt, ulOptReq);
-			}
+		return os;
+	}
 
-			// compute required rewindability of the n-th child
-			virtual
-			CRewindabilitySpec *PrsRequired
-				(
-				IMemoryPool *pmp,
-				CExpressionHandle &exprhdl,
-				CRewindabilitySpec *prsRequired,
-				ULONG ulChildIndex,
-				DrgPdp *pdrgpdpCtxt,
-				ULONG ulOptReq
-				)
-				const
-			{
-				return PrsRequiredCorrelatedJoin(pmp, exprhdl, prsRequired, ulChildIndex, pdrgpdpCtxt, ulOptReq);
-			}
+	// conversion function
+	static CPhysicalCorrelatedLeftSemiNLJoin *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopPhysicalCorrelatedLeftSemiNLJoin == pop->Eopid());
 
-			// return true if operator is a correlated NL Join
-			virtual
-			BOOL FCorrelated() const
-			{
-				return true;
-			}
+		return dynamic_cast<CPhysicalCorrelatedLeftSemiNLJoin *>(pop);
+	}
 
-			// return required inner columns
-			virtual
-			DrgPcr *PdrgPcrInner() const
-			{
-				return m_pdrgpcrInner;
-			}
+};  // class CPhysicalCorrelatedLeftSemiNLJoin
 
-			// origin subquery id
-			EOperatorId EopidOriginSubq() const
-			{
-				return m_eopidOriginSubq;
-			}
-
-			// print
-			virtual
-			IOstream &OsPrint
-				(
-				IOstream &os
-				)
-				const
-			{
-				os << this->SzId() << "(";
-				(void) CUtils::OsPrintDrgPcr(os, m_pdrgpcrInner);
-				os << ")";
-
-				return os;
-			}
-
-			// conversion function
-			static
-			CPhysicalCorrelatedLeftSemiNLJoin *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopPhysicalCorrelatedLeftSemiNLJoin == pop->Eopid());
-
-				return dynamic_cast<CPhysicalCorrelatedLeftSemiNLJoin*>(pop);
-			}
-
-	}; // class CPhysicalCorrelatedLeftSemiNLJoin
-
-}
+}  // namespace gpopt
 
 
-#endif // !GPOPT_CPhysicalCorrelatedLeftSemiNLJoin_H
+#endif  // !GPOPT_CPhysicalCorrelatedLeftSemiNLJoin_H
 
 // EOF

@@ -28,38 +28,36 @@ XERCES_CPP_NAMESPACE_USE
 
 
 //	ctor
-CParseHandlerValuesScan::CParseHandlerValuesScan
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot)
+CParseHandlerValuesScan::CParseHandlerValuesScan(IMemoryPool *pmp,
+												 CParseHandlerManager *pphm,
+												 CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot)
 {
 }
 
 
 //	processes a Xerces start element event
 void
-CParseHandlerValuesScan::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes &attrs
-	)
+CParseHandlerValuesScan::StartElement(const XMLCh *const xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const xmlszQname,
+									  const Attributes &attrs)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalValuesScan), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalValuesScan),
+				 xmlszLocalname))
 	{
 		m_pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalValuesScan(m_pmp);
 
 		// parse handler for the proj list
-		CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+		CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pphPrL);
 
 		//parse handler for the properties of the operator
-		CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+		CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphProp);
 
 		// store parse handlers
@@ -69,7 +67,9 @@ CParseHandlerValuesScan::StartElement
 	else
 	{
 		// parse scalar child
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarValuesList), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarValuesList), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		// store parse handler
@@ -81,16 +81,17 @@ CParseHandlerValuesScan::StartElement
 
 //	processes a Xerces end element event
 void
-CParseHandlerValuesScan::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerValuesScan::EndElement(const XMLCh *const,  // xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalValuesScan), xmlszLocalname))
+	if (0 != XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalValuesScan),
+				 xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -100,19 +101,22 @@ CParseHandlerValuesScan::EndElement
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);
 
 	// valuesscan has properties element as its first child
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
 
 	// set statistics and physical properties
 	CParseHandlerUtils::SetProperties(m_pdxln, pphProp);
 
 	// valuesscan has project list element as its second child
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
 	AddChildFromParseHandler(pphPrL);
 
 	// valuesscan child value list begins with third child
 	for (ULONG ul = 2; ul < ulArity; ul++)
 	{
-		CParseHandlerScalarValuesList *pphPScValuesList = dynamic_cast<CParseHandlerScalarValuesList *>((*this)[ul]);
+		CParseHandlerScalarValuesList *pphPScValuesList =
+			dynamic_cast<CParseHandlerScalarValuesList *>((*this)[ul]);
 		AddChildFromParseHandler(pphPScValuesList);
 	}
 
@@ -121,4 +125,3 @@ CParseHandlerValuesScan::EndElement
 }
 
 // EOF
-

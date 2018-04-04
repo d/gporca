@@ -17,83 +17,72 @@
 
 namespace gpopt
 {
+using namespace gpos;
 
-	using namespace gpos;
+//---------------------------------------------------------------------------
+//	@class:
+//		CScalarSubqueryExistential
+//
+//	@doc:
+//		Parent class for EXISTS/NOT EXISTS subquery operators
+//
+//---------------------------------------------------------------------------
+class CScalarSubqueryExistential : public CScalar
+{
+private:
+	// private copy ctor
+	CScalarSubqueryExistential(const CScalarSubqueryExistential &);
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CScalarSubqueryExistential
-	//
-	//	@doc:
-	//		Parent class for EXISTS/NOT EXISTS subquery operators
-	//
-	//---------------------------------------------------------------------------
-	class CScalarSubqueryExistential : public CScalar
+public:
+	// ctor
+	CScalarSubqueryExistential(IMemoryPool *pmp);
+
+	// dtor
+	virtual ~CScalarSubqueryExistential();
+
+	// return the type of the scalar expression
+	virtual IMDId *
+	PmdidType() const;
+
+	// match function
+	BOOL
+	FMatch(COperator *pop) const;
+
+	// sensitivity to order of inputs
+	BOOL
+	FInputOrderSensitive() const
 	{
-		private:
+		return true;
+	}
 
-			// private copy ctor
-			CScalarSubqueryExistential(const CScalarSubqueryExistential &);
+	// return a copy of the operator with remapped columns
+	virtual COperator *
+	PopCopyWithRemappedColumns(IMemoryPool *,  //pmp,
+							   HMUlCr *,	   //phmulcr,
+							   BOOL			   //fMustExist
+	)
+	{
+		return PopCopyDefault();
+	}
 
-		public:
+	// derive partition consumer info
+	virtual CPartInfo *
+	PpartinfoDerive(IMemoryPool *pmp, CExpressionHandle &exprhdl) const;
 
-			// ctor
-			CScalarSubqueryExistential(IMemoryPool *pmp);
+	// conversion function
+	static CScalarSubqueryExistential *
+	PopConvert(COperator *pop)
+	{
+		GPOS_ASSERT(NULL != pop);
+		GPOS_ASSERT(EopScalarSubqueryExists == pop->Eopid() ||
+					EopScalarSubqueryNotExists == pop->Eopid());
 
-			// dtor
-			virtual
-			~CScalarSubqueryExistential();
+		return dynamic_cast<CScalarSubqueryExistential *>(pop);
+	}
 
-			// return the type of the scalar expression
-			virtual 
-			IMDId *PmdidType() const;
+};  // class CScalarSubqueryExistential
+}  // namespace gpopt
 
-			// match function
-			BOOL FMatch(COperator *pop) const;
-
-			// sensitivity to order of inputs
-			BOOL FInputOrderSensitive() const
-			{
-				return true;
-			}
-
-			// return a copy of the operator with remapped columns
-			virtual
-			COperator *PopCopyWithRemappedColumns
-						(
-						IMemoryPool *, //pmp,
-						HMUlCr *, //phmulcr,
-						BOOL //fMustExist
-						)
-			{
-				return PopCopyDefault();
-			}
-			
-			// derive partition consumer info
-			virtual
-			CPartInfo *PpartinfoDerive
-				(
-				IMemoryPool *pmp, 
-				CExpressionHandle &exprhdl
-				) 
-				const;
-
-			// conversion function
-			static
-			CScalarSubqueryExistential *PopConvert
-				(
-				COperator *pop
-				)
-			{
-				GPOS_ASSERT(NULL != pop);
-				GPOS_ASSERT(EopScalarSubqueryExists == pop->Eopid() || EopScalarSubqueryNotExists == pop->Eopid());
-
-				return dynamic_cast<CScalarSubqueryExistential*>(pop);
-			}
-
-	}; // class CScalarSubqueryExistential
-}
-
-#endif // !GPOPT_CScalarSubqueryExistential_H
+#endif  // !GPOPT_CScalarSubqueryExistential_H
 
 // EOF

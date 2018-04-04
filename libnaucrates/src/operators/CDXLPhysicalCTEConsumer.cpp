@@ -28,16 +28,9 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLPhysicalCTEConsumer::CDXLPhysicalCTEConsumer
-	(
-	IMemoryPool *pmp,
-	ULONG ulId,
-	DrgPul *pdrgpulColIds
-	)
-	:
-	CDXLPhysical(pmp),
-	m_ulId(ulId),
-	m_pdrgpulColIds(pdrgpulColIds)
+CDXLPhysicalCTEConsumer::CDXLPhysicalCTEConsumer(IMemoryPool *pmp, ULONG ulId,
+												 DrgPul *pdrgpulColIds)
+	: CDXLPhysical(pmp), m_ulId(ulId), m_pdrgpulColIds(pdrgpulColIds)
 {
 	GPOS_ASSERT(NULL != pdrgpulColIds);
 }
@@ -92,19 +85,17 @@ CDXLPhysicalCTEConsumer::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalCTEConsumer::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLPhysicalCTEConsumer::SerializeToDXL(CXMLSerializer *pxmlser,
+										const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenCTEId), UlId());
 
-	CWStringDynamic *pstrColIds = CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulColIds);
+	CWStringDynamic *pstrColIds =
+		CDXLUtils::PstrSerialize(m_pmp, m_pdrgpulColIds);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenColumns), pstrColIds);
 	GPOS_DELETE(pstrColIds);
 
@@ -112,7 +103,8 @@ CDXLPhysicalCTEConsumer::SerializeToDXL
 	pdxln->SerializePropertiesToDXL(pxmlser);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -125,11 +117,8 @@ CDXLPhysicalCTEConsumer::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLPhysicalCTEConsumer::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) const
+CDXLPhysicalCTEConsumer::AssertValid(const CDXLNode *pdxln,
+									 BOOL fValidateChildren) const
 {
 	GPOS_ASSERT(1 == pdxln->UlArity());
 
@@ -140,8 +129,7 @@ CDXLPhysicalCTEConsumer::AssertValid
 	{
 		pdxlnPrL->Pdxlop()->AssertValid(pdxlnPrL, fValidateChildren);
 	}
-
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -33,10 +33,9 @@
 GPOS_RESULT
 CContradictionTest::EresUnittest()
 {
-	CUnittest rgut[] =
-		{
+	CUnittest rgut[] = {
 		GPOS_UNITTEST_FUNC(CContradictionTest::EresUnittest_Constraint),
-		};
+	};
 
 	return CUnittest::EresExecute(rgut, GPOS_ARRAY_SIZE(rgut));
 }
@@ -61,10 +60,9 @@ CContradictionTest::EresUnittest_Constraint()
 	CMDAccessor mda(pmp, CMDCache::Pcache(), CTestUtils::m_sysidDefault, pmdp);
 
 
-	typedef CExpression *(*Pfpexpr)(IMemoryPool*);
+	typedef CExpression *(*Pfpexpr)(IMemoryPool *);
 
-	Pfpexpr rgpf[] =
-		{
+	Pfpexpr rgpf[] = {
 		CTestUtils::PexprLogicalApplyWithOuterRef<CLogicalInnerApply>,
 		CTestUtils::PexprLogicalApply<CLogicalLeftSemiApply>,
 		CTestUtils::PexprLogicalApply<CLogicalLeftAntiSemiApply>,
@@ -89,18 +87,13 @@ CContradictionTest::EresUnittest_Constraint()
 		CTestUtils::PexprLogicalDynamicGet,
 		CTestUtils::PexprLogicalSequence,
 		CTestUtils::PexprLogicalTVFTwoArgs,
-		};
+	};
 
 	for (ULONG i = 0; i < GPOS_ARRAY_SIZE(rgpf); i++)
 	{
 		// install opt context in TLS
-		CAutoOptCtxt aoc
-						(
-						pmp,
-						&mda,
-						NULL,  /* pceeval */
-						CTestUtils::Pcm(pmp)
-						);
+		CAutoOptCtxt aoc(pmp, &mda, NULL, /* pceeval */
+						 CTestUtils::Pcm(pmp));
 
 		// generate simple expression
 		CExpression *pexpr = rgpf[i](pmp);
@@ -125,10 +118,13 @@ CContradictionTest::EresUnittest_Constraint()
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 		pexpr->DbgPrint();
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
- 		CExpression *pexprPreprocessed = CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
-		oss	<< std::endl << "PREPROCESSED EXPR:" << std::endl << *pexprPreprocessed << std::endl;
+		CExpression *pexprPreprocessed =
+			CExpressionPreprocessor::PexprPreprocess(pmp, pexpr);
+		oss << std::endl
+			<< "PREPROCESSED EXPR:" << std::endl
+			<< *pexprPreprocessed << std::endl;
 		GPOS_TRACE(str.Wsz());
 		str.Reset();
 

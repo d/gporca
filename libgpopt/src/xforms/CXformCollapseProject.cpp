@@ -25,29 +25,25 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformCollapseProject::CXformCollapseProject
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformExploration
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-					(
-					pmp,
-					GPOS_NEW(pmp) CLogicalProject(pmp),
-					GPOS_NEW(pmp) CExpression
-						(
-						pmp,
-						GPOS_NEW(pmp) CLogicalProject(pmp),
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
-						GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
-						),
-					GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
-					)
-		)
-{}
+CXformCollapseProject::CXformCollapseProject(IMemoryPool *pmp)
+	: CXformExploration(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(
+			  pmp, GPOS_NEW(pmp) CLogicalProject(pmp),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CLogicalProject(pmp),
+				  GPOS_NEW(pmp) CExpression(
+					  pmp,
+					  GPOS_NEW(pmp) CPatternLeaf(pmp)),  // relational child
+				  GPOS_NEW(pmp) CExpression(
+					  pmp,
+					  GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
+				  ),
+			  GPOS_NEW(pmp) CExpression(
+				  pmp, GPOS_NEW(pmp) CPatternTree(pmp))  // scalar project list
+			  ))
+{
+}
 
 
 
@@ -60,11 +56,8 @@ CXformCollapseProject::CXformCollapseProject
 //
 //---------------------------------------------------------------------------
 CXform::EXformPromise
-CXformCollapseProject::Exfp
-	(
-	CExpressionHandle &//exprhdl
-	)
-	const
+CXformCollapseProject::Exfp(CExpressionHandle &  //exprhdl
+							) const
 {
 	return CXform::ExfpHigh;
 }
@@ -79,13 +72,8 @@ CXformCollapseProject::Exfp
 //
 //---------------------------------------------------------------------------
 void
-CXformCollapseProject::Transform
-	(
-	CXformContext *pxfctxt,
-	CXformResult *pxfres,
-	CExpression *pexpr
-	)
-	const
+CXformCollapseProject::Transform(CXformContext *pxfctxt, CXformResult *pxfres,
+								 CExpression *pexpr) const
 {
 	GPOS_ASSERT(NULL != pxfctxt);
 	GPOS_ASSERT(NULL != pxfres);

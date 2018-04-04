@@ -20,12 +20,7 @@ using namespace gpdxl;
 
 
 // constructs a value list node
-CDXLScalarValuesList::CDXLScalarValuesList
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CDXLScalar(pmp)
+CDXLScalarValuesList::CDXLScalarValuesList(IMemoryPool *pmp) : CDXLScalar(pmp)
 {
 }
 
@@ -50,44 +45,36 @@ CDXLScalarValuesList::PstrOpName() const
 
 // serialize operator in DXL format
 void
-CDXLScalarValuesList::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarValuesList::SerializeToDXL(CXMLSerializer *pxmlser,
+									 const CDXLNode *pdxln) const
 {
 	GPOS_CHECK_ABORT;
 
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 
 	GPOS_CHECK_ABORT;
 }
 
 // conversion function
 CDXLScalarValuesList *
-CDXLScalarValuesList::PdxlopConvert
-	(
-	CDXLOperator *pdxlop
-	)
+CDXLScalarValuesList::PdxlopConvert(CDXLOperator *pdxlop)
 {
 	GPOS_ASSERT(NULL != pdxlop);
 	GPOS_ASSERT(EdxlopScalarValuesList == pdxlop->Edxlop());
 
-	return dynamic_cast<CDXLScalarValuesList*>(pdxlop);
+	return dynamic_cast<CDXLScalarValuesList *>(pdxlop);
 }
 
 // does the operator return a boolean result
 BOOL
-CDXLScalarValuesList::FBoolean
-	(
-	CMDAccessor * //pmda
-	)
-	const
+CDXLScalarValuesList::FBoolean(CMDAccessor *  //pmda
+							   ) const
 {
 	return false;
 }
@@ -96,26 +83,24 @@ CDXLScalarValuesList::FBoolean
 
 // checks whether operator node is well-structured
 void
-CDXLScalarValuesList::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarValuesList::AssertValid(const CDXLNode *pdxln,
+								  BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnConstVal = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnConstVal->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnConstVal->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
-			pdxlnConstVal->Pdxlop()->AssertValid(pdxlnConstVal, fValidateChildren);
+			pdxlnConstVal->Pdxlop()->AssertValid(pdxlnConstVal,
+												 fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

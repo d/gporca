@@ -10,22 +10,25 @@
 
 namespace gpopt
 {
-	// Static unit tests for equivalence classes
-	class CEquivalenceClassesTest
-	{
+// Static unit tests for equivalence classes
+class CEquivalenceClassesTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_NotDisjointEquivalanceClasses();
+	static GPOS_RESULT
+	EresUnittest_IntersectEquivalanceClasses();
+	static DrgPcrs *
+	createEquivalenceClasses(IMemoryPool *pmp, CColRefSet *pcrs,
+							 int breakpoints[]);
 
-		public:
+};  // class CEquivalenceClassesTest
+}  // namespace gpopt
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_NotDisjointEquivalanceClasses();
-			static GPOS_RESULT EresUnittest_IntersectEquivalanceClasses();
-			static DrgPcrs* createEquivalenceClasses(IMemoryPool *pmp, CColRefSet *pcrs, int breakpoints[]);
-
-	}; // class CEquivalenceClassesTest
-}
-
-#endif // !GPOPT_CEquivalenceClassesTest_H
+#endif  // !GPOPT_CEquivalenceClassesTest_H
 
 
 // EOF

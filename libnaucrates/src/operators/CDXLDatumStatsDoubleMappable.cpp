@@ -7,9 +7,9 @@
 //
 //	@doc:
 //		Implementation of DXL datum of types having double mapping
-//		
-//	@owner: 
-//		
+//
+//	@owner:
+//
 //
 //	@test:
 //
@@ -30,20 +30,12 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLDatumStatsDoubleMappable::CDXLDatumStatsDoubleMappable
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	BOOL fByVal,
-	BOOL fNull,
-	BYTE *pba,
-	ULONG ulLength,
-	CDouble dValue
-	)
-	:
-	CDXLDatumGeneric(pmp, pmdidType, iTypeModifier, fByVal, fNull, pba, ulLength),
-	m_dValue(dValue)
+CDXLDatumStatsDoubleMappable::CDXLDatumStatsDoubleMappable(
+	IMemoryPool *pmp, IMDId *pmdidType, INT iTypeModifier, BOOL fByVal,
+	BOOL fNull, BYTE *pba, ULONG ulLength, CDouble dValue)
+	: CDXLDatumGeneric(pmp, pmdidType, iTypeModifier, fByVal, fNull, pba,
+					   ulLength),
+	  m_dValue(dValue)
 {
 }
 //---------------------------------------------------------------------------
@@ -55,20 +47,20 @@ CDXLDatumStatsDoubleMappable::CDXLDatumStatsDoubleMappable
 //
 //---------------------------------------------------------------------------
 void
-CDXLDatumStatsDoubleMappable::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
+CDXLDatumStatsDoubleMappable::Serialize(CXMLSerializer *pxmlser)
 {
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	if (IDefaultTypeModifier != ITypeModifier())
 	{
-		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod), ITypeModifier());
+		pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenTypeMod),
+							  ITypeModifier());
 	}
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull), m_fNull);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue), m_fByVal);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), m_fNull, Pba(), UlLength());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDoubleValue), DStatsMapping());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenValue), m_fNull, Pba(),
+						  UlLength());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenDoubleValue),
+						  DStatsMapping());
 }
 
 // EOF

@@ -23,32 +23,22 @@ using namespace gpdxl;
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalDynamicBitmapTableScan::StartElement
-	(
-	const XMLCh* const,  // xmlszUri
- 	const XMLCh* const xmlszLocalname,
-	const XMLCh* const,  // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerPhysicalDynamicBitmapTableScan::StartElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const,  // xmlszQname
+	const Attributes &attrs)
 {
 	StartElementHelper(xmlszLocalname, EdxltokenPhysicalDynamicBitmapTableScan);
-	m_ulPartIndexId = CDXLOperatorFactory::UlValueFromAttrs
-						(
-						m_pphm->Pmm(),
-						attrs,
-						EdxltokenPartIndexId,
-						EdxltokenPhysicalDynamicBitmapTableScan
-						);
+	m_ulPartIndexId = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenPartIndexId,
+		EdxltokenPhysicalDynamicBitmapTableScan);
 
-	m_ulPartIndexIdPrintable = CDXLOperatorFactory::UlValueFromAttrs
-						(
-						m_pphm->Pmm(),
-						attrs,
-						EdxltokenPartIndexIdPrintable,
-						EdxltokenPhysicalDynamicBitmapTableScan,
-						true, //fOptional
-						m_ulPartIndexId
-						);
+	m_ulPartIndexIdPrintable = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenPartIndexIdPrintable,
+		EdxltokenPhysicalDynamicBitmapTableScan,
+		true,  //fOptional
+		m_ulPartIndexId);
 }
 
 //---------------------------------------------------------------------------
@@ -60,14 +50,14 @@ CParseHandlerPhysicalDynamicBitmapTableScan::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerPhysicalDynamicBitmapTableScan::EndElement
-	(
-	const XMLCh* const,  // xmlszUri
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const  // xmlszQname
-	)
+CParseHandlerPhysicalDynamicBitmapTableScan::EndElement(
+	const XMLCh *const,  // xmlszUri
+	const XMLCh *const xmlszLocalname,
+	const XMLCh *const  // xmlszQname
+)
 {
-	EndElementHelper(xmlszLocalname, EdxltokenPhysicalDynamicBitmapTableScan, m_ulPartIndexId, m_ulPartIndexIdPrintable);
+	EndElementHelper(xmlszLocalname, EdxltokenPhysicalDynamicBitmapTableScan,
+					 m_ulPartIndexId, m_ulPartIndexIdPrintable);
 }
 
 // EOF

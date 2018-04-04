@@ -9,8 +9,8 @@
 //		Implementation of the SAX parse handler class for parsing logical
 //		set operators.
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -33,17 +33,13 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerLogicalSetOp::CParseHandlerLogicalSetOp
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerLogicalOp(pmp, pphm, pphRoot),
-	m_edxlsetop(EdxlsetopSentinel),
-	m_pdrgpdrgpulInputColIds(NULL),
-	m_fCastAcrossInputs(false)
+CParseHandlerLogicalSetOp::CParseHandlerLogicalSetOp(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerLogicalOp(pmp, pphm, pphRoot),
+	  m_edxlsetop(EdxlsetopSentinel),
+	  m_pdrgpdrgpulInputColIds(NULL),
+	  m_fCastAcrossInputs(false)
 {
 }
 
@@ -68,38 +64,37 @@ CParseHandlerLogicalSetOp::~CParseHandlerLogicalSetOp()
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalSetOp::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerLogicalSetOp::StartElement(const XMLCh *const xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const xmlszQname,
+										const Attributes &attrs)
 {
-
 	if (0 == this->UlLength())
 	{
 		m_edxlsetop = Edxlsetop(xmlszLocalname);
 
 		if (EdxlsetopSentinel == m_edxlsetop)
 		{
-			GPOS_RAISE
-				(
-				gpdxl::ExmaDXL,
-				gpdxl::ExmiDXLUnexpectedTag,
-				CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname)->Wsz()
-				);
+			GPOS_RAISE(
+				gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag,
+				CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname)->Wsz());
 		}
 
 		// parse array of input colid arrays
-		const XMLCh *xmlszInputColIds = attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenInputCols));
-		m_pdrgpdrgpulInputColIds = CDXLOperatorFactory::PdrgpdrgpulFromXMLCh(m_pphm->Pmm(), xmlszInputColIds, EdxltokenInputCols, EdxltokenLogicalSetOperation);
+		const XMLCh *xmlszInputColIds =
+			attrs.getValue(CDXLTokens::XmlstrToken(EdxltokenInputCols));
+		m_pdrgpdrgpulInputColIds = CDXLOperatorFactory::PdrgpdrgpulFromXMLCh(
+			m_pphm->Pmm(), xmlszInputColIds, EdxltokenInputCols,
+			EdxltokenLogicalSetOperation);
 
 		// install column descriptor parsers
-		CParseHandlerBase *pphColDescr = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenColumns), m_pphm, this);
+		CParseHandlerBase *pphColDescr = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenColumns), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphColDescr);
 
-		m_fCastAcrossInputs = CDXLOperatorFactory::FValueFromAttrs(m_pphm->Pmm(), attrs, EdxltokenCastAcrossInputs, EdxltokenLogicalSetOperation);
+		m_fCastAcrossInputs = CDXLOperatorFactory::FValueFromAttrs(
+			m_pphm->Pmm(), attrs, EdxltokenCastAcrossInputs,
+			EdxltokenLogicalSetOperation);
 
 		// store child parse handler in array
 		this->Append(pphColDescr);
@@ -110,11 +105,12 @@ CParseHandlerLogicalSetOp::StartElement
 		GPOS_ASSERT(EdxlsetopSentinel != m_edxlsetop);
 
 		// create child node parsers
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
+		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 
 		this->Append(pphChild);
-		
+
 		pphChild->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
 	}
 }
@@ -128,37 +124,46 @@ CParseHandlerLogicalSetOp::StartElement
 //
 //---------------------------------------------------------------------------
 EdxlSetOpType
-CParseHandlerLogicalSetOp::Edxlsetop
-	(
-	const XMLCh* const xmlszLocalname
-	)
+CParseHandlerLogicalSetOp::Edxlsetop(const XMLCh *const xmlszLocalname)
 {
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalUnion), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalUnion),
+								 xmlszLocalname))
 	{
 		return EdxlsetopUnion;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalUnionAll), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalUnionAll), xmlszLocalname))
 	{
 		return EdxlsetopUnionAll;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalIntersect), xmlszLocalname))
+	if (0 ==
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenLogicalIntersect), xmlszLocalname))
 	{
 		return EdxlsetopIntersect;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalIntersectAll), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenLogicalIntersectAll),
+				 xmlszLocalname))
 	{
 		return EdxlsetopIntersectAll;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalDifference), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenLogicalDifference),
+				 xmlszLocalname))
 	{
 		return EdxlsetopDifference;
 	}
 
-	if (0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenLogicalDifferenceAll), xmlszLocalname))
+	if (0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenLogicalDifferenceAll),
+				 xmlszLocalname))
 	{
 		return EdxlsetopDifferenceAll;
 	}
@@ -175,18 +180,17 @@ CParseHandlerLogicalSetOp::Edxlsetop
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerLogicalSetOp::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerLogicalSetOp::EndElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
 	EdxlSetOpType edxlsetop = Edxlsetop(xmlszLocalname);
 
-	if(EdxlsetopSentinel == edxlsetop && m_edxlsetop != edxlsetop)
+	if (EdxlsetopSentinel == edxlsetop && m_edxlsetop != edxlsetop)
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
@@ -194,24 +198,28 @@ CParseHandlerLogicalSetOp::EndElement
 	GPOS_ASSERT(3 <= ulLen);
 
 	// get the columns descriptors
-	CParseHandlerColDescr *pphColDescr = dynamic_cast<CParseHandlerColDescr *>((*this)[0]);
+	CParseHandlerColDescr *pphColDescr =
+		dynamic_cast<CParseHandlerColDescr *>((*this)[0]);
 	GPOS_ASSERT(NULL != pphColDescr->Pdrgpdxlcd());
 	DrgPdxlcd *pdrgpdxlcd = pphColDescr->Pdrgpdxlcd();
 
 	pdrgpdxlcd->AddRef();
-	CDXLLogicalSetOp *pdxlop = GPOS_NEW(m_pmp) CDXLLogicalSetOp(m_pmp, edxlsetop, pdrgpdxlcd, m_pdrgpdrgpulInputColIds, m_fCastAcrossInputs);
+	CDXLLogicalSetOp *pdxlop = GPOS_NEW(m_pmp)
+		CDXLLogicalSetOp(m_pmp, edxlsetop, pdrgpdxlcd, m_pdrgpdrgpulInputColIds,
+						 m_fCastAcrossInputs);
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 
 	for (ULONG ul = 1; ul < ulLen; ul++)
 	{
 		// add constructed logical children from child parse handlers
-		CParseHandlerLogicalOp *pphChild = dynamic_cast<CParseHandlerLogicalOp*>((*this)[ul]);
+		CParseHandlerLogicalOp *pphChild =
+			dynamic_cast<CParseHandlerLogicalOp *>((*this)[ul]);
 		AddChildFromParseHandler(pphChild);
-	}		
-	
+	}
+
 #ifdef GPOS_DEBUG
 	m_pdxln->Pdxlop()->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 	// deactivate handler
 	m_pphm->DeactivateHandler();

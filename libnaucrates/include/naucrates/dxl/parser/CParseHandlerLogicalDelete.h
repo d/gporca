@@ -18,62 +18,57 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerLogicalDelete
-	//
-	//	@doc:
-	//		Parse handler for parsing a logical delete operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerLogicalDelete : public CParseHandlerLogicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerLogicalDelete
+//
+//	@doc:
+//		Parse handler for parsing a logical delete operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerLogicalDelete : public CParseHandlerLogicalOp
+{
+private:
+	// ctid column id
+	ULONG m_ulCtid;
 
-			// ctid column id
-			ULONG m_ulCtid;
+	// segmentId column id
+	ULONG m_ulSegmentId;
 
-			// segmentId column id
-			ULONG m_ulSegmentId;
+	// delete col ids
+	DrgPul *m_pdrgpulDelete;
 
-			// delete col ids
-			DrgPul *m_pdrgpulDelete;
+	// private copy ctor
+	CParseHandlerLogicalDelete(const CParseHandlerLogicalDelete &);
 
-			// private copy ctor
-			CParseHandlerLogicalDelete(const CParseHandlerLogicalDelete &);
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			void StartElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname,		// element's qname
-				const Attributes& attr				// element's attributes
-				);
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			void EndElement
-				(
-				const XMLCh* const xmlszUri, 		// URI of element's namespace
-				const XMLCh* const xmlszLocalname,	// local part of element's name
-				const XMLCh* const xmlszQname		// element's qname
-				);
+public:
+	// ctor
+	CParseHandlerLogicalDelete(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							   CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerLogicalDelete
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerLogicalDelete_H
+#endif  // !GPDXL_CParseHandlerLogicalDelete_H
 
 // EOF

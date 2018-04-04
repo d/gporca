@@ -16,16 +16,10 @@ using namespace gpos;
 using namespace gpdxl;
 
 // Ctor
-CDXLScalarPartListNullTest::CDXLScalarPartListNullTest
-	(
-	IMemoryPool *pmp,
-	ULONG ulLevel,
-	BOOL fIsNull
-	)
-	:
-	CDXLScalar(pmp),
-	m_ulLevel(ulLevel),
-	m_fIsNull(fIsNull)
+CDXLScalarPartListNullTest::CDXLScalarPartListNullTest(IMemoryPool *pmp,
+													   ULONG ulLevel,
+													   BOOL fIsNull)
+	: CDXLScalar(pmp), m_ulLevel(ulLevel), m_fIsNull(fIsNull)
 {
 }
 
@@ -45,19 +39,19 @@ CDXLScalarPartListNullTest::PstrOpName() const
 
 // Serialize operator in DXL format
 void
-CDXLScalarPartListNullTest::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * // pdxln
-	)
-	const
+CDXLScalarPartListNullTest::SerializeToDXL(CXMLSerializer *pxmlser,
+										   const CDXLNode *  // pdxln
+										   ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenPartLevel), m_ulLevel);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarIsNull), m_fIsNull);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenScalarIsNull),
+						  m_fIsNull);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 // partitioning level
@@ -76,11 +70,8 @@ CDXLScalarPartListNullTest::FIsNull() const
 
 // does the operator return a boolean result
 BOOL
-CDXLScalarPartListNullTest::FBoolean
-	(
-	CMDAccessor * //pmda
-	)
-	const
+CDXLScalarPartListNullTest::FBoolean(CMDAccessor *  //pmda
+									 ) const
 {
 	return true;
 }
@@ -88,28 +79,22 @@ CDXLScalarPartListNullTest::FBoolean
 #ifdef GPOS_DEBUG
 // Checks whether operator node is well-structured
 void
-CDXLScalarPartListNullTest::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarPartListNullTest::AssertValid(const CDXLNode *pdxln,
+										BOOL  // fValidateChildren
+										) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // conversion function
 CDXLScalarPartListNullTest *
-CDXLScalarPartListNullTest::PdxlopConvert
-	(
-	CDXLOperator *pdxlop
-	)
+CDXLScalarPartListNullTest::PdxlopConvert(CDXLOperator *pdxlop)
 {
 	GPOS_ASSERT(NULL != pdxlop);
 	GPOS_ASSERT(EdxlopScalarPartListNullTest == pdxlop->Edxlop());
 
-	return dynamic_cast<CDXLScalarPartListNullTest*>(pdxlop);
+	return dynamic_cast<CDXLScalarPartListNullTest *>(pdxlop);
 }
 
 // EOF

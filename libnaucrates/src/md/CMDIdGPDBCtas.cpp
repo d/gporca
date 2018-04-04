@@ -28,12 +28,8 @@ CMDIdGPDBCtas CMDIdGPDBCtas::m_mdidInvalidKey(0);
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CMDIdGPDBCtas::CMDIdGPDBCtas
-	(
-	OID oid
-	)
-	:
-	CMDIdGPDB(CSystemId(IMDId::EmdidGPDB, GPMD_GPDB_CTAS_SYSID), oid)
+CMDIdGPDBCtas::CMDIdGPDBCtas(OID oid)
+	: CMDIdGPDB(CSystemId(IMDId::EmdidGPDB, GPMD_GPDB_CTAS_SYSID), oid)
 {
 	Serialize();
 }
@@ -47,12 +43,8 @@ CMDIdGPDBCtas::CMDIdGPDBCtas
 //		Copy constructor
 //
 //---------------------------------------------------------------------------
-CMDIdGPDBCtas::CMDIdGPDBCtas
-	(
-	const CMDIdGPDBCtas &mdidSource
-	)
-	:
-	CMDIdGPDB(mdidSource.Sysid(), mdidSource.OidObjectId())
+CMDIdGPDBCtas::CMDIdGPDBCtas(const CMDIdGPDBCtas &mdidSource)
+	: CMDIdGPDB(mdidSource.Sysid(), mdidSource.OidObjectId())
 {
 	GPOS_ASSERT(mdidSource.FValid());
 	GPOS_ASSERT(IMDId::EmdidGPDBCtas == mdidSource.Emdidt());
@@ -69,20 +61,17 @@ CMDIdGPDBCtas::CMDIdGPDBCtas
 //
 //---------------------------------------------------------------------------
 BOOL
-CMDIdGPDBCtas::FEquals
-	(
-	const IMDId *pmdid
-	) 
-	const
+CMDIdGPDBCtas::FEquals(const IMDId *pmdid) const
 {
 	if (NULL == pmdid || EmdidGPDBCtas != pmdid->Emdidt())
 	{
 		return false;
 	}
-	
-	const CMDIdGPDBCtas *pmdidGPDBCTAS = CMDIdGPDBCtas::PmdidConvert(const_cast<IMDId *>(pmdid));
-	
-	return m_oid == pmdidGPDBCTAS->OidObjectId(); 
+
+	const CMDIdGPDBCtas *pmdidGPDBCTAS =
+		CMDIdGPDBCtas::PmdidConvert(const_cast<IMDId *>(pmdid));
+
+	return m_oid == pmdidGPDBCTAS->OidObjectId();
 }
 
 //---------------------------------------------------------------------------
@@ -93,7 +82,8 @@ CMDIdGPDBCtas::FEquals
 //		Is the mdid valid
 //
 //---------------------------------------------------------------------------
-BOOL CMDIdGPDBCtas::FValid() const
+BOOL
+CMDIdGPDBCtas::FValid() const
 {
 	return !FEquals(&CMDIdGPDBCtas::m_mdidInvalidKey);
 }
@@ -107,14 +97,10 @@ BOOL CMDIdGPDBCtas::FValid() const
 //
 //---------------------------------------------------------------------------
 IOstream &
-CMDIdGPDBCtas::OsPrint
-	(
-	IOstream &os
-	) 
-	const
+CMDIdGPDBCtas::OsPrint(IOstream &os) const
 {
-	os << "(" << OidObjectId() << "," << 
-				UlVersionMajor() << "." << UlVersionMinor() << ")";
+	os << "(" << OidObjectId() << "," << UlVersionMajor() << "."
+	   << UlVersionMinor() << ")";
 	return os;
 }
 

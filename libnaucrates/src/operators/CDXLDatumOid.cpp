@@ -9,7 +9,7 @@
 //		Implementation of DXL datum of type oid
 //
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -29,16 +29,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLDatumOid::CDXLDatumOid
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	BOOL fNull,
-	OID oidVal
-	)
-	:
-	CDXLDatum(pmp, pmdidType, IDefaultTypeModifier, fNull, 4 /*ulLength*/ ),
-	m_oidVal(oidVal)
+CDXLDatumOid::CDXLDatumOid(IMemoryPool *pmp, IMDId *pmdidType, BOOL fNull,
+						   OID oidVal)
+	: CDXLDatum(pmp, pmdidType, IDefaultTypeModifier, fNull, 4 /*ulLength*/),
+	  m_oidVal(oidVal)
 {
 }
 
@@ -65,14 +59,12 @@ CDXLDatumOid::OidValue() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLDatumOid::Serialize
-	(
-	CXMLSerializer *pxmlser
-	)
+CDXLDatumOid::Serialize(CXMLSerializer *pxmlser)
 {
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
 	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsNull), m_fNull);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue), FByValue());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenIsByValue),
+						  FByValue());
 
 	if (!m_fNull)
 	{

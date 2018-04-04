@@ -6,7 +6,7 @@
 //		CParseHandlerScalarSubquery.cpp
 //
 //	@doc:
-//		Implementation of the SAX parse handler class for parsing scalar subquery 
+//		Implementation of the SAX parse handler class for parsing scalar subquery
 //		operators.
 //---------------------------------------------------------------------------
 
@@ -30,15 +30,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarSubquery::CParseHandlerScalarSubquery
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot),
-	m_pdxlop(NULL)
+CParseHandlerScalarSubquery::CParseHandlerScalarSubquery(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot), m_pdxlop(NULL)
 {
 }
 
@@ -52,34 +46,30 @@ CParseHandlerScalarSubquery::CParseHandlerScalarSubquery
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubquery::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerScalarSubquery::StartElement(const XMLCh *const,  // xmlszUri,
+										  const XMLCh *const xmlszLocalname,
+										  const XMLCh *const,  // xmlszQname
+										  const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubquery), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarSubquery), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
-		
+
 	// parse column id
-	ULONG ulColId = CDXLOperatorFactory::UlValueFromAttrs
-										(
-										m_pphm->Pmm(),
-										attrs, 
-										EdxltokenColId,
-										EdxltokenScalarSubquery
-										);
+	ULONG ulColId = CDXLOperatorFactory::UlValueFromAttrs(
+		m_pphm->Pmm(), attrs, EdxltokenColId, EdxltokenScalarSubquery);
 	m_pdxlop = GPOS_NEW(m_pmp) CDXLScalarSubquery(m_pmp, ulColId);
 
 	// parse handler for child node
-	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
+	CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenLogical), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphChild);
-		
+
 	// store child parse handler in array
 	this->Append(pphChild);
 }
@@ -93,37 +83,38 @@ CParseHandlerScalarSubquery::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarSubquery::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarSubquery::EndElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarSubquery), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarSubquery), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct node from parsed components
 	GPOS_ASSERT(1 == this->UlLength());
 	GPOS_ASSERT(NULL != m_pdxlop);
-	
-	CParseHandlerLogicalOp *pphChild = dynamic_cast<CParseHandlerLogicalOp *>((*this)[0]);
 
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);	
+	CParseHandlerLogicalOp *pphChild =
+		dynamic_cast<CParseHandlerLogicalOp *>((*this)[0]);
+
+	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, m_pdxlop);
 
 	// add constructed child
 	AddChildFromParseHandler(pphChild);
 
 #ifdef GPOS_DEBUG
 	m_pdxlop->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
-	
+#endif  // GPOS_DEBUG
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }
 
 // EOF
-

@@ -29,26 +29,19 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarWindowRef::CDXLScalarWindowRef
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidFunc,
-	IMDId *pmdidRetType,
-	BOOL fDistinct,
-	BOOL fStarArg,
-	BOOL fSimpleAgg,
-	EdxlWinStage edxlwinstage,
-	ULONG ulWinspecPosition
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidFunc(pmdidFunc),
-	m_pmdidRetType(pmdidRetType),
-	m_fDistinct(fDistinct),
-	m_fStarArg(fStarArg),
-	m_fSimpleAgg(fSimpleAgg),
-	m_edxlwinstage(edxlwinstage),
-	m_ulWinspecPos(ulWinspecPosition)
+CDXLScalarWindowRef::CDXLScalarWindowRef(IMemoryPool *pmp, IMDId *pmdidFunc,
+										 IMDId *pmdidRetType, BOOL fDistinct,
+										 BOOL fStarArg, BOOL fSimpleAgg,
+										 EdxlWinStage edxlwinstage,
+										 ULONG ulWinspecPosition)
+	: CDXLScalar(pmp),
+	  m_pmdidFunc(pmdidFunc),
+	  m_pmdidRetType(pmdidRetType),
+	  m_fDistinct(fDistinct),
+	  m_fStarArg(fStarArg),
+	  m_fSimpleAgg(fSimpleAgg),
+	  m_edxlwinstage(edxlwinstage),
+	  m_ulWinspecPos(ulWinspecPosition)
 {
 	GPOS_ASSERT(m_pmdidFunc->FValid());
 	GPOS_ASSERT(m_pmdidRetType->FValid());
@@ -95,12 +88,10 @@ const CWStringConst *
 CDXLScalarWindowRef::PstrWinStage() const
 {
 	GPOS_ASSERT(EdxlwinstageSentinel > m_edxlwinstage);
-	ULONG rgrgulMapping[][2] =
-					{
-					{EdxlwinstageImmediate, EdxltokenWindowrefStageImmediate},
-					{EdxlwinstagePreliminary, EdxltokenWindowrefStagePreliminary},
-					{EdxlwinstageRowKey, EdxltokenWindowrefStageRowKey}
-					};
+	ULONG rgrgulMapping[][2] = {
+		{EdxlwinstageImmediate, EdxltokenWindowrefStageImmediate},
+		{EdxlwinstagePreliminary, EdxltokenWindowrefStagePreliminary},
+		{EdxlwinstageRowKey, EdxltokenWindowrefStageRowKey}};
 
 	const ULONG ulArity = GPOS_ARRAY_SIZE(rgrgulMapping);
 	for (ULONG ul = 0; ul < ulArity; ul++)
@@ -141,27 +132,31 @@ CDXLScalarWindowRef::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarWindowRef::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarWindowRef::SerializeToDXL(CXMLSerializer *pxmlser,
+									const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	m_pmdidFunc->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenWindowrefOid));
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	m_pmdidFunc->Serialize(pxmlser,
+						   CDXLTokens::PstrToken(EdxltokenWindowrefOid));
 	m_pmdidRetType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefDistinct),m_fDistinct);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefStarArg),m_fStarArg);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefSimpleAgg),m_fSimpleAgg);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefStrategy), PstrWinStage());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefWinSpecPos), m_ulWinspecPos);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefDistinct),
+						  m_fDistinct);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefStarArg),
+						  m_fStarArg);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefSimpleAgg),
+						  m_fSimpleAgg);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefStrategy),
+						  PstrWinStage());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenWindowrefWinSpecPos),
+						  m_ulWinspecPos);
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -173,11 +168,7 @@ CDXLScalarWindowRef::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarWindowRef::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarWindowRef::FBoolean(CMDAccessor *pmda) const
 {
 	IMDId *pmdid = pmda->Pmdfunc(m_pmdidFunc)->PmdidTypeResult();
 	return (IMDType::EtiBool == pmda->Pmdtype(pmdid)->Eti());
@@ -193,14 +184,11 @@ CDXLScalarWindowRef::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarWindowRef::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	)
-	const
+CDXLScalarWindowRef::AssertValid(const CDXLNode *pdxln,
+								 BOOL fValidateChildren) const
 {
-	EdxlWinStage edxlwinrefstage = ((CDXLScalarWindowRef*) pdxln->Pdxlop())->Edxlwinstage();
+	EdxlWinStage edxlwinrefstage =
+		((CDXLScalarWindowRef *) pdxln->Pdxlop())->Edxlwinstage();
 
 	GPOS_ASSERT((EdxlwinstageSentinel >= edxlwinrefstage));
 
@@ -208,14 +196,16 @@ CDXLScalarWindowRef::AssertValid
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnWinrefArg = (*pdxln)[ul];
-		GPOS_ASSERT(EdxloptypeScalar == pdxlnWinrefArg->Pdxlop()->Edxloperatortype());
+		GPOS_ASSERT(EdxloptypeScalar ==
+					pdxlnWinrefArg->Pdxlop()->Edxloperatortype());
 
 		if (fValidateChildren)
 		{
-			pdxlnWinrefArg->Pdxlop()->AssertValid(pdxlnWinrefArg, fValidateChildren);
+			pdxlnWinrefArg->Pdxlop()->AssertValid(pdxlnWinrefArg,
+												  fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

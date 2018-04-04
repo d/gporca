@@ -24,12 +24,7 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPoint::CPoint
-	(
-	IDatum *pdatum
-	)
-	: 
-	m_pdatum(pdatum)
+CPoint::CPoint(IDatum *pdatum) : m_pdatum(pdatum)
 {
 	GPOS_ASSERT(NULL != m_pdatum);
 }
@@ -43,11 +38,7 @@ CPoint::CPoint
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FEqual
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FEqual(const CPoint *ppoint) const
 {
 	GPOS_ASSERT(NULL != ppoint);
 	return m_pdatum->FStatsEqual(ppoint->m_pdatum);
@@ -62,11 +53,7 @@ CPoint::FEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FNotEqual
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FNotEqual(const CPoint *ppoint) const
 {
 	return !(this->FEqual(ppoint));
 }
@@ -80,14 +67,11 @@ CPoint::FNotEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FLessThan
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FLessThan(const CPoint *ppoint) const
 {
 	GPOS_ASSERT(NULL != ppoint);
-	return m_pdatum->FStatsComparable(ppoint->m_pdatum) && m_pdatum->FStatsLessThan(ppoint->m_pdatum);
+	return m_pdatum->FStatsComparable(ppoint->m_pdatum) &&
+		   m_pdatum->FStatsLessThan(ppoint->m_pdatum);
 }
 
 //---------------------------------------------------------------------------
@@ -99,11 +83,7 @@ CPoint::FLessThan
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FLessThanOrEqual
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FLessThanOrEqual(const CPoint *ppoint) const
 {
 	return (this->FLessThan(ppoint) || this->FEqual(ppoint));
 }
@@ -117,13 +97,10 @@ CPoint::FLessThanOrEqual
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FGreaterThan
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FGreaterThan(const CPoint *ppoint) const
 {
-	return m_pdatum->FStatsComparable(ppoint->m_pdatum) && m_pdatum->FStatsGreaterThan(ppoint->m_pdatum);
+	return m_pdatum->FStatsComparable(ppoint->m_pdatum) &&
+		   m_pdatum->FStatsGreaterThan(ppoint->m_pdatum);
 }
 
 //---------------------------------------------------------------------------
@@ -135,11 +112,7 @@ CPoint::FGreaterThan
 //
 //---------------------------------------------------------------------------
 BOOL
-CPoint::FGreaterThanOrEqual
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::FGreaterThanOrEqual(const CPoint *ppoint) const
 {
 	return (this->FGreaterThan(ppoint) || this->FEqual(ppoint));
 }
@@ -153,11 +126,7 @@ CPoint::FGreaterThanOrEqual
 //
 //---------------------------------------------------------------------------
 CDouble
-CPoint::DDistance
-	(
-	const CPoint *ppoint
-	)
-	const
+CPoint::DDistance(const CPoint *ppoint) const
 {
 	GPOS_ASSERT(NULL != ppoint);
 	if (m_pdatum->FStatsComparable(ppoint->m_pdatum))
@@ -178,12 +147,8 @@ CPoint::DDistance
 //		Print function
 //
 //---------------------------------------------------------------------------
-IOstream&
-CPoint::OsPrint
-	(
-	IOstream &os
-	)
-	const
+IOstream &
+CPoint::OsPrint(IOstream &os) const
 {
 	m_pdatum->OsPrint(os);
 	return os;
@@ -198,11 +163,7 @@ CPoint::OsPrint
 //
 //---------------------------------------------------------------------------
 CPoint *
-CPoint::PpointMin
-	(
-	CPoint *ppoint1,
-	CPoint *ppoint2
-	)
+CPoint::PpointMin(CPoint *ppoint1, CPoint *ppoint2)
 {
 	if (ppoint1->FLessThanOrEqual(ppoint2))
 	{
@@ -220,11 +181,7 @@ CPoint::PpointMin
 //
 //---------------------------------------------------------------------------
 CPoint *
-CPoint::PpointMax
-	(
-	CPoint *ppoint1,
-	CPoint *ppoint2
-	)
+CPoint::PpointMax(CPoint *ppoint1, CPoint *ppoint2)
 {
 	if (ppoint1->FGreaterThanOrEqual(ppoint2))
 	{
@@ -241,12 +198,7 @@ CPoint::PpointMax
 //		Translate the point into its DXL representation
 //---------------------------------------------------------------------------
 CDXLDatum *
-CPoint::Pdxldatum
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda
-	)
-	const
+CPoint::Pdxldatum(IMemoryPool *pmp, CMDAccessor *pmda) const
 {
 	IMDId *pmdid = m_pdatum->Pmdid();
 	return pmda->Pmdtype(pmdid)->Pdxldatum(pmp, m_pdatum);

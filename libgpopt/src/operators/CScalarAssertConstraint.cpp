@@ -25,14 +25,9 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarAssertConstraint::CScalarAssertConstraint
-	(
-	IMemoryPool *pmp,
-	CWStringBase *pstrErrorMsg
-	)
-	:
-	CScalar(pmp),
-	m_pstrErrorMsg(pstrErrorMsg)
+CScalarAssertConstraint::CScalarAssertConstraint(IMemoryPool *pmp,
+												 CWStringBase *pstrErrorMsg)
+	: CScalar(pmp), m_pstrErrorMsg(pstrErrorMsg)
 {
 	GPOS_ASSERT(NULL != pstrErrorMsg);
 }
@@ -60,18 +55,15 @@ CScalarAssertConstraint::~CScalarAssertConstraint()
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarAssertConstraint::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarAssertConstraint::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() != Eopid())
 	{
 		return false;
 	}
-	
-	return m_pstrErrorMsg->FEquals(CScalarAssertConstraint::PopConvert(pop)->PstrErrorMsg());
+
+	return m_pstrErrorMsg->FEquals(
+		CScalarAssertConstraint::PopConvert(pop)->PstrErrorMsg());
 }
 
 //---------------------------------------------------------------------------
@@ -83,16 +75,12 @@ CScalarAssertConstraint::FMatch
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarAssertConstraint::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarAssertConstraint::OsPrint(IOstream &os) const
 {
 	os << SzId() << " (ErrorMsg: ";
 	os << PstrErrorMsg()->Wsz();
 	os << ")";
-	
+
 	return os;
 }
 
@@ -113,4 +101,3 @@ CScalarAssertConstraint::PmdidType() const
 
 
 // EOF
-

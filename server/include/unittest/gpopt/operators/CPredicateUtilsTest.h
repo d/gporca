@@ -15,30 +15,33 @@
 
 namespace gpopt
 {
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CPredicateUtilsTest
-	//
-	//	@doc:
-	//		Unittests
-	//
-	//---------------------------------------------------------------------------
-	class CPredicateUtilsTest
-	{
+//---------------------------------------------------------------------------
+//	@class:
+//		CPredicateUtilsTest
+//
+//	@doc:
+//		Unittests
+//
+//---------------------------------------------------------------------------
+class CPredicateUtilsTest
+{
+public:
+	// unittests
+	static GPOS_RESULT
+	EresUnittest();
+	static GPOS_RESULT
+	EresUnittest_Conjunctions();
+	static GPOS_RESULT
+	EresUnittest_Disjunctions();
+	static GPOS_RESULT
+	EresUnittest_PlainEqualities();
+	static GPOS_RESULT
+	EresUnittest_Implication();
 
-		public:
 
-			// unittests
-			static GPOS_RESULT EresUnittest();
-			static GPOS_RESULT EresUnittest_Conjunctions();
-			static GPOS_RESULT EresUnittest_Disjunctions();
-			static GPOS_RESULT EresUnittest_PlainEqualities();
-			static GPOS_RESULT EresUnittest_Implication();
+};  // class CPredicateUtilsTest
+}  // namespace gpopt
 
-
-	}; // class CPredicateUtilsTest
-}
-
-#endif // !GPOPT_CPredicateUtilsTest_H
+#endif  // !GPOPT_CPredicateUtilsTest_H
 
 // EOF

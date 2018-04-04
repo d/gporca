@@ -19,72 +19,67 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	enum Edxlbs
+enum Edxlbs
+{
+	EdxlbsIndexProjList = 0,
+	EdxlbsIndexFilter,
+	EdxlbsIndexRecheckCond,
+	EdxlbsIndexBitmap,
+	EdxlbsSentinel
+};
+
+// fwd declarations
+class CDXLTableDescr;
+class CXMLSerializer;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalAbstractBitmapScan
+//
+//	@doc:
+//		Parent class for representing DXL bitmap table scan operators, both not
+//		partitioned and dynamic.
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalAbstractBitmapScan : public CDXLPhysical
+{
+private:
+	// private copy ctor
+	CDXLPhysicalAbstractBitmapScan(const CDXLPhysicalAbstractBitmapScan &);
+
+protected:
+	// table descriptor for the scanned table
+	CDXLTableDescr *m_pdxltabdesc;
+
+public:
+	// ctor
+	CDXLPhysicalAbstractBitmapScan(IMemoryPool *pmp,
+								   CDXLTableDescr *pdxltabdesc)
+		: CDXLPhysical(pmp), m_pdxltabdesc(pdxltabdesc)
 	{
-		EdxlbsIndexProjList = 0,
-		EdxlbsIndexFilter,
-		EdxlbsIndexRecheckCond,
-		EdxlbsIndexBitmap,
-		EdxlbsSentinel
-	};
+		GPOS_ASSERT(NULL != pdxltabdesc);
+	}
 
-	// fwd declarations
-	class CDXLTableDescr;
-	class CXMLSerializer;
+	// dtor
+	virtual ~CDXLPhysicalAbstractBitmapScan();
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalAbstractBitmapScan
-	//
-	//	@doc:
-	//		Parent class for representing DXL bitmap table scan operators, both not
-	//		partitioned and dynamic.
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalAbstractBitmapScan : public CDXLPhysical
+	// table descriptor
+	const CDXLTableDescr *
+	Pdxltabdesc()
 	{
-		private:
-			// private copy ctor
-			CDXLPhysicalAbstractBitmapScan(const CDXLPhysicalAbstractBitmapScan &);
-
-		protected:
-			// table descriptor for the scanned table
-			CDXLTableDescr *m_pdxltabdesc;
-
-		public:
-			// ctor
-			CDXLPhysicalAbstractBitmapScan
-				(
-				IMemoryPool *pmp,
-				CDXLTableDescr *pdxltabdesc
-				)
-				:
-				CDXLPhysical(pmp),
-				m_pdxltabdesc(pdxltabdesc)
-			{
-				GPOS_ASSERT(NULL != pdxltabdesc);
-			}
-
-			// dtor
-			virtual
-			~CDXLPhysicalAbstractBitmapScan();
-
-			// table descriptor
-			const CDXLTableDescr *Pdxltabdesc()
-			{
-				return m_pdxltabdesc;
-			}
+		return m_pdxltabdesc;
+	}
 
 #ifdef GPOS_DEBUG
-			// checks whether the operator has valid structure, i.e. number and
-			// types of child nodes
-			virtual
-			void AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
-#endif // GPOS_DEBUG
-	};  // class CDXLPhysicalAbstractBitmapScan
-}
+	// checks whether the operator has valid structure, i.e. number and
+	// types of child nodes
+	virtual void
+	AssertValid(const CDXLNode *pdxln, BOOL fValidateChildren) const;
+#endif  // GPOS_DEBUG
+};		// class CDXLPhysicalAbstractBitmapScan
+}  // namespace gpdxl
 
 #endif  // !GPDXL_CDXLPhysicalAbstractBitmapScan_H
 

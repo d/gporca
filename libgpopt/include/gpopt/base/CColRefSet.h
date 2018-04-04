@@ -21,129 +21,148 @@
 
 namespace gpopt
 {
+// fwd decl
+class CColRefSet;
 
-	// fwd decl
-	class CColRefSet;
-	
-	// short hand for colref set array
-	typedef CDynamicPtrArray<CColRefSet, CleanupRelease> DrgPcrs;
+// short hand for colref set array
+typedef CDynamicPtrArray<CColRefSet, CleanupRelease> DrgPcrs;
 
-	// hash map mapping CColRef -> CColRefSet
-	typedef CHashMap<CColRef, CColRefSet, gpos::UlHash<CColRef>, gpos::FEqual<CColRef>,
-					CleanupNULL<CColRef>, CleanupRelease<CColRefSet> > HMCrCrs;
+// hash map mapping CColRef -> CColRefSet
+typedef CHashMap<CColRef, CColRefSet, gpos::UlHash<CColRef>,
+				 gpos::FEqual<CColRef>, CleanupNULL<CColRef>,
+				 CleanupRelease<CColRefSet> >
+	HMCrCrs;
 
-	// hash map mapping INT -> CColRef
-	typedef CHashMap<INT, CColRef, gpos::UlHash<INT>, gpos::FEqual<INT>,
-					CleanupDelete<INT>, CleanupNULL<CColRef> > HMICr;
+// hash map mapping INT -> CColRef
+typedef CHashMap<INT, CColRef, gpos::UlHash<INT>, gpos::FEqual<INT>,
+				 CleanupDelete<INT>, CleanupNULL<CColRef> >
+	HMICr;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CColRefSet
-	//
-	//	@doc:
-	//		Column reference sets based on bitsets
-	//
-	//		Redefine accessors by bit index to be private to make super class' 
-	//		member functions inaccessible
-	//
-	//---------------------------------------------------------------------------
-	class CColRefSet : public CBitSet
-	{
-		// bitset iter needs to access internals
-		friend class CColRefSetIter;
-			
-		private:
-						
-			// determine if bit is set
-			BOOL FBit(ULONG ulBit) const;
-			
-			// set given bit; return previous value
-			BOOL FExchangeSet(ULONG ulBit);
-						
-			// clear given bit; return previous value
-			BOOL FExchangeClear(ULONG ulBit);
+//---------------------------------------------------------------------------
+//	@class:
+//		CColRefSet
+//
+//	@doc:
+//		Column reference sets based on bitsets
+//
+//		Redefine accessors by bit index to be private to make super class'
+//		member functions inaccessible
+//
+//---------------------------------------------------------------------------
+class CColRefSet : public CBitSet
+{
+	// bitset iter needs to access internals
+	friend class CColRefSetIter;
 
-		public:
-				
-			// ctor
-			explicit
-			CColRefSet(IMemoryPool *pmp, ULONG ulSizeBits = GPOPT_COLREFSET_SIZE);
+private:
+	// determine if bit is set
+	BOOL
+	FBit(ULONG ulBit) const;
 
-			explicit
-			CColRefSet(IMemoryPool *pmp, const CColRefSet &);
-			
-			// ctor, copy from col refs array
-			CColRefSet(IMemoryPool *pmp, const DrgPcr *pdrgpcr, ULONG ulSizeBits = GPOPT_COLREFSET_SIZE);
+	// set given bit; return previous value
+	BOOL
+	FExchangeSet(ULONG ulBit);
 
-			// dtor
-			~CColRefSet();
-			
-			// determine if bit is set
-			BOOL FMember(const CColRef *pcr) const;
-			
-			// return random member
-			CColRef *PcrAny() const;
-			
-			// return first member
-			CColRef *PcrFirst() const;
+	// clear given bit; return previous value
+	BOOL
+	FExchangeClear(ULONG ulBit);
 
-			// include column
-			void Include(const CColRef *pcr);
+public:
+	// ctor
+	explicit CColRefSet(IMemoryPool *pmp,
+						ULONG ulSizeBits = GPOPT_COLREFSET_SIZE);
 
-			// include column array
-			void Include(const DrgPcr *pdrgpcr);
+	explicit CColRefSet(IMemoryPool *pmp, const CColRefSet &);
 
-			// include column set
-			void Include(const CColRefSet *pcrs);
-						
-			// remove column
-			void Exclude(const CColRef *pcr);
-			
-			// remove column array
-			void Exclude(const DrgPcr *pdrgpcr);
+	// ctor, copy from col refs array
+	CColRefSet(IMemoryPool *pmp, const DrgPcr *pdrgpcr,
+			   ULONG ulSizeBits = GPOPT_COLREFSET_SIZE);
 
-			// remove column set
-			void Exclude(const CColRefSet *pcrs);
-			
-			// replace column with another column
-			void Replace(const CColRef *pcrOut, const CColRef *pcrIn);
+	// dtor
+	~CColRefSet();
 
-			// replace column array with another column array
-			void Replace(const DrgPcr *pdrgpcrOut, const DrgPcr *pdrgpcrIn);
+	// determine if bit is set
+	BOOL
+	FMember(const CColRef *pcr) const;
 
-			// check if the current colrefset is a subset of any of the colrefsets
-			// in the given array
-			BOOL FContained(const DrgPcrs *pdrgpcrs);
+	// return random member
+	CColRef *
+	PcrAny() const;
 
-			// convert to array
-			DrgPcr *Pdrgpcr(IMemoryPool *pmp) const;
+	// return first member
+	CColRef *
+	PcrFirst() const;
 
-			// hash function
-			ULONG UlHash();	
+	// include column
+	void
+	Include(const CColRef *pcr);
 
-			// debug print
-			IOstream &OsPrint(IOstream &os, ULONG ulLenMax = ULONG_MAX) const;
+	// include column array
+	void
+	Include(const DrgPcr *pdrgpcr);
 
-			// extract all column ids
-			void ExtractColIds(IMemoryPool *pmp, DrgPul *pdrgpulColIds) const;
+	// include column set
+	void
+	Include(const CColRefSet *pcrs);
 
-			// are the columns in the column reference set covered by the array of column ref sets
-			static
-			BOOL FCovered(DrgPcrs *pdrgpcrs, CColRefSet *pcrs);
+	// remove column
+	void
+	Exclude(const CColRef *pcr);
 
-	}; // class CColRefSet
+	// remove column array
+	void
+	Exclude(const DrgPcr *pdrgpcr);
+
+	// remove column set
+	void
+	Exclude(const CColRefSet *pcrs);
+
+	// replace column with another column
+	void
+	Replace(const CColRef *pcrOut, const CColRef *pcrIn);
+
+	// replace column array with another column array
+	void
+	Replace(const DrgPcr *pdrgpcrOut, const DrgPcr *pdrgpcrIn);
+
+	// check if the current colrefset is a subset of any of the colrefsets
+	// in the given array
+	BOOL
+	FContained(const DrgPcrs *pdrgpcrs);
+
+	// convert to array
+	DrgPcr *
+	Pdrgpcr(IMemoryPool *pmp) const;
+
+	// hash function
+	ULONG
+	UlHash();
+
+	// debug print
+	IOstream &
+	OsPrint(IOstream &os, ULONG ulLenMax = ULONG_MAX) const;
+
+	// extract all column ids
+	void
+	ExtractColIds(IMemoryPool *pmp, DrgPul *pdrgpulColIds) const;
+
+	// are the columns in the column reference set covered by the array of column ref sets
+	static BOOL
+	FCovered(DrgPcrs *pdrgpcrs, CColRefSet *pcrs);
+
+};  // class CColRefSet
 
 
-	// shorthand for printing
-	inline
-	IOstream &operator << (IOstream &os, CColRefSet &crf)
-	{
-		return crf.OsPrint(os);
-	}
-
+// shorthand for printing
+inline IOstream &
+operator<<(IOstream &os, CColRefSet &crf)
+{
+	return crf.OsPrint(os);
 }
 
-#endif // !GPOS_CColRefSet_H
+}  // namespace gpopt
+
+#endif  // !GPOS_CColRefSet_H
 
 
 // EOF

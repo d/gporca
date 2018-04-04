@@ -25,16 +25,10 @@ using namespace gpdxl;
 //		Constructs a ScalarArrayComp node
 //
 //---------------------------------------------------------------------------
-CDXLScalarArrayComp::CDXLScalarArrayComp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp,
-	const CWStringConst *pstrOpName,
-	EdxlArrayCompType edxlcomptype
-	)
-	:
-	CDXLScalarComp(pmp, pmdidOp, pstrOpName),
-	m_edxlcomptype(edxlcomptype)
+CDXLScalarArrayComp::CDXLScalarArrayComp(IMemoryPool *pmp, IMDId *pmdidOp,
+										 const CWStringConst *pstrOpName,
+										 EdxlArrayCompType edxlcomptype)
+	: CDXLScalarComp(pmp, pmdidOp, pstrOpName), m_edxlcomptype(edxlcomptype)
 {
 }
 
@@ -112,22 +106,22 @@ CDXLScalarArrayComp::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArrayComp::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarArrayComp::SerializeToDXL(CXMLSerializer *pxmlser,
+									const CDXLNode *pdxln) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpName), m_pstrCompOpName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpName),
+						  m_pstrCompOpName);
 	m_pmdid->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenOpNo));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpType), PstrArrayCompType());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenOpType),
+						  PstrArrayCompType());
 
 	pdxln->SerializeChildrenToDXL(pxmlser);
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 #ifdef GPOS_DEBUG
@@ -140,12 +134,8 @@ CDXLScalarArrayComp::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarArrayComp::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarArrayComp::AssertValid(const CDXLNode *pdxln,
+								 BOOL fValidateChildren) const
 {
 	const ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(2 == ulArity);
@@ -154,14 +144,14 @@ CDXLScalarArrayComp::AssertValid
 	{
 		CDXLNode *pdxlnArg = (*pdxln)[ul];
 		GPOS_ASSERT(EdxloptypeScalar == pdxlnArg->Pdxlop()->Edxloperatortype());
-		
+
 		if (fValidateChildren)
 		{
 			pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 
 // EOF

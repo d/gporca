@@ -29,12 +29,8 @@ using namespace gpopt;
 
 
 // initialization of static variables
-const CHAR *CEnfdDistribution::m_szDistributionMatching[EdmSentinel] =
-{
-	"exact",
-	"satisfy",
-	"subset"
-};
+const CHAR *CEnfdDistribution::m_szDistributionMatching[EdmSentinel] = {
+	"exact", "satisfy", "subset"};
 
 
 //---------------------------------------------------------------------------
@@ -45,14 +41,9 @@ const CHAR *CEnfdDistribution::m_szDistributionMatching[EdmSentinel] =
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CEnfdDistribution::CEnfdDistribution
-	(
-	CDistributionSpec *pds,
-	EDistributionMatching edm
-	)
-	:
-	m_pds(pds),
-	m_edm(edm)
+CEnfdDistribution::CEnfdDistribution(CDistributionSpec *pds,
+									 EDistributionMatching edm)
+	: m_pds(pds), m_edm(edm)
 {
 	GPOS_ASSERT(NULL != pds);
 	GPOS_ASSERT(EdmSentinel > edm);
@@ -83,11 +74,7 @@ CEnfdDistribution::~CEnfdDistribution()
 //
 //---------------------------------------------------------------------------
 BOOL
-CEnfdDistribution::FCompatible
-	(
-	CDistributionSpec *pds
-	)
-	const
+CEnfdDistribution::FCompatible(CDistributionSpec *pds) const
 {
 	GPOS_ASSERT(NULL != pds);
 
@@ -103,10 +90,9 @@ CEnfdDistribution::FCompatible
 			GPOS_ASSERT(CDistributionSpec::EdtHashed == m_pds->Edt());
 			GPOS_ASSERT(CDistributionSpec::EdtHashed == pds->Edt());
 
-			return dynamic_cast<const CDistributionSpecHashed *>(pds)->FMatchSubset
-						(
-						dynamic_cast<const CDistributionSpecHashed *>(m_pds)
-						);
+			return dynamic_cast<const CDistributionSpecHashed *>(pds)
+				->FMatchSubset(
+					dynamic_cast<const CDistributionSpecHashed *>(m_pds));
 
 		case (EdmSentinel):
 			GPOS_ASSERT("invalid matching type");
@@ -139,14 +125,9 @@ CEnfdDistribution::UlHash() const
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CEnfdDistribution::Epet
-	(
-	CExpressionHandle &exprhdl,
-	CPhysical *popPhysical,
-	CPartitionPropagationSpec *pppsReqd,
-	BOOL fDistribReqd
-	)
-	const
+CEnfdDistribution::Epet(CExpressionHandle &exprhdl, CPhysical *popPhysical,
+						CPartitionPropagationSpec *pppsReqd,
+						BOOL fDistribReqd) const
 {
 	if (fDistribReqd)
 	{
@@ -208,11 +189,7 @@ CEnfdDistribution::Epet
 //
 //---------------------------------------------------------------------------
 IOstream &
-CEnfdDistribution::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CEnfdDistribution::OsPrint(IOstream &os) const
 {
 	os = m_pds->OsPrint(os);
 

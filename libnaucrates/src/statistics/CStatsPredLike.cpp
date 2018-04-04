@@ -24,18 +24,13 @@ using namespace gpmd;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CStatsPredLike::CStatsPredLike
-	(
-	ULONG ulColId,
-	CExpression *pexprLeft,
-	CExpression *pexprRight,
-	CDouble dDefaultScaleFactor
-	)
-	:
-	CStatsPred(ulColId),
-	m_pexprLeft(pexprLeft),
-	m_pexprRight(pexprRight),
-	m_dDefaultScaleFactor(dDefaultScaleFactor)
+CStatsPredLike::CStatsPredLike(ULONG ulColId, CExpression *pexprLeft,
+							   CExpression *pexprRight,
+							   CDouble dDefaultScaleFactor)
+	: CStatsPred(ulColId),
+	  m_pexprLeft(pexprLeft),
+	  m_pexprRight(pexprRight),
+	  m_dDefaultScaleFactor(dDefaultScaleFactor)
 {
 	GPOS_ASSERT(ULONG_MAX != ulColId);
 	GPOS_ASSERT(NULL != pexprLeft);

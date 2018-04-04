@@ -6,7 +6,7 @@
 //		CParseHandlerSequence.cpp
 //
 //	@doc:
-//		Implementation of the SAX parse handler class for parsing sequence 
+//		Implementation of the SAX parse handler class for parsing sequence
 //		operators
 //---------------------------------------------------------------------------
 
@@ -34,15 +34,10 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerSequence::CParseHandlerSequence
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerPhysicalOp(pmp, pphm, pphRoot),
-	m_fInsideSequence(false)
+CParseHandlerSequence::CParseHandlerSequence(IMemoryPool *pmp,
+											 CParseHandlerManager *pphm,
+											 CParseHandlerBase *pphRoot)
+	: CParseHandlerPhysicalOp(pmp, pphm, pphRoot), m_fInsideSequence(false)
 {
 }
 
@@ -56,25 +51,26 @@ CParseHandlerSequence::CParseHandlerSequence
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSequence::StartElement
-	(
-	const XMLCh* const xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const xmlszQname,
-	const Attributes& attrs
-	)
+CParseHandlerSequence::StartElement(const XMLCh *const xmlszUri,
+									const XMLCh *const xmlszLocalname,
+									const XMLCh *const xmlszQname,
+									const Attributes &attrs)
 {
-	if (!m_fInsideSequence && 0 == XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalSequence), xmlszLocalname))
+	if (!m_fInsideSequence &&
+		0 == XMLString::compareString(
+				 CDXLTokens::XmlstrToken(EdxltokenPhysicalSequence),
+				 xmlszLocalname))
 	{
 		// new sequence operator
 		// parse handler for the proj list
-		CParseHandlerBase *pphPrL =
-				CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm, this);
+		CParseHandlerBase *pphPrL = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalarProjList), m_pphm,
+			this);
 		m_pphm->ActivateParseHandler(pphPrL);
 
 		//parse handler for the properties of the operator
-		CParseHandlerBase *pphProp =
-				CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
+		CParseHandlerBase *pphProp = CParseHandlerFactory::Pph(
+			m_pmp, CDXLTokens::XmlstrToken(EdxltokenProperties), m_pphm, this);
 		m_pphm->ActivateParseHandler(pphProp);
 
 		// store child parse handlers in array
@@ -85,11 +81,12 @@ CParseHandlerSequence::StartElement
 	else
 	{
 		// child of the sequence operator
-		CParseHandlerBase *pphChild = CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
+		CParseHandlerBase *pphChild =
+			CParseHandlerFactory::Pph(m_pmp, xmlszLocalname, m_pphm, this);
 		m_pphm->ActivateParseHandler(pphChild);
 		this->Append(pphChild);
 		pphChild->startElement(xmlszUri, xmlszLocalname, xmlszQname, attrs);
-	}	
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -101,50 +98,52 @@ CParseHandlerSequence::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerSequence::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerSequence::EndElement(const XMLCh *const,  // xmlszUri,
+								  const XMLCh *const xmlszLocalname,
+								  const XMLCh *const  // xmlszQname
+)
 {
-	if (0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenPhysicalSequence), 
-										xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenPhysicalSequence), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// construct node from the created child nodes
-	CParseHandlerProperties *pphProp = dynamic_cast<CParseHandlerProperties *>((*this)[0]);
-		
+	CParseHandlerProperties *pphProp =
+		dynamic_cast<CParseHandlerProperties *>((*this)[0]);
+
 	CDXLPhysicalSequence *pdxlop = GPOS_NEW(m_pmp) CDXLPhysicalSequence(m_pmp);
-	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);	
+	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
 
 	// set statistics and physical properties
 	CParseHandlerUtils::SetProperties(m_pdxln, pphProp);
 
 	// add project list
-	CParseHandlerProjList *pphPrL = dynamic_cast<CParseHandlerProjList*>((*this)[1]);
+	CParseHandlerProjList *pphPrL =
+		dynamic_cast<CParseHandlerProjList *>((*this)[1]);
 	GPOS_ASSERT(NULL != pphPrL);
 	AddChildFromParseHandler(pphPrL);
-			
+
 	const ULONG ulLen = this->UlLength();
 	// add constructed children from child parse handlers
 	for (ULONG ul = 2; ul < ulLen; ul++)
 	{
-		CParseHandlerPhysicalOp *pphChild = dynamic_cast<CParseHandlerPhysicalOp*>((*this)[ul]);
+		CParseHandlerPhysicalOp *pphChild =
+			dynamic_cast<CParseHandlerPhysicalOp *>((*this)[ul]);
 		GPOS_ASSERT(NULL != pphChild);
 		AddChildFromParseHandler(pphChild);
 	}
 
 #ifdef GPOS_DEBUG
 	pdxlop->AssertValid(m_pdxln, false /* fValidateChildren */);
-#endif // GPOS_DEBUG
-	
+#endif  // GPOS_DEBUG
+
 	// deactivate handler
 	m_pphm->DeactivateHandler();
 }
 
 // EOF
-

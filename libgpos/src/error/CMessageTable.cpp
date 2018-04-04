@@ -27,25 +27,12 @@ const ELocale CMessageTable::m_elocInvalid = ELocInvalid;
 //	@doc:
 //
 //---------------------------------------------------------------------------
-CMessageTable::CMessageTable
-	(
-	IMemoryPool *pmp,
-	ULONG ulSize,
-	ELocale eloc
-	)
-	:
-	m_eloc(eloc)
+CMessageTable::CMessageTable(IMemoryPool *pmp, ULONG ulSize, ELocale eloc)
+	: m_eloc(eloc)
 {
-	m_sht.Init
-		(
-		pmp,
-		ulSize,
-		GPOS_OFFSET(CMessage, m_link),
-		GPOS_OFFSET(CMessage, m_exc),
-		&(CException::m_excInvalid),
-		CException::UlHash,
-		CException::FEqual
-		);
+	m_sht.Init(pmp, ulSize, GPOS_OFFSET(CMessage, m_link),
+			   GPOS_OFFSET(CMessage, m_exc), &(CException::m_excInvalid),
+			   CException::UlHash, CException::FEqual);
 }
 
 
@@ -54,14 +41,11 @@ CMessageTable::CMessageTable
 //		CMessageTable::PmsgLookup
 //
 //	@doc:
-//		Lookup message 
+//		Lookup message
 //
 //---------------------------------------------------------------------------
-CMessage*
-CMessageTable::PmsgLookup
-	(
-	CException exc
-	)
+CMessage *
+CMessageTable::PmsgLookup(CException exc)
 {
 	MTAccessor shta(m_sht, exc);
 	return shta.PtLookup();
@@ -77,10 +61,7 @@ CMessageTable::PmsgLookup
 //
 //---------------------------------------------------------------------------
 void
-CMessageTable::AddMessage
-	(
-	CMessage *pmsg
-	)
+CMessageTable::AddMessage(CMessage *pmsg)
 {
 	MTAccessor shta(m_sht, pmsg->m_exc);
 
@@ -88,10 +69,9 @@ CMessageTable::AddMessage
 	{
 		shta.Insert(pmsg);
 	}
-	
+
 	// TODO: 6/24/2010; raise approp. error for duplicate message
 	// or simply ignore?
 }
 
 // EOF
-

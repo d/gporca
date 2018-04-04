@@ -10,7 +10,7 @@
 //		that is potentially assigned to many jobs.
 
 //	@owner:
-//		
+//
 //
 //	@test:
 //
@@ -37,10 +37,7 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 CJobQueue::EJobQueueResult
-CJobQueue::EjqrAdd
-	(
-	CJob *pj
-	)
+CJobQueue::EjqrAdd(CJob *pj)
 {
 	GPOS_ASSERT(NULL != pj);
 
@@ -98,10 +95,7 @@ CJobQueue::EjqrAdd
 //
 //---------------------------------------------------------------------------
 void
-CJobQueue::NotifyCompleted
-	(
-	CSchedulerContext *psc
-	)
+CJobQueue::NotifyCompleted(CSchedulerContext *psc)
 {
 	// scope for auto spinlock
 	{
@@ -140,10 +134,7 @@ CJobQueue::NotifyCompleted
 //
 //---------------------------------------------------------------------------
 IOstream &
-CJobQueue::OsPrintQueuedJobs
-	(
-	IOstream &os
-	)
+CJobQueue::OsPrintQueuedJobs(IOstream &os)
 {
 	os << "Job queue: " << std::endl;
 
@@ -157,7 +148,6 @@ CJobQueue::OsPrintQueuedJobs
 	return os;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF
-

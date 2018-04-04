@@ -19,11 +19,8 @@ using namespace gpopt;
 
 
 // initialization of static variables
-const CHAR *CDistributionSpecSingleton::m_szSegmentType[EstSentinel] =
-{
-	"master",
-	"segment"
-};
+const CHAR *CDistributionSpecSingleton::m_szSegmentType[EstSentinel] = {
+	"master", "segment"};
 
 
 //---------------------------------------------------------------------------
@@ -34,12 +31,8 @@ const CHAR *CDistributionSpecSingleton::m_szSegmentType[EstSentinel] =
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDistributionSpecSingleton::CDistributionSpecSingleton
-	(
-	ESegmentType est
-	)
-	:
-	m_est(est)
+CDistributionSpecSingleton::CDistributionSpecSingleton(ESegmentType est)
+	: m_est(est)
 {
 	GPOS_ASSERT(EstSentinel != est);
 }
@@ -54,17 +47,13 @@ CDistributionSpecSingleton::CDistributionSpecSingleton
 //
 //---------------------------------------------------------------------------
 BOOL
-CDistributionSpecSingleton::FSatisfies
-	(
-	const CDistributionSpec *pds
-	)
-	const
-{	
+CDistributionSpecSingleton::FSatisfies(const CDistributionSpec *pds) const
+{
 	if (FMatch(pds))
 	{
 		// exact match implies satisfaction
 		return true;
-	 }
+	}
 
 	if (EdtNonSingleton == pds->Edt())
 	{
@@ -77,7 +66,7 @@ CDistributionSpecSingleton::FSatisfies
 		// a singleton distribution satisfies "any" distributions
 		return true;
 	}
-	
+
 	if (EdtHashed == pds->Edt() &&
 		CDistributionSpecHashed::PdsConvert(pds)->FSatisfiedBySingleton())
 	{
@@ -85,7 +74,8 @@ CDistributionSpecSingleton::FSatisfies
 		return true;
 	}
 
-	return (EdtSingleton == pds->Edt() && m_est == ((CDistributionSpecSingleton *) pds)->Est());
+	return (EdtSingleton == pds->Edt() &&
+			m_est == ((CDistributionSpecSingleton *) pds)->Est());
 }
 
 
@@ -98,22 +88,20 @@ CDistributionSpecSingleton::FSatisfies
 //
 //---------------------------------------------------------------------------
 void
-CDistributionSpecSingleton::AppendEnforcers
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl
-	CReqdPropPlan *prpp,
-	DrgPexpr *pdrgpexpr,
-	CExpression *pexpr
-	)
+CDistributionSpecSingleton::AppendEnforcers(IMemoryPool *pmp,
+											CExpressionHandle &,  // exprhdl
+											CReqdPropPlan *prpp,
+											DrgPexpr *pdrgpexpr,
+											CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pmp);
 	GPOS_ASSERT(NULL != prpp);
 	GPOS_ASSERT(NULL != pdrgpexpr);
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(!GPOS_FTRACE(EopttraceDisableMotions));
-	GPOS_ASSERT(this == prpp->Ped()->PdsRequired() &&
-	            "required plan properties don't match enforced distribution spec");
+	GPOS_ASSERT(
+		this == prpp->Ped()->PdsRequired() &&
+		"required plan properties don't match enforced distribution spec");
 
 
 	if (GPOS_FTRACE(EopttraceDisableMotionGather))
@@ -123,27 +111,19 @@ CDistributionSpecSingleton::AppendEnforcers
 	}
 
 	pexpr->AddRef();
-	CExpression *pexprMotion = GPOS_NEW(pmp) CExpression
-										(
-										pmp,
-										GPOS_NEW(pmp) CPhysicalMotionGather(pmp, m_est),
-										pexpr
-										);
+	CExpression *pexprMotion = GPOS_NEW(pmp) CExpression(
+		pmp, GPOS_NEW(pmp) CPhysicalMotionGather(pmp, m_est), pexpr);
 	pdrgpexpr->Append(pexprMotion);
 
 	if (!prpp->Peo()->PosRequired()->FEmpty() &&
-	    CDistributionSpecSingleton::EstMaster == m_est)
+		CDistributionSpecSingleton::EstMaster == m_est)
 	{
 		COrderSpec *pos = prpp->Peo()->PosRequired();
 		pos->AddRef();
 		pexpr->AddRef();
-		
-		CExpression *pexprGatherMerge = GPOS_NEW(pmp) CExpression
-													(
-													pmp,
-													GPOS_NEW(pmp) CPhysicalMotionGather(pmp, m_est, pos),
-													pexpr
-													);
+
+		CExpression *pexprGatherMerge = GPOS_NEW(pmp) CExpression(
+			pmp, GPOS_NEW(pmp) CPhysicalMotionGather(pmp, m_est, pos), pexpr);
 		pdrgpexpr->Append(pexprGatherMerge);
 	}
 }
@@ -158,15 +138,10 @@ CDistributionSpecSingleton::AppendEnforcers
 //
 //---------------------------------------------------------------------------
 IOstream &
-CDistributionSpecSingleton::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CDistributionSpecSingleton::OsPrint(IOstream &os) const
 {
 	return os << "SINGLETON (" << m_szSegmentType[m_est] << ")";
 }
 
 
 // EOF
-

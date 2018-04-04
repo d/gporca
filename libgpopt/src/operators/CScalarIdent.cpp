@@ -28,10 +28,10 @@ using namespace gpopt;
 //
 //---------------------------------------------------------------------------
 ULONG
-CScalarIdent::UlHash() const 
+CScalarIdent::UlHash() const
 {
 	return gpos::UlCombineHashes(COperator::UlHash(),
-							   gpos::UlHashPtr<CColRef>(m_pcr));
+								 gpos::UlHashPtr<CColRef>(m_pcr));
 }
 
 
@@ -44,20 +44,16 @@ CScalarIdent::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarIdent::FMatch
-	(
-	COperator *pop
-	)
-const
+CScalarIdent::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CScalarIdent *popIdent = CScalarIdent::PopConvert(pop);
-		
+
 		// match if column reference is same
 		return Pcr() == popIdent->Pcr();
 	}
-	
+
 	return false;
 }
 
@@ -86,12 +82,8 @@ CScalarIdent::FInputOrderSensitive() const
 //
 //---------------------------------------------------------------------------
 COperator *
-CScalarIdent::PopCopyWithRemappedColumns
-	(
-	IMemoryPool *pmp,
-	HMUlCr *phmulcr,
-	BOOL fMustExist
-	)
+CScalarIdent::PopCopyWithRemappedColumns(IMemoryPool *pmp, HMUlCr *phmulcr,
+										 BOOL fMustExist)
 {
 	ULONG ulId = m_pcr->UlId();
 	CColRef *pcr = phmulcr->PtLookup(&ulId);
@@ -103,12 +95,13 @@ CScalarIdent::PopCopyWithRemappedColumns
 			CColumnFactory *pcf = COptCtxt::PoctxtFromTLS()->Pcf();
 
 			CName name(m_pcr->Name());
-			pcr = pcf->PcrCreate(m_pcr->Pmdtype(), m_pcr->ITypeModifier(), name);
+			pcr =
+				pcf->PcrCreate(m_pcr->Pmdtype(), m_pcr->ITypeModifier(), name);
 
 #ifdef GPOS_DEBUG
 			BOOL fResult =
-#endif // GPOS_DEBUG
-			phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcr);
+#endif  // GPOS_DEBUG
+				phmulcr->FInsert(GPOS_NEW(pmp) ULONG(ulId), pcr);
 			GPOS_ASSERT(fResult);
 		}
 		else
@@ -128,7 +121,7 @@ CScalarIdent::PopCopyWithRemappedColumns
 //		Expression type
 //
 //---------------------------------------------------------------------------
-IMDId*
+IMDId *
 CScalarIdent::PmdidType() const
 {
 	return m_pcr->Pmdtype()->Pmdid();
@@ -149,10 +142,7 @@ CScalarIdent::ITypeModifier() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarIdent::FCastedScId
-	(
-	CExpression *pexpr
-	)
+CScalarIdent::FCastedScId(CExpression *pexpr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 
@@ -169,11 +159,7 @@ CScalarIdent::FCastedScId
 }
 
 BOOL
-CScalarIdent::FCastedScId
-	(
-	CExpression *pexpr,
-	CColRef *pcr
-	)
+CScalarIdent::FCastedScId(CExpression *pexpr, CColRef *pcr)
 {
 	GPOS_ASSERT(NULL != pexpr);
 	GPOS_ASSERT(NULL != pcr);
@@ -197,17 +183,12 @@ CScalarIdent::FCastedScId
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarIdent::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarIdent::OsPrint(IOstream &os) const
 {
 	os << SzId() << " ";
 	m_pcr->OsPrint(os);
-	
+
 	return os;
 }
 
 // EOF
-

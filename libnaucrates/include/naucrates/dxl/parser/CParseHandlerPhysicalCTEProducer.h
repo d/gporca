@@ -16,55 +16,49 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
+XERCES_CPP_NAMESPACE_USE
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerPhysicalCTEProducer
-	//
-	//	@doc:
-	//		Parse handler for parsing a physical CTE producer operator
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerPhysicalCTEProducer : public CParseHandlerPhysicalOp
-	{
-		private:
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerPhysicalCTEProducer
+//
+//	@doc:
+//		Parse handler for parsing a physical CTE producer operator
+//
+//---------------------------------------------------------------------------
+class CParseHandlerPhysicalCTEProducer : public CParseHandlerPhysicalOp
+{
+private:
+	// private copy ctor
+	CParseHandlerPhysicalCTEProducer(const CParseHandlerPhysicalCTEProducer &);
 
-			// private copy ctor
-			CParseHandlerPhysicalCTEProducer(const CParseHandlerPhysicalCTEProducer &);
+	// process the start of an element
+	virtual void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
 
-			// process the start of an element
-			virtual
-			void StartElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-					);
+	// process the end of an element
+	virtual void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
 
-			// process the end of an element
-			virtual
-			void EndElement
-					(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-					);
+public:
+	// ctor
+	CParseHandlerPhysicalCTEProducer(IMemoryPool *pmp,
+									 CParseHandlerManager *pphm,
+									 CParseHandlerBase *pphRoot);
+};
+}  // namespace gpdxl
 
-		public:
-			// ctor
-			CParseHandlerPhysicalCTEProducer
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-	};
-}
-
-#endif // !GPDXL_CParseHandlerPhysicalCTEProducer_H
+#endif  // !GPDXL_CParseHandlerPhysicalCTEProducer_H
 
 // EOF

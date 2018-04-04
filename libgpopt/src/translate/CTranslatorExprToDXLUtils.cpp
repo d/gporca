@@ -7,7 +7,7 @@
 //
 //	@doc:
 //		Implementation of the helper methods used during Expr to DXL translation
-//		
+//
 //---------------------------------------------------------------------------
 
 #include "gpopt/translate/CTranslatorExprToDXLUtils.h"
@@ -49,21 +49,19 @@ using namespace gpnaucrates;
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnInt4Const
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	INT iVal
-	)
+CTranslatorExprToDXLUtils::PdxlnInt4Const(IMemoryPool *pmp, CMDAccessor *pmda,
+										  INT iVal)
 {
 	GPOS_ASSERT(NULL != pmp);
 
 	const IMDTypeInt4 *pmdtypeint4 = pmda->PtMDType<IMDTypeInt4>();
 	pmdtypeint4->Pmdid()->AddRef();
-	
-	CDXLDatumInt4 *pdxldatum = GPOS_NEW(pmp) CDXLDatumInt4(pmp, pmdtypeint4->Pmdid(), false /*fNull*/, iVal);
-	CDXLScalarConstValue *pdxlConst = GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum);
-	
+
+	CDXLDatumInt4 *pdxldatum = GPOS_NEW(pmp)
+		CDXLDatumInt4(pmp, pmdtypeint4->Pmdid(), false /*fNull*/, iVal);
+	CDXLScalarConstValue *pdxlConst =
+		GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum);
+
 	return GPOS_NEW(pmp) CDXLNode(pmp, pdxlConst);
 }
 
@@ -76,21 +74,19 @@ CTranslatorExprToDXLUtils::PdxlnInt4Const
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnBoolConst
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	BOOL fVal
-	)
+CTranslatorExprToDXLUtils::PdxlnBoolConst(IMemoryPool *pmp, CMDAccessor *pmda,
+										  BOOL fVal)
 {
 	GPOS_ASSERT(NULL != pmp);
 
 	const IMDTypeBool *pmdtype = pmda->PtMDType<IMDTypeBool>();
 	pmdtype->Pmdid()->AddRef();
-	
-	CDXLDatumBool *pdxldatum = GPOS_NEW(pmp) CDXLDatumBool(pmp, pmdtype->Pmdid(), false /*fNull*/, fVal);
-	CDXLScalarConstValue *pdxlConst = GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum);
-	
+
+	CDXLDatumBool *pdxldatum = GPOS_NEW(pmp)
+		CDXLDatumBool(pmp, pmdtype->Pmdid(), false /*fNull*/, fVal);
+	CDXLScalarConstValue *pdxlConst =
+		GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum);
+
 	return GPOS_NEW(pmp) CDXLNode(pmp, pdxlConst);
 }
 
@@ -103,16 +99,11 @@ CTranslatorExprToDXLUtils::PdxlnBoolConst
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTest
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	const CPartConstraint *ppartcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	DrgPsz *pdrgszPartTypes
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTest(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	const CPartConstraint *ppartcnstr, DrgDrgPcr *pdrgpdrgpcrPartKeys,
+	DrgPsz *pdrgszPartTypes)
+{
 	DrgPdxln *pdrgpdxln = GPOS_NEW(pmp) DrgPdxln(pmp);
 
 	const ULONG ulLevels = pdrgpdrgpcrPartKeys->UlLength();
@@ -120,33 +111,29 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTest
 	{
 		CConstraint *pcnstr = ppartcnstr->Pcnstr(ul);
 		DrgDrgPcr *pdrgpdrgpcr = ppartcnstr->Pdrgpdrgpcr();
-		BOOL fRangePart = (IMDRelation::ErelpartitionRange == *(*pdrgszPartTypes)[ul]);
-		CDXLNode *pdxlnPartialScanTest = PdxlnPartialScanTest(pmp, pmda, pcf, pcnstr, pdrgpdrgpcr, fRangePart);
+		BOOL fRangePart =
+			(IMDRelation::ErelpartitionRange == *(*pdrgszPartTypes)[ul]);
+		CDXLNode *pdxlnPartialScanTest = PdxlnPartialScanTest(
+			pmp, pmda, pcf, pcnstr, pdrgpdrgpcr, fRangePart);
 
 		// check whether the scalar filter is of the form "where false"
 		BOOL fScalarFalse = FScalarConstFalse(pmda, pdxlnPartialScanTest);
 		if (!fScalarFalse)
 		{
 			// add (AND not defaultpart) to the previous condition
-			CDXLNode *pdxlnNotDefault = GPOS_NEW(pmp) CDXLNode
-											(
-											pmp,
-											GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot),
-											PdxlnDefaultPartitionTest(pmp, ul)
-											);
+			CDXLNode *pdxlnNotDefault = GPOS_NEW(pmp)
+				CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot),
+						 PdxlnDefaultPartitionTest(pmp, ul));
 
-			pdxlnPartialScanTest = GPOS_NEW(pmp) CDXLNode
-											(
-											pmp,
-											GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
-											pdxlnNotDefault,
-											pdxlnPartialScanTest
-											);
+			pdxlnPartialScanTest = GPOS_NEW(pmp)
+				CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+						 pdxlnNotDefault, pdxlnPartialScanTest);
 		}
 
 		if (ppartcnstr->FDefaultPartition(ul))
 		{
-			CDXLNode *pdxlnDefaultPartitionTest = PdxlnDefaultPartitionTest(pmp, ul);
+			CDXLNode *pdxlnDefaultPartitionTest =
+				PdxlnDefaultPartitionTest(pmp, ul);
 
 			if (fScalarFalse)
 			{
@@ -155,13 +142,9 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTest
 			}
 			else
 			{
-				pdxlnPartialScanTest = GPOS_NEW(pmp) CDXLNode
-										(
-										pmp,
-										GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
-										pdxlnPartialScanTest,
-										pdxlnDefaultPartitionTest
-										);
+				pdxlnPartialScanTest = GPOS_NEW(pmp)
+					CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+							 pdxlnPartialScanTest, pdxlnDefaultPartitionTest);
 			}
 		}
 
@@ -176,7 +159,8 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTest
 		return pdxln;
 	}
 
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdrgpdxln);
+	return GPOS_NEW(pmp) CDXLNode(
+		pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdrgpdxln);
 }
 
 //---------------------------------------------------------------------------
@@ -188,17 +172,11 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTest
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnDefaultPartitionTest
-	(
-	IMemoryPool *pmp, 
-	ULONG ulPartLevel
-	)
-{	
-	CDXLNode *pdxlnDefaultPart = GPOS_NEW(pmp) CDXLNode
-									(
-									pmp,
-									GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel)
-									);
+CTranslatorExprToDXLUtils::PdxlnDefaultPartitionTest(IMemoryPool *pmp,
+													 ULONG ulPartLevel)
+{
+	CDXLNode *pdxlnDefaultPart = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel));
 
 	return pdxlnDefaultPart;
 }
@@ -212,44 +190,38 @@ CTranslatorExprToDXLUtils::PdxlnDefaultPartitionTest
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTest
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	CConstraint *pcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
+CTranslatorExprToDXLUtils::PdxlnPartialScanTest(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	CConstraint *pcnstr, DrgDrgPcr *pdrgpdrgpcrPartKeys, BOOL fRangePart)
 {
 	GPOS_ASSERT(NULL != pcnstr);
-	
+
 	if (pcnstr->FContradiction())
 	{
 		return PdxlnBoolConst(pmp, pmda, false /*fVal*/);
 	}
-	
+
 	switch (pcnstr->Ect())
 	{
 		case CConstraint::EctConjunction:
-			return PdxlnPartialScanTestConjunction(pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
-			
+			return PdxlnPartialScanTestConjunction(
+				pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
+
 		case CConstraint::EctDisjunction:
-			return PdxlnPartialScanTestDisjunction(pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
+			return PdxlnPartialScanTestDisjunction(
+				pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
 
 		case CConstraint::EctNegation:
-			return PdxlnPartialScanTestNegation(pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
+			return PdxlnPartialScanTestNegation(
+				pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
 
 		case CConstraint::EctInterval:
-			return PdxlnPartialScanTestInterval(pmp, pmda, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
+			return PdxlnPartialScanTestInterval(
+				pmp, pmda, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
 
 		default:
-			GPOS_RAISE
-				(
-				gpdxl::ExmaDXL,
-				gpdxl::ExmiExpr2DXLUnsupportedFeature,
-				GPOS_WSZ_LIT("Unrecognized constraint type")
-				);
+			GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiExpr2DXLUnsupportedFeature,
+					   GPOS_WSZ_LIT("Unrecognized constraint type"));
 			return NULL;
 	}
 }
@@ -259,47 +231,44 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTest
 //		CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjDisj
 //
 //	@doc:
-// 		Construct a test expression for the given conjunction or disjunction 
+// 		Construct a test expression for the given conjunction or disjunction
 //		based part constraint
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjDisj
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	DrgPcnstr *pdrgpcnstr,
-	BOOL fConjunction,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjDisj(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	DrgPcnstr *pdrgpcnstr, BOOL fConjunction, DrgDrgPcr *pdrgpdrgpcrPartKeys,
+	BOOL fRangePart)
+{
 	GPOS_ASSERT(NULL != pdrgpcnstr);
-	
+
 	const ULONG ulLength = pdrgpcnstr->UlLength();
-	
+
 	if (1 == ulLength)
 	{
-		return PdxlnPartialScanTest(pmp, pmda, pcf, (*pdrgpcnstr)[0], pdrgpdrgpcrPartKeys, fRangePart);
+		return PdxlnPartialScanTest(pmp, pmda, pcf, (*pdrgpcnstr)[0],
+									pdrgpdrgpcrPartKeys, fRangePart);
 	}
-	
+
 	EdxlBoolExprType edxlbooltype = Edxlor;
-	
+
 	if (fConjunction)
 	{
 		edxlbooltype = Edxland;
 	}
-	
-	CDXLNode *pdxlnResult = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, edxlbooltype));
-	
+
+	CDXLNode *pdxlnResult = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, edxlbooltype));
+
 	for (ULONG ul = 0; ul < ulLength; ul++)
 	{
 		CConstraint *pcnstr = (*pdrgpcnstr)[ul];
-		CDXLNode *pdxln = PdxlnPartialScanTest(pmp, pmda, pcf, pcnstr, pdrgpdrgpcrPartKeys, fRangePart);
+		CDXLNode *pdxln = PdxlnPartialScanTest(pmp, pmda, pcf, pcnstr,
+											   pdrgpdrgpcrPartKeys, fRangePart);
 		pdxlnResult->AddChild(pdxln);
 	}
-	
+
 	return pdxlnResult;
 }
 
@@ -308,9 +277,9 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjDisj
 //		CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints
 //
 //	@doc:
-// 		Construct a nested if statement testing the constraints in the 
+// 		Construct a nested if statement testing the constraints in the
 //		given part index map and propagating to the right part index id
-//		
+//
 //		For example for the following part constraint map:
 //		1->[1,3), 2->[3,5), 3->![1,5), the generated if expr will be:
 //		If (min,max,minincl,maxincl) \subseteq [1,3)
@@ -323,21 +292,16 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjDisj
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	PartCnstrMap *ppartcnstrmap,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	DrgPsz *pdrgszPartTypes
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	PartCnstrMap *ppartcnstrmap, DrgDrgPcr *pdrgpdrgpcrPartKeys,
+	DrgPsz *pdrgszPartTypes)
+{
 	PartCnstrMapIter pcmi(ppartcnstrmap);
-		
+
 	CDXLNode *pdxlnScalarRootIfStmt = NULL;
 	CDXLNode *pdxlnScalarLeafIfStmt = NULL;
-	
+
 	const IMDTypeInt4 *pmdtypeint4 = pmda->PtMDType<IMDTypeInt4>();
 	IMDId *pmdidRetType = pmdtypeint4->Pmdid();
 
@@ -345,27 +309,17 @@ CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints
 	{
 		ULONG ulSecondaryScanId = *(pcmi.Pk());
 		const CPartConstraint *ppartcnstr = pcmi.Pt();
-		CDXLNode *pdxlnTest = PdxlnPartialScanTest
-									(
-									pmp, 
-									pmda, 
-									pcf,
-									ppartcnstr,
-									pdrgpdrgpcrPartKeys,
-									pdrgszPartTypes
-									);
-		
-		CDXLNode *pdxlnPropagate = PdxlnInt4Const(pmp, pmda, (INT) ulSecondaryScanId);
-		
+		CDXLNode *pdxlnTest = PdxlnPartialScanTest(
+			pmp, pmda, pcf, ppartcnstr, pdrgpdrgpcrPartKeys, pdrgszPartTypes);
+
+		CDXLNode *pdxlnPropagate =
+			PdxlnInt4Const(pmp, pmda, (INT) ulSecondaryScanId);
+
 		pmdidRetType->AddRef();
-		CDXLNode *pdxlnScalarIf = GPOS_NEW(pmp) CDXLNode
-										(
-										pmp, 
-										GPOS_NEW(pmp) CDXLScalarIfStmt(pmp, pmdidRetType),
-										pdxlnTest, 
-										pdxlnPropagate
-										);
-		
+		CDXLNode *pdxlnScalarIf = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarIfStmt(pmp, pmdidRetType),
+					 pdxlnTest, pdxlnPropagate);
+
 		if (NULL == pdxlnScalarRootIfStmt)
 		{
 			pdxlnScalarRootIfStmt = pdxlnScalarIf;
@@ -373,27 +327,29 @@ CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints
 		else
 		{
 			// add nested if statement to the latest leaf if statement as the else case of the already constructed if stmt
-			GPOS_ASSERT(NULL != pdxlnScalarLeafIfStmt && 2 == pdxlnScalarLeafIfStmt->UlArity());
+			GPOS_ASSERT(NULL != pdxlnScalarLeafIfStmt &&
+						2 == pdxlnScalarLeafIfStmt->UlArity());
 			pdxlnScalarLeafIfStmt->AddChild(pdxlnScalarIf);
 		}
-		
+
 		pdxlnScalarLeafIfStmt = pdxlnScalarIf;
 	}
-	
+
 	GPOS_ASSERT(2 == pdxlnScalarLeafIfStmt->UlArity());
-	
+
 	// add a dummy value for the top and bottom level else cases
 	const IMDType *pmdtypeVoid = pmda->Pmdtype(pmdidRetType);
 	CDXLDatum *pdxldatum = pmdtypeVoid->PdxldatumNull(pmp);
-	CDXLNode *pdxlnNullConst = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
+	CDXLNode *pdxlnNullConst = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
 	pdxlnScalarLeafIfStmt->AddChild(pdxlnNullConst);
-	
+
 	if (2 == pdxlnScalarRootIfStmt->UlArity())
 	{
 		pdxlnNullConst->AddRef();
 		pdxlnScalarRootIfStmt->AddChild(pdxlnNullConst);
 	}
-	
+
 	return pdxlnScalarRootIfStmt;
 }
 
@@ -402,27 +358,24 @@ CTranslatorExprToDXLUtils::PdxlnPropagationExpressionForPartConstraints
 //		CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjunction
 //
 //	@doc:
-// 		Construct a test expression for the given conjunction  
+// 		Construct a test expression for the given conjunction
 //		based part constraint
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjunction
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	CConstraint *pcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjunction(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	CConstraint *pcnstr, DrgDrgPcr *pdrgpdrgpcrPartKeys, BOOL fRangePart)
+{
 	GPOS_ASSERT(CConstraint::EctConjunction == pcnstr->Ect());
-	
-	CConstraintConjunction *pcnstrConj = dynamic_cast<CConstraintConjunction *>(pcnstr);
-	
+
+	CConstraintConjunction *pcnstrConj =
+		dynamic_cast<CConstraintConjunction *>(pcnstr);
+
 	DrgPcnstr *pdrgpcnstr = pcnstrConj->Pdrgpcnstr();
-	return PdxlnPartialScanTestConjDisj(pmp, pmda, pcf, pdrgpcnstr, true /*fConjunction*/, pdrgpdrgpcrPartKeys, fRangePart);
+	return PdxlnPartialScanTestConjDisj(pmp, pmda, pcf, pdrgpcnstr,
+										true /*fConjunction*/,
+										pdrgpdrgpcrPartKeys, fRangePart);
 }
 
 //---------------------------------------------------------------------------
@@ -430,27 +383,24 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestConjunction
 //		CTranslatorExprToDXLUtils::PdxlnPartialScanTestDisjunction
 //
 //	@doc:
-// 		Construct a test expression for the given disjunction  
+// 		Construct a test expression for the given disjunction
 //		based part constraint
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestDisjunction
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	CConstraint *pcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestDisjunction(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	CConstraint *pcnstr, DrgDrgPcr *pdrgpdrgpcrPartKeys, BOOL fRangePart)
+{
 	GPOS_ASSERT(CConstraint::EctDisjunction == pcnstr->Ect());
-	
-	CConstraintDisjunction *pcnstrDisj = dynamic_cast<CConstraintDisjunction *>(pcnstr);
-	
+
+	CConstraintDisjunction *pcnstrDisj =
+		dynamic_cast<CConstraintDisjunction *>(pcnstr);
+
 	DrgPcnstr *pdrgpcnstr = pcnstrDisj->Pdrgpcnstr();
-	return PdxlnPartialScanTestConjDisj(pmp, pmda, pcf, pdrgpcnstr, false /*fConjunction*/, pdrgpdrgpcrPartKeys, fRangePart);
+	return PdxlnPartialScanTestConjDisj(pmp, pmda, pcf, pdrgpcnstr,
+										false /*fConjunction*/,
+										pdrgpdrgpcrPartKeys, fRangePart);
 }
 
 //---------------------------------------------------------------------------
@@ -458,30 +408,27 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestDisjunction
 //		CTranslatorExprToDXLUtils::PdxlnPartialScanTestNegation
 //
 //	@doc:
-// 		Construct a test expression for the given negation  
+// 		Construct a test expression for the given negation
 //		based part constraint
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestNegation
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CColumnFactory *pcf,
-	CConstraint *pcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestNegation(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	CConstraint *pcnstr, DrgDrgPcr *pdrgpdrgpcrPartKeys, BOOL fRangePart)
+{
 	GPOS_ASSERT(CConstraint::EctNegation == pcnstr->Ect());
-	
-	CConstraintNegation *pcnstrNeg = dynamic_cast<CConstraintNegation *>(pcnstr);
-	
+
+	CConstraintNegation *pcnstrNeg =
+		dynamic_cast<CConstraintNegation *>(pcnstr);
+
 	CConstraint *pcnstrChild = pcnstrNeg->PcnstrChild();
 
-	CDXLNode *pdxlnChild = PdxlnPartialScanTest(pmp, pmda, pcf, pcnstrChild, pdrgpdrgpcrPartKeys, fRangePart);
-	
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot), pdxlnChild);
+	CDXLNode *pdxlnChild = PdxlnPartialScanTest(
+		pmp, pmda, pcf, pcnstrChild, pdrgpdrgpcrPartKeys, fRangePart);
+
+	return GPOS_NEW(pmp) CDXLNode(
+		pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot), pdxlnChild);
 }
 
 //---------------------------------------------------------------------------
@@ -489,47 +436,47 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestNegation
 //		CTranslatorExprToDXLUtils::PdxlnPartialScanTestInterval
 //
 //	@doc:
-// 		Construct a test expression for the given interval  
+// 		Construct a test expression for the given interval
 //		based part constraint
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestInterval
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CConstraint *pcnstr,
-	DrgDrgPcr *pdrgpdrgpcrPartKeys,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestInterval(
+	IMemoryPool *pmp, CMDAccessor *pmda, CConstraint *pcnstr,
+	DrgDrgPcr *pdrgpdrgpcrPartKeys, BOOL fRangePart)
+{
 	GPOS_ASSERT(CConstraint::EctInterval == pcnstr->Ect());
-	
-	CConstraintInterval *pcnstrInterval = dynamic_cast<CConstraintInterval *>(pcnstr);
-	
+
+	CConstraintInterval *pcnstrInterval =
+		dynamic_cast<CConstraintInterval *>(pcnstr);
+
 	const CColRef *pcrPartKey = pcnstrInterval->Pcr();
 	IMDId *pmdidPartKeyType = pcrPartKey->Pmdtype()->Pmdid();
 	ULONG ulPartLevel = UlPartKeyLevel(pcrPartKey, pdrgpdrgpcrPartKeys);
 
 	DrgPrng *pdrgprng = pcnstrInterval->Pdrgprng();
 	const ULONG ulRanges = pdrgprng->UlLength();
-	 
+
 	GPOS_ASSERT(0 < ulRanges);
-	
+
 	if (1 == ulRanges)
 	{
-		return PdxlnPartialScanTestRange(pmp, pmda, (*pdrgprng)[0], pmdidPartKeyType, ulPartLevel, fRangePart);
+		return PdxlnPartialScanTestRange(pmp, pmda, (*pdrgprng)[0],
+										 pmdidPartKeyType, ulPartLevel,
+										 fRangePart);
 	}
-	
-	CDXLNode *pdxlnDisjunction = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor));
-	
+
+	CDXLNode *pdxlnDisjunction = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor));
+
 	for (ULONG ul = 0; ul < ulRanges; ul++)
 	{
 		CRange *prng = (*pdrgprng)[ul];
-		CDXLNode *pdxlnChild = PdxlnPartialScanTestRange(pmp, pmda, prng, pmdidPartKeyType, ulPartLevel, fRangePart);
+		CDXLNode *pdxlnChild = PdxlnPartialScanTestRange(
+			pmp, pmda, prng, pmdidPartKeyType, ulPartLevel, fRangePart);
 		pdxlnDisjunction->AddChild(pdxlnChild);
 	}
-	
+
 	return pdxlnDisjunction;
 }
 
@@ -543,11 +490,8 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestInterval
 //
 //---------------------------------------------------------------------------
 ULONG
-CTranslatorExprToDXLUtils::UlPartKeyLevel
-	(
-	const CColRef *pcr,
-	DrgDrgPcr *pdrgpdrgpcr
-	)
+CTranslatorExprToDXLUtils::UlPartKeyLevel(const CColRef *pcr,
+										  DrgDrgPcr *pdrgpdrgpcr)
 {
 	GPOS_ASSERT(0 < pdrgpdrgpcr->UlLength() && "No partitioning keys found");
 
@@ -574,63 +518,57 @@ CTranslatorExprToDXLUtils::UlPartKeyLevel
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartialScanTestRange
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CRange *prng,
-	IMDId *pmdidPartKeyType,
-	ULONG ulPartLevel,
-	BOOL fRangePart
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnPartialScanTestRange(
+	IMemoryPool *pmp, CMDAccessor *pmda, CRange *prng, IMDId *pmdidPartKeyType,
+	ULONG ulPartLevel, BOOL fRangePart)
+{
 	if (fRangePart)
 	{
-		CDXLNode *pdxlnStart = PdxlnRangeStartPredicate(pmp, pmda, prng->PdatumLeft(), prng->EriLeft(), pmdidPartKeyType, ulPartLevel);
-		CDXLNode *pdxlnEnd = PdxlnRangeEndPredicate(pmp, pmda, prng->PdatumRight(), prng->EriRight(), pmdidPartKeyType, ulPartLevel);
+		CDXLNode *pdxlnStart = PdxlnRangeStartPredicate(
+			pmp, pmda, prng->PdatumLeft(), prng->EriLeft(), pmdidPartKeyType,
+			ulPartLevel);
+		CDXLNode *pdxlnEnd = PdxlnRangeEndPredicate(
+			pmp, pmda, prng->PdatumRight(), prng->EriRight(), pmdidPartKeyType,
+			ulPartLevel);
 
-		return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdxlnStart, pdxlnEnd);
+		return GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+					 pdxlnStart, pdxlnEnd);
 	}
-	else // list partition
+	else  // list partition
 	{
 		IDatum *pdatum = prng->PdatumLeft();
 		if (pdatum == NULL)
 		{
 			// TODO: In case of default partitions, we end up with NULL for Left and Right Datum.
 			// Currently we fallback and should handle it better in future.
-			GPOS_RAISE
-				(
-				gpdxl::ExmaDXL,
-				gpdxl::ExmiExpr2DXLUnsupportedFeature,
-				GPOS_WSZ_LIT("Queries over default list partition that have indexes")
-				);
+			GPOS_RAISE(
+				gpdxl::ExmaDXL, gpdxl::ExmiExpr2DXLUnsupportedFeature,
+				GPOS_WSZ_LIT(
+					"Queries over default list partition that have indexes"));
 		}
 		GPOS_ASSERT(pdatum->FMatch(prng->PdatumRight()));
 
 		CDXLDatum *pdxldatum = Pdxldatum(pmp, pmda, pdatum);
-		CDXLNode *pdxlnScalar = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
+		CDXLNode *pdxlnScalar = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
 		// TODO: what if part key type is varchar, the value type is text?
 		const IMDType *pmdtype = pmda->Pmdtype(pmdidPartKeyType);
 		IMDId *pmdidResult = pmdtype->PmdidTypeArray();
 		pmdidResult->AddRef();
 		pmdidPartKeyType->AddRef();
-		CDXLNode *pdxlnPartList = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartListValues(pmp, ulPartLevel, pmdidResult, pmdidPartKeyType));
+		CDXLNode *pdxlnPartList = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartListValues(
+							  pmp, ulPartLevel, pmdidResult, pmdidPartKeyType));
 
 		IMDId *pmdidEq = pmdtype->PmdidCmp(IMDType::EcmptEq);
 		pmdidEq->AddRef();
-		CDXLNode *pdxlnScCmp = GPOS_NEW(pmp) CDXLNode
-													(
-													pmp,
-													GPOS_NEW(pmp) CDXLScalarArrayComp
-																(
-																pmp,
-																pmdidEq,
-																GPOS_NEW(pmp) CWStringConst(pmp, pmdidEq->Wsz()),
-																Edxlarraycomptypeany
-																),
-													pdxlnScalar,
-													pdxlnPartList
-													);
+		CDXLNode *pdxlnScCmp = GPOS_NEW(pmp) CDXLNode(
+			pmp,
+			GPOS_NEW(pmp) CDXLScalarArrayComp(
+				pmp, pmdidEq, GPOS_NEW(pmp) CWStringConst(pmp, pmdidEq->Wsz()),
+				Edxlarraycomptypeany),
+			pdxlnScalar, pdxlnPartList);
 		return pdxlnScCmp;
 	}
 }
@@ -644,30 +582,18 @@ CTranslatorExprToDXLUtils::PdxlnPartialScanTestRange
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeStartPredicate
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	IDatum *pdatum,
-	CRange::ERangeInclusion eri,
-	IMDId *pmdidPartKeyType,
-	ULONG ulPartLevel
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnRangeStartPredicate(
+	IMemoryPool *pmp, CMDAccessor *pmda, IDatum *pdatum,
+	CRange::ERangeInclusion eri, IMDId *pmdidPartKeyType, ULONG ulPartLevel)
+{
 	const IMDType *pmdtype = pmda->Pmdtype(pmdidPartKeyType);
-	
-	return PdxlnRangePointPredicate
-			(
-			pmp, 
-			pmda, 
-			pdatum,
-			eri, 
-			pmdidPartKeyType, 
-			pmdtype->PmdidCmp(IMDType::EcmptL), 	// pmdidCmpExl
-			pmdtype->PmdidCmp(IMDType::EcmptLEq), 	// pmdidCmpIncl
-			ulPartLevel,
-			true /*fLower*/
-			);
+
+	return PdxlnRangePointPredicate(
+		pmp, pmda, pdatum, eri, pmdidPartKeyType,
+		pmdtype->PmdidCmp(IMDType::EcmptL),	// pmdidCmpExl
+		pmdtype->PmdidCmp(IMDType::EcmptLEq),  // pmdidCmpIncl
+		ulPartLevel, true					   /*fLower*/
+	);
 }
 
 //---------------------------------------------------------------------------
@@ -679,30 +605,18 @@ CTranslatorExprToDXLUtils::PdxlnRangeStartPredicate
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeEndPredicate
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	IDatum *pdatum,
-	CRange::ERangeInclusion eri,
-	IMDId *pmdidPartKeyType,
-	ULONG ulPartLevel
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnRangeEndPredicate(
+	IMemoryPool *pmp, CMDAccessor *pmda, IDatum *pdatum,
+	CRange::ERangeInclusion eri, IMDId *pmdidPartKeyType, ULONG ulPartLevel)
+{
 	const IMDType *pmdtype = pmda->Pmdtype(pmdidPartKeyType);
-	
-	return PdxlnRangePointPredicate
-			(
-			pmp, 
-			pmda, 
-			pdatum,
-			eri, 
-			pmdidPartKeyType, 
-			pmdtype->PmdidCmp(IMDType::EcmptG), 	// pmdidCmpExl
-			pmdtype->PmdidCmp(IMDType::EcmptGEq), 	// pmdidCmpIncl
-			ulPartLevel,
-			false /*fLower*/
-			);
+
+	return PdxlnRangePointPredicate(
+		pmp, pmda, pdatum, eri, pmdidPartKeyType,
+		pmdtype->PmdidCmp(IMDType::EcmptG),	// pmdidCmpExl
+		pmdtype->PmdidCmp(IMDType::EcmptGEq),  // pmdidCmpIncl
+		ulPartLevel, false					   /*fLower*/
+	);
 }
 
 //---------------------------------------------------------------------------
@@ -710,126 +624,114 @@ CTranslatorExprToDXLUtils::PdxlnRangeEndPredicate
 //		CTranslatorExprToDXLUtils::PdxlnRangePointPredicate
 //
 //	@doc:
-// 		Construct a test expression for the given range point using the 
+// 		Construct a test expression for the given range point using the
 //		provided comparison operators
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangePointPredicate
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	IDatum *pdatum,
-	CRange::ERangeInclusion eri,
-	IMDId *pmdidPartKeyType,
-	IMDId *pmdidCmpExl,
-	IMDId *pmdidCmpIncl,
-	ULONG ulPartLevel,
-	BOOL fLower
-	)
-{	
+CTranslatorExprToDXLUtils::PdxlnRangePointPredicate(
+	IMemoryPool *pmp, CMDAccessor *pmda, IDatum *pdatum,
+	CRange::ERangeInclusion eri, IMDId *pmdidPartKeyType, IMDId *pmdidCmpExl,
+	IMDId *pmdidCmpIncl, ULONG ulPartLevel, BOOL fLower)
+{
 	if (NULL == pdatum)
 	{
 		// point in an unbounded range: create a predicate (open-ended)
-		return GPOS_NEW(pmp) CDXLNode
-					(
-					pmp,
-					GPOS_NEW(pmp) CDXLScalarPartBoundOpen(pmp, ulPartLevel, fLower)
-					);
+		return GPOS_NEW(pmp) CDXLNode(
+			pmp,
+			GPOS_NEW(pmp) CDXLScalarPartBoundOpen(pmp, ulPartLevel, fLower));
 	}
-	
+
 	pmdidPartKeyType->AddRef();
-	CDXLNode *pdxlnPartBound = GPOS_NEW(pmp) CDXLNode
-										(
-										pmp,
-										GPOS_NEW(pmp) CDXLScalarPartBound(pmp, ulPartLevel, pmdidPartKeyType, fLower)
-										);
+	CDXLNode *pdxlnPartBound = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBound(
+						  pmp, ulPartLevel, pmdidPartKeyType, fLower));
 
 	CDXLDatum *pdxldatum = Pdxldatum(pmp, pmda, pdatum);
-	CDXLNode *pdxlnPoint = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
-	 	
+	CDXLNode *pdxlnPoint = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarConstValue(pmp, pdxldatum));
+
 	// generate a predicate of the form "point < col" / "point > col"
 	pmdidCmpExl->AddRef();
-	
-	CWStringConst *pstrCmpExcl = GPOS_NEW(pmp) CWStringConst(pmp, pmda->Pmdscop(pmdidCmpExl)->Mdname().Pstr()->Wsz());
-	CDXLNode *pdxlnPredicateExclusive = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarComp(pmp, pmdidCmpExl, pstrCmpExcl), pdxlnPoint, pdxlnPartBound);
-	
+
+	CWStringConst *pstrCmpExcl = GPOS_NEW(pmp)
+		CWStringConst(pmp, pmda->Pmdscop(pmdidCmpExl)->Mdname().Pstr()->Wsz());
+	CDXLNode *pdxlnPredicateExclusive = GPOS_NEW(pmp) CDXLNode(
+		pmp, GPOS_NEW(pmp) CDXLScalarComp(pmp, pmdidCmpExl, pstrCmpExcl),
+		pdxlnPoint, pdxlnPartBound);
+
 	// generate a predicate of the form "point <= col and colIncluded" / "point >= col and colIncluded"
 	pmdidCmpIncl->AddRef();
 
-	CWStringConst *pstrCmpIncl = GPOS_NEW(pmp) CWStringConst(pmp, pmda->Pmdscop(pmdidCmpIncl)->Mdname().Pstr()->Wsz());
+	CWStringConst *pstrCmpIncl = GPOS_NEW(pmp)
+		CWStringConst(pmp, pmda->Pmdscop(pmdidCmpIncl)->Mdname().Pstr()->Wsz());
 	pdxlnPartBound->AddRef();
 	pdxlnPoint->AddRef();
-	CDXLNode *pdxlnCmpIncl = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarComp(pmp, pmdidCmpIncl, pstrCmpIncl), pdxlnPoint, pdxlnPartBound);
+	CDXLNode *pdxlnCmpIncl = GPOS_NEW(pmp) CDXLNode(
+		pmp, GPOS_NEW(pmp) CDXLScalarComp(pmp, pmdidCmpIncl, pstrCmpIncl),
+		pdxlnPoint, pdxlnPartBound);
 
-	CDXLNode *pdxlnPartBoundInclusion = GPOS_NEW(pmp) CDXLNode
-										(
-										pmp,
-										GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(pmp, ulPartLevel, fLower)
-										);
+	CDXLNode *pdxlnPartBoundInclusion = GPOS_NEW(pmp) CDXLNode(
+		pmp,
+		GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(pmp, ulPartLevel, fLower));
 
 	if (CRange::EriExcluded == eri)
 	{
 		// negate the "inclusion" portion of the predicate
-		pdxlnPartBoundInclusion = GPOS_NEW(pmp) CDXLNode
-											(
-											pmp,
-											GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot),
-											pdxlnPartBoundInclusion
-											);
+		pdxlnPartBoundInclusion = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlnot),
+					 pdxlnPartBoundInclusion);
 	}
 
-	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdxlnCmpIncl, pdxlnPartBoundInclusion);
+	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+				 pdxlnCmpIncl, pdxlnPartBoundInclusion);
 
 	// return the final predicate in the form "(point <= col and colInclusive) or point < col" / "(point >= col and colInclusive) or point > col"
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnPredicateInclusive, pdxlnPredicateExclusive);
+	return GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+				 pdxlnPredicateInclusive, pdxlnPredicateExclusive);
 }
 
 
 // construct a DXL node for the part key portion of the list partition filter
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnListFilterPartKey
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CExpression *pexprPartKey,
-	IMDId *pmdidTypePartKey,
-	ULONG ulPartLevel
-	)
+CTranslatorExprToDXLUtils::PdxlnListFilterPartKey(IMemoryPool *pmp,
+												  CMDAccessor *pmda,
+												  CExpression *pexprPartKey,
+												  IMDId *pmdidTypePartKey,
+												  ULONG ulPartLevel)
 {
 	GPOS_ASSERT(NULL != pexprPartKey);
 	GPOS_ASSERT(NULL != pmdidTypePartKey);
-	GPOS_ASSERT(CScalar::PopConvert(pexprPartKey->Pop())->PmdidType()->FEquals(pmdidTypePartKey));
+	GPOS_ASSERT(CScalar::PopConvert(pexprPartKey->Pop())
+					->PmdidType()
+					->FEquals(pmdidTypePartKey));
 
 	CDXLNode *pdxlnPartKey = NULL;
 
 	if (CUtils::FScalarIdent(pexprPartKey))
 	{
 		// Simple Scalar Ident - create a ScalarPartListValues from the partition key
-		IMDId *pmdidResultArray = pmda->Pmdtype(pmdidTypePartKey)->PmdidTypeArray();
+		IMDId *pmdidResultArray =
+			pmda->Pmdtype(pmdidTypePartKey)->PmdidTypeArray();
 		pmdidResultArray->AddRef();
 		pmdidTypePartKey->AddRef();
 
-		pdxlnPartKey = GPOS_NEW(pmp) CDXLNode
-						(
-						pmp,
-						GPOS_NEW(pmp) CDXLScalarPartListValues
-								(
-								pmp,
-								ulPartLevel,
-								pmdidResultArray,
-								pmdidTypePartKey
-								)
-						);
+		pdxlnPartKey = GPOS_NEW(pmp) CDXLNode(
+			pmp, GPOS_NEW(pmp) CDXLScalarPartListValues(
+					 pmp, ulPartLevel, pmdidResultArray, pmdidTypePartKey));
 	}
 	else if (CScalarIdent::FCastedScId(pexprPartKey))
 	{
 		// ScalarCast(ScalarIdent) - create an ArrayCoerceExpr over a ScalarPartListValues
-		CScalarCast *pexprScalarCast = CScalarCast::PopConvert(pexprPartKey->Pop());
+		CScalarCast *pexprScalarCast =
+			CScalarCast::PopConvert(pexprPartKey->Pop());
 		IMDId *pmdidDestElem = pexprScalarCast->PmdidType();
 		IMDId *pmdidDestArray = pmda->Pmdtype(pmdidDestElem)->PmdidTypeArray();
 
-		CScalarIdent *pexprScalarIdent = CScalarIdent::PopConvert((*pexprPartKey)[0]->Pop());
+		CScalarIdent *pexprScalarIdent =
+			CScalarIdent::PopConvert((*pexprPartKey)[0]->Pop());
 		IMDId *pmdidSrcElem = pexprScalarIdent->PmdidType();
 		IMDId *pmdidSrcArray = pmda->Pmdtype(pmdidSrcElem)->PmdidTypeArray();
 
@@ -843,46 +745,31 @@ CTranslatorExprToDXLUtils::PdxlnListFilterPartKey
 
 		pmdidSrcArray->AddRef();
 		pmdidSrcElem->AddRef();
-		CDXLNode *pdxlnPartKeyIdent = GPOS_NEW(pmp) CDXLNode
-							(
-							pmp,
-							GPOS_NEW(pmp) CDXLScalarPartListValues
-									(
-									pmp,
-									ulPartLevel,
-									pmdidSrcArray,
-									pmdidSrcElem
-									)
-							);
+		CDXLNode *pdxlnPartKeyIdent = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartListValues(
+							  pmp, ulPartLevel, pmdidSrcArray, pmdidSrcElem));
 
 		pmdidDestArray->AddRef();
 		pmdidArrayCastFunc->AddRef();
-		pdxlnPartKey = GPOS_NEW(pmp) CDXLNode
-					(
-					pmp,
-					GPOS_NEW(pmp) CDXLScalarArrayCoerceExpr
-									(
-									pmp,
-									pmdidArrayCastFunc,
-									pmdidDestArray,
-									IDefaultTypeModifier,
-									true, /* fIsExplicit */
-									EdxlcfDontCare,
-									-1 /* iLoc */
-									),
-					pdxlnPartKeyIdent
-					);
+		pdxlnPartKey = GPOS_NEW(pmp)
+			CDXLNode(pmp,
+					 GPOS_NEW(pmp) CDXLScalarArrayCoerceExpr(
+						 pmp, pmdidArrayCastFunc, pmdidDestArray,
+						 IDefaultTypeModifier, true, /* fIsExplicit */
+						 EdxlcfDontCare, -1			 /* iLoc */
+						 ),
+					 pdxlnPartKeyIdent);
 	}
 	else
 	{
 		// Not supported - should be unreachable.
 		CWStringDynamic *pstr = GPOS_NEW(pmp) CWStringDynamic(pmp);
-		pstr->AppendFormat(GPOS_WSZ_LIT("Unsupported part filter operator for list partitions : %ls"),
-						   pexprPartKey->Pop()->SzId());
-		GPOS_THROW_EXCEPTION(gpopt::ExmaGPOPT,
-							 gpopt::ExmiUnsupportedOp,
-							 CException::ExsevDebug1,
-							 pstr->Wsz());
+		pstr->AppendFormat(
+			GPOS_WSZ_LIT(
+				"Unsupported part filter operator for list partitions : %ls"),
+			pexprPartKey->Pop()->SzId());
+		GPOS_THROW_EXCEPTION(gpopt::ExmaGPOPT, gpopt::ExmiUnsupportedOp,
+							 CException::ExsevDebug1, pstr->Wsz());
 	}
 
 	GPOS_ASSERT(NULL != pdxlnPartKey);
@@ -893,45 +780,34 @@ CTranslatorExprToDXLUtils::PdxlnListFilterPartKey
 
 // Construct a predicate node for a list partition filter
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnListFilterScCmp
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CDXLNode *pdxlnPartKey,
-	CDXLNode *pdxlnOther,
-	IMDId *pmdidTypePartKey,
-	IMDId *pmdidTypeOther,
-	IMDType::ECmpType ecmpt,
-	ULONG ulPartLevel,
-	BOOL fHasDefaultPart
-	)
+CTranslatorExprToDXLUtils::PdxlnListFilterScCmp(
+	IMemoryPool *pmp, CMDAccessor *pmda, CDXLNode *pdxlnPartKey,
+	CDXLNode *pdxlnOther, IMDId *pmdidTypePartKey, IMDId *pmdidTypeOther,
+	IMDType::ECmpType ecmpt, ULONG ulPartLevel, BOOL fHasDefaultPart)
 {
 	IMDId *pmdidScCmp = NULL;
 
-	pmdidScCmp = CUtils::PmdidScCmp(pmp, pmda, pmdidTypeOther, pmdidTypePartKey, ecmpt);
+	pmdidScCmp =
+		CUtils::PmdidScCmp(pmp, pmda, pmdidTypeOther, pmdidTypePartKey, ecmpt);
 
 	const IMDScalarOp *pmdscop = pmda->Pmdscop(pmdidScCmp);
 	const CWStringConst *pstrScCmp = pmdscop->Mdname().Pstr();
 
 	pmdidScCmp->AddRef();
-	CDXLNode *pdxlnScCmp = GPOS_NEW(pmp) CDXLNode
-												(
-												pmp,
-												GPOS_NEW(pmp) CDXLScalarArrayComp
-															(
-															pmp,
-															pmdidScCmp,
-															GPOS_NEW(pmp) CWStringConst(pmp, pstrScCmp->Wsz()),
-															Edxlarraycomptypeany
-															),
-												pdxlnOther,
-												pdxlnPartKey
-												);
+	CDXLNode *pdxlnScCmp = GPOS_NEW(pmp) CDXLNode(
+		pmp,
+		GPOS_NEW(pmp) CDXLScalarArrayComp(
+			pmp, pmdidScCmp, GPOS_NEW(pmp) CWStringConst(pmp, pstrScCmp->Wsz()),
+			Edxlarraycomptypeany),
+		pdxlnOther, pdxlnPartKey);
 
 	if (fHasDefaultPart)
 	{
-		CDXLNode *pdxlnDefault = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel));
-		return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnScCmp, pdxlnDefault);
+		CDXLNode *pdxlnDefault = GPOS_NEW(pmp) CDXLNode(
+			pmp, GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel));
+		return GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+					 pdxlnScCmp, pdxlnDefault);
 	}
 	else
 	{
@@ -948,67 +824,61 @@ CTranslatorExprToDXLUtils::PdxlnListFilterScCmp
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeFilterScCmp
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CDXLNode *pdxlnScalar,
-	IMDId *pmdidTypePartKey,
-	IMDId *pmdidTypeOther,
-	IMDId *pmdidTypeCastExpr,
-	IMDId *pmdidCastFunc,
-	IMDType::ECmpType ecmpt,
-	ULONG ulPartLevel
-	)
+CTranslatorExprToDXLUtils::PdxlnRangeFilterScCmp(
+	IMemoryPool *pmp, CMDAccessor *pmda, CDXLNode *pdxlnScalar,
+	IMDId *pmdidTypePartKey, IMDId *pmdidTypeOther, IMDId *pmdidTypeCastExpr,
+	IMDId *pmdidCastFunc, IMDType::ECmpType ecmpt, ULONG ulPartLevel)
 {
 	if (IMDType::EcmptEq == ecmpt)
 	{
-		return PdxlnRangeFilterEqCmp
-				(
-				pmp, 
-				pmda, 
-				pdxlnScalar, 
-				pmdidTypePartKey, 
-				pmdidTypeOther,
-				pmdidTypeCastExpr,
-				pmdidCastFunc,
-				ulPartLevel
-				);
+		return PdxlnRangeFilterEqCmp(pmp, pmda, pdxlnScalar, pmdidTypePartKey,
+									 pmdidTypeOther, pmdidTypeCastExpr,
+									 pmdidCastFunc, ulPartLevel);
 	}
-	
+
 	BOOL fLowerBound = false;
 	IMDType::ECmpType ecmptScCmp = IMDType::EcmptOther;
-	
+
 	if (IMDType::EcmptLEq == ecmpt || IMDType::EcmptL == ecmpt)
 	{
 		// partkey </<= other: construct condition min < other
 		fLowerBound = true;
 		ecmptScCmp = IMDType::EcmptL;
 	}
-	else 
+	else
 	{
 		GPOS_ASSERT(IMDType::EcmptGEq == ecmpt || IMDType::EcmptG == ecmpt);
-		
+
 		// partkey >/>= other: construct condition max > other
 		ecmptScCmp = IMDType::EcmptG;
 	}
-	
-	CDXLNode *pdxlnPredicateExclusive = PdxlnCmp(pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmptScCmp, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
-	
+
+	CDXLNode *pdxlnPredicateExclusive = PdxlnCmp(
+		pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmptScCmp,
+		pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
+
 	if (IMDType::EcmptLEq != ecmpt && IMDType::EcmptGEq != ecmpt)
 	{
 		// scalar comparison does not include equality: no need to consider part constraint boundaries
 		return pdxlnPredicateExclusive;
 	}
-	
-	pdxlnScalar->AddRef();
-	CDXLNode *pdxlnInclusiveCmp = PdxlnCmp(pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmpt, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
-	CDXLNode *pdxlnInclusiveBoolPredicate = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(pmp, ulPartLevel, fLowerBound));
 
-	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdxlnInclusiveCmp, pdxlnInclusiveBoolPredicate);
-	
+	pdxlnScalar->AddRef();
+	CDXLNode *pdxlnInclusiveCmp = PdxlnCmp(
+		pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmpt,
+		pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
+	CDXLNode *pdxlnInclusiveBoolPredicate =
+		GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(
+										pmp, ulPartLevel, fLowerBound));
+
+	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+				 pdxlnInclusiveCmp, pdxlnInclusiveBoolPredicate);
+
 	// return the final predicate in the form "(point <= col and colIncluded) or point < col" / "(point >= col and colIncluded) or point > col"
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnPredicateInclusive, pdxlnPredicateExclusive);
+	return GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+				 pdxlnPredicateInclusive, pdxlnPredicateExclusive);
 }
 
 //---------------------------------------------------------------------------
@@ -1020,24 +890,25 @@ CTranslatorExprToDXLUtils::PdxlnRangeFilterScCmp
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeFilterEqCmp
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CDXLNode *pdxlnScalar,
-	IMDId *pmdidTypePartKey,
-	IMDId *pmdidTypeOther,
-	IMDId *pmdidTypeCastExpr,
-	IMDId *pmdidCastFunc,
-	ULONG ulPartLevel
-	)
+CTranslatorExprToDXLUtils::PdxlnRangeFilterEqCmp(
+	IMemoryPool *pmp, CMDAccessor *pmda, CDXLNode *pdxlnScalar,
+	IMDId *pmdidTypePartKey, IMDId *pmdidTypeOther, IMDId *pmdidTypeCastExpr,
+	IMDId *pmdidCastFunc, ULONG ulPartLevel)
 {
-	CDXLNode *pdxlnPredicateMin = PdxlnRangeFilterPartBound(pmp, pmda, pdxlnScalar, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc, ulPartLevel, true /*fLowerBound*/, IMDType::EcmptL);
+	CDXLNode *pdxlnPredicateMin = PdxlnRangeFilterPartBound(
+		pmp, pmda, pdxlnScalar, pmdidTypePartKey, pmdidTypeOther,
+		pmdidTypeCastExpr, pmdidCastFunc, ulPartLevel, true /*fLowerBound*/,
+		IMDType::EcmptL);
 	pdxlnScalar->AddRef();
-	CDXLNode *pdxlnPredicateMax = PdxlnRangeFilterPartBound(pmp, pmda, pdxlnScalar, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc, ulPartLevel, false /*fLowerBound*/, IMDType::EcmptG);
-		
+	CDXLNode *pdxlnPredicateMax = PdxlnRangeFilterPartBound(
+		pmp, pmda, pdxlnScalar, pmdidTypePartKey, pmdidTypeOther,
+		pmdidTypeCastExpr, pmdidCastFunc, ulPartLevel, false /*fLowerBound*/,
+		IMDType::EcmptG);
+
 	// return the conjunction of the predicate for the lower and upper bounds
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdxlnPredicateMin, pdxlnPredicateMax);
+	return GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+				 pdxlnPredicateMin, pdxlnPredicateMax);
 }
 
 //---------------------------------------------------------------------------
@@ -1045,45 +916,47 @@ CTranslatorExprToDXLUtils::PdxlnRangeFilterEqCmp
 //		CTranslatorExprToDXLUtils::PdxlnRangeFilterPartBound
 //
 //	@doc:
-// 		Construct a predicate for a partition bound of one of the two forms 
+// 		Construct a predicate for a partition bound of one of the two forms
 //		(min <= Scalar and minincl) or min < Scalar
 //		(max >= Scalar and maxinc) or Max > Scalar
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeFilterPartBound
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda, 
-	CDXLNode *pdxlnScalar,
-	IMDId *pmdidTypePartKey,
-	IMDId *pmdidTypeOther,
-	IMDId *pmdidTypeCastExpr,
-	IMDId *pmdidCastFunc,
-	ULONG ulPartLevel,
-	ULONG fLowerBound,
-	IMDType::ECmpType ecmpt
-	)
+CTranslatorExprToDXLUtils::PdxlnRangeFilterPartBound(
+	IMemoryPool *pmp, CMDAccessor *pmda, CDXLNode *pdxlnScalar,
+	IMDId *pmdidTypePartKey, IMDId *pmdidTypeOther, IMDId *pmdidTypeCastExpr,
+	IMDId *pmdidCastFunc, ULONG ulPartLevel, ULONG fLowerBound,
+	IMDType::ECmpType ecmpt)
 {
 	GPOS_ASSERT(IMDType::EcmptL == ecmpt || IMDType::EcmptG == ecmpt);
-	
+
 	IMDType::ECmpType ecmptInc = IMDType::EcmptLEq;
 	if (IMDType::EcmptG == ecmpt)
 	{
 		ecmptInc = IMDType::EcmptGEq;
 	}
 
-	CDXLNode *pdxlnPredicateExclusive = PdxlnCmp(pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmpt, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
+	CDXLNode *pdxlnPredicateExclusive = PdxlnCmp(
+		pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmpt,
+		pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
 
 	pdxlnScalar->AddRef();
-	CDXLNode *pdxlnInclusiveCmp = PdxlnCmp(pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmptInc, pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
-	
-	CDXLNode *pdxlnInclusiveBoolPredicate = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(pmp, ulPartLevel, fLowerBound));
-	
-	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland), pdxlnInclusiveCmp, pdxlnInclusiveBoolPredicate);
-	
+	CDXLNode *pdxlnInclusiveCmp = PdxlnCmp(
+		pmp, pmda, ulPartLevel, fLowerBound, pdxlnScalar, ecmptInc,
+		pmdidTypePartKey, pmdidTypeOther, pmdidTypeCastExpr, pmdidCastFunc);
+
+	CDXLNode *pdxlnInclusiveBoolPredicate =
+		GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundInclusion(
+										pmp, ulPartLevel, fLowerBound));
+
+	CDXLNode *pdxlnPredicateInclusive = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxland),
+				 pdxlnInclusiveCmp, pdxlnInclusiveBoolPredicate);
+
 	// return the final predicate in the form "(point <= col and colIncluded) or point < col" / "(point >= col and colIncluded) or point > col"
-	return GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnPredicateInclusive, pdxlnPredicateExclusive);
+	return GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+				 pdxlnPredicateInclusive, pdxlnPredicateExclusive);
 }
 
 
@@ -1097,32 +970,32 @@ CTranslatorExprToDXLUtils::PdxlnRangeFilterPartBound
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnRangeFilterDefaultAndOpenEnded
-	(
-	IMemoryPool *pmp, 
-	ULONG ulPartLevel,
-	BOOL fLTComparison,
-	BOOL fGTComparison,
-	BOOL fEQComparison,
-	BOOL fDefaultPart
-	)
+CTranslatorExprToDXLUtils::PdxlnRangeFilterDefaultAndOpenEnded(
+	IMemoryPool *pmp, ULONG ulPartLevel, BOOL fLTComparison, BOOL fGTComparison,
+	BOOL fEQComparison, BOOL fDefaultPart)
 {
 	CDXLNode *pdxlnResult = NULL;
 	if (fLTComparison || fEQComparison)
 	{
 		// add a condition to cover the cases of open-ended interval (-inf, x)
-		pdxlnResult = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundOpen(pmp, ulPartLevel, true /*fLower*/));
+		pdxlnResult =
+			GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundOpen(
+											pmp, ulPartLevel, true /*fLower*/));
 	}
-	
+
 	if (fGTComparison || fEQComparison)
 	{
 		// add a condition to cover the cases of open-ended interval (x, inf)
-		CDXLNode *pdxlnOpenMax = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundOpen(pmp, ulPartLevel, false /*fLower*/));
+		CDXLNode *pdxlnOpenMax = GPOS_NEW(pmp)
+			CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBoundOpen(
+							  pmp, ulPartLevel, false /*fLower*/));
 
 		// construct a boolean OR expression over the two expressions
 		if (NULL != pdxlnResult)
 		{
-			pdxlnResult = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnResult, pdxlnOpenMax);
+			pdxlnResult = GPOS_NEW(pmp)
+				CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+						 pdxlnResult, pdxlnOpenMax);
 		}
 		else
 		{
@@ -1133,19 +1006,21 @@ CTranslatorExprToDXLUtils::PdxlnRangeFilterDefaultAndOpenEnded
 	if (fDefaultPart)
 	{
 		// add a condition to cover the cases of default partition
-		CDXLNode *pdxlnDefault = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel));
+		CDXLNode *pdxlnDefault = GPOS_NEW(pmp) CDXLNode(
+			pmp, GPOS_NEW(pmp) CDXLScalarPartDefault(pmp, ulPartLevel));
 
 		if (NULL != pdxlnResult)
 		{
-			pdxlnResult = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor), pdxlnDefault, pdxlnResult);
+			pdxlnResult = GPOS_NEW(pmp)
+				CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, Edxlor),
+						 pdxlnDefault, pdxlnResult);
 		}
 		else
 		{
 			pdxlnResult = pdxlnDefault;
 		}
-
 	}
-	
+
 	return pdxlnResult;
 }
 
@@ -1159,23 +1034,25 @@ CTranslatorExprToDXLUtils::PdxlnRangeFilterDefaultAndOpenEnded
 //
 //---------------------------------------------------------------------------
 CDXLPhysicalProperties *
-CTranslatorExprToDXLUtils::PdxlpropCopy
-	(
-	IMemoryPool *pmp,
-	CDXLNode *pdxln
-	)
+CTranslatorExprToDXLUtils::PdxlpropCopy(IMemoryPool *pmp, CDXLNode *pdxln)
 {
 	GPOS_ASSERT(NULL != pdxln);
 
 	GPOS_ASSERT(NULL != pdxln->Pdxlprop());
-	CDXLPhysicalProperties *pdxlprop = CDXLPhysicalProperties::PdxlpropConvert(pdxln->Pdxlprop());
+	CDXLPhysicalProperties *pdxlprop =
+		CDXLPhysicalProperties::PdxlpropConvert(pdxln->Pdxlprop());
 
-	CWStringDynamic *pstrStartupcost = GPOS_NEW(pmp) CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrStartupCost()->Wsz());
-	CWStringDynamic *pstrCost = GPOS_NEW(pmp) CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrTotalCost()->Wsz());
-	CWStringDynamic *pstrRows = GPOS_NEW(pmp) CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrRows()->Wsz());
-	CWStringDynamic *pstrWidth = GPOS_NEW(pmp) CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrWidth()->Wsz());
+	CWStringDynamic *pstrStartupcost = GPOS_NEW(pmp)
+		CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrStartupCost()->Wsz());
+	CWStringDynamic *pstrCost = GPOS_NEW(pmp)
+		CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrTotalCost()->Wsz());
+	CWStringDynamic *pstrRows = GPOS_NEW(pmp)
+		CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrRows()->Wsz());
+	CWStringDynamic *pstrWidth = GPOS_NEW(pmp)
+		CWStringDynamic(pmp, pdxlprop->Pdxlopcost()->PstrWidth()->Wsz());
 
-	return GPOS_NEW(pmp) CDXLPhysicalProperties(GPOS_NEW(pmp) CDXLOperatorCost(pstrStartupcost, pstrCost, pstrRows, pstrWidth));
+	return GPOS_NEW(pmp) CDXLPhysicalProperties(GPOS_NEW(pmp) CDXLOperatorCost(
+		pstrStartupcost, pstrCost, pstrRows, pstrWidth));
 }
 
 
@@ -1189,53 +1066,52 @@ CTranslatorExprToDXLUtils::PdxlpropCopy
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnCmp
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda,
-	ULONG ulPartLevel,
-	BOOL fLowerBound,
-	CDXLNode *pdxlnScalar, 
-	IMDType::ECmpType ecmpt, 
-	IMDId *pmdidTypePartKey,
-	IMDId *pmdidTypeExpr,
-	IMDId *pmdidTypeCastExpr,
-	IMDId *pmdidCastFunc
-	)
+CTranslatorExprToDXLUtils::PdxlnCmp(
+	IMemoryPool *pmp, CMDAccessor *pmda, ULONG ulPartLevel, BOOL fLowerBound,
+	CDXLNode *pdxlnScalar, IMDType::ECmpType ecmpt, IMDId *pmdidTypePartKey,
+	IMDId *pmdidTypeExpr, IMDId *pmdidTypeCastExpr, IMDId *pmdidCastFunc)
 {
 	IMDId *pmdidScCmp = NULL;
 
 	if (IMDId::FValid(pmdidTypeCastExpr))
 	{
-		pmdidScCmp = CUtils::PmdidScCmp(pmp, pmda, pmdidTypeCastExpr, pmdidTypeExpr, ecmpt);
+		pmdidScCmp = CUtils::PmdidScCmp(pmp, pmda, pmdidTypeCastExpr,
+										pmdidTypeExpr, ecmpt);
 	}
 	else
 	{
-		pmdidScCmp = CUtils::PmdidScCmp(pmp, pmda, pmdidTypePartKey, pmdidTypeExpr, ecmpt);
+		pmdidScCmp = CUtils::PmdidScCmp(pmp, pmda, pmdidTypePartKey,
+										pmdidTypeExpr, ecmpt);
 	}
-	
-	const IMDScalarOp *pmdscop = pmda->Pmdscop(pmdidScCmp); 
+
+	const IMDScalarOp *pmdscop = pmda->Pmdscop(pmdidScCmp);
 	const CWStringConst *pstrScCmp = pmdscop->Mdname().Pstr();
-	
+
 	pmdidScCmp->AddRef();
-	
-	CDXLScalarComp *pdxlopCmp = GPOS_NEW(pmp) CDXLScalarComp(pmp, pmdidScCmp, GPOS_NEW(pmp) CWStringConst(pmp, pstrScCmp->Wsz()));
+
+	CDXLScalarComp *pdxlopCmp = GPOS_NEW(pmp) CDXLScalarComp(
+		pmp, pmdidScCmp, GPOS_NEW(pmp) CWStringConst(pmp, pstrScCmp->Wsz()));
 	CDXLNode *pdxlnScCmp = GPOS_NEW(pmp) CDXLNode(pmp, pdxlopCmp);
-	
+
 	pmdidTypePartKey->AddRef();
-	CDXLNode *pdxlnPartBound = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBound(pmp, ulPartLevel, pmdidTypePartKey, fLowerBound));
-	
+	CDXLNode *pdxlnPartBound = GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartBound(
+						  pmp, ulPartLevel, pmdidTypePartKey, fLowerBound));
+
 	if (IMDId::FValid(pmdidTypeCastExpr))
 	{
 		GPOS_ASSERT(NULL != pmdidCastFunc);
 		pmdidTypeCastExpr->AddRef();
 		pmdidCastFunc->AddRef();
 
-		pdxlnPartBound = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarCast(pmp, pmdidTypeCastExpr, pmdidCastFunc), pdxlnPartBound);
+		pdxlnPartBound = GPOS_NEW(pmp) CDXLNode(
+			pmp,
+			GPOS_NEW(pmp) CDXLScalarCast(pmp, pmdidTypeCastExpr, pmdidCastFunc),
+			pdxlnPartBound);
 	}
 	pdxlnScCmp->AddChild(pdxlnPartBound);
 	pdxlnScCmp->AddChild(pdxlnScalar);
-	
+
 	return pdxlnScCmp;
 }
 
@@ -1248,19 +1124,14 @@ CTranslatorExprToDXLUtils::PdxlnCmp
 //
 //---------------------------------------------------------------------------
 CColRef *
-CTranslatorExprToDXLUtils::PcrCreate
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CColumnFactory *pcf,
-	IMDId *pmdidType,
-	INT iTypeModifier,
-	const WCHAR *wszName
-	)
+CTranslatorExprToDXLUtils::PcrCreate(IMemoryPool *pmp, CMDAccessor *pmda,
+									 CColumnFactory *pcf, IMDId *pmdidType,
+									 INT iTypeModifier, const WCHAR *wszName)
 {
 	const IMDType *pmdtype = pmda->Pmdtype(pmdidType);
-	
-	CName *pname = GPOS_NEW(pmp) CName(GPOS_NEW(pmp) CWStringConst(wszName), true /*fOwnsMemory*/);
+
+	CName *pname = GPOS_NEW(pmp)
+		CName(GPOS_NEW(pmp) CWStringConst(wszName), true /*fOwnsMemory*/);
 	CColRef *pcr = pcf->PcrCreate(pmdtype, iTypeModifier, *pname);
 	GPOS_DELETE(pname);
 	return pcr;
@@ -1276,18 +1147,20 @@ CTranslatorExprToDXLUtils::PcrCreate
 //
 //---------------------------------------------------------------------------
 CDXLPhysicalProperties *
-CTranslatorExprToDXLUtils::Pdxlprop
-	(
-	IMemoryPool *pmp
-	)
+CTranslatorExprToDXLUtils::Pdxlprop(IMemoryPool *pmp)
 {
 	// TODO:  - May 10, 2012; replace the dummy implementation with a real one
-	CWStringDynamic *pstrStartupcost = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("10"));
-	CWStringDynamic *pstrTotalcost = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("100"));
-	CWStringDynamic *pstrRows = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("100"));
-	CWStringDynamic *pstrWidth = GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("4"));
+	CWStringDynamic *pstrStartupcost =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("10"));
+	CWStringDynamic *pstrTotalcost =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("100"));
+	CWStringDynamic *pstrRows =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("100"));
+	CWStringDynamic *pstrWidth =
+		GPOS_NEW(pmp) CWStringDynamic(pmp, GPOS_WSZ_LIT("4"));
 
-	CDXLOperatorCost *pdxlopcost = GPOS_NEW(pmp) CDXLOperatorCost(pstrStartupcost, pstrTotalcost, pstrRows, pstrWidth);
+	CDXLOperatorCost *pdxlopcost = GPOS_NEW(pmp)
+		CDXLOperatorCost(pstrStartupcost, pstrTotalcost, pstrRows, pstrWidth);
 	return GPOS_NEW(pmp) CDXLPhysicalProperties(pdxlopcost);
 }
 
@@ -1300,22 +1173,20 @@ CTranslatorExprToDXLUtils::Pdxlprop
 //
 //---------------------------------------------------------------------------
 BOOL
-CTranslatorExprToDXLUtils::FScalarConstTrue
-	(
-	CMDAccessor *pmda,
-	CDXLNode *pdxln
-	)
+CTranslatorExprToDXLUtils::FScalarConstTrue(CMDAccessor *pmda, CDXLNode *pdxln)
 {
 	GPOS_ASSERT(NULL != pdxln);
 	if (EdxlopScalarConstValue == pdxln->Pdxlop()->Edxlop())
 	{
 		CDXLScalarConstValue *pdxlopConst =
-				CDXLScalarConstValue::PdxlopConvert(pdxln->Pdxlop());
+			CDXLScalarConstValue::PdxlopConvert(pdxln->Pdxlop());
 
-		const IMDType *pmdtype = pmda->Pmdtype(pdxlopConst->Pdxldatum()->Pmdid());
-		if (IMDType::EtiBool ==  pmdtype->Eti())
+		const IMDType *pmdtype =
+			pmda->Pmdtype(pdxlopConst->Pdxldatum()->Pmdid());
+		if (IMDType::EtiBool == pmdtype->Eti())
 		{
-			CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(const_cast<CDXLDatum*>(pdxlopConst->Pdxldatum()));
+			CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(
+				const_cast<CDXLDatum *>(pdxlopConst->Pdxldatum()));
 
 			return (!pdxldatum->FNull() && pdxldatum->FValue());
 		}
@@ -1333,22 +1204,20 @@ CTranslatorExprToDXLUtils::FScalarConstTrue
 //
 //---------------------------------------------------------------------------
 BOOL
-CTranslatorExprToDXLUtils::FScalarConstFalse
-	(
-	CMDAccessor *pmda,
-	CDXLNode *pdxln
-	)
+CTranslatorExprToDXLUtils::FScalarConstFalse(CMDAccessor *pmda, CDXLNode *pdxln)
 {
 	GPOS_ASSERT(NULL != pdxln);
 	if (EdxlopScalarConstValue == pdxln->Pdxlop()->Edxlop())
 	{
 		CDXLScalarConstValue *pdxlopConst =
-				CDXLScalarConstValue::PdxlopConvert(pdxln->Pdxlop());
+			CDXLScalarConstValue::PdxlopConvert(pdxln->Pdxlop());
 
-		const IMDType *pmdtype = pmda->Pmdtype(pdxlopConst->Pdxldatum()->Pmdid());
-		if (IMDType::EtiBool ==  pmdtype->Eti())
+		const IMDType *pmdtype =
+			pmda->Pmdtype(pdxlopConst->Pdxldatum()->Pmdid());
+		if (IMDType::EtiBool == pmdtype->Eti())
 		{
-			CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(const_cast<CDXLDatum*>(pdxlopConst->Pdxldatum()));
+			CDXLDatumBool *pdxldatum = CDXLDatumBool::PdxldatumConvert(
+				const_cast<CDXLDatum *>(pdxlopConst->Pdxldatum()));
 			return (!pdxldatum->FNull() && !pdxldatum->FValue());
 		}
 	}
@@ -1362,34 +1231,31 @@ CTranslatorExprToDXLUtils::FScalarConstFalse
 //
 //	@doc:
 //		Construct a project list node by creating references to the columns
-//		of the given project list of the child node 
+//		of the given project list of the child node
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnProjListFromChildProjList
-	(
-	IMemoryPool *pmp,
-	CColumnFactory *pcf,
-	HMCrDxln *phmcrdxln, 
-	const CDXLNode *pdxlnProjListChild
-	)
+CTranslatorExprToDXLUtils::PdxlnProjListFromChildProjList(
+	IMemoryPool *pmp, CColumnFactory *pcf, HMCrDxln *phmcrdxln,
+	const CDXLNode *pdxlnProjListChild)
 {
 	GPOS_ASSERT(NULL != pdxlnProjListChild);
-	
+
 	CDXLScalarProjList *pdxlopPrL = GPOS_NEW(pmp) CDXLScalarProjList(pmp);
 	CDXLNode *pdxlnProjList = GPOS_NEW(pmp) CDXLNode(pmp, pdxlopPrL);
-	
+
 	// create a scalar identifier for each project element of the child
 	const ULONG ulArity = pdxlnProjListChild->UlArity();
 	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
 		CDXLNode *pdxlnProjElemChild = (*pdxlnProjListChild)[ul];
-		
+
 		// translate proj elem
-		CDXLNode *pdxlnProjElem = PdxlnProjElem(pmp, pcf, phmcrdxln, pdxlnProjElemChild);
+		CDXLNode *pdxlnProjElem =
+			PdxlnProjElem(pmp, pcf, phmcrdxln, pdxlnProjElemChild);
 		pdxlnProjList->AddChild(pdxlnProjElem);
 	}
-		
+
 	return pdxlnProjList;
 }
 
@@ -1402,29 +1268,23 @@ CTranslatorExprToDXLUtils::PdxlnProjListFromChildProjList
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPrLPartitionSelector
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CColumnFactory *pcf,
-	HMCrDxln *phmcrdxln,
-	BOOL fUseChildProjList,
-	CDXLNode *pdxlnPrLChild,
-	CColRef *pcrOid,
-	ULONG ulPartLevels,
-	BOOL fGeneratePartOid
-	)
+CTranslatorExprToDXLUtils::PdxlnPrLPartitionSelector(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf,
+	HMCrDxln *phmcrdxln, BOOL fUseChildProjList, CDXLNode *pdxlnPrLChild,
+	CColRef *pcrOid, ULONG ulPartLevels, BOOL fGeneratePartOid)
 {
 	GPOS_ASSERT_IMP(fUseChildProjList, NULL != pdxlnPrLChild);
 
 	CDXLNode *pdxlnPrL = NULL;
 	if (fUseChildProjList)
 	{
-		pdxlnPrL = PdxlnProjListFromChildProjList(pmp, pcf, phmcrdxln, pdxlnPrLChild);
+		pdxlnPrL =
+			PdxlnProjListFromChildProjList(pmp, pcf, phmcrdxln, pdxlnPrLChild);
 	}
 	else
 	{
-		pdxlnPrL = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarProjList(pmp));
+		pdxlnPrL =
+			GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarProjList(pmp));
 	}
 
 	if (fGeneratePartOid)
@@ -1437,9 +1297,11 @@ CTranslatorExprToDXLUtils::PdxlnPrLPartitionSelector
 		}
 
 		CMDName *pmdname = GPOS_NEW(pmp) CMDName(pmp, pcrOid->Name().Pstr());
-		CDXLScalarProjElem *pdxlopPrEl = GPOS_NEW(pmp) CDXLScalarProjElem(pmp, pcrOid->UlId(), pmdname);
+		CDXLScalarProjElem *pdxlopPrEl =
+			GPOS_NEW(pmp) CDXLScalarProjElem(pmp, pcrOid->UlId(), pmdname);
 		CDXLNode *pdxlnPrEl = GPOS_NEW(pmp) CDXLNode(pmp, pdxlopPrEl);
-		CDXLNode *pdxlnPartOid = GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarPartOid(pmp, ulPartLevels-1));
+		CDXLNode *pdxlnPartOid = GPOS_NEW(pmp) CDXLNode(
+			pmp, GPOS_NEW(pmp) CDXLScalarPartOid(pmp, ulPartLevels - 1));
 		pdxlnPrEl->AddChild(pdxlnPartOid);
 		pdxlnPrL->AddChild(pdxlnPrEl);
 	}
@@ -1456,17 +1318,10 @@ CTranslatorExprToDXLUtils::PdxlnPrLPartitionSelector
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPropExprPartitionSelector
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CColumnFactory *pcf,
-	BOOL fConditional,
-	PartCnstrMap *ppartcnstrmap,
-	DrgDrgPcr *pdrgpdrgpcrKeys,
-	ULONG ulScanId,
-	DrgPsz *pdrgszPartTypes
-	)
+CTranslatorExprToDXLUtils::PdxlnPropExprPartitionSelector(
+	IMemoryPool *pmp, CMDAccessor *pmda, CColumnFactory *pcf, BOOL fConditional,
+	PartCnstrMap *ppartcnstrmap, DrgDrgPcr *pdrgpdrgpcrKeys, ULONG ulScanId,
+	DrgPsz *pdrgszPartTypes)
 {
 	if (!fConditional)
 	{
@@ -1474,7 +1329,8 @@ CTranslatorExprToDXLUtils::PdxlnPropExprPartitionSelector
 		return PdxlnInt4Const(pmp, pmda, (INT) ulScanId);
 	}
 
-	return PdxlnPropagationExpressionForPartConstraints(pmp, pmda, pcf, ppartcnstrmap, pdrgpdrgpcrKeys, pdrgszPartTypes);
+	return PdxlnPropagationExpressionForPartConstraints(
+		pmp, pmda, pcf, ppartcnstrmap, pdrgpdrgpcrKeys, pdrgszPartTypes);
 }
 
 //---------------------------------------------------------------------------
@@ -1482,32 +1338,31 @@ CTranslatorExprToDXLUtils::PdxlnPropExprPartitionSelector
 //		CTranslatorExprToDXLUtils::PdxlnProjElem
 //
 //	@doc:
-//		Create a project elem as a scalar identifier for the given child 
+//		Create a project elem as a scalar identifier for the given child
 //		project element
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnProjElem
-	(
-	IMemoryPool *pmp,
-	CColumnFactory *pcf,
-	HMCrDxln *phmcrdxln, 
-	const CDXLNode *pdxlnChildProjElem
-	)
+CTranslatorExprToDXLUtils::PdxlnProjElem(IMemoryPool *pmp, CColumnFactory *pcf,
+										 HMCrDxln *phmcrdxln,
+										 const CDXLNode *pdxlnChildProjElem)
 {
-	GPOS_ASSERT(NULL != pdxlnChildProjElem && 1 == pdxlnChildProjElem->UlArity());
-	
-	CDXLScalarProjElem *pdxlopPrElChild = dynamic_cast<CDXLScalarProjElem*>(pdxlnChildProjElem->Pdxlop());
+	GPOS_ASSERT(NULL != pdxlnChildProjElem &&
+				1 == pdxlnChildProjElem->UlArity());
 
-    // find the col ref corresponding to this element's id through column factory
-    CColRef *pcr = pcf->PcrLookup(pdxlopPrElChild->UlId());
-    if (NULL == pcr)
-    {
-    	GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiExpr2DXLAttributeNotFound, pdxlopPrElChild->UlId());
-    }
-    
-    CDXLNode *pdxlnProjElemResult = PdxlnProjElem(pmp, phmcrdxln, pcr);
-	
+	CDXLScalarProjElem *pdxlopPrElChild =
+		dynamic_cast<CDXLScalarProjElem *>(pdxlnChildProjElem->Pdxlop());
+
+	// find the col ref corresponding to this element's id through column factory
+	CColRef *pcr = pcf->PcrLookup(pdxlopPrElChild->UlId());
+	if (NULL == pcr)
+	{
+		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiExpr2DXLAttributeNotFound,
+				   pdxlopPrElChild->UlId());
+	}
+
+	CDXLNode *pdxlnProjElemResult = PdxlnProjElem(pmp, phmcrdxln, pcr);
+
 	return pdxlnProjElemResult;
 }
 
@@ -1520,13 +1375,13 @@ CTranslatorExprToDXLUtils::PdxlnProjElem
 //
 //---------------------------------------------------------------------------
 void
-CTranslatorExprToDXLUtils::ReplaceSubplan
-	(
+CTranslatorExprToDXLUtils::ReplaceSubplan(
 	IMemoryPool *pmp,
 	HMCrDxln *phmcrdxlnSubplans,  // map of col ref to subplan
-	const CColRef *pcr, // key of entry in the passed map
-	CDXLScalarProjElem *pdxlopPrEl // project element to use for creating DXL col ref to replace subplan
-	)
+	const CColRef *pcr,			  // key of entry in the passed map
+	CDXLScalarProjElem *
+		pdxlopPrEl  // project element to use for creating DXL col ref to replace subplan
+)
 {
 	GPOS_ASSERT(NULL != phmcrdxlnSubplans);
 	GPOS_ASSERT(NULL != pcr);
@@ -1534,13 +1389,15 @@ CTranslatorExprToDXLUtils::ReplaceSubplan
 
 	IMDId *pmdidType = pcr->Pmdtype()->Pmdid();
 	pmdidType->AddRef();
-	CMDName *pmdname = GPOS_NEW(pmp) CMDName(pmp, pdxlopPrEl->PmdnameAlias()->Pstr());
-	CDXLColRef *pdxlcr = GPOS_NEW(pmp) CDXLColRef(pmp, pmdname, pdxlopPrEl->UlId(), pmdidType, pcr->ITypeModifier());
+	CMDName *pmdname =
+		GPOS_NEW(pmp) CMDName(pmp, pdxlopPrEl->PmdnameAlias()->Pstr());
+	CDXLColRef *pdxlcr = GPOS_NEW(pmp) CDXLColRef(
+		pmp, pmdname, pdxlopPrEl->UlId(), pmdidType, pcr->ITypeModifier());
 	CDXLScalarIdent *pdxlnScId = GPOS_NEW(pmp) CDXLScalarIdent(pmp, pdxlcr);
 	CDXLNode *pdxln = GPOS_NEW(pmp) CDXLNode(pmp, pdxlnScId);
 #ifdef GPOS_DEBUG
 	BOOL fReplaced =
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 		phmcrdxlnSubplans->FReplace(pcr, pdxln);
 	GPOS_ASSERT(fReplaced);
 }
@@ -1561,22 +1418,23 @@ CTranslatorExprToDXLUtils::ReplaceSubplan
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnProjElem
-	(
+CTranslatorExprToDXLUtils::PdxlnProjElem(
 	IMemoryPool *pmp,
-	HMCrDxln *phmcrdxlnSubplans, // map of col ref -> subplan: can be modified by this function
-	const CColRef *pcr
-	)
+	HMCrDxln *
+		phmcrdxlnSubplans,  // map of col ref -> subplan: can be modified by this function
+	const CColRef *pcr)
 {
 	GPOS_ASSERT(NULL != pcr);
-	
+
 	CMDName *pmdname = GPOS_NEW(pmp) CMDName(pmp, pcr->Name().Pstr());
-	
-	CDXLScalarProjElem *pdxlopPrEl = GPOS_NEW(pmp) CDXLScalarProjElem(pmp, pcr->UlId(), pmdname);
+
+	CDXLScalarProjElem *pdxlopPrEl =
+		GPOS_NEW(pmp) CDXLScalarProjElem(pmp, pcr->UlId(), pmdname);
 	CDXLNode *pdxlnPrEl = GPOS_NEW(pmp) CDXLNode(pmp, pdxlopPrEl);
-	
+
 	// create a scalar identifier for the proj element expression
-	CDXLNode *pdxlnScId = PdxlnIdent(pmp, phmcrdxlnSubplans, NULL /*phmcrdxlnIndexLookup*/, pcr);
+	CDXLNode *pdxlnScId =
+		PdxlnIdent(pmp, phmcrdxlnSubplans, NULL /*phmcrdxlnIndexLookup*/, pcr);
 
 	if (EdxlopScalarSubPlan == pdxlnScId->Pdxlop()->Edxlop())
 	{
@@ -1588,7 +1446,7 @@ CTranslatorExprToDXLUtils::PdxlnProjElem
 
 	// attach scalar id expression to proj elem
 	pdxlnPrEl->AddChild(pdxlnScId);
-	
+
 	return pdxlnPrEl;
 }
 
@@ -1602,17 +1460,14 @@ CTranslatorExprToDXLUtils::PdxlnProjElem
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnIdent
-	(
-	IMemoryPool *pmp,
-	HMCrDxln *phmcrdxlnSubplans,
-	HMCrDxln *phmcrdxlnIndexLookup,
-	const CColRef *pcr
-	)
+CTranslatorExprToDXLUtils::PdxlnIdent(IMemoryPool *pmp,
+									  HMCrDxln *phmcrdxlnSubplans,
+									  HMCrDxln *phmcrdxlnIndexLookup,
+									  const CColRef *pcr)
 {
 	GPOS_ASSERT(NULL != pcr);
 	GPOS_ASSERT(NULL != phmcrdxlnSubplans);
-	
+
 	CDXLNode *pdxln = phmcrdxlnSubplans->PtLookup(pcr);
 
 	if (NULL != pdxln)
@@ -1636,8 +1491,9 @@ CTranslatorExprToDXLUtils::PdxlnIdent
 	IMDId *pmdid = pcr->Pmdtype()->Pmdid();
 	pmdid->AddRef();
 
-	CDXLColRef *pdxlcr = GPOS_NEW(pmp) CDXLColRef(pmp, pmdname, pcr->UlId(), pmdid, pcr->ITypeModifier());
-	
+	CDXLColRef *pdxlcr = GPOS_NEW(pmp)
+		CDXLColRef(pmp, pmdname, pcr->UlId(), pmdid, pcr->ITypeModifier());
+
 	CDXLScalarIdent *pdxlop = GPOS_NEW(pmp) CDXLScalarIdent(pmp, pdxlcr);
 	return GPOS_NEW(pmp) CDXLNode(pmp, pdxlop);
 }
@@ -1651,11 +1507,7 @@ CTranslatorExprToDXLUtils::PdxlnIdent
 //
 //---------------------------------------------------------------------------
 DrgPdatum *
-CTranslatorExprToDXLUtils::PdrgpdatumNulls
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr
-	)
+CTranslatorExprToDXLUtils::PdrgpdatumNulls(IMemoryPool *pmp, DrgPcr *pdrgpcr)
 {
 	DrgPdatum *pdrgpdatum = GPOS_NEW(pmp) DrgPdatum(pmp);
 
@@ -1682,11 +1534,8 @@ CTranslatorExprToDXLUtils::PdrgpdatumNulls
 //
 //---------------------------------------------------------------------------
 BOOL
-CTranslatorExprToDXLUtils::FProjectListMatch
-	(
-	CDXLNode *pdxlnPrL,
-	DrgPcr *pdrgpcr
-	)
+CTranslatorExprToDXLUtils::FProjectListMatch(CDXLNode *pdxlnPrL,
+											 DrgPcr *pdrgpcr)
 {
 	GPOS_ASSERT(NULL != pdxlnPrL);
 	GPOS_ASSERT(NULL != pdrgpcr);
@@ -1703,7 +1552,8 @@ CTranslatorExprToDXLUtils::FProjectListMatch
 		CColRef *pcr = (*pdrgpcr)[ul];
 
 		CDXLNode *pdxlnPrEl = (*pdxlnPrL)[ul];
-		CDXLScalarProjElem *pdxlopPrEl = CDXLScalarProjElem::PdxlopConvert(pdxlnPrEl->Pdxlop());
+		CDXLScalarProjElem *pdxlopPrEl =
+			CDXLScalarProjElem::PdxlopConvert(pdxlnPrEl->Pdxlop());
 
 		if (pcr->UlId() != pdxlopPrEl->UlId())
 		{
@@ -1725,13 +1575,10 @@ CTranslatorExprToDXLUtils::FProjectListMatch
 //
 //---------------------------------------------------------------------------
 DrgPcr *
-CTranslatorExprToDXLUtils::PdrgpcrMapColumns
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcrInput,
-	HMCrUl *phmcrul,
-	DrgPcr *pdrgpcrMapDest
-	)
+CTranslatorExprToDXLUtils::PdrgpcrMapColumns(IMemoryPool *pmp,
+											 DrgPcr *pdrgpcrInput,
+											 HMCrUl *phmcrul,
+											 DrgPcr *pdrgpcrMapDest)
 {
 	GPOS_ASSERT(NULL != phmcrul);
 	GPOS_ASSERT(NULL != pdrgpcrMapDest);
@@ -1750,7 +1597,7 @@ CTranslatorExprToDXLUtils::PdrgpcrMapColumns
 
 		// get column index from hashmap
 		ULONG *pul = phmcrul->PtLookup(pcr);
-		GPOS_ASSERT (NULL != pul);
+		GPOS_ASSERT(NULL != pul);
 
 		// add corresponding column from dest array
 		pdrgpcrNew->Append((*pdrgpcrMapDest)[*pul]);
@@ -1769,20 +1616,14 @@ CTranslatorExprToDXLUtils::PdrgpcrMapColumns
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnResult
-	(
-	IMemoryPool *pmp,
-	CDXLPhysicalProperties *pdxlprop,
-	CDXLNode *pdxlnPrL,
-	CDXLNode *pdxlnFilter,
-	CDXLNode *pdxlnOneTimeFilter,
-	CDXLNode *pdxlnChild
-	)
+CTranslatorExprToDXLUtils::PdxlnResult(
+	IMemoryPool *pmp, CDXLPhysicalProperties *pdxlprop, CDXLNode *pdxlnPrL,
+	CDXLNode *pdxlnFilter, CDXLNode *pdxlnOneTimeFilter, CDXLNode *pdxlnChild)
 {
 	CDXLPhysicalResult *pdxlop = GPOS_NEW(pmp) CDXLPhysicalResult(pmp);
 	CDXLNode *pdxlnResult = GPOS_NEW(pmp) CDXLNode(pmp, pdxlop);
 	pdxlnResult->SetProperties(pdxlprop);
-	
+
 	pdxlnResult->AddChild(pdxlnPrL);
 	pdxlnResult->AddChild(pdxlnFilter);
 	pdxlnResult->AddChild(pdxlnOneTimeFilter);
@@ -1801,13 +1642,10 @@ CTranslatorExprToDXLUtils::PdxlnResult
 
 // create a DXL Value Scan node
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnValuesScan
-	(
-	IMemoryPool *pmp,
-	CDXLPhysicalProperties *pdxlprop,
-	CDXLNode *pdxlnPrL,
-	DrgPdrgPdatum *pdrgpdrgdatum
-	)
+CTranslatorExprToDXLUtils::PdxlnValuesScan(IMemoryPool *pmp,
+										   CDXLPhysicalProperties *pdxlprop,
+										   CDXLNode *pdxlnPrL,
+										   DrgPdrgPdatum *pdrgpdrgdatum)
 {
 	CDXLPhysicalValuesScan *pdxlop = GPOS_NEW(pmp) CDXLPhysicalValuesScan(pmp);
 	CDXLNode *pdxlnValuesScan = GPOS_NEW(pmp) CDXLNode(pmp, pdxlop);
@@ -1831,7 +1669,8 @@ CTranslatorExprToDXLUtils::PdxlnValuesScan
 			CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
 			const IMDType *pmdtype = pmda->Pmdtype(pdatum->Pmdid());
 
-			CDXLNode *pdxlnValue = GPOS_NEW(pmp) CDXLNode(pmp, pmdtype->PdxlopScConst(pmp, pdatum));
+			CDXLNode *pdxlnValue = GPOS_NEW(pmp)
+				CDXLNode(pmp, pmdtype->PdxlopScConst(pmp, pdatum));
 			pdxlnValueList->AddChild(pdxlnValue);
 		}
 		pdrgpdatum->Release();
@@ -1854,27 +1693,15 @@ CTranslatorExprToDXLUtils::PdxlnValuesScan
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnPartitionSelector
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid,
-	ULONG ulPartLevels,
-	ULONG ulScanId,
-	CDXLPhysicalProperties *pdxlprop,
-	CDXLNode *pdxlnPrL,
-	CDXLNode *pdxlnEqFilters,
-	CDXLNode *pdxlnFilters,
-	CDXLNode *pdxlnResidual,
-	CDXLNode *pdxlnPropagation,
-	CDXLNode *pdxlnPrintable,
-	CDXLNode *pdxlnChild
-	)
+CTranslatorExprToDXLUtils::PdxlnPartitionSelector(
+	IMemoryPool *pmp, IMDId *pmdid, ULONG ulPartLevels, ULONG ulScanId,
+	CDXLPhysicalProperties *pdxlprop, CDXLNode *pdxlnPrL,
+	CDXLNode *pdxlnEqFilters, CDXLNode *pdxlnFilters, CDXLNode *pdxlnResidual,
+	CDXLNode *pdxlnPropagation, CDXLNode *pdxlnPrintable, CDXLNode *pdxlnChild)
 {
-	CDXLNode *pdxlnSelector = GPOS_NEW(pmp) CDXLNode
-										(
-										pmp,
-										GPOS_NEW(pmp) CDXLPhysicalPartitionSelector(pmp, pmdid, ulPartLevels, ulScanId)
-										);
+	CDXLNode *pdxlnSelector =
+		GPOS_NEW(pmp) CDXLNode(pmp, GPOS_NEW(pmp) CDXLPhysicalPartitionSelector(
+										pmp, pmdid, ulPartLevels, ulScanId));
 
 	pdxlnSelector->SetProperties(pdxlprop);
 	pdxlnSelector->AddChild(pdxlnPrL);
@@ -1900,16 +1727,12 @@ CTranslatorExprToDXLUtils::PdxlnPartitionSelector
 //
 //---------------------------------------------------------------------------
 CDXLNode *
-CTranslatorExprToDXLUtils::PdxlnCombineBoolean
-	(
-	IMemoryPool *pmp,
-	CDXLNode *pdxlnFst,
-	CDXLNode *pdxlnSnd,
-	EdxlBoolExprType boolexptype
-	)
+CTranslatorExprToDXLUtils::PdxlnCombineBoolean(IMemoryPool *pmp,
+											   CDXLNode *pdxlnFst,
+											   CDXLNode *pdxlnSnd,
+											   EdxlBoolExprType boolexptype)
 {
-	GPOS_ASSERT(Edxlor == boolexptype ||
-				Edxland == boolexptype);
+	GPOS_ASSERT(Edxlor == boolexptype || Edxland == boolexptype);
 
 	if (NULL == pdxlnFst)
 	{
@@ -1921,13 +1744,9 @@ CTranslatorExprToDXLUtils::PdxlnCombineBoolean
 		return pdxlnFst;
 	}
 
-	return  GPOS_NEW(pmp) CDXLNode
-						(
-						pmp,
-						GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, boolexptype),
-						pdxlnFst,
-						pdxlnSnd
-						);
+	return GPOS_NEW(pmp)
+		CDXLNode(pmp, GPOS_NEW(pmp) CDXLScalarBoolExpr(pmp, boolexptype),
+				 pdxlnFst, pdxlnSnd);
 }
 
 //---------------------------------------------------------------------------
@@ -1940,11 +1759,7 @@ CTranslatorExprToDXLUtils::PdxlnCombineBoolean
 //
 //---------------------------------------------------------------------------
 HMCrUl *
-CTranslatorExprToDXLUtils::PhmcrulColIndex
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcr
-	)
+CTranslatorExprToDXLUtils::PhmcrulColIndex(IMemoryPool *pmp, DrgPcr *pdrgpcr)
 {
 	HMCrUl *phmcrul = GPOS_NEW(pmp) HMCrUl(pmp);
 
@@ -1955,10 +1770,10 @@ CTranslatorExprToDXLUtils::PhmcrulColIndex
 		ULONG *pul = GPOS_NEW(pmp) ULONG(ul);
 
 		// add to hashmap
-	#ifdef GPOS_DEBUG
+#ifdef GPOS_DEBUG
 		BOOL fRes =
-	#endif // GPOS_DEBUG
-		phmcrul->FInsert(pcr, pul);
+#endif  // GPOS_DEBUG
+			phmcrul->FInsert(pcr, pul);
 		GPOS_ASSERT(fRes);
 	}
 
@@ -1974,20 +1789,15 @@ CTranslatorExprToDXLUtils::PhmcrulColIndex
 //
 //---------------------------------------------------------------------------
 void
-CTranslatorExprToDXLUtils::SetStats
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CDXLNode *pdxln,
-	const IStatistics *pstats,
-	BOOL fRoot
-	)
+CTranslatorExprToDXLUtils::SetStats(IMemoryPool *pmp, CMDAccessor *pmda,
+									CDXLNode *pdxln, const IStatistics *pstats,
+									BOOL fRoot)
 {
-	if (NULL != pstats && GPOS_FTRACE(EopttraceExtractDXLStats) && 
-		(GPOS_FTRACE(EopttraceExtractDXLStatsAllNodes) || fRoot)
-		)
+	if (NULL != pstats && GPOS_FTRACE(EopttraceExtractDXLStats) &&
+		(GPOS_FTRACE(EopttraceExtractDXLStatsAllNodes) || fRoot))
 	{
-		CDXLPhysicalProperties::PdxlpropConvert(pdxln->Pdxlprop())->SetStats(pstats->Pdxlstatsderrel(pmp, pmda));
+		CDXLPhysicalProperties::PdxlpropConvert(pdxln->Pdxlprop())
+			->SetStats(pstats->Pdxlstatsderrel(pmp, pmda));
 	}
 }
 
@@ -2001,54 +1811,54 @@ CTranslatorExprToDXLUtils::SetStats
 //
 //---------------------------------------------------------------------------
 void
-CTranslatorExprToDXLUtils::SetDirectDispatchInfo
-	(
-	IMemoryPool *pmp,
-	CMDAccessor *pmda,
-	CDXLNode *pdxln,
-	CDrvdPropRelational *pdpRel,
-	DrgPds *pdrgpdsBaseTables
-	)
+CTranslatorExprToDXLUtils::SetDirectDispatchInfo(IMemoryPool *pmp,
+												 CMDAccessor *pmda,
+												 CDXLNode *pdxln,
+												 CDrvdPropRelational *pdpRel,
+												 DrgPds *pdrgpdsBaseTables)
 {
 	GPOS_ASSERT(NULL != pdxln);
 	GPOS_ASSERT(NULL != pdpRel);
 	GPOS_ASSERT(NULL != pdrgpdsBaseTables);
-	
+
 	Edxlopid edxlopid = pdxln->Pdxlop()->Edxlop();
-	if (EdxlopPhysicalCTAS == edxlopid || EdxlopPhysicalDML == edxlopid || EdxlopPhysicalRowTrigger == edxlopid)
+	if (EdxlopPhysicalCTAS == edxlopid || EdxlopPhysicalDML == edxlopid ||
+		EdxlopPhysicalRowTrigger == edxlopid)
 	{
 		// direct dispatch for CTAS and DML handled elsewhere
 		// TODO:  - Oct 15, 2014; unify
 		return;
 	}
-	
+
 	if (1 != pdpRel->UlJoinDepth() || 1 != pdrgpdsBaseTables->UlLength())
 	{
 		// direct dispatch not supported for join queries
 		return;
 	}
-		
+
 	CDistributionSpec *pds = (*pdrgpdsBaseTables)[0];
-	
+
 	if (CDistributionSpec::EdtHashed != pds->Edt())
 	{
-		// direct dispatch only supported for scans over hash distributed tables 
+		// direct dispatch only supported for scans over hash distributed tables
 		return;
 	}
-	
+
 	CPropConstraint *ppc = pdpRel->Ppc();
 	if (NULL == ppc->Pcnstr())
 	{
 		return;
 	}
-		
+
 	GPOS_ASSERT(NULL != ppc->Pcnstr());
-	
-	CDistributionSpecHashed *pdsHashed = CDistributionSpecHashed::PdsConvert(pds);
+
+	CDistributionSpecHashed *pdsHashed =
+		CDistributionSpecHashed::PdsConvert(pds);
 	DrgPexpr *pdrgpexprHashed = pdsHashed->Pdrgpexpr();
-	
-	CDXLDirectDispatchInfo *pdxlddinfo = Pdxlddinfo(pmp, pmda, pdrgpexprHashed, ppc->Pcnstr());
-	
+
+	CDXLDirectDispatchInfo *pdxlddinfo =
+		Pdxlddinfo(pmp, pmda, pdrgpexprHashed, ppc->Pcnstr());
+
 	if (NULL != pdxlddinfo)
 	{
 		pdxln->SetDirectDispatchInfo(pdxlddinfo);
@@ -2065,26 +1875,22 @@ CTranslatorExprToDXLUtils::SetDirectDispatchInfo
 //
 //---------------------------------------------------------------------------
 CDXLDirectDispatchInfo *
-CTranslatorExprToDXLUtils::Pdxlddinfo
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda,
-	DrgPexpr *pdrgpexprHashed, 
-	CConstraint *pcnstr
-	)
+CTranslatorExprToDXLUtils::Pdxlddinfo(IMemoryPool *pmp, CMDAccessor *pmda,
+									  DrgPexpr *pdrgpexprHashed,
+									  CConstraint *pcnstr)
 {
 	GPOS_ASSERT(NULL != pdrgpexprHashed);
 	GPOS_ASSERT(NULL != pcnstr);
-	
+
 	const ULONG ulHashExpr = pdrgpexprHashed->UlLength();
 	GPOS_ASSERT(0 < ulHashExpr);
-	
+
 	if (1 == ulHashExpr)
 	{
 		CExpression *pexprHashed = (*pdrgpexprHashed)[0];
 		return PdxlddinfoSingleDistrKey(pmp, pmda, pexprHashed, pcnstr);
 	}
-	
+
 	BOOL fSuccess = true;
 	DrgPdxldatum *pdrgpdxldatum = GPOS_NEW(pmp) DrgPdxldatum(pmp);
 
@@ -2093,15 +1899,17 @@ CTranslatorExprToDXLUtils::Pdxlddinfo
 		CExpression *pexpr = (*pdrgpexprHashed)[ul];
 		if (!CUtils::FScalarIdent(pexpr))
 		{
-			fSuccess = false; 
+			fSuccess = false;
 			break;
 		}
-		
-		const CColRef *pcrDistrCol = CScalarIdent::PopConvert(pexpr->Pop())->Pcr();
-		
+
+		const CColRef *pcrDistrCol =
+			CScalarIdent::PopConvert(pexpr->Pop())->Pcr();
+
 		CConstraint *pcnstrDistrCol = pcnstr->Pcnstr(pmp, pcrDistrCol);
-		
-		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(pmp, pmda, pcrDistrCol, pcnstrDistrCol);
+
+		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(
+			pmp, pmda, pcrDistrCol, pcnstrDistrCol);
 		CRefCount::SafeRelease(pcnstrDistrCol);
 
 		if (NULL != pdxldatum && FDirectDispatchable(pcrDistrCol, pdxldatum))
@@ -2116,14 +1924,14 @@ CTranslatorExprToDXLUtils::Pdxlddinfo
 			break;
 		}
 	}
-	
+
 	if (!fSuccess)
 	{
 		pdrgpdxldatum->Release();
 
 		return NULL;
 	}
-	
+
 	DrgPdrgPdxldatum *pdrgpdrgpdxldatum = GPOS_NEW(pmp) DrgPdrgPdxldatum(pmp);
 	pdrgpdrgpdxldatum->Append(pdrgpdxldatum);
 	return GPOS_NEW(pmp) CDXLDirectDispatchInfo(pdrgpdrgpdxldatum);
@@ -2139,29 +1947,28 @@ CTranslatorExprToDXLUtils::Pdxlddinfo
 //
 //---------------------------------------------------------------------------
 CDXLDirectDispatchInfo *
-CTranslatorExprToDXLUtils::PdxlddinfoSingleDistrKey
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda,
-	CExpression *pexprHashed, 
-	CConstraint *pcnstr
-	)
+CTranslatorExprToDXLUtils::PdxlddinfoSingleDistrKey(IMemoryPool *pmp,
+													CMDAccessor *pmda,
+													CExpression *pexprHashed,
+													CConstraint *pcnstr)
 {
 	GPOS_ASSERT(NULL != pexprHashed);
 	if (!CUtils::FScalarIdent(pexprHashed))
 	{
 		return NULL;
 	}
-	
-	const CColRef *pcrDistrCol = CScalarIdent::PopConvert(pexprHashed->Pop())->Pcr();
-	
+
+	const CColRef *pcrDistrCol =
+		CScalarIdent::PopConvert(pexprHashed->Pop())->Pcr();
+
 	CConstraint *pcnstrDistrCol = pcnstr->Pcnstr(pmp, pcrDistrCol);
-	
+
 	DrgPdrgPdxldatum *pdrgpdrgpdxldatum = NULL;
-	
+
 	if (CPredicateUtils::FConstColumn(pcnstrDistrCol, pcrDistrCol))
 	{
-		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(pmp, pmda, pcrDistrCol, pcnstrDistrCol);
+		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(
+			pmp, pmda, pcrDistrCol, pcnstrDistrCol);
 		GPOS_ASSERT(NULL != pdxldatum);
 
 		if (FDirectDispatchable(pcrDistrCol, pdxldatum))
@@ -2170,25 +1977,27 @@ CTranslatorExprToDXLUtils::PdxlddinfoSingleDistrKey
 
 			pdxldatum->AddRef();
 			pdrgpdxldatum->Append(pdxldatum);
-		
+
 			pdrgpdrgpdxldatum = GPOS_NEW(pmp) DrgPdrgPdxldatum(pmp);
 			pdrgpdrgpdxldatum->Append(pdrgpdxldatum);
 		}
 
 		pdxldatum->Release();
 	}
-	else if (CPredicateUtils::FColumnDisjunctionOfConst(pcnstrDistrCol, pcrDistrCol))
+	else if (CPredicateUtils::FColumnDisjunctionOfConst(pcnstrDistrCol,
+														pcrDistrCol))
 	{
-		pdrgpdrgpdxldatum = PdrgpdrgpdxldatumFromDisjPointConstraint(pmp, pmda, pcrDistrCol, pcnstrDistrCol);
+		pdrgpdrgpdxldatum = PdrgpdrgpdxldatumFromDisjPointConstraint(
+			pmp, pmda, pcrDistrCol, pcnstrDistrCol);
 	}
-	
+
 	CRefCount::SafeRelease(pcnstrDistrCol);
 
 	if (NULL == pdrgpdrgpdxldatum)
 	{
 		return NULL;
 	}
-	
+
 	return GPOS_NEW(pmp) CDXLDirectDispatchInfo(pdrgpdrgpdxldatum);
 }
 
@@ -2203,11 +2012,8 @@ CTranslatorExprToDXLUtils::PdxlddinfoSingleDistrKey
 //
 //---------------------------------------------------------------------------
 BOOL
-CTranslatorExprToDXLUtils::FDirectDispatchable
-	(
-	const CColRef *pcrDistrCol,
-	const CDXLDatum *pdxldatum
-	)
+CTranslatorExprToDXLUtils::FDirectDispatchable(const CColRef *pcrDistrCol,
+											   const CDXLDatum *pdxldatum)
 {
 	GPOS_ASSERT(NULL != pcrDistrCol);
 	GPOS_ASSERT(NULL != pdxldatum);
@@ -2219,7 +2025,8 @@ CTranslatorExprToDXLUtils::FDirectDispatchable
 	// consistent. If either the constant or the distribution column are
 	// not integers, then their datatypes must be identical to ensure that
 	// the hash value of the constant will point to the right segment.
-	BOOL fBothInt = CUtils::FIntType(pmdidDistrCol) && CUtils::FIntType(pmdidDatum);
+	BOOL fBothInt =
+		CUtils::FIntType(pmdidDistrCol) && CUtils::FIntType(pmdidDatum);
 
 	return fBothInt || (pmdidDatum->FEquals(pmdidDistrCol));
 }
@@ -2234,37 +2041,35 @@ CTranslatorExprToDXLUtils::FDirectDispatchable
 //
 //---------------------------------------------------------------------------
 CDXLDatum *
-CTranslatorExprToDXLUtils::PdxldatumFromPointConstraint
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda,
-	const CColRef *pcrDistrCol, 
-	CConstraint *pcnstrDistrCol
-	)
+CTranslatorExprToDXLUtils::PdxldatumFromPointConstraint(
+	IMemoryPool *pmp, CMDAccessor *pmda, const CColRef *pcrDistrCol,
+	CConstraint *pcnstrDistrCol)
 {
 	if (!CPredicateUtils::FConstColumn(pcnstrDistrCol, pcrDistrCol))
 	{
 		return NULL;
 	}
-	
+
 	GPOS_ASSERT(CConstraint::EctInterval == pcnstrDistrCol->Ect());
-	
-	CConstraintInterval *pci = dynamic_cast<CConstraintInterval *>(pcnstrDistrCol);
+
+	CConstraintInterval *pci =
+		dynamic_cast<CConstraintInterval *>(pcnstrDistrCol);
 	GPOS_ASSERT(1 >= pci->Pdrgprng()->UlLength());
-	
+
 	CDXLDatum *pdxldatum = NULL;
-	
+
 	if (1 == pci->Pdrgprng()->UlLength())
 	{
 		const CRange *prng = (*pci->Pdrgprng())[0];
-		pdxldatum = CTranslatorExprToDXLUtils::Pdxldatum(pmp, pmda, prng->PdatumLeft());
+		pdxldatum =
+			CTranslatorExprToDXLUtils::Pdxldatum(pmp, pmda, prng->PdatumLeft());
 	}
 	else
 	{
 		GPOS_ASSERT(pci->FIncludesNull());
 		pdxldatum = pcrDistrCol->Pmdtype()->PdxldatumNull(pmp);
 	}
-	
+
 	return pdxldatum;
 }
 
@@ -2273,25 +2078,22 @@ CTranslatorExprToDXLUtils::PdxldatumFromPointConstraint
 //		CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
 //
 //	@doc:
-//		Compute an array of DXL datum arrays from a disjunction of point constraints. 
+//		Compute an array of DXL datum arrays from a disjunction of point constraints.
 //		Returns NULL if this is not possible
 //
 //---------------------------------------------------------------------------
 DrgPdrgPdxldatum *
-CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
-	(
-	IMemoryPool *pmp, 
-	CMDAccessor *pmda,
-	const CColRef *pcrDistrCol, 
-	CConstraint *pcnstrDistrCol
-	)
+CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint(
+	IMemoryPool *pmp, CMDAccessor *pmda, const CColRef *pcrDistrCol,
+	CConstraint *pcnstrDistrCol)
 {
 	GPOS_ASSERT(NULL != pcnstrDistrCol);
 	if (CPredicateUtils::FConstColumn(pcnstrDistrCol, pcrDistrCol))
 	{
 		DrgPdrgPdxldatum *pdrgpdrgpdxldatum = NULL;
 
-		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(pmp, pmda, pcrDistrCol, pcnstrDistrCol);
+		CDXLDatum *pdxldatum = PdxldatumFromPointConstraint(
+			pmp, pmda, pcrDistrCol, pcnstrDistrCol);
 
 		if (FDirectDispatchable(pcrDistrCol, pdxldatum))
 		{
@@ -2309,21 +2111,23 @@ CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
 
 		return pdrgpdrgpdxldatum;
 	}
-	
+
 	GPOS_ASSERT(CConstraint::EctInterval == pcnstrDistrCol->Ect());
-	
-	CConstraintInterval *pcnstrInterval = dynamic_cast<CConstraintInterval *>(pcnstrDistrCol);
+
+	CConstraintInterval *pcnstrInterval =
+		dynamic_cast<CConstraintInterval *>(pcnstrDistrCol);
 
 	DrgPrng *pdrgprng = pcnstrInterval->Pdrgprng();
 
 	const ULONG ulRanges = pdrgprng->UlLength();
 	DrgPdrgPdxldatum *pdrgpdrgpdxdatum = GPOS_NEW(pmp) DrgPdrgPdxldatum(pmp);
-	
+
 	for (ULONG ul = 0; ul < ulRanges; ul++)
 	{
 		CRange *prng = (*pdrgprng)[ul];
 		GPOS_ASSERT(prng->FPoint());
-		CDXLDatum *pdxldatum = CTranslatorExprToDXLUtils::Pdxldatum(pmp, pmda, prng->PdatumLeft());
+		CDXLDatum *pdxldatum =
+			CTranslatorExprToDXLUtils::Pdxldatum(pmp, pmda, prng->PdatumLeft());
 
 		if (!FDirectDispatchable(pcrDistrCol, pdxldatum))
 		{
@@ -2339,7 +2143,7 @@ CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
 		pdrgpdxldatum->Append(pdxldatum);
 		pdrgpdrgpdxdatum->Append(pdrgpdxldatum);
 	}
-	
+
 	if (pcnstrInterval->FIncludesNull())
 	{
 		CDXLDatum *pdxldatum = pcrDistrCol->Pmdtype()->PdxldatumNull(pmp);
@@ -2357,7 +2161,7 @@ CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
 		pdrgpdxldatum->Append(pdxldatum);
 		pdrgpdrgpdxdatum->Append(pdrgpdxldatum);
 	}
-	
+
 	if (0 < pdrgpdrgpdxdatum->UlLength())
 	{
 		return pdrgpdrgpdxdatum;
@@ -2378,16 +2182,14 @@ CTranslatorExprToDXLUtils::PdrgpdrgpdxldatumFromDisjPointConstraint
 //
 //---------------------------------------------------------------------------
 BOOL
-CTranslatorExprToDXLUtils::FLocalHashAggStreamSafe
-	(
-	CExpression *pexprAgg
-	)
+CTranslatorExprToDXLUtils::FLocalHashAggStreamSafe(CExpression *pexprAgg)
 {
 	GPOS_ASSERT(NULL != pexprAgg);
 
 	COperator::EOperatorId eopid = pexprAgg->Pop()->Eopid();
 
-	if (COperator::EopPhysicalHashAgg !=  eopid && COperator::EopPhysicalHashAggDeduplicate != eopid)
+	if (COperator::EopPhysicalHashAgg != eopid &&
+		COperator::EopPhysicalHashAggDeduplicate != eopid)
 	{
 		// not a hash aggregate
 		return false;
@@ -2396,7 +2198,8 @@ CTranslatorExprToDXLUtils::FLocalHashAggStreamSafe
 	CPhysicalAgg *popAgg = CPhysicalAgg::PopConvert(pexprAgg->Pop());
 
 	// is a local hash aggregate and it generates duplicates (therefore safe to stream)
-	return (COperator::EgbaggtypeLocal == popAgg->Egbaggtype()) && popAgg->FGeneratesDuplicates();
+	return (COperator::EgbaggtypeLocal == popAgg->Egbaggtype()) &&
+		   popAgg->FGeneratesDuplicates();
 }
 
 //---------------------------------------------------------------------------
@@ -2408,12 +2211,8 @@ CTranslatorExprToDXLUtils::FLocalHashAggStreamSafe
 //
 //---------------------------------------------------------------------------
 void
-CTranslatorExprToDXLUtils::ExtractCastMdids
-	(
-	COperator *pop, 
-	IMDId **ppmdidType, 
-	IMDId **ppmdidCastFunc
-	)
+CTranslatorExprToDXLUtils::ExtractCastMdids(COperator *pop, IMDId **ppmdidType,
+											IMDId **ppmdidCastFunc)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(NULL != ppmdidType);
@@ -2431,12 +2230,9 @@ CTranslatorExprToDXLUtils::ExtractCastMdids
 }
 
 BOOL
-CTranslatorExprToDXLUtils::FDXLOpExists
-	(
-	const CDXLOperator *pop,
-	const gpdxl::Edxlopid *peopid,
-	ULONG ulOps
-	)
+CTranslatorExprToDXLUtils::FDXLOpExists(const CDXLOperator *pop,
+										const gpdxl::Edxlopid *peopid,
+										ULONG ulOps)
 {
 	GPOS_ASSERT(NULL != pop);
 	GPOS_ASSERT(NULL != peopid);
@@ -2454,12 +2250,8 @@ CTranslatorExprToDXLUtils::FDXLOpExists
 }
 
 BOOL
-CTranslatorExprToDXLUtils::FHasDXLOp
-	(
-	const CDXLNode *pdxln,
-	const gpdxl::Edxlopid *peopid,
-	ULONG ulOps
-	)
+CTranslatorExprToDXLUtils::FHasDXLOp(const CDXLNode *pdxln,
+									 const gpdxl::Edxlopid *peopid, ULONG ulOps)
 {
 	GPOS_CHECK_STACK_SIZE;
 	GPOS_ASSERT(NULL != pdxln);
@@ -2485,22 +2277,19 @@ CTranslatorExprToDXLUtils::FHasDXLOp
 }
 
 BOOL
-CTranslatorExprToDXLUtils::FProjListContainsSubplanWithBroadCast
-	(
-	CDXLNode *pdxlnPrjList
-	)
+CTranslatorExprToDXLUtils::FProjListContainsSubplanWithBroadCast(
+	CDXLNode *pdxlnPrjList)
 {
 	if (pdxlnPrjList->Pdxlop()->Edxlop() == EdxlopScalarSubPlan)
 	{
-		gpdxl::Edxlopid rgeopidMotion[] =	{
-			EdxlopPhysicalMotionBroadcast
-		};
-		return FHasDXLOp(pdxlnPrjList, rgeopidMotion, GPOS_ARRAY_SIZE(rgeopidMotion));
+		gpdxl::Edxlopid rgeopidMotion[] = {EdxlopPhysicalMotionBroadcast};
+		return FHasDXLOp(pdxlnPrjList, rgeopidMotion,
+						 GPOS_ARRAY_SIZE(rgeopidMotion));
 	}
 
 	const ULONG ulArity = pdxlnPrjList->UlArity();
 
-	for (ULONG ul =0; ul < ulArity; ul++)
+	for (ULONG ul = 0; ul < ulArity; ul++)
 	{
 		if (FProjListContainsSubplanWithBroadCast((*pdxlnPrjList)[ul]))
 		{
@@ -2512,15 +2301,12 @@ CTranslatorExprToDXLUtils::FProjListContainsSubplanWithBroadCast
 }
 
 void
-CTranslatorExprToDXLUtils::ExtractIdentColIds
-	(
-	CDXLNode *pdxln,
-	CBitSet *pbs
-	)
+CTranslatorExprToDXLUtils::ExtractIdentColIds(CDXLNode *pdxln, CBitSet *pbs)
 {
 	if (pdxln->Pdxlop()->Edxlop() == EdxlopScalarIdent)
 	{
-		const CDXLColRef *pdxlcr = CDXLScalarIdent::PdxlopConvert(pdxln->Pdxlop())->Pdxlcr();
+		const CDXLColRef *pdxlcr =
+			CDXLScalarIdent::PdxlopConvert(pdxln->Pdxlop())->Pdxlcr();
 		pbs->FExchangeSet(pdxlcr->UlID());
 	}
 
@@ -2532,14 +2318,9 @@ CTranslatorExprToDXLUtils::ExtractIdentColIds
 }
 
 BOOL
-CTranslatorExprToDXLUtils::FMotionHazard
-	(
-	IMemoryPool *pmp,
-	CDXLNode *pdxln,
-	const gpdxl::Edxlopid *peopid,
-	ULONG ulOps,
-	CBitSet *pbsPrjCols
-	)
+CTranslatorExprToDXLUtils::FMotionHazard(IMemoryPool *pmp, CDXLNode *pdxln,
+										 const gpdxl::Edxlopid *peopid,
+										 ULONG ulOps, CBitSet *pbsPrjCols)
 {
 	GPOS_ASSERT(pbsPrjCols);
 
@@ -2568,7 +2349,8 @@ CTranslatorExprToDXLUtils::FMotionHazard
 	// so only check the outer child for motions
 	if (pdxln->Pdxlop()->Edxlop() == EdxlopPhysicalHashJoin)
 	{
-		if (FMotionHazard(pmp, (*pdxln)[EdxlhjIndexHashLeft], peopid, ulOps, pbsPrjCols))
+		if (FMotionHazard(pmp, (*pdxln)[EdxlhjIndexHashLeft], peopid, ulOps,
+						  pbsPrjCols))
 		{
 			return true;
 		}
@@ -2588,10 +2370,7 @@ CTranslatorExprToDXLUtils::FMotionHazard
 }
 
 BOOL
-CTranslatorExprToDXLUtils::FMotionHazardSafeOp
-	(
-	CDXLNode *pdxln
-	)
+CTranslatorExprToDXLUtils::FMotionHazardSafeOp(CDXLNode *pdxln)
 {
 	BOOL fMotionHazardSafeOp = false;
 	Edxlopid edxlop = pdxln->Pdxlop()->Edxlop();
@@ -2606,11 +2385,12 @@ CTranslatorExprToDXLUtils::FMotionHazardSafeOp
 
 		case EdxlopPhysicalAgg:
 		{
-			CDXLPhysicalAgg *pdxlnPhysicalAgg = CDXLPhysicalAgg::PdxlopConvert(pdxln->Pdxlop());
+			CDXLPhysicalAgg *pdxlnPhysicalAgg =
+				CDXLPhysicalAgg::PdxlopConvert(pdxln->Pdxlop());
 			if (pdxlnPhysicalAgg->Edxlaggstr() == EdxlaggstrategyHashed)
 				fMotionHazardSafeOp = true;
 		}
-			break;
+		break;
 
 		default:
 			break;

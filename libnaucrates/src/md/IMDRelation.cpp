@@ -26,10 +26,7 @@ using namespace gpmd;
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-IMDRelation::PstrDistrPolicy
-	(
-	Ereldistrpolicy ereldistrpolicy
-	)
+IMDRelation::PstrDistrPolicy(Ereldistrpolicy ereldistrpolicy)
 {
 	switch (ereldistrpolicy)
 	{
@@ -53,10 +50,7 @@ IMDRelation::PstrDistrPolicy
 //
 //---------------------------------------------------------------------------
 const CWStringConst *
-IMDRelation::PstrStorageType
-	(
-	IMDRelation::Erelstoragetype erelstorage
-	)
+IMDRelation::PstrStorageType(IMDRelation::Erelstoragetype erelstorage)
 {
 	switch (erelstorage)
 	{
@@ -86,11 +80,7 @@ IMDRelation::PstrStorageType
 //
 //---------------------------------------------------------------------------
 CWStringDynamic *
-IMDRelation::PstrColumns
-	(
-	IMemoryPool *pmp,
-	DrgPul *pdrgpul
-	)
+IMDRelation::PstrColumns(IMemoryPool *pmp, DrgPul *pdrgpul)
 {
 	CWStringDynamic *pstr = GPOS_NEW(pmp) CWStringDynamic(pmp);
 
@@ -105,7 +95,8 @@ IMDRelation::PstrColumns
 		}
 		else
 		{
-			pstr->AppendFormat(GPOS_WSZ_LIT("%d%ls"), ulId, CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
+			pstr->AppendFormat(GPOS_WSZ_LIT("%d%ls"), ulId,
+							   CDXLTokens::PstrToken(EdxltokenComma)->Wsz());
 		}
 	}
 
@@ -114,10 +105,8 @@ IMDRelation::PstrColumns
 
 // check if index is partial given its mdid
 BOOL
-IMDRelation::FPartialIndex
-	(
-	IMDId * // mdid
-	) const
+IMDRelation::FPartialIndex(IMDId *  // mdid
+						   ) const
 {
 	return false;
 }

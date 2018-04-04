@@ -29,16 +29,10 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarBitmapBoolOp::CDXLScalarBitmapBoolOp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType,
-	EdxlBitmapBoolOp bitmapboolop
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidType(pmdidType),
-	m_bitmapboolop(bitmapboolop)
+CDXLScalarBitmapBoolOp::CDXLScalarBitmapBoolOp(IMemoryPool *pmp,
+											   IMDId *pmdidType,
+											   EdxlBitmapBoolOp bitmapboolop)
+	: CDXLScalar(pmp), m_pmdidType(pmdidType), m_bitmapboolop(bitmapboolop)
 {
 	GPOS_ASSERT(EdxlbitmapSentinel > bitmapboolop);
 	GPOS_ASSERT(IMDId::FValid(pmdidType));
@@ -109,11 +103,7 @@ CDXLScalarBitmapBoolOp::Edxlbitmapboolop() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarBitmapBoolOp::FBoolean
-	(
-	CMDAccessor *pmda
-	) 
-	const
+CDXLScalarBitmapBoolOp::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -133,7 +123,7 @@ CDXLScalarBitmapBoolOp::PstrOpName() const
 	{
 		return CDXLTokens::PstrToken(EdxltokenScalarBitmapAnd);
 	}
-	
+
 	return CDXLTokens::PstrToken(EdxltokenScalarBitmapOr);
 }
 
@@ -146,24 +136,22 @@ CDXLScalarBitmapBoolOp::PstrOpName() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBitmapBoolOp::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode *pdxln
-	)
-	const
+CDXLScalarBitmapBoolOp::SerializeToDXL(CXMLSerializer *pxmlser,
+									   const CDXLNode *pdxln) const
 {
 	GPOS_CHECK_ABORT;
 
 	const CWStringConst *pstrElemName = PstrOpName();
 
 	GPOS_ASSERT(NULL != pstrElemName);
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
-	
+
 	pdxln->SerializeChildrenToDXL(pxmlser);
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 
 	GPOS_CHECK_ABORT;
 }
@@ -178,34 +166,33 @@ CDXLScalarBitmapBoolOp::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarBitmapBoolOp::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL fValidateChildren
-	) 
-	const
+CDXLScalarBitmapBoolOp::AssertValid(const CDXLNode *pdxln,
+									BOOL fValidateChildren) const
 {
-	EdxlBitmapBoolOp edxlbitmapboolop = ((CDXLScalarBitmapBoolOp *) pdxln->Pdxlop())->Edxlbitmapboolop();
+	EdxlBitmapBoolOp edxlbitmapboolop =
+		((CDXLScalarBitmapBoolOp *) pdxln->Pdxlop())->Edxlbitmapboolop();
 
-	GPOS_ASSERT( (edxlbitmapboolop == EdxlbitmapAnd) || (edxlbitmapboolop == EdxlbitmapOr));
+	GPOS_ASSERT((edxlbitmapboolop == EdxlbitmapAnd) ||
+				(edxlbitmapboolop == EdxlbitmapOr));
 
 	ULONG ulArity = pdxln->UlArity();
 	GPOS_ASSERT(2 == ulArity);
-	
+
 
 	for (ULONG ul = 0; ul < ulArity; ++ul)
 	{
 		CDXLNode *pdxlnArg = (*pdxln)[ul];
 		Edxlopid edxlop = pdxlnArg->Pdxlop()->Edxlop();
-		
-		GPOS_ASSERT(EdxlopScalarBitmapBoolOp == edxlop || EdxlopScalarBitmapIndexProbe == edxlop);
-		
+
+		GPOS_ASSERT(EdxlopScalarBitmapBoolOp == edxlop ||
+					EdxlopScalarBitmapIndexProbe == edxlop);
+
 		if (fValidateChildren)
 		{
 			pdxlnArg->Pdxlop()->AssertValid(pdxlnArg, fValidateChildren);
 		}
 	}
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

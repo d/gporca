@@ -19,44 +19,46 @@
 // fwd decl
 namespace gpnaucrates
 {
-	class IDatumInt4;
+class IDatumInt4;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpnaucrates;
+using namespace gpos;
+using namespace gpnaucrates;
 
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		IMDTypeInt4
-	//
-	//	@doc:
-	//		Interface for INT4 types in the metadata cache
-	//
-	//---------------------------------------------------------------------------
-	class IMDTypeInt4 : public IMDType
+
+//---------------------------------------------------------------------------
+//	@class:
+//		IMDTypeInt4
+//
+//	@doc:
+//		Interface for INT4 types in the metadata cache
+//
+//---------------------------------------------------------------------------
+class IMDTypeInt4 : public IMDType
+{
+public:
+	// type id
+	static ETypeInfo
+	EtiType()
 	{
-		public:
-			// type id
-			static ETypeInfo EtiType()
-			{
-				return EtiInt4;
-			}
-			
-			virtual ETypeInfo Eti() const
-			{
-				return IMDTypeInt4::EtiType();
-			} 
-			
-			// factory function for INT4 datums
-			virtual IDatumInt4 *PdatumInt4(IMemoryPool *pmp, INT iValue, BOOL fNULL) const = 0;
-		
-	};
+		return EtiInt4;
+	}
 
-}
+	virtual ETypeInfo
+	Eti() const
+	{
+		return IMDTypeInt4::EtiType();
+	}
 
-#endif // !GPMD_IMDTypeInt4_H
+	// factory function for INT4 datums
+	virtual IDatumInt4 *
+	PdatumInt4(IMemoryPool *pmp, INT iValue, BOOL fNULL) const = 0;
+};
+
+}  // namespace gpmd
+
+#endif  // !GPMD_IMDTypeInt4_H
 
 // EOF

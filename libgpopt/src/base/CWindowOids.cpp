@@ -5,19 +5,26 @@
 
 using namespace gpopt;
 
-CWindowOids::CWindowOids(OID oidRowNumber, OID oidRank) {
-    m_oidRowNumber = oidRowNumber;
-    m_oidRank = oidRank;
+CWindowOids::CWindowOids(OID oidRowNumber, OID oidRank)
+{
+	m_oidRowNumber = oidRowNumber;
+	m_oidRank = oidRank;
 }
 
-OID CWindowOids::OidRowNumber() const {
-    return m_oidRowNumber;
+OID
+CWindowOids::OidRowNumber() const
+{
+	return m_oidRowNumber;
 }
 
-OID CWindowOids::OidRank() const {
-    return m_oidRank;
+OID
+CWindowOids::OidRank() const
+{
+	return m_oidRank;
 }
 
-CWindowOids *CWindowOids::Pwindowoids(IMemoryPool *pmp) {
-    return GPOS_NEW(pmp) CWindowOids(DUMMY_ROW_NUMBER_OID, DUMMY_WIN_RANK);
+CWindowOids *
+CWindowOids::Pwindowoids(IMemoryPool *pmp)
+{
+	return GPOS_NEW(pmp) CWindowOids(DUMMY_ROW_NUMBER_OID, DUMMY_WIN_RANK);
 }

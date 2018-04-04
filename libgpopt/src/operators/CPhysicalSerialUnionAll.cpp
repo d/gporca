@@ -8,8 +8,8 @@
 //	@doc:
 //		Implementation of physical union all operator
 //
-//	@owner: 
-//		
+//	@owner:
+//
 //
 //	@test:
 //
@@ -42,15 +42,12 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalSerialUnionAll::CPhysicalSerialUnionAll
-	(
-	IMemoryPool *pmp,
-	DrgPcr *pdrgpcrOutput,
-	DrgDrgPcr *pdrgpdrgpcrInput,
-	ULONG ulScanIdPartialIndex
-	)
-	:
-	CPhysicalUnionAll(pmp, pdrgpcrOutput, pdrgpdrgpcrInput, ulScanIdPartialIndex)
+CPhysicalSerialUnionAll::CPhysicalSerialUnionAll(IMemoryPool *pmp,
+												 DrgPcr *pdrgpcrOutput,
+												 DrgDrgPcr *pdrgpdrgpcrInput,
+												 ULONG ulScanIdPartialIndex)
+	: CPhysicalUnionAll(pmp, pdrgpcrOutput, pdrgpdrgpcrInput,
+						ulScanIdPartialIndex)
 {
 	// UnionAll creates two distribution requests to enforce distribution of its children:
 	// (1) (Hashed, Hashed): used to pass hashed distribution (requested from above)
@@ -76,22 +73,18 @@ CPhysicalSerialUnionAll::~CPhysicalSerialUnionAll()
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalSerialUnionAll::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *pdrgpdpCtxt,
-	ULONG ulOptReq
-	)
-	const
+CPhysicalSerialUnionAll::PdsRequired(IMemoryPool *pmp,
+									 CExpressionHandle &exprhdl,
+									 CDistributionSpec *pdsRequired,
+									 ULONG ulChildIndex, DrgPdp *pdrgpdpCtxt,
+									 ULONG ulOptReq) const
 {
 	GPOS_ASSERT(NULL != PdrgpdrgpcrInput());
 	GPOS_ASSERT(ulChildIndex < PdrgpdrgpcrInput()->UlLength());
 	GPOS_ASSERT(2 > ulOptReq);
 
-	CDistributionSpec *pds = PdsMasterOnlyOrReplicated(pmp, exprhdl, pdsRequired, ulChildIndex, ulOptReq);
+	CDistributionSpec *pds = PdsMasterOnlyOrReplicated(
+		pmp, exprhdl, pdsRequired, ulChildIndex, ulOptReq);
 	if (NULL != pds)
 	{
 		return pds;
@@ -100,7 +93,9 @@ CPhysicalSerialUnionAll::PdsRequired
 	if (0 == ulOptReq && CDistributionSpec::EdtHashed == pdsRequired->Edt())
 	{
 		// attempt passing requested hashed distribution to children
-		CDistributionSpecHashed *pdshashed = PdshashedPassThru(pmp, CDistributionSpecHashed::PdsConvert(pdsRequired), ulChildIndex);
+		CDistributionSpecHashed *pdshashed = PdshashedPassThru(
+			pmp, CDistributionSpecHashed::PdsConvert(pdsRequired),
+			ulChildIndex);
 		if (NULL != pdshashed)
 		{
 			return pdshashed;
@@ -114,13 +109,15 @@ CPhysicalSerialUnionAll::PdsRequired
 	}
 
 	// inspect distribution delivered by outer child
-	CDistributionSpec *pdsOuter = CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
+	CDistributionSpec *pdsOuter =
+		CDrvdPropPlan::Pdpplan((*pdrgpdpCtxt)[0])->Pds();
 
 	if (CDistributionSpec::EdtSingleton == pdsOuter->Edt() ||
 		CDistributionSpec::EdtStrictSingleton == pdsOuter->Edt())
 	{
 		// outer child is Singleton, require inner child to have matching Singleton distribution
-		return CPhysical::PdssMatching(pmp, CDistributionSpecSingleton::PdssConvert(pdsOuter));
+		return CPhysical::PdssMatching(
+			pmp, CDistributionSpecSingleton::PdssConvert(pdsOuter));
 	}
 
 	if (CDistributionSpec::EdtUniversal == pdsOuter->Edt())
@@ -128,7 +125,8 @@ CPhysicalSerialUnionAll::PdsRequired
 		// require inner child to be on the master segment in order to avoid
 		// duplicate values when doing UnionAll operation with Universal outer child
 		// Example: select 1 union all select i from x;
-		return GPOS_NEW(pmp) CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
+		return GPOS_NEW(pmp)
+			CDistributionSpecSingleton(CDistributionSpecSingleton::EstMaster);
 	}
 
 	if (CDistributionSpec::EdtReplicated == pdsOuter->Edt())
@@ -141,7 +139,8 @@ CPhysicalSerialUnionAll::PdsRequired
 	// we need to the inner child to be distributed across segments that does
 	// not generate duplicate results. That is, inner child should not be replicated.
 
-	return GPOS_NEW(pmp) CDistributionSpecNonSingleton(false /*fAllowReplicated*/);
+	return GPOS_NEW(pmp)
+		CDistributionSpecNonSingleton(false /*fAllowReplicated*/);
 }
 
 // EOF

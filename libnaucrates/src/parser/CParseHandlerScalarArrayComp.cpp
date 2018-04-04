@@ -6,7 +6,7 @@
 //		CParseHandlerScalarArrayComp.cpp
 //
 //	@doc:
-//		
+//
 //		Implementation of the SAX parse handler class for parsing scalar array comparison.
 //---------------------------------------------------------------------------
 
@@ -29,14 +29,9 @@ XERCES_CPP_NAMESPACE_USE
 //		Constructor
 //
 //---------------------------------------------------------------------------
-CParseHandlerScalarArrayComp::CParseHandlerScalarArrayComp
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerScalarOp(pmp, pphm, pphRoot)
+CParseHandlerScalarArrayComp::CParseHandlerScalarArrayComp(
+	IMemoryPool *pmp, CParseHandlerManager *pphm, CParseHandlerBase *pphRoot)
+	: CParseHandlerScalarOp(pmp, pphm, pphRoot)
 {
 }
 
@@ -49,22 +44,24 @@ CParseHandlerScalarArrayComp::CParseHandlerScalarArrayComp
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarArrayComp::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& attrs
-	)
+CParseHandlerScalarArrayComp::StartElement(const XMLCh *const,  // xmlszUri,
+										   const XMLCh *const xmlszLocalname,
+										   const XMLCh *const,  // xmlszQname
+										   const Attributes &attrs)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarArrayComp), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarArrayComp), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
 	// parse and create scalar ArrayComp
-	CDXLScalarArrayComp *pdxlop = (CDXLScalarArrayComp*) CDXLOperatorFactory::PdxlopArrayComp(m_pphm->Pmm(), attrs);
+	CDXLScalarArrayComp *pdxlop =
+		(CDXLScalarArrayComp *) CDXLOperatorFactory::PdxlopArrayComp(
+			m_pphm->Pmm(), attrs);
 
 	// construct node from the created child nodes
 	m_pdxln = GPOS_NEW(m_pmp) CDXLNode(m_pmp, pdxlop);
@@ -73,11 +70,13 @@ CParseHandlerScalarArrayComp::StartElement
 	// order of their expected appearance
 
 	// parse handler for right scalar node
-	CParseHandlerBase *pphRight = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pphRight = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphRight);
 
 	// parse handler for left scalar node
-	CParseHandlerBase *pphLeft = CParseHandlerFactory::Pph(m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
+	CParseHandlerBase *pphLeft = CParseHandlerFactory::Pph(
+		m_pmp, CDXLTokens::XmlstrToken(EdxltokenScalar), m_pphm, this);
 	m_pphm->ActivateParseHandler(pphLeft);
 
 	// store parse handlers
@@ -94,21 +93,24 @@ CParseHandlerScalarArrayComp::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerScalarArrayComp::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerScalarArrayComp::EndElement(const XMLCh *const,  // xmlszUri,
+										 const XMLCh *const xmlszLocalname,
+										 const XMLCh *const  // xmlszQname
+)
 {
-	if(0 != XMLString::compareString(CDXLTokens::XmlstrToken(EdxltokenScalarArrayComp), xmlszLocalname))
+	if (0 !=
+		XMLString::compareString(
+			CDXLTokens::XmlstrToken(EdxltokenScalarArrayComp), xmlszLocalname))
 	{
-		CWStringDynamic *pstr = CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
+		CWStringDynamic *pstr =
+			CDXLUtils::PstrFromXMLCh(m_pphm->Pmm(), xmlszLocalname);
 		GPOS_RAISE(gpdxl::ExmaDXL, gpdxl::ExmiDXLUnexpectedTag, pstr->Wsz());
 	}
 
-	CParseHandlerScalarOp *pphLeft = dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
-	CParseHandlerScalarOp *pphRight = dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
+	CParseHandlerScalarOp *pphLeft =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[0]);
+	CParseHandlerScalarOp *pphRight =
+		dynamic_cast<CParseHandlerScalarOp *>((*this)[1]);
 
 	// add constructed children
 	AddChildFromParseHandler(pphLeft);

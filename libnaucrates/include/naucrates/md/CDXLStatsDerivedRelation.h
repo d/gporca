@@ -18,83 +18,80 @@
 
 namespace gpdxl
 {
-	class CXMLSerializer;
+class CXMLSerializer;
 }
 
 namespace gpmd
 {
-	using namespace gpos;
-	using namespace gpdxl;
-	using namespace gpmd;
+using namespace gpos;
+using namespace gpdxl;
+using namespace gpmd;
 
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLStatsDerivedRelation
-	//
-	//	@doc:
-	//		Class representing DXL derived relation statistics
-	//
-	//---------------------------------------------------------------------------
-	class CDXLStatsDerivedRelation : public CRefCount
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLStatsDerivedRelation
+//
+//	@doc:
+//		Class representing DXL derived relation statistics
+//
+//---------------------------------------------------------------------------
+class CDXLStatsDerivedRelation : public CRefCount
+{
+private:
+	// number of rows
+	CDouble m_dRows;
+
+	// flag to indicate if input relation is empty
+	BOOL m_fEmpty;
+
+	// array of derived column statistics
+	DrgPdxlstatsdercol *m_pdrgpdxlstatsdercol;
+
+	// private copy ctor
+	CDXLStatsDerivedRelation(const CDXLStatsDerivedRelation &);
+
+public:
+	// ctor
+	CDXLStatsDerivedRelation(CDouble dRows, BOOL fEmpty,
+							 DrgPdxlstatsdercol *pdrgpdxldercolstat);
+
+	// dtor
+	virtual ~CDXLStatsDerivedRelation();
+
+	// number of rows
+	CDouble
+	DRows() const
 	{
-		private:
+		return m_dRows;
+	}
 
-			// number of rows
-			CDouble m_dRows;
+	// is statistics on an empty input
+	virtual BOOL
+	FEmpty() const
+	{
+		return m_fEmpty;
+	}
 
-			// flag to indicate if input relation is empty
-			BOOL m_fEmpty;
+	// derived column statistics
+	const DrgPdxlstatsdercol *
+	Pdrgpdxlstatsdercol() const;
 
-			// array of derived column statistics
-			DrgPdxlstatsdercol *m_pdrgpdxlstatsdercol;
-
-			// private copy ctor
-			CDXLStatsDerivedRelation(const CDXLStatsDerivedRelation &);
-
-		public:
-
-			// ctor
-			CDXLStatsDerivedRelation
-				(
-				CDouble dRows,
-				BOOL fEmpty,
-				DrgPdxlstatsdercol *pdrgpdxldercolstat
-				);
-
-			// dtor
-			virtual
-			~CDXLStatsDerivedRelation();
-
-			// number of rows
-			CDouble DRows() const
-			{
-				return m_dRows;
-			}
-
-			// is statistics on an empty input
-			virtual
-			BOOL FEmpty() const
-			{
-				return m_fEmpty;
-			}
-
-			// derived column statistics
-			const DrgPdxlstatsdercol *Pdrgpdxlstatsdercol() const;
-
-			// serialize bucket in DXL format
-			void Serialize(gpdxl::CXMLSerializer *) const;
+	// serialize bucket in DXL format
+	void
+	Serialize(gpdxl::CXMLSerializer *) const;
 
 #ifdef GPOS_DEBUG
-			// debug print of the bucket
-			void DebugPrint(IOstream &os) const;
+	// debug print of the bucket
+	void
+	DebugPrint(IOstream &os) const;
 #endif
+};
 
-	};
+// array of dxl buckets
+typedef CDynamicPtrArray<CDXLStatsDerivedRelation, CleanupRelease>
+	DrgPdxlstatsderrel;
+}  // namespace gpmd
 
-	// array of dxl buckets
-	typedef CDynamicPtrArray<CDXLStatsDerivedRelation, CleanupRelease> DrgPdxlstatsderrel;
-}
-
-#endif // !GPMD_CDXLStatsDerivedRelation_H
+#endif  // !GPMD_CDXLStatsDerivedRelation_H
 
 // EOF

@@ -24,20 +24,11 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CXformImplementTVFNoArgs::CXformImplementTVFNoArgs
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CXformImplementTVF
-		(
-		 // pattern
-		GPOS_NEW(pmp) CExpression
-				(
-				pmp,
-				GPOS_NEW(pmp) CLogicalTVF(pmp)
-				)
-		)
-{}
+CXformImplementTVFNoArgs::CXformImplementTVFNoArgs(IMemoryPool *pmp)
+	: CXformImplementTVF(
+		  // pattern
+		  GPOS_NEW(pmp) CExpression(pmp, GPOS_NEW(pmp) CLogicalTVF(pmp)))
+{
+}
 
 // EOF

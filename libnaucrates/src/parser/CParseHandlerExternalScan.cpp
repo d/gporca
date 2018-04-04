@@ -27,15 +27,12 @@ XERCES_CPP_NAMESPACE_USE
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CParseHandlerExternalScan::CParseHandlerExternalScan
-	(
-	IMemoryPool *pmp,
-	CParseHandlerManager *pphm,
-	CParseHandlerBase *pphRoot
-	)
-	:
-	CParseHandlerTableScan(pmp, pphm, pphRoot)
-{}
+CParseHandlerExternalScan::CParseHandlerExternalScan(IMemoryPool *pmp,
+													 CParseHandlerManager *pphm,
+													 CParseHandlerBase *pphRoot)
+	: CParseHandlerTableScan(pmp, pphm, pphRoot)
+{
+}
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -46,15 +43,14 @@ CParseHandlerExternalScan::CParseHandlerExternalScan
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerExternalScan::StartElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const, // xmlszQname
-	const Attributes& // attrs
-	)
+CParseHandlerExternalScan::StartElement(const XMLCh *const,  // xmlszUri,
+										const XMLCh *const xmlszLocalname,
+										const XMLCh *const,  // xmlszQname
+										const Attributes &   // attrs
+)
 {
-	CParseHandlerTableScan::StartElement(xmlszLocalname, EdxltokenPhysicalExternalScan);
+	CParseHandlerTableScan::StartElement(xmlszLocalname,
+										 EdxltokenPhysicalExternalScan);
 }
 
 //---------------------------------------------------------------------------
@@ -66,15 +62,13 @@ CParseHandlerExternalScan::StartElement
 //
 //---------------------------------------------------------------------------
 void
-CParseHandlerExternalScan::EndElement
-	(
-	const XMLCh* const, // xmlszUri,
-	const XMLCh* const xmlszLocalname,
-	const XMLCh* const // xmlszQname
-	)
+CParseHandlerExternalScan::EndElement(const XMLCh *const,  // xmlszUri,
+									  const XMLCh *const xmlszLocalname,
+									  const XMLCh *const  // xmlszQname
+)
 {
-	CParseHandlerTableScan::EndElement(xmlszLocalname, EdxltokenPhysicalExternalScan);
+	CParseHandlerTableScan::EndElement(xmlszLocalname,
+									   EdxltokenPhysicalExternalScan);
 }
 
 // EOF
-

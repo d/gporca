@@ -22,80 +22,82 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CDXLPhysicalMotion
-	//
-	//	@doc:
-	//		Base class for representing DXL motion operators
-	//
-	//---------------------------------------------------------------------------
-	class CDXLPhysicalMotion : public CDXLPhysical
+using namespace gpos;
+
+//---------------------------------------------------------------------------
+//	@class:
+//		CDXLPhysicalMotion
+//
+//	@doc:
+//		Base class for representing DXL motion operators
+//
+//---------------------------------------------------------------------------
+class CDXLPhysicalMotion : public CDXLPhysical
+{
+private:
+	// private copy ctor
+	CDXLPhysicalMotion(CDXLPhysicalMotion &);
+
+	// serialize the given list of segment ids into a comma-separated string
+	CWStringDynamic *
+	PstrSegIds(const DrgPi *pdrgpi) const;
+
+	// serialize input and output segment ids into a comma-separated string
+	CWStringDynamic *
+	PstrInputSegIds() const;
+	CWStringDynamic *
+	PstrOutputSegIds() const;
+
+protected:
+	// list of input segment ids
+	DrgPi *m_pdrgpiInputSegIds;
+
+	// list of output segment ids
+	DrgPi *m_pdrgpiOutputSegIds;
+
+	void
+	SerializeSegmentInfoToDXL(CXMLSerializer *pxmlser) const;
+
+
+public:
+	// ctor/dtor
+	explicit CDXLPhysicalMotion(IMemoryPool *pmp);
+
+	virtual ~CDXLPhysicalMotion();
+
+	// accessors
+	const DrgPi *
+	PdrgpiInputSegIds() const;
+	const DrgPi *
+	PdrgpiOutputSegIds() const;
+
+	// setters
+	void
+	SetInputSegIds(DrgPi *pdrgpi);
+	void
+	SetOutputSegIds(DrgPi *pdrgpi);
+	void
+	SetSegmentInfo(DrgPi *pdrgpiInputSegIds, DrgPi *pdrgpiOutputSegIds);
+
+	// index of relational child node in the children array
+	virtual ULONG
+	UlChildIndex() const = 0;
+
+	// conversion function
+	static CDXLPhysicalMotion *
+	PdxlopConvert(CDXLOperator *pdxlop)
 	{
-		private:
-			// private copy ctor
-			CDXLPhysicalMotion(CDXLPhysicalMotion&);
-			
-			// serialize the given list of segment ids into a comma-separated string
-			CWStringDynamic *PstrSegIds(const DrgPi *pdrgpi) const;
+		GPOS_ASSERT(NULL != pdxlop);
+		GPOS_ASSERT(EdxlopPhysicalMotionGather == pdxlop->Edxlop() ||
+					EdxlopPhysicalMotionBroadcast == pdxlop->Edxlop() ||
+					EdxlopPhysicalMotionRedistribute == pdxlop->Edxlop() ||
+					EdxlopPhysicalMotionRoutedDistribute == pdxlop->Edxlop() ||
+					EdxlopPhysicalMotionRandom == pdxlop->Edxlop());
 
-			// serialize input and output segment ids into a comma-separated string
-			CWStringDynamic *PstrInputSegIds() const;
-			CWStringDynamic *PstrOutputSegIds() const;
-			
-		protected:
-			// list of input segment ids
-			DrgPi *m_pdrgpiInputSegIds;
-			
-			// list of output segment ids
-			DrgPi *m_pdrgpiOutputSegIds;
-
-			void SerializeSegmentInfoToDXL(CXMLSerializer *pxmlser) const;
-
-			
-		public:
-			// ctor/dtor
-			explicit
-			CDXLPhysicalMotion(IMemoryPool *pmp);
-
-			virtual
-			~CDXLPhysicalMotion();
-			
-			// accessors
-			const DrgPi *PdrgpiInputSegIds() const;
-			const DrgPi *PdrgpiOutputSegIds() const;
-			
-			// setters
-			void SetInputSegIds(DrgPi *pdrgpi);
-			void SetOutputSegIds(DrgPi *pdrgpi);
-			void SetSegmentInfo(DrgPi *pdrgpiInputSegIds, DrgPi *pdrgpiOutputSegIds);
-
-			// index of relational child node in the children array
-			virtual 
-			ULONG UlChildIndex() const = 0;
-			
-			// conversion function
-			static
-			CDXLPhysicalMotion *PdxlopConvert
-				(
-				CDXLOperator *pdxlop
-				)
-			{
-				GPOS_ASSERT(NULL != pdxlop);
-				GPOS_ASSERT(EdxlopPhysicalMotionGather == pdxlop->Edxlop()
-						|| EdxlopPhysicalMotionBroadcast == pdxlop->Edxlop()
-						|| EdxlopPhysicalMotionRedistribute == pdxlop->Edxlop()
-						|| EdxlopPhysicalMotionRoutedDistribute == pdxlop->Edxlop()
-						|| EdxlopPhysicalMotionRandom == pdxlop->Edxlop());
-
-				return dynamic_cast<CDXLPhysicalMotion*>(pdxlop);
-			}
-
-	};
-}
-#endif // !GPDXL_CDXLPhysicalMotion_H
+		return dynamic_cast<CDXLPhysicalMotion *>(pdxlop);
+	}
+};
+}  // namespace gpdxl
+#endif  // !GPDXL_CDXLPhysicalMotion_H
 
 // EOF
-

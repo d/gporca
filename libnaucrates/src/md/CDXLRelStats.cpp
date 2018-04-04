@@ -29,23 +29,17 @@ using namespace gpmd;
 //		Constructs a metadata relation
 //
 //---------------------------------------------------------------------------
-CDXLRelStats::CDXLRelStats
-	(
-	IMemoryPool *pmp,
-	CMDIdRelStats *pmdidRelStats,
-	CMDName *pmdname,
-	CDouble dRows,
-	BOOL fEmpty
-	)
-	:
-	m_pmp(pmp),
-	m_pmdidRelStats(pmdidRelStats),
-	m_pmdname(pmdname),
-	m_dRows(dRows),
-	m_fEmpty(fEmpty)
+CDXLRelStats::CDXLRelStats(IMemoryPool *pmp, CMDIdRelStats *pmdidRelStats,
+						   CMDName *pmdname, CDouble dRows, BOOL fEmpty)
+	: m_pmp(pmp),
+	  m_pmdidRelStats(pmdidRelStats),
+	  m_pmdname(pmdname),
+	  m_dRows(dRows),
+	  m_fEmpty(fEmpty)
 {
 	GPOS_ASSERT(pmdidRelStats->FValid());
-	m_pstr = CDXLUtils::PstrSerializeMDObj(m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
+	m_pstr = CDXLUtils::PstrSerializeMDObj(
+		m_pmp, this, false /*fSerializeHeader*/, false /*fIndent*/);
 }
 
 //---------------------------------------------------------------------------
@@ -128,21 +122,20 @@ CDXLRelStats::DRows() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLRelStats::Serialize
-	(
-	CXMLSerializer *pxmlser
-	) const
+CDXLRelStats::Serialize(CXMLSerializer *pxmlser) const
 {
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenRelationStats));
-	
-	m_pmdidRelStats->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName), m_pmdname->Pstr());
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenRows), m_dRows);
-	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenEmptyRelation), m_fEmpty);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 CDXLTokens::PstrToken(EdxltokenRelationStats));
 
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), 
-						CDXLTokens::PstrToken(EdxltokenRelationStats));
+	m_pmdidRelStats->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenMdid));
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenName),
+						  m_pmdname->Pstr());
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenRows), m_dRows);
+	pxmlser->AddAttribute(CDXLTokens::PstrToken(EdxltokenEmptyRelation),
+						  m_fEmpty);
+
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  CDXLTokens::PstrToken(EdxltokenRelationStats));
 
 	GPOS_CHECK_ABORT;
 }
@@ -159,24 +152,20 @@ CDXLRelStats::Serialize
 //
 //---------------------------------------------------------------------------
 void
-CDXLRelStats::DebugPrint
-	(
-	IOstream &os
-	)
-	const
+CDXLRelStats::DebugPrint(IOstream &os) const
 {
 	os << "Relation id: ";
 	Pmdid()->OsPrint(os);
 	os << std::endl;
-	
+
 	os << "Relation name: " << (Mdname()).Pstr()->Wsz() << std::endl;
-	
+
 	os << "Rows: " << DRows() << std::endl;
 
 	os << "Empty: " << FEmpty() << std::endl;
 }
 
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 //---------------------------------------------------------------------------
 //	@function:
@@ -187,11 +176,7 @@ CDXLRelStats::DebugPrint
 //
 //---------------------------------------------------------------------------
 CDXLRelStats *
-CDXLRelStats::PdxlrelstatsDummy
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdid
-	)
+CDXLRelStats::PdxlrelstatsDummy(IMemoryPool *pmp, IMDId *pmdid)
 {
 	CMDIdRelStats *pmdidRelStats = CMDIdRelStats::PmdidConvert(pmdid);
 	CAutoP<CWStringDynamic> a_pstr;
@@ -199,10 +184,11 @@ CDXLRelStats::PdxlrelstatsDummy
 	CAutoP<CMDName> a_pmdname;
 	a_pmdname = GPOS_NEW(pmp) CMDName(pmp, a_pstr.Pt());
 	CAutoRef<CDXLRelStats> a_pdxlrelstats;
-	a_pdxlrelstats = GPOS_NEW(pmp) CDXLRelStats(pmp, pmdidRelStats, a_pmdname.Pt(), CStatistics::DDefaultColumnWidth, false /* fEmpty */);
+	a_pdxlrelstats = GPOS_NEW(pmp)
+		CDXLRelStats(pmp, pmdidRelStats, a_pmdname.Pt(),
+					 CStatistics::DDefaultColumnWidth, false /* fEmpty */);
 	a_pmdname.PtReset();
 	return a_pdxlrelstats.PtReset();
 }
 
 // EOF
-

@@ -27,13 +27,9 @@ using namespace gpopt;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CPhysicalSpool::CPhysicalSpool
-	(
-	IMemoryPool *pmp
-	)
-	:
-	CPhysical(pmp)
-{}
+CPhysicalSpool::CPhysicalSpool(IMemoryPool *pmp) : CPhysical(pmp)
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -45,7 +41,8 @@ CPhysicalSpool::CPhysicalSpool
 //
 //---------------------------------------------------------------------------
 CPhysicalSpool::~CPhysicalSpool()
-{}
+{
+}
 
 
 //---------------------------------------------------------------------------
@@ -57,15 +54,11 @@ CPhysicalSpool::~CPhysicalSpool()
 //
 //---------------------------------------------------------------------------
 CColRefSet *
-CPhysicalSpool::PcrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
+CPhysicalSpool::PcrsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CColRefSet *pcrsRequired, ULONG ulChildIndex,
+							 DrgPdp *,  // pdrgpdpCtxt
+							 ULONG		// ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -82,16 +75,11 @@ CPhysicalSpool::PcrsRequired
 //
 //---------------------------------------------------------------------------
 COrderSpec *
-CPhysicalSpool::PosRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	COrderSpec *posRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSpool::PosRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							COrderSpec *posRequired, ULONG ulChildIndex,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -108,16 +96,11 @@ CPhysicalSpool::PosRequired
 //
 //---------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalSpool::PdsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CDistributionSpec *pdsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSpool::PdsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							CDistributionSpec *pdsRequired, ULONG ulChildIndex,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
@@ -133,20 +116,18 @@ CPhysicalSpool::PdsRequired
 //
 //---------------------------------------------------------------------------
 CPartitionPropagationSpec *
-CPhysicalSpool::PppsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &exprhdl,
-	CPartitionPropagationSpec *pppsRequired,
-	ULONG ulChildIndex,
-	DrgPdp *, //pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
+CPhysicalSpool::PppsRequired(IMemoryPool *pmp, CExpressionHandle &exprhdl,
+							 CPartitionPropagationSpec *pppsRequired,
+							 ULONG ulChildIndex,
+							 DrgPdp *,  //pdrgpdpCtxt,
+							 ULONG		//ulOptReq
+)
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 	GPOS_ASSERT(NULL != pppsRequired);
-	
-	return CPhysical::PppsRequiredPushThru(pmp, exprhdl, pppsRequired, ulChildIndex);
+
+	return CPhysical::PppsRequiredPushThru(pmp, exprhdl, pppsRequired,
+										   ulChildIndex);
 }
 
 //---------------------------------------------------------------------------
@@ -158,20 +139,17 @@ CPhysicalSpool::PppsRequired
 //
 //---------------------------------------------------------------------------
 CCTEReq *
-CPhysicalSpool::PcteRequired
-	(
-	IMemoryPool *, //pmp,
-	CExpressionHandle &, //exprhdl,
-	CCTEReq *pcter,
-	ULONG
+CPhysicalSpool::PcteRequired(IMemoryPool *,		   //pmp,
+							 CExpressionHandle &,  //exprhdl,
+							 CCTEReq *pcter,
+							 ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
+								 ulChildIndex
 #endif
-	,
-	DrgPdp *, //pdrgpdpCtxt,
-	ULONG //ulOptReq
-	)
-	const
+							 ,
+							 DrgPdp *,  //pdrgpdpCtxt,
+							 ULONG		//ulOptReq
+							 ) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 	return PcterPushThru(pcter);
@@ -186,25 +164,23 @@ CPhysicalSpool::PcteRequired
 //
 //---------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalSpool::PrsRequired
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle &, // exprhdl,
-	CRewindabilitySpec *,// prsRequired,
-	ULONG
+CPhysicalSpool::PrsRequired(IMemoryPool *pmp,
+							CExpressionHandle &,   // exprhdl,
+							CRewindabilitySpec *,  // prsRequired,
+							ULONG
 #ifdef GPOS_DEBUG
-	ulChildIndex
-#endif // GPOS_DEBUG
-	,
-	DrgPdp *, // pdrgpdpCtxt
-	ULONG // ulOptReq
-	)
-	const
+								ulChildIndex
+#endif  // GPOS_DEBUG
+							,
+							DrgPdp *,  // pdrgpdpCtxt
+							ULONG	  // ulOptReq
+							) const
 {
 	GPOS_ASSERT(0 == ulChildIndex);
 
 	// spool establishes rewindability on its own
-	return GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
+	return GPOS_NEW(pmp)
+		CRewindabilitySpec(CRewindabilitySpec::ErtNone /*ert*/);
 }
 
 
@@ -217,12 +193,8 @@ CPhysicalSpool::PrsRequired
 //
 //--------------------------------------------------------------------------
 COrderSpec *
-CPhysicalSpool::PosDerive
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalSpool::PosDerive(IMemoryPool *,  // pmp
+						  CExpressionHandle &exprhdl) const
 {
 	return PosDerivePassThruOuter(exprhdl);
 }
@@ -237,12 +209,8 @@ CPhysicalSpool::PosDerive
 //
 //--------------------------------------------------------------------------
 CDistributionSpec *
-CPhysicalSpool::PdsDerive
-	(
-	IMemoryPool *, // pmp
-	CExpressionHandle &exprhdl
-	)
-	const
+CPhysicalSpool::PdsDerive(IMemoryPool *,  // pmp
+						  CExpressionHandle &exprhdl) const
 {
 	return PdsDerivePassThruOuter(exprhdl);
 }
@@ -257,15 +225,13 @@ CPhysicalSpool::PdsDerive
 //
 //--------------------------------------------------------------------------
 CRewindabilitySpec *
-CPhysicalSpool::PrsDerive
-	(
-	IMemoryPool *pmp,
-	CExpressionHandle & // exprhdl
-	)
-	const
+CPhysicalSpool::PrsDerive(IMemoryPool *pmp,
+						  CExpressionHandle &  // exprhdl
+						  ) const
 {
 	// rewindability of output is always true
-	return GPOS_NEW(pmp) CRewindabilitySpec(CRewindabilitySpec::ErtGeneral /*ert*/);
+	return GPOS_NEW(pmp)
+		CRewindabilitySpec(CRewindabilitySpec::ErtGeneral /*ert*/);
 }
 
 
@@ -278,11 +244,7 @@ CPhysicalSpool::PrsDerive
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalSpool::FMatch
-	(
-	COperator *pop
-	)
-	const
+CPhysicalSpool::FMatch(COperator *pop) const
 {
 	// spool doesn't contain any members as of now
 	return Eopid() == pop->Eopid();
@@ -298,13 +260,10 @@ CPhysicalSpool::FMatch
 //
 //---------------------------------------------------------------------------
 BOOL
-CPhysicalSpool::FProvidesReqdCols
-	(
-	CExpressionHandle &exprhdl,
-	CColRefSet *pcrsRequired,
-	ULONG // ulOptReq
-	)
-	const
+CPhysicalSpool::FProvidesReqdCols(CExpressionHandle &exprhdl,
+								  CColRefSet *pcrsRequired,
+								  ULONG  // ulOptReq
+								  ) const
 {
 	return FUnaryProvidesReqdCols(exprhdl, pcrsRequired);
 }
@@ -319,15 +278,12 @@ CPhysicalSpool::FProvidesReqdCols
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalSpool::EpetOrder
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdOrder *
+CPhysicalSpool::EpetOrder(CExpressionHandle &,  // exprhdl
+						  const CEnfdOrder *
 #ifdef GPOS_DEBUG
-	peo
-#endif // GPOS_DEBUG
-	)
-	const
+							  peo
+#endif  // GPOS_DEBUG
+						  ) const
 {
 	GPOS_ASSERT(NULL != peo);
 	GPOS_ASSERT(!peo->PosRequired()->FEmpty());
@@ -346,15 +302,12 @@ CPhysicalSpool::EpetOrder
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalSpool::EpetDistribution
-	(
-	CExpressionHandle &/*exprhdl*/,
-	const CEnfdDistribution *
+CPhysicalSpool::EpetDistribution(CExpressionHandle & /*exprhdl*/,
+								 const CEnfdDistribution *
 #ifdef GPOS_DEBUG
-	ped
-#endif // GPOS_DEBUG
-	)
-	const
+									 ped
+#endif  // GPOS_DEBUG
+								 ) const
 {
 	GPOS_ASSERT(NULL != ped);
 
@@ -373,12 +326,9 @@ CPhysicalSpool::EpetDistribution
 //
 //---------------------------------------------------------------------------
 CEnfdProp::EPropEnforcingType
-CPhysicalSpool::EpetRewindability
-	(
-	CExpressionHandle &, // exprhdl
-	const CEnfdRewindability * // per
-	)
-	const
+CPhysicalSpool::EpetRewindability(CExpressionHandle &,		  // exprhdl
+								  const CEnfdRewindability *  // per
+								  ) const
 {
 	// no need for enforcing rewindability on output
 	return CEnfdProp::EpetUnnecessary;
@@ -386,13 +336,8 @@ CPhysicalSpool::EpetRewindability
 
 
 BOOL
-CPhysicalSpool::FValidContext
-	(
-	IMemoryPool *,
-	COptimizationContext *,
-	DrgPoc *pdrgpocChild
-	)
-	const
+CPhysicalSpool::FValidContext(IMemoryPool *, COptimizationContext *,
+							  DrgPoc *pdrgpocChild) const
 {
 	GPOS_ASSERT(NULL != pdrgpocChild);
 	GPOS_ASSERT(1 == pdrgpocChild->UlLength());
@@ -437,4 +382,3 @@ CPhysicalSpool::FValidContext
 	return true;
 }
 // EOF
-

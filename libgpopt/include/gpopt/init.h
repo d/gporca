@@ -14,20 +14,22 @@
 #ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif  // __cplusplus
 
-// initialize gpopt library
-void gpopt_init();
+	// initialize gpopt library
+	void
+	gpopt_init();
 
 
-// terminate gpopt library
-void gpopt_terminate(void);
+	// terminate gpopt library
+	void
+	gpopt_terminate(void);
 
 #ifdef __cplusplus
 }
-#endif // __cplusplus
+#endif  // __cplusplus
 
-#endif // !GPOPT_init_H
+#endif  // !GPOPT_init_H
 
 
 // EOF

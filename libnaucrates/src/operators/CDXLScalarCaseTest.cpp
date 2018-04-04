@@ -27,14 +27,8 @@ using namespace gpdxl;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CDXLScalarCaseTest::CDXLScalarCaseTest
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidType
-	)
-	:
-	CDXLScalar(pmp),
-	m_pmdidType(pmdidType)
+CDXLScalarCaseTest::CDXLScalarCaseTest(IMemoryPool *pmp, IMDId *pmdidType)
+	: CDXLScalar(pmp), m_pmdidType(pmdidType)
 {
 	GPOS_ASSERT(m_pmdidType->FValid());
 }
@@ -103,18 +97,17 @@ CDXLScalarCaseTest::PmdidType() const
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarCaseTest::SerializeToDXL
-	(
-	CXMLSerializer *pxmlser,
-	const CDXLNode * //pdxln
-	)
-	const
+CDXLScalarCaseTest::SerializeToDXL(CXMLSerializer *pxmlser,
+								   const CDXLNode *  //pdxln
+								   ) const
 {
 	const CWStringConst *pstrElemName = PstrOpName();
 
-	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->OpenElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						 pstrElemName);
 	m_pmdidType->Serialize(pxmlser, CDXLTokens::PstrToken(EdxltokenTypeId));
-	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix), pstrElemName);
+	pxmlser->CloseElement(CDXLTokens::PstrToken(EdxltokenNamespacePrefix),
+						  pstrElemName);
 }
 
 //---------------------------------------------------------------------------
@@ -126,11 +119,7 @@ CDXLScalarCaseTest::SerializeToDXL
 //
 //---------------------------------------------------------------------------
 BOOL
-CDXLScalarCaseTest::FBoolean
-	(
-	CMDAccessor *pmda
-	)
-	const
+CDXLScalarCaseTest::FBoolean(CMDAccessor *pmda) const
 {
 	return (IMDType::EtiBool == pmda->Pmdtype(m_pmdidType)->Eti());
 }
@@ -145,16 +134,13 @@ CDXLScalarCaseTest::FBoolean
 //
 //---------------------------------------------------------------------------
 void
-CDXLScalarCaseTest::AssertValid
-	(
-	const CDXLNode *pdxln,
-	BOOL // fValidateChildren
-	)
-	const
+CDXLScalarCaseTest::AssertValid(const CDXLNode *pdxln,
+								BOOL  // fValidateChildren
+								) const
 {
 	GPOS_ASSERT(0 == pdxln->UlArity());
 	GPOS_ASSERT(m_pmdidType->FValid());
 }
-#endif // GPOS_DEBUG
+#endif  // GPOS_DEBUG
 
 // EOF

@@ -25,11 +25,7 @@
 using namespace gpopt;
 using namespace gpmd;
 
-const CHAR CScalarArrayCmp::m_rgszCmpType[EarrcmpSentinel][10] =
-{
-	"Any",
-	"All"
-};
+const CHAR CScalarArrayCmp::m_rgszCmpType[EarrcmpSentinel][10] = {"Any", "All"};
 
 
 //---------------------------------------------------------------------------
@@ -40,25 +36,21 @@ const CHAR CScalarArrayCmp::m_rgszCmpType[EarrcmpSentinel][10] =
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CScalarArrayCmp::CScalarArrayCmp
-	(
-	IMemoryPool *pmp,
-	IMDId *pmdidOp,
-	const CWStringConst *pstrOp,
-	EArrCmpType earrcmpt
-	)
-	:
-	CScalar(pmp),
-	m_pmdidOp(pmdidOp),
-	m_pscOp(pstrOp),
-	m_earrccmpt(earrcmpt),
-	m_fReturnsNullOnNullInput(false)
+CScalarArrayCmp::CScalarArrayCmp(IMemoryPool *pmp, IMDId *pmdidOp,
+								 const CWStringConst *pstrOp,
+								 EArrCmpType earrcmpt)
+	: CScalar(pmp),
+	  m_pmdidOp(pmdidOp),
+	  m_pscOp(pstrOp),
+	  m_earrccmpt(earrcmpt),
+	  m_fReturnsNullOnNullInput(false)
 {
 	GPOS_ASSERT(pmdidOp->FValid());
 	GPOS_ASSERT(EarrcmpSentinel > earrcmpt);
 
 	CMDAccessor *pmda = COptCtxt::PoctxtFromTLS()->Pmda();
-	m_fReturnsNullOnNullInput = CMDAccessorUtils::FScalarOpReturnsNullOnNullInput(pmda, m_pmdidOp);
+	m_fReturnsNullOnNullInput =
+		CMDAccessorUtils::FScalarOpReturnsNullOnNullInput(pmda, m_pmdidOp);
 }
 
 
@@ -102,14 +94,12 @@ CScalarArrayCmp::PmdidOp() const
 ULONG
 CScalarArrayCmp::UlHash() const
 {
-	return gpos::UlCombineHashes
-					(
-					gpos::UlCombineHashes(COperator::UlHash(), m_pmdidOp->UlHash()),
-					m_earrccmpt
-					);
+	return gpos::UlCombineHashes(
+		gpos::UlCombineHashes(COperator::UlHash(), m_pmdidOp->UlHash()),
+		m_earrccmpt);
 }
 
-	
+
 //---------------------------------------------------------------------------
 //	@function:
 //		CScalarArrayCmp::FMatch
@@ -119,20 +109,17 @@ CScalarArrayCmp::UlHash() const
 //
 //---------------------------------------------------------------------------
 BOOL
-CScalarArrayCmp::FMatch
-	(
-	COperator *pop
-	)
-	const
+CScalarArrayCmp::FMatch(COperator *pop) const
 {
 	if (pop->Eopid() == Eopid())
 	{
 		CScalarArrayCmp *popCmp = CScalarArrayCmp::PopConvert(pop);
-		
+
 		// match if operator oid are identical
-		return m_earrccmpt == popCmp->Earrcmpt() && m_pmdidOp->FEquals(popCmp->PmdidOp());
+		return m_earrccmpt == popCmp->Earrcmpt() &&
+			   m_pmdidOp->FEquals(popCmp->PmdidOp());
 	}
-	
+
 	return false;
 }
 
@@ -161,11 +148,7 @@ CScalarArrayCmp::PmdidType() const
 //
 //---------------------------------------------------------------------------
 CScalar::EBoolEvalResult
-CScalarArrayCmp::Eber
-	(
-	DrgPul *pdrgpulChildren
-	)
-	const
+CScalarArrayCmp::Eber(DrgPul *pdrgpulChildren) const
 {
 	if (m_fReturnsNullOnNullInput)
 	{
@@ -185,16 +168,12 @@ CScalarArrayCmp::Eber
 //
 //---------------------------------------------------------------------------
 IOstream &
-CScalarArrayCmp::OsPrint
-	(
-	IOstream &os
-	)
-	const
+CScalarArrayCmp::OsPrint(IOstream &os) const
 {
-	os << SzId() << " " <<  m_rgszCmpType[m_earrccmpt] << " (";
+	os << SzId() << " " << m_rgszCmpType[m_earrccmpt] << " (";
 	os << Pstr()->Wsz();
 	os << ")";
-	
+
 	return os;
 }
 
@@ -208,18 +187,15 @@ CScalarArrayCmp::OsPrint
 //
 //---------------------------------------------------------------------------
 CExpression *
-CScalarArrayCmp::PexprExpand
-	(
-	IMemoryPool *pmp,
-	CExpression *pexprArrayCmp
-	)
+CScalarArrayCmp::PexprExpand(IMemoryPool *pmp, CExpression *pexprArrayCmp)
 {
 	GPOS_ASSERT(NULL != pexprArrayCmp);
 	GPOS_ASSERT(EopScalarArrayCmp == pexprArrayCmp->Pop()->Eopid());
 
 	CExpression *pexprIdent = (*pexprArrayCmp)[0];
 	CExpression *pexprArray = CUtils::PexprScalarArrayChild(pexprArrayCmp);
-	CScalarArrayCmp *popArrayCmp = CScalarArrayCmp::PopConvert(pexprArrayCmp->Pop());
+	CScalarArrayCmp *popArrayCmp =
+		CScalarArrayCmp::PopConvert(pexprArrayCmp->Pop());
 	ULONG ulArrayElems = 0;
 
 	if (CUtils::FScalarArray(pexprArray))
@@ -239,7 +215,8 @@ CScalarArrayCmp::PexprExpand
 	DrgPexpr *pdrgpexpr = GPOS_NEW(pmp) DrgPexpr(pmp);
 	for (ULONG ul = 0; ul < ulArrayElems; ul++)
 	{
-		CExpression *pexprArrayElem = CUtils::PScalarArrayExprChildAt(pmp, pexprArray, ul);
+		CExpression *pexprArrayElem =
+			CUtils::PScalarArrayExprChildAt(pmp, pexprArray, ul);
 		pexprIdent->AddRef();
 		const CWStringConst *pstrOpName = popArrayCmp->Pstr();
 		IMDId *pmdidOp = popArrayCmp->PmdidOp();
@@ -247,7 +224,8 @@ CScalarArrayCmp::PexprExpand
 
 		pmdidOp->AddRef();
 
-		CExpression *pexprCmp = CUtils::PexprScalarCmp(pmp, pexprIdent, pexprArrayElem, *pstrOpName, pmdidOp);
+		CExpression *pexprCmp = CUtils::PexprScalarCmp(
+			pmp, pexprIdent, pexprArrayElem, *pstrOpName, pmdidOp);
 		pdrgpexpr->Append(pexprCmp);
 	}
 	GPOS_ASSERT(0 < pdrgpexpr->UlLength());
@@ -269,4 +247,3 @@ CScalarArrayCmp::PexprExpand
 
 
 // EOF
-

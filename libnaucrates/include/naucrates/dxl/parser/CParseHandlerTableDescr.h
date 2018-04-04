@@ -21,61 +21,56 @@
 
 namespace gpdxl
 {
-	using namespace gpos;
+using namespace gpos;
 
-	XERCES_CPP_NAMESPACE_USE
-	
-	//---------------------------------------------------------------------------
-	//	@class:
-	//		CParseHandlerTableDescr
-	//
-	//	@doc:
-	//		Parse handler for parsing a table descriptor
-	//
-	//---------------------------------------------------------------------------
-	class CParseHandlerTableDescr : public CParseHandlerBase
-	{
-		private:
+XERCES_CPP_NAMESPACE_USE
 
-			// the table descriptor to construct
-			CDXLTableDescr *m_pdxltabdesc;
-				
-			// private copy ctor
-			CParseHandlerTableDescr(const CParseHandlerTableDescr &);
-			
-			// process the start of an element
-			void StartElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
- 					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname,		// element's qname
-					const Attributes& attr				// element's attributes
-				);
-				
-			// process the end of an element
-			void EndElement
-				(
-					const XMLCh* const xmlszUri, 		// URI of element's namespace
-					const XMLCh* const xmlszLocalname,	// local part of element's name
-					const XMLCh* const xmlszQname		// element's qname
-				);
-			
-		public:
-			// ctor/dtor
-			CParseHandlerTableDescr
-				(
-				IMemoryPool *pmp,
-				CParseHandlerManager *pphm,
-				CParseHandlerBase *pphRoot
-				);
-			
-			~CParseHandlerTableDescr();
-		
-			CDXLTableDescr *Pdxltabdesc();
-			
-	};
-}
+//---------------------------------------------------------------------------
+//	@class:
+//		CParseHandlerTableDescr
+//
+//	@doc:
+//		Parse handler for parsing a table descriptor
+//
+//---------------------------------------------------------------------------
+class CParseHandlerTableDescr : public CParseHandlerBase
+{
+private:
+	// the table descriptor to construct
+	CDXLTableDescr *m_pdxltabdesc;
 
-#endif // !GPDXL_CParseHandlerTableDescriptor_H
+	// private copy ctor
+	CParseHandlerTableDescr(const CParseHandlerTableDescr &);
+
+	// process the start of an element
+	void
+	StartElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname,		// element's qname
+		const Attributes &attr				// element's attributes
+	);
+
+	// process the end of an element
+	void
+	EndElement(
+		const XMLCh *const xmlszUri,		// URI of element's namespace
+		const XMLCh *const xmlszLocalname,  // local part of element's name
+		const XMLCh *const xmlszQname		// element's qname
+	);
+
+public:
+	// ctor/dtor
+	CParseHandlerTableDescr(IMemoryPool *pmp, CParseHandlerManager *pphm,
+							CParseHandlerBase *pphRoot);
+
+	~CParseHandlerTableDescr();
+
+	CDXLTableDescr *
+	Pdxltabdesc();
+};
+}  // namespace gpdxl
+
+#endif  // !GPDXL_CParseHandlerTableDescriptor_H
 
 // EOF

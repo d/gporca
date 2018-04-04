@@ -23,16 +23,9 @@ using namespace gpos;
 //		ctor
 //
 //---------------------------------------------------------------------------
-CAutoTimer::CAutoTimer
-	(
-	const CHAR *sz,
-	BOOL fPrint
-	)
-	: 
-	m_sz(sz),
-	m_fPrint(fPrint)
+CAutoTimer::CAutoTimer(const CHAR *sz, BOOL fPrint) : m_sz(sz), m_fPrint(fPrint)
 {
-	GPOS_ASSERT(NULL != sz);	
+	GPOS_ASSERT(NULL != sz);
 }
 
 
@@ -58,4 +51,3 @@ CAutoTimer::~CAutoTimer() throw()
 }
 
 // EOF
-

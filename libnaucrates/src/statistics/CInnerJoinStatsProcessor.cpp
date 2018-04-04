@@ -16,29 +16,21 @@ using namespace gpmd;
 
 // return statistics object after performing inner join
 CStatistics *
-CInnerJoinStatsProcessor::PstatsInnerJoinStatic
-			(
-			IMemoryPool *pmp,
-			const IStatistics *pistatsOuter,
-			const IStatistics *pistatsInner,
-			DrgPstatspredjoin *pdrgpstatspredjoin
-			)
+CInnerJoinStatsProcessor::PstatsInnerJoinStatic(
+	IMemoryPool *pmp, const IStatistics *pistatsOuter,
+	const IStatistics *pistatsInner, DrgPstatspredjoin *pdrgpstatspredjoin)
 {
 	GPOS_ASSERT(NULL != pistatsOuter);
 	GPOS_ASSERT(NULL != pistatsInner);
 	GPOS_ASSERT(NULL != pdrgpstatspredjoin);
-	const CStatistics *pstatsOuter = dynamic_cast<const CStatistics *> (pistatsOuter);
+	const CStatistics *pstatsOuter =
+		dynamic_cast<const CStatistics *>(pistatsOuter);
 
-	return CJoinStatsProcessor::PstatsJoinDriver
-			(
-			pmp,
-			pstatsOuter->PStatsConf(),
-			pistatsOuter,
-			pistatsInner,
-			pdrgpstatspredjoin,
-			IStatistics::EsjtInnerJoin,
-			true /* fIgnoreLasjHistComputation */
-			);
+	return CJoinStatsProcessor::PstatsJoinDriver(
+		pmp, pstatsOuter->PStatsConf(), pistatsOuter, pistatsInner,
+		pdrgpstatspredjoin, IStatistics::EsjtInnerJoin,
+		true /* fIgnoreLasjHistComputation */
+	);
 }
 
 // EOF

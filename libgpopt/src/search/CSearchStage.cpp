@@ -23,18 +23,13 @@ using namespace gpos;
 //		Ctor
 //
 //---------------------------------------------------------------------------
-CSearchStage::CSearchStage
-	(
-	CXformSet *pxfs,
-	ULONG ulTimeThreshold,
-	CCost costThreshold
-	)
-	:
-	m_pxfs(pxfs),
-	m_ulTimeThreshold(ulTimeThreshold),
-	m_costThreshold(costThreshold),
-	m_pexprBest(NULL),
-	m_costBest(GPOPT_INVALID_COST)
+CSearchStage::CSearchStage(CXformSet *pxfs, ULONG ulTimeThreshold,
+						   CCost costThreshold)
+	: m_pxfs(pxfs),
+	  m_ulTimeThreshold(ulTimeThreshold),
+	  m_costThreshold(costThreshold),
+	  m_pexprBest(NULL),
+	  m_costBest(GPOPT_INVALID_COST)
 {
 	GPOS_ASSERT(NULL != pxfs);
 	GPOS_ASSERT(0 < pxfs->CElements());
@@ -68,16 +63,12 @@ CSearchStage::~CSearchStage()
 //
 //---------------------------------------------------------------------------
 IOstream &
-CSearchStage::OsPrint
-	(
-	IOstream &os
-	)
+CSearchStage::OsPrint(IOstream &os)
 {
-	os
-		<< "Search Stage" << std::endl
-		<< "\ttime threshold: " << m_ulTimeThreshold
-		<< ", cost threshold:" << m_costThreshold
-		<< ", best plan found: " << std::endl;
+	os << "Search Stage" << std::endl
+	   << "\ttime threshold: " << m_ulTimeThreshold
+	   << ", cost threshold:" << m_costThreshold
+	   << ", best plan found: " << std::endl;
 
 	if (NULL != m_pexprBest)
 	{
@@ -96,10 +87,7 @@ CSearchStage::OsPrint
 //
 //---------------------------------------------------------------------------
 void
-CSearchStage::SetBestExpr
-	(
-	CExpression *pexpr
-	)
+CSearchStage::SetBestExpr(CExpression *pexpr)
 {
 	GPOS_ASSERT_IMP(NULL != pexpr, pexpr->Pop()->FPhysical());
 
@@ -121,10 +109,7 @@ CSearchStage::SetBestExpr
 //
 //---------------------------------------------------------------------------
 DrgPss *
-CSearchStage::PdrgpssDefault
-	(
-	IMemoryPool *pmp
-	)
+CSearchStage::PdrgpssDefault(IMemoryPool *pmp)
 {
 	CXformSet *pxfs = GPOS_NEW(pmp) CXformSet(pmp);
 	pxfs->Union(CXformFactory::Pxff()->PxfsExploration());
@@ -136,4 +121,3 @@ CSearchStage::PdrgpssDefault
 }
 
 // EOF
-

@@ -2,8 +2,10 @@
 
 set -e -u
 
+: "${CLANG_FORMAT:=clang-format}"
+
 format() {
-	git ls-files --full-name :!scripts '*.cpp' '*.h' '*.inl' | parallel --quote -X --max-chars 16384 clang-format -i {} {}
+	git ls-files --full-name :!scripts '*.cpp' '*.h' '*.inl' | parallel --quote -X --max-chars 16384 "${CLANG_FORMAT}" -i {} {}
 }
 
 stage() {

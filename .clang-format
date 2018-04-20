@@ -8,7 +8,7 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterReturnType: All
-BinPackParameters: false
+BinPackParameters: true
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Allman
 ConstructorInitializerAllOnOneLineOrOnePerLine: true

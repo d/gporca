@@ -68,7 +68,7 @@ gpos::HexDump
 		os << COstream::EsmHex;
 
         // individual bytes
-		for(ULONG j = 0; j < GPOS_MEM_BPL; j++)
+		for(ULONG j = 0; j < GPOS_MEM_BPL && (GPOS_MEM_BPL * i + j < size); j++)
 		{
 			if (buf[j] < 16)
 			{
@@ -88,7 +88,7 @@ gpos::HexDump
 		os << " ";
 
 		// text representation
-		for(ULONG j = 0; j < GPOS_MEM_BPL; j++)
+		for(ULONG j = 0; j < GPOS_MEM_BPL && (GPOS_MEM_BPL * i + j < size); j++)
 		{
 			// print only 'visible' characters
 			if(buf[j] >= 0x20 && buf[j] <= 0x7f)

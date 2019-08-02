@@ -128,25 +128,12 @@ void*
 CMemoryPool::NewImpl
 	(
 	SIZE_T size,
-	const CHAR *filename,
-	ULONG line,
-	CMemoryPool::EAllocationType eat
+	const CHAR *filename __attribute__((unused)),
+	ULONG line __attribute__((unused)),
+	CMemoryPool::EAllocationType eat __attribute__((unused))
 	)
 {
-	GPOS_ASSERT(gpos::ulong_max >= size);
-	GPOS_ASSERT_IMP
-	(
-	(NULL != CMemoryPoolManager::GetMemoryPoolMgr()) && (this == CMemoryPoolManager::GetMemoryPoolMgr()->GetGlobalMemoryPool()),
-	 CMemoryPoolManager::GetMemoryPoolMgr()->IsGlobalNewAllowed() &&
-	 "Use of new operator without target memory pool is prohibited, use New(...) instead"
-	);
-
-	ULONG alloc_size = CMemoryPool::GetAllocSize((ULONG) size);
-	void *ptr = Allocate(alloc_size, filename, line);
-
-	GPOS_OOM_CHECK(ptr);
-	
-	return this->FinalizeAlloc(ptr, (ULONG) size, eat);
+	return ::operator new(size);
 }
 
 //---------------------------------------------------------------------------
@@ -161,17 +148,10 @@ void
 CMemoryPool::DeleteImpl
 	(
 	void *ptr,
-	EAllocationType eat
+	EAllocationType eat __attribute__((unused))
 	)
 {
-	// deletion of NULL pointers is legal
-	if (NULL == ptr)
-	{
-		return;
-	}
-
-	// release allocation
-	FreeAlloc(ptr, eat);
+	::operator delete(ptr);
 
 }  // namespace gpos
 

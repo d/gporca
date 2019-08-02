@@ -203,29 +203,11 @@ namespace gpos
 			T* NewArrayImpl
 				(
 				SIZE_T num_elements,
-				const CHAR *filename,
-				ULONG line
+				const CHAR *filename __attribute__((unused)),
+				ULONG line __attribute__((unused))
 				)
 			{
-				T *array = static_cast<T*>(NewImpl(
-												   sizeof(T) * num_elements,
-												   filename,
-												   line,
-												   EatArray));
-				for (SIZE_T idx = 0; idx < num_elements; ++idx) {
-					try {
-						new(array + idx) T();
-					} catch (...) {
-						// If any element's constructor throws, deconstruct
-						// previous objects and reclaim memory before rethrowing.
-						for (SIZE_T destroy_idx = idx - 1; destroy_idx < idx; --destroy_idx) {
-							array[destroy_idx].~T();
-						}
-						DeleteImpl(array, EatArray);
-						throw;
-					}
-				}
-				return array;
+				return new T[num_elements];
 			}
 
 			// delete implementation
@@ -352,29 +334,11 @@ namespace gpos
 	class CDeleter {
 		public:
 			static void Delete(T* object) {
-				if (NULL == object) {
-					return;
-				}
-
-				// Invoke destructor, then free memory.
-				object->~T();
-				CMemoryPool::DeleteImpl(object, CMemoryPool::EatSingleton);
+				delete object;
 			}
 
 			static void DeleteArray(T* object_array) {
-				if (NULL == object_array) {
-					return;
-				}
-
-				// Invoke destructor on each array element in reverse
-				// order from construction.
-				const SIZE_T  num_elements = CMemoryPool::SizeOfAlloc(object_array) / sizeof(T);
-				for (SIZE_T idx = num_elements - 1; idx < num_elements; --idx) {
-					object_array[idx].~T();
-				}
-
-				// Free memory.
-				CMemoryPool::DeleteImpl(object_array, CMemoryPool::EatArray);
+				delete []object_array;
 			}
 	};
 
@@ -383,11 +347,11 @@ namespace gpos
 	class CDeleter<const T> {
 		public:
 			static void Delete(const T* object) {
-				CDeleter<T>::Delete(const_cast<T*>(object));
+				delete object;
 			}
 
 			static void DeleteArray(const T* object_array) {
-				CDeleter<T>::DeleteArray(const_cast<T*>(object_array));
+				delete[] object_array;
 			}
 	};
 	}  // namespace delete_detail

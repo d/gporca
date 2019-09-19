@@ -48,7 +48,7 @@ namespace gpos
 	template<class T>
 	inline void CleanupRelease(T *elem)
 	{
-		(dynamic_cast<CRefCount*>(elem))->Release();
+		elem->Release();
 	}
 
 	// commonly used array types

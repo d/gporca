@@ -243,7 +243,7 @@ namespace gpnaucrates
 	{
 		if (NULL != stats)
 		{
-			(dynamic_cast<CRefCount*>(stats))->Release();
+			stats->Release();
 		}
 	}
 
